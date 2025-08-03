@@ -1,0 +1,22 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment and config files
+.env
+config.php
+
+# Ignore IDE/editor folders
+.vscode/
+.idea/
+
+# Ignore vendor folder if using Composer (not in your case, but good to know)
+vendor/
+
+# Ignore node_modules if using Node.js for anything (optional)
+node_modules/
+
+# Ignore logs and cache
+*.log
+/cache
+/tmp
