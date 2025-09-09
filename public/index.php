@@ -12,4 +12,15 @@ $router = new Router();
 $router->get('/ug', 'UGControl@index');
 $router->get('/ug/appointment', 'UGControl@appointment');
 
+$router->get('/CallResponder', 'CallResponderControl@index');
+$router->get('/CallSuccess', 'CallResponderControl@success');
+
+$router->get('/DonationForm', 'DonorControl@DonationForm');
+$router->get('/DonationSuccess', 'DonorControl@DonationSuccess');
+
+$router->get('/EditPosts', 'ModeratorControl@edit');
+$router->get('/FlaggedUsers', 'ModeratorControl@flagged');
+$router->get('/ModeratorDashboard', 'ModeratorControl@ModeratorDashboard');
+$router->get('/WarnForm', 'ModeratorControl@warn');
+
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
