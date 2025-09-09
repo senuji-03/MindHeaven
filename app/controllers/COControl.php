@@ -10,7 +10,6 @@ class COControl {
     public function calender() {
         view('/counselor/calender');
     }
-
     public function sessionHistory() {
         view('/counselor/sessionHistory');
     }
