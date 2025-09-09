@@ -395,25 +395,25 @@ if (!function_exists('is_active')) {
         <h3 class="nav-section-title">Main</h3>
         <ul class="nav-list">
           <li>
-            <a class="nav-link <?= is_active('dashboard', $CURRENT_PAGE) ?>" href="/MindHeaven/Undergrad_student/index.php">
+            <a class="nav-link <?= is_active('dashboard', $CURRENT_PAGE) ?>" href="./">
               <span class="nav-icon">📊</span>
               <span class="nav-text">Dashboard</span>
             </a>
           </li>
           <li>
-            <a class="nav-link <?= is_active('habits', $CURRENT_PAGE) ?>" href="/MindHeaven/Undergrad_student/views/habits.php">
+            <a class="nav-link <?= is_active('habits', $CURRENT_PAGE) ?>" href="./habits">
               <span class="nav-icon">✅</span>
               <span class="nav-text">Habits</span>
             </a>
           </li>
           <li>
-            <a class="nav-link <?= is_active('mood', $CURRENT_PAGE) ?>" href="/MindHeaven/Undergrad_student/views/mood.php">
+            <a class="nav-link <?= is_active('mood', $CURRENT_PAGE) ?>" href="./mood">
               <span class="nav-icon">😊</span>
               <span class="nav-text">Mood Tracker</span>
             </a>
           </li>
           <li>
-            <a class="nav-link <?= is_active('appointments', $CURRENT_PAGE) ?>" href="/MindHeaven/Undergrad_student/views/appointments.php">
+            <a class="nav-link <?= is_active('appointments', $CURRENT_PAGE) ?>" href="./appointment">
               <span class="nav-icon">📅</span>
               <span class="nav-text">Appointments</span>
             </a>
@@ -425,19 +425,19 @@ if (!function_exists('is_active')) {
         <h3 class="nav-section-title">Support</h3>
         <ul class="nav-list">
           <li>
-            <a class="nav-link <?= is_active('resources', $CURRENT_PAGE) ?>" href="/MindHeaven/Undergrad_student/views/resources.php">
+            <a class="nav-link <?= is_active('resources', $CURRENT_PAGE) ?>" href="./resources">
               <span class="nav-icon">📚</span>
               <span class="nav-text">Resources</span>
             </a>
           </li>
           <li>
-            <a class="nav-link <?= is_active('contact', $CURRENT_PAGE) ?>" href="/MindHeaven/Undergrad_student/views/contact.php">
+            <a class="nav-link <?= is_active('contact', $CURRENT_PAGE) ?>" href="./contact">
               <span class="nav-icon">📞</span>
               <span class="nav-text">Contact</span>
             </a>
           </li>
           <li>
-            <a class="nav-link <?= is_active('about', $CURRENT_PAGE) ?>" href="/MindHeaven/Undergrad_student/views/about.php">
+            <a class="nav-link <?= is_active('about', $CURRENT_PAGE) ?>" href="./about">
               <span class="nav-icon">ℹ️</span>
               <span class="nav-text">About</span>
             </a>
@@ -449,7 +449,7 @@ if (!function_exists('is_active')) {
         <h3 class="nav-section-title">Emergency</h3>
         <ul class="nav-list">
           <li>
-            <a class="nav-link crisis-link <?= is_active('crisis', $CURRENT_PAGE) ?>" href="/MindHeaven/Undergrad_student/views/crisis.php">
+            <a class="nav-link crisis-link <?= is_active('crisis', $CURRENT_PAGE) ?>" href="./crisis">
               <span class="nav-icon">🆘</span>
               <span class="nav-text">Crisis Support</span>
             </a>

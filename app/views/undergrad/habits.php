@@ -1,10 +1,10 @@
 <?php
 $TITLE = 'MindHeaven — Habits';
 $CURRENT_PAGE = 'habits';
-$PAGE_CSS = ['/MindHeaven/Undergrad_student/assets/css/habits.css'];
-$PAGE_JS  = ['/MindHeaven/Undergrad_student/assets/js/habits.js'];
+$PAGE_CSS = ['/MindHeaven/public/css/undergrad/crisis.css'];
+$PAGE_JS  = ['/MindHeaven/public/js/undergrad/crisis.js'];
 
-include __DIR__ . '/layout/header.php';
+require BASE_PATH.'/app/views/layouts/header.php';
 ?>
 
 <style>
@@ -1039,4 +1039,4 @@ include __DIR__ . '/layout/header.php';
   </div>
 </div>
 
-<?php include __DIR__ . '/layout/footer.php'; ?>
+<?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>

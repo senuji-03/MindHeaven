@@ -1,8 +1,8 @@
 <?php
 $TITLE = 'MindHeaven — Resources';
 $CURRENT_PAGE = 'resources';
-$PAGE_CSS = ['/MindHeaven/Undergrad_student/assets/css/resources.css'];
-$PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/resources.js'];
+$PAGE_CSS = ['/MindHeaven/public/css/undergrad/resources.css'];
+$PAGE_JS = ['/MindHeaven/public/css/undergrad/resources.js'];
 
 require BASE_PATH.'/app/views/layouts/header.php';
 ?>
@@ -535,5 +535,6 @@ require BASE_PATH.'/app/views/layouts/header.php';
   </div>
 </div>
 
-<?php include __DIR__ . '/layout/footer.php'; ?>
+<?
+require BASE_PATH.'/app/views/layouts/footer.php'; ?>
 

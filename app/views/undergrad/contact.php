@@ -1,10 +1,10 @@
 <?php
 $TITLE = 'MindHeaven — Contact & Support';
 $CURRENT_PAGE = 'contact';
-$PAGE_CSS = ['/MindHeaven/Undergrad_student/assets/css/contact.css'];
-$PAGE_JS  = ['/MindHeaven/Undergrad_student/assets/js/contact.js'];
+$PAGE_CSS = ['/MindHeaven/public/css/undergrad/contact.css'];
+$PAGE_JS  = ['/MindHeaven/public/css/undergrad/contact.js'];
 
-include __DIR__ . '/layout/header.php';
+require BASE_PATH.'/app/views/layouts/header.php';
 ?>
 
 <main id="main" class="container contact">
@@ -330,5 +330,5 @@ include __DIR__ . '/layout/header.php';
   </div>
 </div>
 
-<?php include __DIR__ . '/layout/footer.php'; ?>
+<?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>
 

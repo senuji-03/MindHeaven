@@ -1,10 +1,10 @@
 <?php
 $TITLE = 'MindHeaven — Crisis Support';
 $CURRENT_PAGE = 'crisis';
-$PAGE_CSS = ['/MindHeaven/Undergrad_student/assets/css/crisis.css'];
-$PAGE_JS  = ['/MindHeaven/Undergrad_student/assets/js/crisis.js'];
+$PAGE_CSS = ['/MindHeaven/public/css/undergrad/crisis.css'];
+$PAGE_JS  = ['/MindHeaven/public/css/undergrad/crisis.js'];
 
-include __DIR__ . '/layout/header.php';
+require BASE_PATH.'/app/views/layouts/header.php';
 ?>
 
 <main id="main" class="container crisis">
@@ -274,5 +274,5 @@ include __DIR__ . '/layout/header.php';
   </div>
 </div>
 
-<?php include __DIR__ . '/layout/footer.php'; ?>
+<?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>
 

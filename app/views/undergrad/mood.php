@@ -1,10 +1,10 @@
 <?php
 $TITLE = 'MindHeaven — Mood Tracker';
 $CURRENT_PAGE = 'mood';
-$PAGE_CSS = ['/MindHeaven/Undergrad_student/assets/css/mood.css'];
+$PAGE_CSS = ['/MindHeaven/public/css/undergrad/mood.css'];
 $PAGE_JS  = ['/MindHeaven/Undergrad_student/assets/js/mood.js'];
 
-include __DIR__ . '/layout/header.php';
+require BASE_PATH.'/app/views/layouts/header.php';
 ?>
 
 <main id="main" class="container mood">
@@ -235,4 +235,4 @@ include __DIR__ . '/layout/header.php';
   </div>
 </div>
 
-<?php include __DIR__ . '/layout/footer.php'; ?>
+<?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>
