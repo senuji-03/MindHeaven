@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Resource Hub</title>
-    <!-- Use BASE_URL so paths work everywhere -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/public/css/admin/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/Admin/style.css">
 </head>
 <body>
     <div class="sidebar">
         <h2>Admin</h2>
         <!-- Update links to use routes instead of .html files -->
-        <a href="<?php echo BASE_URL; ?>/admin">Dashboard</a>
-        <a href="<?php echo BASE_URL; ?>/admin/manage-users">Manage Users</a>
-        <a href="<?php echo BASE_URL; ?>/admin/resource-hub" class="active">Resource Hub</a>
+        <a href="<?= BASE_URL ?>/admin">Dashboard</a>
+        <a href="<?= BASE_URL ?>/admin/manage-users">Manage Users</a>
+        <a href="<?= BASE_URL ?>/admin/resource-hub" class="active">Resource Hub</a>
     </div>
 
     <div class="main-content">
@@ -31,6 +30,6 @@
         </section>
     </div>
 
-    <script src="<?php echo BASE_URL; ?>/public/js/admin/script.js"></script>
+    <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
 </body>
 </html>

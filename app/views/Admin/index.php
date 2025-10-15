@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <!-- Use BASE_PATH so paths work in any environment -->
-    <link rel="stylesheet" href="../../public/css/Admin/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/Admin/style.css">
 </head>
 <body>
 
@@ -12,7 +11,7 @@
     <header class="topbar">
         <h1>Admin Dashboard</h1>
         <div class="icons">
-            🔔 <span class="count">3</span>
+            <a href="<?= BASE_URL ?>/logout" class="btn-top">Logout</a>
         </div>
     </header>
 
@@ -23,17 +22,19 @@
         <aside class="sidebar">
             <h2>Admin</h2>
             <ul>
-                <li><a href="<?php echo BASE_PATH; ?>/admin" class="active">Dashboard</a></li>
-                <li><a href="<?php echo BASE_PATH; ?>/admin/manage-users">Manage Users</a></li>
-                <li><a href="<?php echo BASE_PATH; ?>/admin/resource-hub">Resource Hub</a></li>
-                <li><a href="#">Moderate Forum</a></li>
-                <li><a href="#">Manage Counselors</a></li>
-                <li><a href="#">Appointment History</a></li>
-                <li><a href="#">Donation History</a></li>
-                <li><a href="#">Awareness Programs</a></li>
-                <li><a href="#">System Monitoring</a></li>
-                <li><a href="#">Settings</a></li>
-                <li><a href="#">Profile</a></li>
+                <li><a href="<?= BASE_URL ?>/admin" class="active">Dashboard</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/manage-users">Manage Users</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/moderate-forum">Moderate Forum</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/counselors">Manage Counselors</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/appointments">Appointments</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/approve-counselors">Approve Counselors</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/resource-hub">Resource Hub</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/reports">Reports & Moods</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/donations">Donations</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/awareness">Awareness Programs</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/monitoring">System Monitoring</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/settings">Settings</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/profile">Profile</a></li>
             </ul>
         </aside>
 
@@ -86,6 +87,6 @@
         </main>
     </div>
 
-    <script src="<?php echo BASE_PATH; ?>/public/js/admin/script.js"></script>
+    <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
 </body>
 </html>

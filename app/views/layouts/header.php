@@ -5,11 +5,79 @@ if (!isset($TITLE)) $TITLE = 'MindHeaven';
 if (!isset($CURRENT_PAGE)) $CURRENT_PAGE = '';
 if (!isset($PAGE_CSS)) $PAGE_CSS = [];
 
+// Include Auth class for session checking
+require_once BASE_PATH . '/core/Auth.php';
+
 if (!function_exists('is_active')) {
   function is_active($slug, $current) {
     return $slug === $current ? 'active' : '';
   }
 }
+
+// Function to get navigation items based on user role
+function getNavigationItems($role) {
+  $navItems = [
+    'undergrad' => [
+      'main' => [
+        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
+        ['icon' => '✅', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
+        ['icon' => '😊', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
+        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
+      ],
+      'support' => [
+        ['icon' => '📚', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
+        ['icon' => '💬', 'text' => 'Forum', 'url' => '/ug/forum', 'slug' => 'forum'],
+        ['icon' => '📞', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
+        ['icon' => 'ℹ️', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
+      ],
+      'emergency' => [
+        ['icon' => '🆘', 'text' => 'Crisis Support', 'url' => '/ug/crisis', 'slug' => 'crisis', 'class' => 'crisis-link'],
+      ]
+    ],
+    'admin' => [
+      'main' => [
+        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/admin', 'slug' => 'dashboard'],
+        ['icon' => '👥', 'text' => 'Manage Users', 'url' => '/admin/manage-users', 'slug' => 'manage-users'],
+        ['icon' => '📚', 'text' => 'Resource Hub', 'url' => '/admin/resource-hub', 'slug' => 'resource-hub'],
+      ]
+    ],
+    'counselor' => [
+      'main' => [
+        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/counselor', 'slug' => 'dashboard'],
+        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/counselor/appointments', 'slug' => 'appointments'],
+        ['icon' => '📆', 'text' => 'Calendar', 'url' => '/counselor/calender', 'slug' => 'calendar'],
+        ['icon' => '📋', 'text' => 'Session History', 'url' => '/counselor/session-history', 'slug' => 'session-history'],
+      ]
+    ],
+    'moderator' => [
+      'main' => [
+        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/ModeratorDashboard', 'slug' => 'dashboard'],
+        ['icon' => '✏️', 'text' => 'Edit Posts', 'url' => '/EditPosts', 'slug' => 'edit-posts'],
+        ['icon' => '🚩', 'text' => 'Flagged Users', 'url' => '/FlaggedUsers', 'slug' => 'flagged-users'],
+        ['icon' => '⚠️', 'text' => 'Warn Users', 'url' => '/WarnForm', 'slug' => 'warn-form'],
+      ]
+    ],
+    'call_responder' => [
+      'main' => [
+        ['icon' => '📞', 'text' => 'Call Dashboard', 'url' => '/CallResponder', 'slug' => 'dashboard'],
+        ['icon' => '✅', 'text' => 'Call Success', 'url' => '/CallSuccess', 'slug' => 'success'],
+      ]
+    ],
+    'donor' => [
+      'main' => [
+        ['icon' => '💝', 'text' => 'Donation Form', 'url' => '/DonationForm', 'slug' => 'donation-form'],
+        ['icon' => '✅', 'text' => 'Donation Success', 'url' => '/DonationSuccess', 'slug' => 'donation-success'],
+      ]
+    ]
+  ];
+  
+  return $navItems[$role] ?? $navItems['undergrad'];
+}
+
+// Get current user info
+$currentUser = Auth::user();
+$userRole = $currentUser ? $currentUser['role'] : 'undergrad';
+$navigationItems = getNavigationItems($userRole);
 ?>
 <!doctype html>
 <html lang="en">
@@ -28,19 +96,15 @@ if (!function_exists('is_active')) {
   /* Header Inline Styles */
   .sidebar {
     position: fixed;
-    left: 0;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-    color: white;
-    z-index: 1000;
-    transition: all 0.3s ease;
-    overflow-y: auto;
-  }
-  
-  .sidebar.collapsed {
-    width: 80px;
+  left: 0;
+  top: 0;
+  width: 240px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+  color: white;
+  z-index: 1000;
+  overflow-y: auto;
+  transform: none !important; /* Force no transform */
   }
   
   .sidebar-header {
@@ -73,13 +137,7 @@ if (!function_exists('is_active')) {
   }
   
   .brand-name {
-    transition: opacity 0.3s ease;
-  }
-  
-  .sidebar.collapsed .brand-name {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
+    /* Always visible */
   }
   
   .sidebar-toggle {
@@ -112,15 +170,6 @@ if (!function_exists('is_active')) {
     color: #9ca3af;
     margin: 0 0 1rem 0;
     padding: 0 1.5rem;
-    transition: opacity 0.3s ease;
-  }
-  
-  .sidebar.collapsed .nav-section-title {
-    opacity: 0;
-    height: 0;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
   }
   
   .nav-list {
@@ -158,13 +207,7 @@ if (!function_exists('is_active')) {
   }
   
   .nav-text {
-    transition: opacity 0.3s ease;
-  }
-  
-  .sidebar.collapsed .nav-text {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
+    /* Always visible */
   }
   
   .crisis-link {
@@ -203,13 +246,7 @@ if (!function_exists('is_active')) {
   }
   
   .user-details {
-    transition: opacity 0.3s ease;
-  }
-  
-  .sidebar.collapsed .user-details {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
+    /* Always visible */
   }
   
   .user-name {
@@ -224,14 +261,9 @@ if (!function_exists('is_active')) {
   }
   
   .main-wrapper {
-    margin-left: 280px;
-    transition: margin-left 0.3s ease;
+    margin-left: 380px;
     min-height: 100vh;
     background: #f9fafb;
-  }
-  
-  .sidebar.collapsed + .main-wrapper {
-    margin-left: 80px;
   }
   
   .top-header {
@@ -385,87 +417,44 @@ if (!function_exists('is_active')) {
         </div>
         <span class="brand-name">MindHeaven</span>
       </a>
-      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
-        <span class="toggle-icon">←</span>
-      </button>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-section">
-        <h3 class="nav-section-title">Main</h3>
-        <ul class="nav-list">
-          <li>
-            <a class="nav-link <?= is_active('dashboard', $CURRENT_PAGE) ?>" href="./">
-              <span class="nav-icon">📊</span>
-              <span class="nav-text">Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a class="nav-link <?= is_active('habits', $CURRENT_PAGE) ?>" href="./habits">
-              <span class="nav-icon">✅</span>
-              <span class="nav-text">Habits</span>
-            </a>
-          </li>
-          <li>
-            <a class="nav-link <?= is_active('mood', $CURRENT_PAGE) ?>" href="./mood">
-              <span class="nav-icon">😊</span>
-              <span class="nav-text">Mood Tracker</span>
-            </a>
-          </li>
-          <li>
-            <a class="nav-link <?= is_active('appointments', $CURRENT_PAGE) ?>" href="./appointment">
-              <span class="nav-icon">📅</span>
-              <span class="nav-text">Appointments</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="nav-section">
-        <h3 class="nav-section-title">Support</h3>
-        <ul class="nav-list">
-          <li>
-            <a class="nav-link <?= is_active('resources', $CURRENT_PAGE) ?>" href="./resources">
-              <span class="nav-icon">📚</span>
-              <span class="nav-text">Resources</span>
-            </a>
-          </li>
-          <li>
-            <a class="nav-link <?= is_active('contact', $CURRENT_PAGE) ?>" href="./contact">
-              <span class="nav-icon">📞</span>
-              <span class="nav-text">Contact</span>
-            </a>
-          </li>
-          <li>
-            <a class="nav-link <?= is_active('about', $CURRENT_PAGE) ?>" href="./about">
-              <span class="nav-icon">ℹ️</span>
-              <span class="nav-text">About</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="nav-section">
-        <h3 class="nav-section-title">Emergency</h3>
-        <ul class="nav-list">
-          <li>
-            <a class="nav-link crisis-link <?= is_active('crisis', $CURRENT_PAGE) ?>" href="./crisis">
-              <span class="nav-icon">🆘</span>
-              <span class="nav-text">Crisis Support</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+      <?php foreach($navigationItems as $sectionName => $items): ?>
+        <div class="nav-section">
+          <h3 class="nav-section-title"><?= ucfirst($sectionName) ?></h3>
+          <ul class="nav-list">
+            <?php foreach($items as $item): ?>
+              <li>
+                <a class="nav-link <?= is_active($item['slug'], $CURRENT_PAGE) ?> <?= $item['class'] ?? '' ?>" href="<?= BASE_URL . $item['url'] ?>">
+                  <span class="nav-icon"><?= $item['icon'] ?></span>
+                  <span class="nav-text"><?= $item['text'] ?></span>
+                </a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endforeach; ?>
     </nav>
 
     <div class="sidebar-footer">
-      <div class="user-info">
-        <div class="user-avatar">👤</div>
-        <div class="user-details">
-          <div class="user-name">Student</div>
-          <div class="user-role">Undergraduate</div>
+      <?php if(Auth::check()): ?>
+        <div class="user-info">
+          <div class="user-avatar">👤</div>
+          <div class="user-details">
+            <div class="user-name"><?= htmlspecialchars($currentUser['username']) ?></div>
+            <div class="user-role"><?= ucfirst($currentUser['role']) ?></div>
+          </div>
         </div>
-      </div>
+      <?php else: ?>
+        <div class="user-info">
+          <div class="user-avatar">👤</div>
+          <div class="user-details">
+            <div class="user-name">Guest</div>
+            <div class="user-role">Not logged in</div>
+          </div>
+        </div>
+      <?php endif; ?>
     </div>
   </aside>
 
@@ -488,6 +477,22 @@ if (!function_exists('is_active')) {
         </div>
 
         <div class="header-actions">
+          <?php if(Auth::check()): ?>
+    <!-- Logged-in user: show Logout -->
+    <a href="<?= BASE_URL ?>/logout">
+        <button class="header-btn" type="button" aria-label="Logout">
+            <span class="btn-icon">🚪</span> Logout
+        </button>
+    </a>
+<?php else: ?>
+    <!-- Not logged in: show Login -->
+    <a href="<?= BASE_URL ?>/login">
+        <button class="header-btn" type="button" aria-label="Login">
+            <span class="btn-icon">🔑</span> Login
+        </button>
+    </a>
+<?php endif; ?>
+
           <button class="header-btn" id="themeToggle" aria-label="Toggle theme">
             <span class="btn-icon">🌙</span>
           </button>

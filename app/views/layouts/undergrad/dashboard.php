@@ -1,5 +1,5 @@
 <?php 
-$TITLE = 'MindHeaven — Dashboard';
+$TITLE = 'Undegraduate Dashboard';
 $CURRENT_PAGE = 'dashboard';
 $PAGE_CSS = ['/MindHeaven/Undergrad_student/assets/css/dashboard.css'];
 $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
@@ -517,6 +517,7 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
 @media (max-width: 768px) {
   .dashboard-main {
     padding: 1rem;
+    margin-left: 480px; 
   }
   
   .hero-content {
@@ -544,6 +545,7 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 </style>
 
 <main id="main" class="dashboard-main">
@@ -565,14 +567,19 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
         </div>
       </div>
       <div class="hero-actions">
-        <button id="quickMoodBtn" class="btn btn-primary">
+        <a href = "/MindHeaven/public/ug/mood">
+        <b> <button id="quickMoodBtn" class="btn btn-outline" style="text-decoration: none; color: white !important;">
+        </b>
           <span class="btn-icon">😊</span>
           Log Mood
+          </a>
         </button>
+        <a href = "/MindHeaven/public/ug/habits">
         <button id="quickHabitBtn" class="btn btn-outline">
           <span class="btn-icon">✅</span>
           Add Habit
         </button>
+        </a>
       </div>
     </div>
   </section>
@@ -598,7 +605,7 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
           </div>
         </div>
         <div class="stat-actions">
-          <a href="/MindHeaven/Undergrad_student/views/habits.php" class="btn btn-small">View All</a>
+          <a href = "/MindHeaven/public/ug/mood" class="btn btn-small">View All</a>
         </div>
       </div>
 
@@ -731,10 +738,17 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
       </div>
 
       <div class="action-card">
+        <div class="action-icon">📋</div>
+        <h4 class="action-title">Self-Assessment Quiz</h4>
+        <p class="action-description">Take a quick mental health assessment and get instant feedback</p>
+        <a href="<?php echo BASE_URL; ?>/ug/quiz" class="btn btn-outline">Start Quiz</a>
+      </div>
+
+      <div class="action-card">
         <div class="action-icon">🆘</div>
         <h4 class="action-title">Crisis Support</h4>
         <p class="action-description">Immediate help when you need it most</p>
-        <a href="/MindHeaven/Undergrad_student/views/crisis.php" class="btn btn-danger">Get Help</a>
+        <a href="/MindHeaven/ug/crisis" class="btn btn-danger">Get Help</a>
       </div>
     </div>
   </section>
@@ -799,4 +813,5 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
     </div>
   </div>
 </div>
+
 
