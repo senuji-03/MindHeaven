@@ -1,6 +1,12 @@
 <?php
 
 class COControl {
+    public function index() {
+        // Redirect to dashboard when accessing /counselor
+        header('Location: ' . BASE_URL . '/counselor/dashboard');
+        exit;
+    }
+    
     public function dashboard() {
         view('/counselor/Cdashboard');
     }
