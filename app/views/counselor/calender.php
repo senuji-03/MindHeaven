@@ -34,12 +34,13 @@
             <ul class="sidebar-menu">
                 <!-- <li class="sidebar-item">📊 Dashboard</li>
                 <li class="sidebar-item active">📅 Calendar</li> -->
-                <li class="sidebar-item active" ><a href="Cdashboard.html">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="calender.html">📅 Calendar</a></li>
-                <li class="sidebar-item"><a href="appoinmentmgt.html">🗓️ Appointment Management</a></li>
-                <li class="sidebar-item">📋 Session History</li>
+                <li class="sidebar-item" ><a href="Cdashboard.php">📊 Dashboard</a></li>
+                <li class="sidebar-item active"><a href="#" style="color: #2563eb;">📅 Calendar</a></li>
+                <li class="sidebar-item"><a href="appointmentmgt.php">🗓️ Appointment Management</a></li>
+                <li class="sidebar-item"><a href="sessionHistory.php">📋 Session History</a></li>
                 <li class="sidebar-item">💭 Forum</li>
                 <li class="sidebar-item">📚 Resource Hub</li>
+                <li class="sidebar-item"><a href="counselor_profile.php">👤 Profile</a></li>
                 <li class="sidebar-item">⚙️ Settings</li>
             </ul>
         </div>

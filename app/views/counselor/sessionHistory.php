@@ -32,13 +32,14 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <ul class="sidebar-menu">
-                <li class="sidebar-item" onclick="showSection('dashboard')">📊 Dashboard</li>
-                <li class="sidebar-item" onclick="showSection('calendar')">📅 Calendar</li>
-                <li class="sidebar-item" onclick="showSection('appointments')">🗓️ Appointment Management</li>
-                <li class="sidebar-item active" onclick="showSection('history')">📋 Session History</li>
-                <li class="sidebar-item" onclick="showSection('forum')">💭 Forum</li>
-                <li class="sidebar-item" onclick="showSection('resources')">📚 Resource Hub</li>
-                <li class="sidebar-item" onclick="showSection('settings')">⚙️ Settings</li>
+               <li class="sidebar-item" ><a href="Cdashboard.php">📊 Dashboard</a></li>
+                <li class="sidebar-item"><a href="calender.php">📅 Calendar</a></li>
+                <li class="sidebar-item"><a href="appointmentmgt.php">🗓️ Appointment Management</a></li>
+                <li class="sidebar-item active"><a href="#" style="color: #2563eb;">📋 Session History</a></li>
+                <li class="sidebar-item">💭 Forum</li>
+                <li class="sidebar-item">📚 Resource Hub</li>
+                <li class="sidebar-item"><a href="counselor_profile.php">👤 Profile</a></li>
+                <li class="sidebar-item">⚙️ Settings</li>
             </ul>
         </div>
 

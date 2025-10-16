@@ -1,3 +1,4 @@
+ 
  // Sample appointment data
         let appointments = [
             {

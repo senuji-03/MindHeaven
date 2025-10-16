@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Counselor Dashboard</title>
     <link rel="stylesheet" href="\MindHeaven\public\css\counselor\Cdashboard.css">
-
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -31,18 +30,16 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-        <div class="sidebar">
+       <div class="sidebar">
             <ul class="sidebar-menu">
-                <!-- <li class="sidebar-item active" onclick="showSection('dashboard')">📊 Dashboard</li> -->
-                <li class="sidebar-item active" ><a href="Cdashboard.html">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="calender.html">📅 Calendar</a></li>
-                <!-- <li class="sidebar-item" onclick="showSection('calendar')">📅 Calendar</li> -->
-                <!-- <li class="sidebar-item" onclick="showSection('appointments')">🗓️ Appointment Management</li> -->
-                <li class="sidebar-item"><a href="appoinmentmgt.html">🗓️ Appointment Management</a></li>
-                <li class="sidebar-item" onclick="showSection('history')">📋 Session History</li>
-                <li class="sidebar-item" onclick="showSection('forum')">💭 Forum</li>
-                <li class="sidebar-item" onclick="showSection('resources')">📚 Resource Hub</li>
-                <li class="sidebar-item" onclick="showSection('settings')">⚙️ Settings</li>
+                 <li class="sidebar-item active"><a href="#" style="color: #2563eb;">📊 Dashboard</a></li>
+                <li class="sidebar-item"><a href="calender.php">📅 Calendar</a></li>
+                <li class="sidebar-item "><a href="appointmentmgt.php">🗓 Appointment Management</a></li>
+                <li class="sidebar-item"><a href="sessionHistory.php">📋 Session History</a></li>
+                <li class="sidebar-item"><a href="#">💭 Forum</a></li>
+                <li class="sidebar-item"><a href="#">📚 Resource Hub</a></li>
+                <li class="sidebar-item"><a href="counselor_profile.php">👤 Profile</a></li>
+                <li class="sidebar-item"><a href="#">⚙ Settings</a></li>
             </ul>
         </div>
 
@@ -103,13 +100,12 @@
                         <div class="time">10:30 AM</div>
                     </div>
                     <div class="media-type video-call">
-                        📹 Video Call
+                        🔹 Video Call
                     </div>
                     <div class="action-buttons">
                         <button class="btn btn-start" onclick="startMeeting('Sarah Johnson')">Start</button>
                         <button class="btn btn-reschedule" onclick="reschedule('Sarah Johnson', 'Anxiety and stress management')">Reschedule</button>
-                        <button class="btn btn-complaint" onclick="viewComplaints('Sarah Johnson', 'Anxiety and stress management')">Complaints</button>
-                        <!-- <button class="btn btn-complaint" onclick="viewComplaints('Sarah Johnson', 'Anxiety and stress management')">Complaints</button> -->
+                        <button class="btn btn-feedback" onclick="sendFeedback('Sarah Johnson', 'Anxiety and stress management')">Feedback</button>
                     </div>
                 </div>
                 <div class="appointment-row">
@@ -127,7 +123,7 @@
                     <div class="action-buttons">
                         <button class="btn btn-start" onclick="startMeeting('Michael Chen')">Start</button>
                         <button class="btn btn-reschedule" onclick="reschedule('Michael Chen', 'Academic pressure and burnout')">Reschedule</button>
-                        <button class="btn btn-complaint" onclick="viewComplaints('Michael Chen', 'Academic pressure and burnout')">Complaints</button>
+                        <button class="btn btn-feedback" onclick="sendFeedback('Michael Chen', 'Academic pressure and burnout')">Feedback</button>
                     </div>
                 </div>
                 <div class="appointment-row">
@@ -140,12 +136,12 @@
                         <div class="time">11:00 AM</div>
                     </div>
                     <div class="media-type video-call">
-                        📹 Video Call
+                        🔹 Video Call
                     </div>
                     <div class="action-buttons">
                         <button class="btn btn-start" onclick="startMeeting('Emily Davis')">Start</button>
                         <button class="btn btn-reschedule" onclick="reschedule('Emily Davis', 'Social anxiety and relationship issues')">Reschedule</button>
-                        <button class="btn btn-complaint" onclick="viewComplaints('Emily Davis', 'Social anxiety and relationship issues')">Complaints</button>
+                        <button class="btn btn-feedback" onclick="sendFeedback('Emily Davis', 'Social anxiety and relationship issues')">Feedback</button>
                     </div>
                 </div>
             </div>
@@ -248,60 +244,64 @@
         </div>
     </div>
 
-    <!-- Complaints Modal -->
-    <div id="complaintsModal" class="modal">
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Submit Complaint</h3>
-                <button class="close" onclick="closeModal('complaintsModal')">&times;</button>
+                <h3 class="modal-title">Send Patient Feedback</h3>
+                <button class="close" onclick="closeModal('feedbackModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div id="complaintsPatientInfo" class="patient-info-card">
+                <div id="feedbackPatientInfo" class="patient-info-card">
                     <!-- Patient info will be populated here -->
                 </div>
-                <form id="complaintsForm">
+                <form id="feedbackForm">
                     <div class="form-group">
-                        <label class="form-label" for="complaintCategory">Complaint Category</label>
-                        <select id="complaintCategory" class="form-input" required>
-                            <option value="">Select Category</option>
-                            <option value="scheduling">Scheduling Issues</option>
-                            <option value="communication">Communication Problems</option>
-                            <option value="technical">Technical Difficulties</option>
-                            <option value="behavior">Patient Behavior</option>
-                            <option value="payment">Payment Issues</option>
-                            <option value="other">Other</option>
+                        <label class="form-label" for="feedbackType">Feedback Type</label>
+                        <select id="feedbackType" class="form-input" required>
+                            <option value="">Select Type</option>
+                            <option value="progress">Progress Update</option>
+                            <option value="recommendation">Recommendations</option>
+                            <option value="homework">Homework Assignment</option>
+                            <option value="encouragement">Encouragement & Support</option>
+                            <option value="concerns">Areas of Concern</option>
+                            <option value="general">General Feedback</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="complaintDescription">Complaint Description</label>
-                        <textarea id="complaintDescription" class="form-textarea" placeholder="Please describe the issue in detail..." required></textarea>
+                        <label class="form-label" for="feedbackMessage">Feedback Message</label>
+                        <textarea id="feedbackMessage" class="form-textarea" placeholder="Share your observations, recommendations, or encouragement for the patient..." required></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label" for="priority">Priority Level</label>
-                            <select id="priority" class="form-input" required>
-                                <option value="">Select Priority</option>
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
-                                <option value="urgent">Urgent</option>
+                            <label class="form-label" for="sessionRating">Session Progress Rating</label>
+                            <select id="sessionRating" class="form-input" required>
+                                <option value="">Select Rating</option>
+                                <option value="5">Excellent Progress</option>
+                                <option value="4">Good Progress</option>
+                                <option value="3">Satisfactory Progress</option>
+                                <option value="2">Needs Improvement</option>
+                                <option value="1">Minimal Progress</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="incidentDate">Incident Date</label>
-                            <input type="date" id="incidentDate" class="form-input" required>
+                            <label class="form-label" for="followUpDate">Follow-up Date</label>
+                            <input type="date" id="followUpDate" class="form-input">
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="actionItems">Action Items / Next Steps</label>
+                        <textarea id="actionItems" class="form-textarea" placeholder="List any homework, exercises, or tasks for the patient to complete..." style="min-height: 80px;"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeModal('complaintsModal')">Cancel</button>
-                <button class="btn-primary" onclick="submitComplaint()">Submit Complaint</button>
+                <button class="btn-secondary" onclick="closeModal('feedbackModal')">Cancel</button>
+                <button class="btn-primary" onclick="submitFeedback()">Send Feedback</button>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
-
+    <script src="\MindHeaven\public\js\counselor\Cdashboard.js"></script>
 </body>
 </html>
