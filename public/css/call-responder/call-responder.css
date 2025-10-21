@@ -1,17 +1,18 @@
 body {
     font-family: Arial, sans-serif;
-    background: #f4f7fa;
+    background: #0f172a; /* dark blue */
     padding: 20px;
     text-align: center;
 }
 
 .call-container {
-    max-width: 600px;
+    max-width: 640px; /* slightly wider container */
     margin: 50px auto;
     background: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    overflow: hidden; /* prevent child overflow */
 }
 
 .btn {
@@ -28,15 +29,83 @@ body {
     background: #e74c3c;
 }
 
-.video-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+/* Notes */
+.notes-container {
+    margin: 15px 0 0 0; /* remove side margins */
 }
 
-video {
-    width: 45%;
-    border: 2px solid #ccc;
-    margin: 5px;
+.notes-textarea {
+    box-sizing: border-box; /* include padding/border in width */
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 220px; /* reduced height */
+    padding: 14px; /* comfortable padding */
+    border: 1px solid #d1d5db;
     border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    resize: vertical;
+    color: #111827;
+}
+
+.notes-textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* Call Logs */
+.logs-section {
+    max-width: 960px;
+    margin: 24px auto 0;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.section-title {
+    margin: 0;
+    font-size: 22px;
+    color: #ffffff; /* header text on dark bg */
+}
+
+.section-subtitle {
+    margin: 4px 0 0;
+    color: #cbd5e1; /* lighter text on dark bg */
+    font-size: 14px;
+}
+
+.logs-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    padding: 12px;
+    max-width: 960px;
+    margin: 0 auto; /* center the table container */
+}
+
+.logs-table {
+    width: 100%;
+    border-collapse: collapse; /* merge borders for neat grid */
+    border: 1px solid #e5e7eb; /* outer border */
+}
+
+.logs-table th,
+.logs-table td {
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb; /* full grid lines */
+    text-align: left;
+    font-size: 14px;
+}
+
+.logs-table thead th {
+    background: #f9fafb;
+    color: #111827;
+    font-weight: 600;
+}
+
+.logs-table tbody tr:hover {
+    background: #f9fafb;
 }

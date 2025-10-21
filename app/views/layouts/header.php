@@ -30,9 +30,10 @@ function getNavigationItems($role) {
         ['icon' => '📞', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
         ['icon' => 'ℹ️', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
       ],
-      'emergency' => [
-        ['icon' => '🆘', 'text' => 'Crisis Support', 'url' => '/ug/crisis', 'slug' => 'crisis', 'class' => 'crisis-link'],
-      ]
+      'feedback' => [
+        ['icon' => '💬', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
+ ]
+      
     ],
     'admin' => [
       'main' => [
@@ -341,8 +342,49 @@ $navigationItems = getNavigationItems($userRole);
     color: #374151;
   }
   
+  /* Button Styles from Landing Page */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  
+  .btn-donate {
+    background: #10b981;
+    color: white;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+  }
+  
+  .btn-donate:hover {
+    background: #059669;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  }
+  
+  .btn-crisis {
+    background: #ef4444;
+    color: white;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+  }
+  
+  .btn-crisis:hover {
+    background: #dc2626;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+  }
+  
   .btn-icon {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
   
   .notification-badge {
@@ -493,13 +535,14 @@ $navigationItems = getNavigationItems($userRole);
     </a>
 <?php endif; ?>
 
-          <button class="header-btn" id="themeToggle" aria-label="Toggle theme">
-            <span class="btn-icon">🌙</span>
-          </button>
-          <button class="header-btn" id="notificationsToggle" aria-label="Notifications">
-            <span class="btn-icon">🔔</span>
-            <span class="notification-badge">3</span>
-          </button>
+          <a href="<?= BASE_URL ?>/donation" class="btn btn-donate">
+            <span class="btn-icon">💝</span>
+            Donate
+          </a>
+          <a href="<?= BASE_URL ?>/ug/crisis" class="btn btn-crisis">
+            <span class="btn-icon">🆘</span>
+            Crisis Support
+          </a>
         </div>
       </div>
     </header>

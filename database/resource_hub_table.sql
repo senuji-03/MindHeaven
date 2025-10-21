@@ -1,0 +1,25 @@
+-- Create resource_hub table for storing moderator-created resources
+CREATE TABLE IF NOT EXISTS `resource_hub` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `category` varchar(100) NOT NULL,
+  `content_type` enum('article','video','audio') NOT NULL,
+  `content` longtext DEFAULT NULL,
+  `file_path` varchar(500) DEFAULT NULL,
+  `file_name` varchar(255) DEFAULT NULL,
+  `file_size` int(10) UNSIGNED DEFAULT NULL,
+  `file_type` varchar(100) DEFAULT NULL,
+  `summary` text DEFAULT NULL,
+  `tags` varchar(500) DEFAULT NULL,
+  `status` enum('draft','published','archived') NOT NULL DEFAULT 'draft',
+  `created_by` int(10) UNSIGNED NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_category` (`category`),
+  KEY `idx_content_type` (`content_type`),
+  KEY `idx_status` (`status`),
+  KEY `idx_created_by` (`created_by`),
+  KEY `idx_created_at` (`created_at`),
+  CONSTRAINT `fk_resource_hub_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

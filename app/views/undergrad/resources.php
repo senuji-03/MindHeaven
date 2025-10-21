@@ -16,7 +16,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
         <p class="hero-subtitle">Comprehensive tools, guides, and support for your mental wellness journey</p>
         <div class="hero-stats">
           <div class="hero-stat">
-            <span class="stat-number">50+</span>
+            <span class="stat-number"><?= $stats['published'] ?? 0 ?></span>
             <span class="stat-label">Resources</span>
           </div>
           <div class="hero-stat">
@@ -94,119 +94,71 @@ require BASE_PATH.'/app/views/layouts/header.php';
     </div>
     
     <div class="categories-grid">
-      <div class="category-card">
-        <div class="category-header">
-          <div class="category-icon">🧠</div>
-          <h3 class="category-title">Mental Health Basics</h3>
+      <?php 
+      // Define category icons and descriptions
+      $categoryInfo = [
+        'Mental Health Basics' => ['icon' => '🧠', 'description' => 'Understanding mental health, common conditions, and when to seek help'],
+        'Anxiety & Stress' => ['icon' => '😰', 'description' => 'Coping strategies and techniques for managing anxiety and stress'],
+        'Depression Support' => ['icon' => '😢', 'description' => 'Resources and support for dealing with depression'],
+        'Mindfulness & Meditation' => ['icon' => '🧘‍♀️', 'description' => 'Guided practices for mindfulness and meditation'],
+        'Sleep & Wellness' => ['icon' => '💤', 'description' => 'Tips for better sleep and overall wellness'],
+        'Relationships & Social' => ['icon' => '👥', 'description' => 'Building healthy relationships and social connections'],
+        'Crisis Support' => ['icon' => '🆘', 'description' => 'Emergency resources and crisis intervention'],
+        'Self-Help Tools' => ['icon' => '🛠️', 'description' => 'Interactive tools and exercises for mental wellness'],
+        'Professional Development' => ['icon' => '🎓', 'description' => 'Resources for academic and career success']
+      ];
+      
+      // Display categories that have resources
+      foreach ($resourcesByCategory as $category => $categoryResources): 
+        $categoryIcon = $categoryInfo[$category]['icon'] ?? '📚';
+        $categoryDescription = $categoryInfo[$category]['description'] ?? 'Resources for ' . $category;
+      ?>
+        <div class="category-card">
+          <div class="category-header">
+            <div class="category-icon"><?= $categoryIcon ?></div>
+            <h3 class="category-title"><?= htmlspecialchars($category) ?></h3>
+          </div>
+          <div class="category-content">
+            <p class="category-description"><?= htmlspecialchars($categoryDescription) ?></p>
+            <ul class="resource-list">
+              <?php foreach (array_slice($categoryResources, 0, 4) as $resource): ?>
+                <li>
+                  <a href="#" class="resource-link" onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
+                    <?= htmlspecialchars($resource['title']) ?>
+                    <?php if ($resource['content_type'] === 'video'): ?>
+                      <span style="color: #3b82f6;">🎥</span>
+                    <?php elseif ($resource['content_type'] === 'audio'): ?>
+                      <span style="color: #10b981;">🎵</span>
+                    <?php else: ?>
+                      <span style="color: #6b7280;">📄</span>
+                    <?php endif; ?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+              <?php if (count($categoryResources) > 4): ?>
+                <li><em>... and <?= count($categoryResources) - 4 ?> more resources</em></li>
+              <?php endif; ?>
+            </ul>
+          </div>
+          <div class="category-footer">
+            <button class="btn btn-outline btn-small" onclick="showCategoryResources('<?= htmlspecialchars($category) ?>')">
+              View All (<?= count($categoryResources) ?>)
+            </button>
+          </div>
         </div>
-        <div class="category-content">
-          <p class="category-description">Understanding mental health, common conditions, and when to seek help</p>
-          <ul class="resource-list">
-            <li><a href="#" class="resource-link">What is Mental Health?</a></li>
-            <li><a href="#" class="resource-link">Common Mental Health Conditions</a></li>
-            <li><a href="#" class="resource-link">Signs You Should Seek Help</a></li>
-            <li><a href="#" class="resource-link">Mental Health Myths vs Facts</a></li>
-          </ul>
+      <?php endforeach; ?>
+      
+      <?php if (empty($resourcesByCategory)): ?>
+        <div class="category-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+          <div class="category-header">
+            <div class="category-icon">📚</div>
+            <h3 class="category-title">No Resources Available</h3>
+          </div>
+          <div class="category-content">
+            <p class="category-description">Resources are being added regularly. Check back soon for new content!</p>
+          </div>
         </div>
-        <div class="category-footer">
-          <button class="btn btn-outline btn-small">View All</button>
-        </div>
-      </div>
-
-      <div class="category-card">
-        <div class="category-header">
-          <div class="category-icon">😰</div>
-          <h3 class="category-title">Anxiety & Stress</h3>
-        </div>
-        <div class="category-content">
-          <p class="category-description">Coping strategies and techniques for managing anxiety and stress</p>
-          <ul class="resource-list">
-            <li><a href="#" class="resource-link">Breathing Exercises</a></li>
-            <li><a href="#" class="resource-link">Grounding Techniques</a></li>
-            <li><a href="#" class="resource-link">Progressive Muscle Relaxation</a></li>
-            <li><a href="#" class="resource-link">Mindfulness for Anxiety</a></li>
-          </ul>
-        </div>
-        <div class="category-footer">
-          <button class="btn btn-outline btn-small">View All</button>
-        </div>
-      </div>
-
-      <div class="category-card">
-        <div class="category-header">
-          <div class="category-icon">😢</div>
-          <h3 class="category-title">Depression Support</h3>
-        </div>
-        <div class="category-content">
-          <p class="category-description">Resources and support for dealing with depression</p>
-          <ul class="resource-list">
-            <li><a href="#" class="resource-link">Understanding Depression</a></li>
-            <li><a href="#" class="resource-link">Self-Care Strategies</a></li>
-            <li><a href="#" class="resource-link">Building Support Networks</a></li>
-            <li><a href="#" class="resource-link">When to Seek Professional Help</a></li>
-          </ul>
-        </div>
-        <div class="category-footer">
-          <button class="btn btn-outline btn-small">View All</button>
-        </div>
-      </div>
-
-      <div class="category-card">
-        <div class="category-header">
-          <div class="category-icon">🧘‍♀️</div>
-          <h3 class="category-title">Mindfulness & Meditation</h3>
-        </div>
-        <div class="category-content">
-          <p class="category-description">Guided practices for mindfulness and meditation</p>
-          <ul class="resource-list">
-            <li><a href="#" class="resource-link">5-Minute Meditation</a></li>
-            <li><a href="#" class="resource-link">Body Scan Practice</a></li>
-            <li><a href="#" class="resource-link">Mindful Breathing</a></li>
-            <li><a href="#" class="resource-link">Walking Meditation</a></li>
-          </ul>
-        </div>
-        <div class="category-footer">
-          <button class="btn btn-outline btn-small">View All</button>
-        </div>
-      </div>
-
-      <div class="category-card">
-        <div class="category-header">
-          <div class="category-icon">💤</div>
-          <h3 class="category-title">Sleep & Wellness</h3>
-        </div>
-        <div class="category-content">
-          <p class="category-description">Tips for better sleep and overall wellness</p>
-          <ul class="resource-list">
-            <li><a href="#" class="resource-link">Sleep Hygiene Tips</a></li>
-            <li><a href="#" class="resource-link">Relaxation Techniques</a></li>
-            <li><a href="#" class="resource-link">Healthy Sleep Schedule</a></li>
-            <li><a href="#" class="resource-link">Managing Sleep Anxiety</a></li>
-          </ul>
-        </div>
-        <div class="category-footer">
-          <button class="btn btn-outline btn-small">View All</button>
-        </div>
-      </div>
-
-      <div class="category-card">
-        <div class="category-header">
-          <div class="category-icon">👥</div>
-          <h3 class="category-title">Relationships & Social</h3>
-        </div>
-        <div class="category-content">
-          <p class="category-description">Building healthy relationships and social connections</p>
-          <ul class="resource-list">
-            <li><a href="#" class="resource-link">Healthy Communication</a></li>
-            <li><a href="#" class="resource-link">Setting Boundaries</a></li>
-            <li><a href="#" class="resource-link">Building Friendships</a></li>
-            <li><a href="#" class="resource-link">Dealing with Conflict</a></li>
-          </ul>
-        </div>
-        <div class="category-footer">
-          <button class="btn btn-outline btn-small">View All</button>
-        </div>
-      </div>
+      <?php endif; ?>
     </div>
   </section>
 
@@ -534,6 +486,115 @@ require BASE_PATH.'/app/views/layouts/header.php';
     </div>
   </div>
 </div>
+
+<!-- Resource Modal -->
+<div id="resourceModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title" id="resourceModalTitle">Resource Details</h3>
+      <button class="modal-close" id="closeResourceModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="resourceModalContent">
+        <!-- Resource content will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Resource modal functionality
+function openResourceModal(resource) {
+  const modal = document.getElementById('resourceModal');
+  const title = document.getElementById('resourceModalTitle');
+  const content = document.getElementById('resourceModalContent');
+  
+  title.textContent = resource.title;
+  
+  let contentHtml = `
+    <div class="resource-details">
+      <div class="resource-meta">
+        <span class="resource-category">${resource.category}</span>
+        <span class="resource-type">${resource.content_type.toUpperCase()}</span>
+      </div>
+      <div class="resource-summary">
+        <h4>Summary</h4>
+        <p>${resource.summary}</p>
+      </div>
+  `;
+  
+  // Add file display if exists
+  if (resource.file_path && resource.file_name) {
+    const fileExtension = resource.file_name.split('.').pop().toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    
+    if (isImage) {
+      contentHtml += `
+        <div class="resource-file">
+          <h4>Featured Image</h4>
+          <img src="${resource.file_path}" alt="${resource.title}" style="max-width: 100%; height: auto; border-radius: 8px;">
+        </div>
+      `;
+    } else {
+      contentHtml += `
+        <div class="resource-file">
+          <h4>Media File</h4>
+          <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">
+              ${resource.content_type === 'video' ? '🎥' : '🎵'}
+            </div>
+            <p><strong>${resource.file_name}</strong></p>
+            <p>Size: ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
+            <a href="${resource.file_path}" target="_blank" class="btn btn-primary">View/Download File</a>
+          </div>
+        </div>
+      `;
+    }
+  }
+  
+  // Add content
+  if (resource.content) {
+    contentHtml += `
+      <div class="resource-content">
+        <h4>Content</h4>
+        <div style="white-space: pre-wrap; line-height: 1.6;">${resource.content}</div>
+      </div>
+    `;
+  }
+  
+  // Add tags if exist
+  if (resource.tags) {
+    contentHtml += `
+      <div class="resource-tags">
+        <h4>Tags</h4>
+        <p>${resource.tags}</p>
+      </div>
+    `;
+  }
+  
+  contentHtml += `</div>`;
+  
+  content.innerHTML = contentHtml;
+  modal.style.display = 'block';
+}
+
+function showCategoryResources(category) {
+  // Redirect to category-specific page
+  window.location.href = `<?= BASE_URL ?>/ug/category-resources?category=${encodeURIComponent(category)}`;
+}
+
+// Close modal functionality
+document.getElementById('closeResourceModal').onclick = function() {
+  document.getElementById('resourceModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById('resourceModal');
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
+}
+</script>
 
 <?
 require BASE_PATH.'/app/views/layouts/footer.php'; ?>

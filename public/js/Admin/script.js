@@ -11,3 +11,4 @@ function dislike(id) {
   let count = document.getElementById(id);
   count.textContent = parseInt(count.textContent) + 1;
 }
+

@@ -2,10 +2,10 @@
 
 session_start();
 
-require_once '../config/config.php';
-require_once '../core/autoload.php';
-require_once '../core/Router.php';
-require_once '../core/view.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../core/autoload.php';
+require_once __DIR__ . '/../core/Router.php';
+require_once __DIR__ . '/../core/view.php';
 
 $router = new Router();
 
@@ -32,6 +32,14 @@ $router->get('/ug/mood', 'UGControl@mood');
 $router->get('/ug/about', 'UGControl@about');
 $router->get('/ug/forum', 'UGControl@forum');
 $router->get('/ug/quiz', 'UGControl@quiz');
+$router->get('/ug/profile', 'UGControl@profile');
+$router->get('/ug/profile/complete', 'UGControl@completeProfile');
+$router->post('/ug/profile/complete', 'UGControl@completeProfile');
+$router->get('/ug/feedback', 'UGControl@feedback');
+$router->post('/ug/feedback/create', 'UGControl@createFeedback');
+$router->post('/ug/feedback/edit', 'UGControl@editFeedback');
+$router->post('/ug/feedback/delete', 'UGControl@deleteFeedback');
+$router->get('/ug/feedback/get', 'UGControl@getFeedbackById');
 
 $router->get('/admin', 'AdminControl@index'); // Admin dashboard
 $router->get('/admin/manage-users', 'AdminControl@manageUsers');
@@ -52,6 +60,10 @@ $router->get('/counselor/dashboard', 'COControl@dashboard');
 $router->get('/counselor/appointments', 'COControl@appointmentmgt');
 $router->get('/counselor/calender', 'COControl@calender');
 $router->get('/counselor/session-history', 'COControl@sessionHistory');
+
+// Minimal Appointment APIs (create + counselors list)
+$router->get('/api/counselors', 'AppointmentApiControl@listCounselors');
+$router->post('/api/appointments/create', 'AppointmentApiControl@create');
 
 $router->get('/CallResponder', 'CallResponderControl@index');
 $router->get('/CallSuccess', 'CallResponderControl@success');

@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moderator - Resource Management</title>
+    <title>Moderator - Edit Resource</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/Admin/style.css">
     <style>
         /* Enhanced UI Styles */
@@ -145,46 +146,6 @@
             border-left-color: #ef4444;
         }
 
-        .resource { 
-            display: grid; 
-            grid-template-columns: 1fr auto;
-            gap: 1rem; 
-            align-items: center; 
-            padding: 1.5rem; 
-            border: 2px solid #e5e7eb; 
-            border-radius: 16px; 
-            background: linear-gradient(135deg, #fff, #f8fafc);
-            transition: all 0.3s ease;
-        }
-        
-        .resource:hover {
-            border-color: #3b82f6;
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1);
-        }
-        
-        .resource-summary { 
-            color: #475569; 
-            line-height: 1.6;
-        }
-        
-        .resource-summary strong {
-            color: #1e293b;
-            font-size: 1.1rem;
-        }
-        
-        .resource-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-direction: column;
-        }
-        
-        .section-divider { 
-            height: 2px; 
-            background: linear-gradient(90deg, transparent, #e5e7eb, transparent); 
-            margin: 2rem 0; 
-            border: 0; 
-        }
-
         /* Enhanced form wrapper */
         .form-wrapper { 
             max-width: 800px; 
@@ -218,54 +179,6 @@
             justify-content: center; 
         }
 
-        /* Resource grid for better display */
-        .resources-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .resource-card {
-            background: linear-gradient(135deg, #fff, #f8fafc);
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .resource-card:hover {
-            border-color: #3b82f6;
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
-            transform: translateY(-4px);
-        }
-
-        .resource-meta {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: #6b7280;
-        }
-
-        .resource-type {
-            background: #3b82f6;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .resource-category {
-            background: #10b981;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
         /* File upload styling */
         .file-upload-area {
             border: 2px dashed #cbd5e1;
@@ -286,10 +199,50 @@
             background: #f0f9ff;
         }
 
-        /* Status indicators */
-        .status-published { color: #10b981; font-weight: 600; }
-        .status-draft { color: #f59e0b; font-weight: 600; }
-        .status-archived { color: #6b7280; font-weight: 600; }
+        /* Current file display */
+        .current-file {
+            background: #f0f9ff;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .current-file img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .current-file-info {
+            flex: 1;
+        }
+
+        .current-file-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: #1e293b;
+        }
+
+        .current-file-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            min-width: auto;
+        }
 
         /* Responsive design */
         @media (max-width: 768px) {
@@ -300,10 +253,6 @@
             
             .form-row label {
                 text-align: left;
-            }
-            
-            .resources-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -344,33 +293,35 @@
     </div>
 
     <div class="main-content">
-        <header><h1>Edit Resources</h1></header>
+        <header><h1>✏️ Edit Resource</h1></header>
 
         <div class="form-wrapper">
             <div class="section-header-bar">
-                <h2>📚 Create New Resource</h2>
+                <h2>📝 Update Resource: <?= htmlspecialchars($resource['title']); ?></h2>
             </div>
             <section class="create-resource card flush-top stack">
-                <form id="addPostForm" action="<?= BASE_URL ?>/Moderator/resource/create" method="POST" enctype="multipart/form-data" class="stack">
+                <form id="editResourceForm" action="<?= BASE_URL ?>/Moderator/resource/update" method="POST" enctype="multipart/form-data" class="stack">
+                    <input type="hidden" name="id" value="<?= $resource['id']; ?>">
+                    
                     <div class="form-rows">
                         <div class="form-row">
-                            <label for="postName">📝 Resource Title</label>
-                            <input id="postName" type="text" name="title" placeholder="Enter a descriptive title for your resource" required>
+                            <label for="title">📝 Resource Title</label>
+                            <input id="title" type="text" name="title" value="<?= htmlspecialchars($resource['title']); ?>" placeholder="Enter a descriptive title for your resource" required>
                         </div>
                         
                         <div class="form-row">
                             <label for="category">🏷️ Category</label>
                             <select id="category" name="category" required>
                                 <option value="">Select a category</option>
-                                <option value="Mental Health Basics">Mental Health Basics</option>
-                                <option value="Anxiety & Stress">Anxiety & Stress</option>
-                                <option value="Depression Support">Depression Support</option>
-                                <option value="Mindfulness & Meditation">Mindfulness & Meditation</option>
-                                <option value="Sleep & Wellness">Sleep & Wellness</option>
-                                <option value="Relationships & Social">Relationships & Social</option>
-                                <option value="Crisis Support">Crisis Support</option>
-                                <option value="Self-Help Tools">Self-Help Tools</option>
-                                <option value="Professional Development">Professional Development</option>
+                                <option value="Mental Health Basics" <?= $resource['category'] === 'Mental Health Basics' ? 'selected' : '' ?>>Mental Health Basics</option>
+                                <option value="Anxiety & Stress" <?= $resource['category'] === 'Anxiety & Stress' ? 'selected' : '' ?>>Anxiety & Stress</option>
+                                <option value="Depression Support" <?= $resource['category'] === 'Depression Support' ? 'selected' : '' ?>>Depression Support</option>
+                                <option value="Mindfulness & Meditation" <?= $resource['category'] === 'Mindfulness & Meditation' ? 'selected' : '' ?>>Mindfulness & Meditation</option>
+                                <option value="Sleep & Wellness" <?= $resource['category'] === 'Sleep & Wellness' ? 'selected' : '' ?>>Sleep & Wellness</option>
+                                <option value="Relationships & Social" <?= $resource['category'] === 'Relationships & Social' ? 'selected' : '' ?>>Relationships & Social</option>
+                                <option value="Crisis Support" <?= $resource['category'] === 'Crisis Support' ? 'selected' : '' ?>>Crisis Support</option>
+                                <option value="Self-Help Tools" <?= $resource['category'] === 'Self-Help Tools' ? 'selected' : '' ?>>Self-Help Tools</option>
+                                <option value="Professional Development" <?= $resource['category'] === 'Professional Development' ? 'selected' : '' ?>>Professional Development</option>
                             </select>
                         </div>
                         
@@ -378,49 +329,70 @@
                             <label for="contentTypeSelect">📄 Content Type</label>
                             <select name="content_type" id="contentTypeSelect" required>
                                 <option value="">Select content type</option>
-                                <option value="article">📝 Article</option>
-                                <option value="video">🎥 Video</option>
-                                <option value="audio">🎵 Audio</option>
+                                <option value="article" <?= $resource['content_type'] === 'article' ? 'selected' : '' ?>>📝 Article</option>
+                                <option value="video" <?= $resource['content_type'] === 'video' ? 'selected' : '' ?>>🎥 Video</option>
+                                <option value="audio" <?= $resource['content_type'] === 'audio' ? 'selected' : '' ?>>🎵 Audio</option>
                             </select>
                         </div>
                         
                         <div class="form-row">
                             <label for="summary">📋 Summary</label>
-                            <textarea id="summary" name="summary" rows="3" placeholder="Brief description of what this resource covers..." required></textarea>
+                            <textarea id="summary" name="summary" rows="3" placeholder="Brief description of what this resource covers..." required><?= htmlspecialchars($resource['summary']); ?></textarea>
                         </div>
                         
                         <div class="form-row">
                             <label for="tags">🏷️ Tags</label>
-                            <input id="tags" type="text" name="tags" placeholder="Enter tags separated by commas (e.g., anxiety, stress, coping)" />
+                            <input id="tags" type="text" name="tags" value="<?= htmlspecialchars($resource['tags']); ?>" placeholder="Enter tags separated by commas (e.g., anxiety, stress, coping)" />
                         </div>
                         
                         <div class="form-row">
                             <label for="status">📊 Status</label>
                             <select name="status" id="status">
-                                <option value="draft">📝 Draft</option>
-                                <option value="published">✅ Published</option>
-                                <option value="archived">📦 Archived</option>
+                                <option value="draft" <?= $resource['status'] === 'draft' ? 'selected' : '' ?>>📝 Draft</option>
+                                <option value="published" <?= $resource['status'] === 'published' ? 'selected' : '' ?>>✅ Published</option>
+                                <option value="archived" <?= $resource['status'] === 'archived' ? 'selected' : '' ?>>📦 Archived</option>
                             </select>
                         </div>
                     </div>
 
-                <div id="articleFields" class="stack card" style="display:none;">
+                    <!-- Current File Display -->
+                    <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
+                        <div class="current-file">
+                            <?php if ($resource['content_type'] === 'article' && in_array(strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
+                                <img src="<?= BASE_URL . $resource['file_path']; ?>" alt="Current image" />
+                            <?php else: ?>
+                                <div style="width: 100px; height: 100px; background: #e5e7eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                                    <?= $resource['content_type'] === 'video' ? '🎥' : '🎵'; ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="current-file-info">
+                                <h4><?= htmlspecialchars($resource['file_name']); ?></h4>
+                                <p>Size: <?= number_format($resource['file_size'] / 1024 / 1024, 2); ?> MB | Type: <?= htmlspecialchars($resource['file_type']); ?></p>
+                            </div>
+                            <div class="file-actions">
+                                <a href="<?= BASE_URL . $resource['file_path']; ?>" target="_blank" class="btn btn-primary btn-small">👁️ View</a>
+                                <button type="button" class="btn btn-secondary btn-small" onclick="removeCurrentFile()">🗑️ Remove</button>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <div id="articleFields" class="stack card" style="display:none;">
                         <h3>📝 Article Content</h3>
-                    <div class="form-group">
+                        <div class="form-group">
                             <label for="articleImage">🖼️ Featured Image</label>
                             <div class="file-upload-area" id="articleImageUpload">
                                 <input id="articleImage" type="file" name="article_image" accept="image/*" style="display: none;">
                                 <p>📁 Click to upload or drag and drop an image</p>
                                 <small>Recommended: 1200x630px, max 5MB</small>
                             </div>
-                    </div>
-                    <div class="form-group">
-                            <label for="articleContent">📄 Article Content</label>
-                            <textarea id="articleContent" name="content" rows="12" placeholder="Write your article content here. You can use basic HTML formatting..."></textarea>
                         </div>
-                </div>
+                        <div class="form-group">
+                            <label for="articleContent">📄 Article Content</label>
+                            <textarea id="articleContent" name="content" rows="12" placeholder="Write your article content here. You can use basic HTML formatting..."><?= htmlspecialchars($resource['content']); ?></textarea>
+                        </div>
+                    </div>
 
-                <div id="videoFields" class="stack card" style="display:none;">
+                    <div id="videoFields" class="stack card" style="display:none;">
                         <h3>🎥 Video Content</h3>
                         <div class="form-group">
                             <label for="videoFile">🎬 Upload Video</label>
@@ -430,13 +402,13 @@
                                 <small>Supported formats: MP4, AVI, MOV. Max size: 100MB</small>
                             </div>
                         </div>
-                    <div class="form-group">
+                        <div class="form-group">
                             <label for="videoDescription">📝 Video Description</label>
-                            <textarea id="videoDescription" name="content" rows="6" placeholder="Describe what this video covers and any key points..."></textarea>
+                            <textarea id="videoDescription" name="content" rows="6" placeholder="Describe what this video covers and any key points..."><?= htmlspecialchars($resource['content']); ?></textarea>
                         </div>
-                </div>
+                    </div>
 
-                <div id="audioFields" class="stack card" style="display:none;">
+                    <div id="audioFields" class="stack card" style="display:none;">
                         <h3>🎵 Audio Content</h3>
                         <div class="form-group">
                             <label for="audioFile">🎧 Upload Audio</label>
@@ -446,155 +418,31 @@
                                 <small>Supported formats: MP3, WAV, M4A. Max size: 50MB</small>
                             </div>
                         </div>
-                    <div class="form-group">
+                        <div class="form-group">
                             <label for="audioDescription">📝 Audio Description</label>
-                            <textarea id="audioDescription" name="content" rows="6" placeholder="Describe what this audio covers and any key points..."></textarea>
+                            <textarea id="audioDescription" name="content" rows="6" placeholder="Describe what this audio covers and any key points..."><?= htmlspecialchars($resource['content']); ?></textarea>
                         </div>
-                </div>
+                    </div>
 
-                <div class="actions">
-                        <button class="btn btn-secondary" type="reset">
-                            🗑️ Clear Form
-                        </button>
+                    <div class="actions">
+                        <a href="<?= BASE_URL ?>/EditPosts" class="btn btn-secondary">
+                            ← Back to Resources
+                        </a>
                         <button class="btn btn-primary" type="submit">
-                            💾 Create Resource
+                            💾 Update Resource
                         </button>
-                </div>
+                    </div>
                 </form>
             </section>
         </div>
 
-        <?php if (isset($_GET['created'])): ?>
-            <div class="alert success">Resource created.</div>
-        <?php elseif (isset($_GET['updated'])): ?>
-            <div class="alert success">Resource updated.</div>
-        <?php elseif (isset($_GET['deleted'])): ?>
-            <div class="alert success">Resource deleted.</div>
+        <?php if (isset($_GET['updated'])): ?>
+            <div class="alert success">✅ Resource updated successfully!</div>
         <?php elseif (isset($_GET['error'])): ?>
-            <div class="alert error">Please provide all fields.</div>
+            <div class="alert error">❌ Error updating resource. Please try again.</div>
         <?php endif; ?>
-
-        <hr class="section-divider">
-        
-        <div class="section-header-bar">
-            <h2>📚 Manage Resources</h2>
-        </div>
-        
-        <section class="resources-management card flush-top">
-            <?php if (!empty($resources)): ?>
-                <div class="resources-grid">
-                    <?php foreach ($resources as $r): ?>
-                        <div class="resource-card">
-                            <div class="resource-header">
-                                <h3><?= htmlspecialchars($r['title']); ?></h3>
-                                <div class="resource-meta">
-                                    <span class="resource-type"><?= ucfirst($r['content_type']); ?></span>
-                                    <span class="resource-category"><?= htmlspecialchars($r['category']); ?></span>
-                                </div>
-                            </div>
-                            
-                            <div class="resource-content">
-                                <p class="resource-summary"><?= htmlspecialchars($r['summary']); ?></p>
-                                
-                                <!-- Display uploaded file if exists -->
-                                <?php if (!empty($r['file_path']) && !empty($r['file_name'])): ?>
-                                    <div class="resource-file-display" style="margin: 1rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e5e7eb;">
-                                        <div style="display: flex; align-items: center; gap: 1rem;">
-                                            <?php 
-                                            $fileExtension = strtolower(pathinfo($r['file_name'], PATHINFO_EXTENSION));
-                                            $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                                            $fileExists = file_exists(BASE_PATH . '/public' . $r['file_path']);
-                                            ?>
-                                            
-                                            <?php if ($r['content_type'] === 'article' && $isImage && $fileExists): ?>
-                                                <img src="<?= BASE_URL . $r['file_path']; ?>" alt="Resource image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
-                                            <?php else: ?>
-                                                <div style="width: 80px; height: 80px; background: #e5e7eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
-                                                    <?php if ($r['content_type'] === 'video'): ?>
-                                                        🎥
-                                                    <?php elseif ($r['content_type'] === 'audio'): ?>
-                                                        🎵
-                                                    <?php else: ?>
-                                                        📄
-                                                    <?php endif; ?>
-                                                </div>
-                                            <?php endif; ?>
-                                            
-                                            <div style="flex: 1;">
-                                                <h4 style="margin: 0 0 0.25rem 0; color: #1e293b; font-size: 1rem;">
-                                                    <?= htmlspecialchars($r['file_name']); ?>
-                                                    <?php if (!$fileExists): ?>
-                                                        <span style="color: #ef4444; font-size: 0.8rem;">(File not found)</span>
-                                                    <?php endif; ?>
-                                                </h4>
-                                                <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">
-                                                    <?php if (!empty($r['file_size'])): ?>
-                                                        Size: <?= number_format($r['file_size'] / 1024 / 1024, 2); ?> MB | 
-                                                    <?php endif; ?>
-                                                    Type: <?= htmlspecialchars($r['file_type'] ?? 'Unknown'); ?>
-                                                </p>
-                                            </div>
-                                            
-                                            <?php if ($fileExists): ?>
-                                                <a href="<?= BASE_URL . $r['file_path']; ?>" target="_blank" class="btn btn-primary btn-small" style="padding: 0.5rem 1rem; font-size: 0.9rem; min-width: auto;">
-                                                    👁️ View
-                                                </a>
-                                            <?php else: ?>
-                                                <span style="color: #ef4444; font-size: 0.9rem; padding: 0.5rem;">File Missing</span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                <?php else: ?>
-                                    <div style="margin: 1rem 0; padding: 1rem; background: #fef3c7; border-radius: 8px; border: 1px solid #f59e0b; color: #92400e;">
-                                        <strong>📄 Text Content Only</strong> - No file attached
-                                    </div>
-                                <?php endif; ?>
-                                
-                                <?php if (!empty($r['tags'])): ?>
-                                    <div class="resource-tags" style="margin: 0.5rem 0;">
-                                        <strong>Tags:</strong> <?= htmlspecialchars($r['tags']); ?>
-                                    </div>
-                                <?php endif; ?>
-                                
-                                <div class="resource-status" style="margin: 0.5rem 0;">
-                                    <strong>Status:</strong> 
-                                    <span class="status-<?= $r['status']; ?>">
-                                        <?= ucfirst($r['status']); ?>
-                                    </span>
-                                </div>
-                                
-                                <div class="resource-dates" style="margin: 0.5rem 0; font-size: 0.9rem; color: #6b7280;">
-                                    <small>Created: <?= date('M j, Y', strtotime($r['created_at'])); ?></small>
-                                    <?php if ($r['updated_at'] !== $r['created_at']): ?>
-                                        <br><small>Updated: <?= date('M j, Y', strtotime($r['updated_at'])); ?></small>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            
-                            <div class="resource-actions">
-                                <a href="<?= BASE_URL ?>/Moderator/resource/edit?id=<?= $r['id']; ?>" class="btn btn-primary">
-                                    ✏️ Edit
-                                </a>
-                                <form action="<?= BASE_URL ?>/Moderator/resource/delete" method="POST" style="display: inline;">
-                                    <input type="hidden" name="id" value="<?= (int)$r['id']; ?>">
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this resource?')">
-                                        🗑️ Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <div class="empty-state" style="text-align: center; padding: 3rem; color: #6b7280;">
-                    <h3>📚 No Resources Yet</h3>
-                    <p>Create your first resource using the form above to get started!</p>
-                </div>
-            <?php endif; ?>
-        </section>
     </div>
 
-    <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
     <script>
     (function(){
         // Content type visibility management
@@ -612,15 +460,7 @@
         
         if (select) {
             select.addEventListener('change', updateVisibility);
-            updateVisibility();
-        }
-        
-        // Form reset handling
-        var form = document.getElementById('addPostForm');
-        if (form) {
-            form.addEventListener('reset', function(){
-                setTimeout(updateVisibility, 0);
-            });
+            updateVisibility(); // Initialize on page load
         }
         
         // Enhanced file upload areas
@@ -676,7 +516,18 @@
         setupFileUpload('videoFileUpload', 'videoFile');
         setupFileUpload('audioFileUpload', 'audioFile');
         
+        // Remove current file function
+        window.removeCurrentFile = function() {
+            if (confirm('Are you sure you want to remove the current file?')) {
+                var currentFile = document.querySelector('.current-file');
+                if (currentFile) {
+                    currentFile.style.display = 'none';
+                }
+            }
+        };
+        
         // Form validation
+        var form = document.getElementById('editResourceForm');
         form.addEventListener('submit', function(e) {
             var contentType = select.value;
             var isValid = true;
@@ -694,15 +545,17 @@
                     }
                 } else if (contentType === 'video') {
                     var videoFile = document.getElementById('videoFile').files.length;
-                    if (!videoFile) {
+                    var videoContent = document.getElementById('videoDescription').value.trim();
+                    if (!videoFile && !videoContent) {
                         isValid = false;
-                        errorMessage = 'Please upload a video file.';
+                        errorMessage = 'Please provide video file or description.';
                     }
                 } else if (contentType === 'audio') {
                     var audioFile = document.getElementById('audioFile').files.length;
-                    if (!audioFile) {
+                    var audioContent = document.getElementById('audioDescription').value.trim();
+                    if (!audioFile && !audioContent) {
                         isValid = false;
-                        errorMessage = 'Please upload an audio file.';
+                        errorMessage = 'Please provide audio file or description.';
                     }
                 }
             }
@@ -726,7 +579,7 @@
         form.addEventListener('submit', function() {
             var submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
-                submitBtn.innerHTML = '⏳ Creating Resource...';
+                submitBtn.innerHTML = '⏳ Updating Resource...';
                 submitBtn.disabled = true;
             }
         });

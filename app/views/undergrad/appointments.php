@@ -26,51 +26,53 @@ require BASE_PATH.'/app/views/layouts/header.php';
 				</div>
 				<div class="card-body">
 					<form id="appointmentForm" class="appointment-form" novalidate>
-						<input type="hidden" id="appointmentId" />
-						<div class="form-grid">
-							<div class="form-group">
-								<label for="appointmentTitle" class="label">Appointment Title *</label>
-								<input type="text" id="appointmentTitle" class="input" placeholder="e.g., Dr. Smith - Therapy Session" required />
-								<div class="error-message" id="titleError"></div>
-							</div>
-							<div class="form-group">
-								<label for="appointmentType" class="label">Appointment Type *</label>
-								<select id="appointmentType" class="input" required>
-									<option value="">Select appointment type</option>
-									<option value="individual">Individual Counseling</option>
-									<option value="group">Group Therapy</option>
-									<option value="crisis">Crisis Support</option>
-									<option value="assessment">Assessment</option>
-									<option value="follow-up">Follow-up Session</option>
-								</select>
-								<div class="error-message" id="typeError"></div>
-							</div>
-							<div class="form-group">
-								<label for="appointmentDate" class="label">Date *</label>
-								<input type="date" id="appointmentDate" class="input" required />
-								<div class="error-message" id="dateError"></div>
-							</div>
-							<div class="form-group">
-								<label for="appointmentTime" class="label">Time *</label>
-								<input type="time" id="appointmentTime" class="input" required />
-								<div class="error-message" id="timeError"></div>
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="appointmentNotes" class="label">Notes (Optional)</label>
-							<textarea id="appointmentNotes" class="input" rows="3" placeholder="Any specific concerns or topics you'd like to discuss..."></textarea>
-						</div>
-						<div class="form-actions">
-							<button type="submit" class="btn primary">
-								<span class="btn-icon">💾</span>
-								<span class="btn-text">Save Appointment</span>
-							</button>
-							<button type="button" id="resetAppointmentForm" class="btn outline">
-								<span class="btn-icon">🔄</span>
-								<span class="btn-text">Reset Form</span>
-							</button>
-						</div>
-					</form>
+    <input type="hidden" id="appointmentId" name="appointmentId" />
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="appointmentTitle" class="label">Appointment Title *</label>
+            <input type="text" id="appointmentTitle" name="title" class="input" placeholder="e.g., Dr. Smith - Therapy Session" required />
+            <div class="error-message" id="titleError"></div>
+        </div>
+        <div class="form-group">
+            <label for="appointmentType" class="label">Appointment Type *</label>
+            <select id="appointmentType" name="type" class="input" required>
+                <option value="">Loading types...</option>
+            </select>
+            <div class="error-message" id="typeError"></div>
+        </div>
+        <div class="form-group">
+            <label for="appointmentCounselor" class="label">Select Counselor *</label>
+            <select id="appointmentCounselor" name="counselor_user_id" class="input" required>
+                <option value="">Loading counselors...</option>
+            </select>
+            <div class="error-message" id="counselorError"></div>
+        </div>
+        <div class="form-group">
+            <label for="appointmentDate" class="label">Date *</label>
+            <input type="date" id="appointmentDate" name="date" class="input" required />
+            <div class="error-message" id="dateError"></div>
+        </div>
+        <div class="form-group">
+            <label for="appointmentTime" class="label">Time *</label>
+            <input type="time" id="appointmentTime" name="time" class="input" required />
+            <div class="error-message" id="timeError"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="appointmentNotes" class="label">Notes (Optional)</label>
+        <textarea id="appointmentNotes" name="notes" class="input" rows="3" placeholder="Any specific concerns or topics you'd like to discuss..."></textarea>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn primary">
+            <span class="btn-icon">💾</span>
+            <span class="btn-text">Save Appointment</span>
+        </button>
+        <button type="button" id="resetAppointmentForm" class="btn outline">
+            <span class="btn-icon">🔄</span>
+            <span class="btn-text">Reset Form</span>
+        </button>
+    </div>
+</form>
 				</div>
 			</div>
 
@@ -196,7 +198,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
 							<span>Audio On</span>
 						</button>
 						<button class="control-btn" id="toggleScreen" onclick="toggleScreenShare()">
-							<span class="btn-icon">🖥️</span>
+							<span class="btn-icon">🖥</span>
 							<span>Share Screen</span>
 						</button>
 						<button class="control-btn danger" onclick="endAppointment()">
@@ -488,37 +490,190 @@ require BASE_PATH.'/app/views/layouts/header.php';
 </style>
 
 <script>
-function initializePage() {
-	// Populate types
-	const types = window.MindHeaven.constants.appointmentTypes || {};
-	const select = document.getElementById('appointmentType');
-	select.innerHTML = Object.keys(types).map(t => `<option value="${t}">${t}</option>`).join('');
+// ----------------------
+// JS FUNCTIONS
+// ----------------------
 
-	// Wire events
-	document.getElementById('appointmentForm').addEventListener('submit', onAppointmentSubmit);
-	document.getElementById('resetAppointmentForm').addEventListener('click', resetAppointmentForm);
-	document.getElementById('importDemoAppointments').addEventListener('click', importDemoAppointments);
-	document.getElementById('exportAppointmentsCsv').addEventListener('click', exportAppointmentsCsv);
+// ----------------------
+// MindHeaven Utility Object
+// ----------------------
+window.MindHeaven = window.MindHeaven || {};
 
-	renderAppointments();
-}
+window.MindHeaven.getStorageItem = function(key, defaultValue = []) {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+    } catch (e) {
+        console.error('Error reading from storage', e);
+        return defaultValue;
+    }
+};
+
+window.MindHeaven.setStorageItem = function(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+        console.error('Error writing to storage', e);
+    }
+};
+
+window.MindHeaven.showAlert = function(message, type = 'info') {
+     // Better visual feedback
+    const alertClass = type === 'error' ? 'alert-danger' : 
+                      type === 'success' ? 'alert-success' : 'alert-info';
+    
+    console.log(`[${type.toUpperCase()}] ${message}`);
+    alert(message); // You can replace this with a nicer toast notification
+};
+
+window.MindHeaven.validateForm = function(form) {
+    let valid = true;
+    form.querySelectorAll('[required]').forEach(input => {
+        const value = input.value ? input.value.trim() : '';
+        if (!value || value === '') {
+            valid = false;
+            input.classList.add('input-error');
+            const errorDiv = input.parentElement.querySelector('.error-message');
+            if (errorDiv) {
+                errorDiv.textContent = 'This field is required';
+            }
+        } else {
+            input.classList.remove('input-error');
+            const errorDiv = input.parentElement.querySelector('.error-message');
+            if (errorDiv) {
+                errorDiv.textContent = '';
+            }
+        }
+    });
+    return valid;
+};
+
+window.MindHeaven.formatDate = function(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString();
+};
+
+window.MindHeaven.formatTime = function(timeStr) {
+    const t = new Date('1970-01-01T' + timeStr + 'Z');
+    return t.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+};
+
+window.MindHeaven.getDemoData = function(type) {
+    if (type === 'appointments') {
+        return [
+            { title: "Demo Session 1", type: "individual", date: "2025-10-20", time: "10:00", status: "scheduled" },
+            { title: "Demo Session 2", type: "group", date: "2025-10-21", time: "14:00", status: "scheduled" }
+        ];
+    }
+    return [];
+};
+
+window.MindHeaven.exportToCSV = function(data, filename) {
+    if (!data.length) return;
+    const csvRows = [];
+    const headers = Object.keys(data[0]);
+    csvRows.push(headers.join(','));
+    for (const row of data) {
+        csvRows.push(headers.map(h => `"${row[h]}"`).join(','));
+    }
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+};
 
 function getAppointments() { return window.MindHeaven.getStorageItem('appointments', []); }
 function saveAppointments(list) { window.MindHeaven.setStorageItem('appointments', list); }
 
 function onAppointmentSubmit(e) {
 	e.preventDefault();
+	console.log("Form submitted!"); 
 	const form = e.target;
-	if (!window.MindHeaven.validateForm(form)) return;
+	//Clear previous errors
+    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+    
+	  // Validate form
+    if (!window.MindHeaven.validateForm(form)) {
+        window.MindHeaven.showAlert('Please fill in all required fields', 'error');
+        return;
+    }
 
 	const id = document.getElementById('appointmentId').value;
 	const title = document.getElementById('appointmentTitle').value.trim();
 	const type = document.getElementById('appointmentType').value;
 	const date = document.getElementById('appointmentDate').value;
 	const time = document.getElementById('appointmentTime').value;
+    const notes = document.getElementById('appointmentNotes').value;
+    const counselorId = document.getElementById('appointmentCounselor').value;
 
+	
+    // Additional validation
+    if (!id) {
+        // Create new appointment in backend DB
+        fetch('/MindHeaven/public/api/appointments/create', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ 
+                counselor_user_id: counselorId, 
+                title, 
+                type, 
+                date, 
+                time, 
+                notes 
+            })
+        })
+        .then(async response => {
+            console.log("Response status:", response.status);
+            const text = await response.text();
+            console.log("Response text:", text);
+            
+            let json;
+            try {
+                json = JSON.parse(text);
+            } catch (e) {
+                throw new Error('Invalid JSON response: ' + text);
+            }
+            
+            if (!response.ok) {
+                throw new Error(json.detail || json.error || 'Failed to create appointment');
+            }
+            return json;
+        })
+        .then(json => {
+            console.log("Success response:", json);
+            window.MindHeaven.showAlert(`Appointment booked successfully! ID: ${json.id}`, 'success');
+            
+            // Store locally for display
+            const list = getAppointments();
+            list.push({ 
+                id: json.id, 
+                title, 
+                type, 
+                date, 
+                time, 
+                status: 'pending',
+                counselor_user_id: counselorId,
+                notes
+            });
+            saveAppointments(list);
+            
+            resetAppointmentForm();
+            renderAppointments();
+        })
+        .catch(err => {
+            console.error("Error creating appointment:", err);
+            window.MindHeaven.showAlert('Error: ' + err.message, 'error');
+        });
+    } else {
 	const list = getAppointments();
-	if (id) {
 		const idx = list.findIndex(a => String(a.id) === String(id));
 		if (idx !== -1) {
 			list[idx].title = title;
@@ -526,14 +681,11 @@ function onAppointmentSubmit(e) {
 			list[idx].date = date;
 			list[idx].time = time;
 		}
+        saveAppointments(list);
 		window.MindHeaven.showAlert('Appointment updated!', 'success');
-	} else {
-		list.push({ id: Date.now(), title, type, date, time, status: 'scheduled' });
-		window.MindHeaven.showAlert('Appointment booked!', 'success');
-	}
-	saveAppointments(list);
 	resetAppointmentForm();
 	renderAppointments();
+    }
 }
 
 function resetAppointmentForm() {
@@ -545,11 +697,7 @@ function renderAppointments() {
 	const tbody = document.getElementById('appointmentsTableBody');
 	const empty = document.getElementById('appointmentsEmptyState');
 	const list = getAppointments();
-	if (!list.length) {
-		empty.style.display = 'block';
-		tbody.innerHTML = '';
-		return;
-	}
+    if (!list.length) { empty.style.display = 'block'; tbody.innerHTML = ''; return; }
 	empty.style.display = 'none';
 	tbody.innerHTML = list.map(a => `
 		<tr>
@@ -573,8 +721,7 @@ function renderAppointments() {
 }
 
 function editAppointment(id) {
-	const list = getAppointments();
-	const a = list.find(x => String(x.id) === String(id));
+    const a = getAppointments().find(x => String(x.id) === String(id));
 	if (!a) return;
 	document.getElementById('appointmentId').value = a.id;
 	document.getElementById('appointmentTitle').value = a.title;
@@ -593,10 +740,7 @@ function deleteAppointment(id) {
 function updateStatus(id, status) {
 	const list = getAppointments();
 	const idx = list.findIndex(a => String(a.id) === String(id));
-	if (idx !== -1) {
-		list[idx].status = status;
-		saveAppointments(list);
-	}
+    if (idx !== -1) { list[idx].status = status; saveAppointments(list); }
 }
 
 function importDemoAppointments() {
@@ -674,7 +818,7 @@ function toggleAudio() {
 function toggleScreenShare() {
 	const btn = document.getElementById('toggleScreen');
 	const isSharing = btn.textContent.includes('Stop');
-	btn.innerHTML = `<span class="btn-icon">🖥️</span><span>${isSharing ? 'Stop Sharing' : 'Share Screen'}</span>`;
+	btn.innerHTML = `<span class="btn-icon">🖥</span><span>${isSharing ? 'Stop Sharing' : 'Share Screen'}</span>`;
 	btn.style.background = isSharing ? '#f3f4f6' : '#4f46e5';
 	btn.style.color = isSharing ? '#374151' : 'white';
 }
@@ -718,6 +862,41 @@ function handleChatKeyPress(event) {
 		sendMessage();
 	}
 }
+
+function loadCounselors() {
+    fetch('/MindHeaven/public/api/counselors', { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(rows => {
+            const cSel = document.getElementById('appointmentCounselor');
+            if (!rows || !rows.length) { cSel.innerHTML = '<option value="">No counselors</option>'; return; }
+            cSel.innerHTML = '<option value="">Select counselor</option>' + rows.map(c => `<option value="${c.id}">${c.full_name || c.username}</option>`).join('');
+        })
+        .catch(() => { document.getElementById('appointmentCounselor').innerHTML = '<option value="">Failed to load counselors</option>'; });
+}
+
+// ----------------------
+// INITIALIZE PAGE
+// ----------------------
+document.addEventListener('DOMContentLoaded', function initializePage() {
+    // populate types
+    const types = ["individual","group","crisis","assessment","follow-up"];
+    const select = document.getElementById('appointmentType');
+    select.innerHTML = '<option value="">Select appointment type</option>' + 
+        types.map(t => `<option value="${t}">${t.charAt(0).toUpperCase() + t.slice(1)}</option>`).join('');
+
+    // load counselors from backend
+    loadCounselors();
+
+    // attach event listeners
+    const form = document.getElementById('appointmentForm');
+    form.addEventListener('submit', onAppointmentSubmit);
+    document.getElementById('resetAppointmentForm').addEventListener('click', resetAppointmentForm);
+    document.getElementById('importDemoAppointments').addEventListener('click', importDemoAppointments);
+    document.getElementById('exportAppointmentsCsv').addEventListener('click', exportAppointmentsCsv);
+
+    renderAppointments();
+});
+
 </script>
 
 <?php

@@ -79,6 +79,7 @@
         
         <div style="text-align: center; margin-top: 20px; font-size: 14px; color: #666;">
             <p>Don't have an account? <a href="<?= BASE_URL ?>/signup" style="color: #5a67f2; text-decoration: none;">Sign Up</a></p>
+            <p><a href="<?= BASE_URL ?>/login/forgot-password" style="color: #5a67f2; text-decoration: none;">Forgot Password?</a></p>
         </div>
     </div>
 </body>
