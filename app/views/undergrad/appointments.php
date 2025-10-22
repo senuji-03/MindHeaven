@@ -899,6 +899,12 @@ document.addEventListener('DOMContentLoaded', function initializePage() {
 
 </script>
 
+<script>
+// Set BASE_URL for JavaScript
+window.BASE_URL = '<?= BASE_URL ?>';
+</script>
+<script src="<?= BASE_URL ?>/js/undergrad/appointments.js"></script>
+
 <?php
 require BASE_PATH.'/app/views/layouts/footer.php';
 ?>

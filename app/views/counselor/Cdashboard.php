@@ -33,13 +33,14 @@
        <div class="sidebar">
             <ul class="sidebar-menu">
                  <li class="sidebar-item active"><a href="#" style="color: #2563eb;">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="calender.php">📅 Calendar</a></li>
-                <li class="sidebar-item "><a href="appointmentmgt.php">🗓 Appointment Management</a></li>
-                <li class="sidebar-item"><a href="sessionHistory.php">📋 Session History</a></li>
-                <li class="sidebar-item"><a href="#">💭 Forum</a></li>
-                <li class="sidebar-item"><a href="#">📚 Resource Hub</a></li>
-                <li class="sidebar-item"><a href="counselor_profile.php">👤 Profile</a></li>
+                <li class="sidebar-item"><a href="calender">📅 Calendar</a></li>
+                <li class="sidebar-item "><a href="appointmentmgt">🗓 Appointment Management</a></li>
+                <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
+                <li class="sidebar-item"><a href="forum">💭 Forum</a></li>
+                <li class="sidebar-item"><a href="resources">📚 Resource Hub</a></li>
+                <li class="sidebar-item"><a href="counselor_profile">👤 Profile</a></li>
                 <li class="sidebar-item"><a href="#">⚙ Settings</a></li>
+                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
 

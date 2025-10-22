@@ -1,113 +1,141 @@
 let currentDate = new Date();
-        let selectedDate = null;
-        let events = {
-            '2024-12-23': [
-                { id: 1, title: 'Sarah Johnson', time: '10:30', type: 'appointment', description: 'Anxiety and stress management session', priority: 'normal' },
-                { id: 2, title: 'Michael Chen', time: '14:00', type: 'appointment', description: 'Academic pressure and burnout session', priority: 'normal' },
-                { id: 3, title: 'Team Meeting', time: '16:30', type: 'meeting', description: 'Weekly counseling team sync', priority: 'normal' }
-            ],
-            '2024-12-24': [
-                { id: 4, title: 'Emily Davis', time: '11:00', type: 'appointment', description: 'Social anxiety and relationship issues', priority: 'normal' },
-                { id: 5, title: 'Holiday Planning', time: '15:00', type: 'meeting', description: 'Plan holiday schedule adjustments', priority: 'urgent' }
-            ],
-            '2024-12-26': [
-                { id: 6, title: 'John Smith', time: '09:00', type: 'appointment', description: 'Depression support session', priority: 'urgent' },
-                { id: 7, title: 'Training Session', time: '13:00', type: 'training', description: 'New therapy techniques workshop', priority: 'normal' }
-            ]
-        };
+let selectedDate = null;
+let events = {};
 
-        function renderCalendar() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            
-            document.getElementById('currentMonth').textContent = 
-                currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const daysInPrevMonth = new Date(year, month, 0).getDate();
-            
-            const calendarDays = document.getElementById('calendarDays');
-            calendarDays.innerHTML = '';
-            
-            // Previous month days
-            for (let i = firstDay - 1; i >= 0; i--) {
-                const day = daysInPrevMonth - i;
-                const dayElement = createDayElement(day, true, year, month - 1);
-                calendarDays.appendChild(dayElement);
-            }
-            
-            // Current month days
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayElement = createDayElement(day, false, year, month);
-                calendarDays.appendChild(dayElement);
-            }
-            
-            // Next month days
-            const totalCells = calendarDays.children.length;
-            const remainingCells = 42 - totalCells;
-            for (let day = 1; day <= remainingCells; day++) {
-                const dayElement = createDayElement(day, true, year, month + 1);
-                calendarDays.appendChild(dayElement);
-            }
-        }
+// Initialize events from PHP data
+if (typeof eventsFromPHP !== 'undefined') {
+    events = eventsFromPHP;
+}
 
-        function createDayElement(day, isOtherMonth, year, month) {
-            const dayElement = document.createElement('div');
-            dayElement.className = 'day';
-            
-            if (isOtherMonth) {
-                dayElement.classList.add('other-month');
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    document.getElementById('currentMonth').textContent = 
+        currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    
+    const calendarDays = document.getElementById('calendarDays');
+    calendarDays.innerHTML = '';
+    
+    // Previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const day = daysInPrevMonth - i;
+        const dayElement = createDayElement(day, true, year, month - 1);
+        calendarDays.appendChild(dayElement);
+    }
+    
+    // Current month days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = createDayElement(day, false, year, month);
+        calendarDays.appendChild(dayElement);
+    }
+    
+    // Next month days
+    const totalCells = calendarDays.children.length;
+    const remainingCells = 42 - totalCells;
+    for (let day = 1; day <= remainingCells; day++) {
+        const dayElement = createDayElement(day, true, year, month + 1);
+        calendarDays.appendChild(dayElement);
+    }
+}
+
+function createDayElement(day, isOtherMonth, year, month) {
+    const dayElement = document.createElement('div');
+    dayElement.className = 'day';
+    
+    if (isOtherMonth) {
+        dayElement.classList.add('other-month');
+    }
+    
+    const today = new Date();
+    const dayDate = new Date(year, month, day);
+    
+    if (!isOtherMonth && 
+        dayDate.toDateString() === today.toDateString()) {
+        dayElement.classList.add('today');
+    }
+    
+    const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dayEvents = events[dateString] || [];
+    
+    if (dayEvents.length > 0) {
+        console.log(`Day ${dateString} has ${dayEvents.length} events:`, dayEvents);
+        dayElement.classList.add('has-events');
+    }
+    
+    dayElement.innerHTML = `
+        <div class="day-number">${day}</div>
+        <div class="day-events">
+            ${dayEvents.slice(0, 2).map(event => 
+                `<div class="event-preview ${event.priority === 'urgent' ? 'urgent' : ''}">${event.title}</div>`
+            ).join('')}
+            ${dayEvents.length > 2 ? `<div class="event-preview">+${dayEvents.length - 2} more</div>` : ''}
+        </div>
+    `;
+    
+    dayElement.addEventListener('click', () => showDayEvents(dateString, day, month + 1, year));
+    
+    return dayElement;
+}
+
+function previousMonth() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    loadMonthEvents();
+}
+
+function nextMonth() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    loadMonthEvents();
+}
+
+function goToToday() {
+    currentDate = new Date();
+    loadMonthEvents();
+}
+
+function loadMonthEvents() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+    
+    console.log(`Loading events for ${year}-${month}`);
+    console.log(`API URL: ${BASE}/counselor/getEventsByMonth?year=${year}&month=${month}`);
+    
+    fetch(`${BASE}/counselor/getEventsByMonth?year=${year}&month=${month}`)
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('API Response:', data);
+            if (data.success) {
+                events = data.events;
+                console.log('Events loaded:', events);
+                renderCalendar();
+            } else {
+                console.error('Failed to load events:', data.message);
+                if (data.message === 'Not logged in') {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/login';
+                }
             }
-            
-            const today = new Date();
-            const dayDate = new Date(year, month, day);
-            
-            if (!isOtherMonth && 
-                dayDate.toDateString() === today.toDateString()) {
-                dayElement.classList.add('today');
-            }
-            
-            const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const dayEvents = events[dateString] || [];
-            
-            if (dayEvents.length > 0) {
-                dayElement.classList.add('has-events');
-            }
-            
-            dayElement.innerHTML = `
-                <div class="day-number">${day}</div>
-                <div class="day-events">
-                    ${dayEvents.slice(0, 2).map(event => 
-                        `<div class="event-preview ${event.priority === 'urgent' ? 'urgent' : ''}">${event.title}</div>`
-                    ).join('')}
-                    ${dayEvents.length > 2 ? `<div class="event-preview">+${dayEvents.length - 2} more</div>` : ''}
-                </div>
-            `;
-            
-            dayElement.addEventListener('click', () => showDayEvents(dateString, day, month + 1, year));
-            
-            return dayElement;
-        }
+        })
+        .catch(error => {
+            console.error('Error loading events:', error);
+        });
+}
 
-        function previousMonth() {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        }
-
-        function nextMonth() {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-        }
-
-        function goToToday() {
-            currentDate = new Date();
-            renderCalendar();
-        }
-
-        function showDayEvents(dateString, day, month, year) {
-            selectedDate = dateString;
-            const dayEvents = events[dateString] || [];
+function showDayEvents(dateString, day, month, year) {
+    selectedDate = dateString;
+    
+    // Load events for this specific date
+    fetch(`${BASE}/counselor/getEventsByDate?date=${dateString}`)
+        .then(response => response.json())
+        .then(data => {
+            const dayEvents = data.success ? data.events : [];
             const monthName = new Date(year, month - 1, day).toLocaleDateString('en-US', { month: 'long' });
             
             document.getElementById('dayEventsTitle').textContent = `Events for ${monthName} ${day}, ${year}`;
@@ -121,7 +149,7 @@ let currentDate = new Date();
                     <div class="day-event-item ${event.priority === 'urgent' ? 'urgent' : ''}">
                         <div class="event-item-header">
                             <span class="event-item-title">${event.title}</span>
-                            <span class="event-item-time">${formatTime(event.time)}</span>
+                            <span class="event-item-time">${formatTime(event.event_time)}</span>
                         </div>
                         <div class="event-item-description">${event.description}</div>
                         <div class="event-item-actions">
@@ -133,151 +161,256 @@ let currentDate = new Date();
             }
             
             document.getElementById('dayEventsModal').style.display = 'block';
-        }
+        })
+        .catch(error => {
+            console.error('Error loading day events:', error);
+        });
+}
 
-        function formatTime(timeString) {
-            const [hours, minutes] = timeString.split(':');
-            const time = new Date();
-            time.setHours(parseInt(hours), parseInt(minutes));
-            return time.toLocaleTimeString('en-US', { 
-                hour: 'numeric', 
-                minute: '2-digit',
-                hour12: true 
+function formatTime(timeString) {
+    const [hours, minutes] = timeString.split(':');
+    const time = new Date();
+    time.setHours(parseInt(hours), parseInt(minutes));
+    return time.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+    });
+}
+
+function showAddEventModal() {
+    document.getElementById('eventModalTitle').textContent = 'Add New Event';
+    document.getElementById('eventForm').reset();
+    document.getElementById('eventId').value = '';
+    document.getElementById('deleteEventBtn').style.display = 'none';
+    
+    // Set default date to today
+    const today = new Date();
+    document.getElementById('eventDate').value = today.toISOString().split('T')[0];
+    
+    document.getElementById('eventModal').style.display = 'block';
+}
+
+function addEventForDay() {
+    closeModal('dayEventsModal');
+    showAddEventModal();
+    if (selectedDate) {
+        document.getElementById('eventDate').value = selectedDate;
+    }
+}
+
+function editEvent(eventId) {
+    // Find the event in current events
+    let eventToEdit = null;
+    for (const dateKey in events) {
+        const event = events[dateKey].find(e => e.id === eventId);
+        if (event) {
+            eventToEdit = event;
+            selectedDate = dateKey;
+            break;
+        }
+    }
+    
+    if (!eventToEdit) {
+        // If not found in current events, fetch from server
+        fetch(`${BASE}/counselor/getEventById?id=${eventId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    populateEditForm(data.event);
+                } else {
+                    showNotification('Event not found', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading event:', error);
+                showNotification('Error loading event', 'error');
             });
-        }
+        return;
+    }
+    
+    populateEditForm(eventToEdit);
+}
 
-        function showAddEventModal() {
-            document.getElementById('eventModalTitle').textContent = 'Add New Event';
-            document.getElementById('eventForm').reset();
-            document.getElementById('eventId').value = '';
-            document.getElementById('deleteEventBtn').style.display = 'none';
-            
-            // Set default date to today
-            const today = new Date();
-            document.getElementById('eventDate').value = today.toISOString().split('T')[0];
-            
-            document.getElementById('eventModal').style.display = 'block';
-        }
+function populateEditForm(eventToEdit) {
+    // Populate form with null checks
+    const eventModalTitle = document.getElementById('eventModalTitle');
+    const eventId = document.getElementById('eventId');
+    const eventTitle = document.getElementById('eventTitle');
+    const eventDate = document.getElementById('eventDate');
+    const eventTime = document.getElementById('eventTime');
+    const eventPriority = document.getElementById('eventPriority');
+    const eventDescription = document.getElementById('eventDescription');
+    const deleteEventBtn = document.getElementById('deleteEventBtn');
+    
+    if (eventModalTitle) eventModalTitle.textContent = 'Edit Event';
+    if (eventId) eventId.value = eventToEdit.id;
+    if (eventTitle) eventTitle.value = eventToEdit.title;
+    if (eventDate) eventDate.value = selectedDate || eventToEdit.event_date;
+    if (eventTime) eventTime.value = eventToEdit.event_time || eventToEdit.time;
+    if (eventPriority) eventPriority.value = eventToEdit.priority;
+    if (eventDescription) eventDescription.value = eventToEdit.description;
+    if (deleteEventBtn) deleteEventBtn.style.display = 'inline-block';
+    
+    closeModal('dayEventsModal');
+    const eventModal = document.getElementById('eventModal');
+    if (eventModal) eventModal.style.display = 'block';
+}
 
-        function addEventForDay() {
-            closeModal('dayEventsModal');
-            showAddEventModal();
-            if (selectedDate) {
-                document.getElementById('eventDate').value = selectedDate;
-            }
-        }
-
-        function editEvent(eventId) {
-            // Find the event
-            let eventToEdit = null;
-            for (const dateKey in events) {
-                const event = events[dateKey].find(e => e.id === eventId);
-                if (event) {
-                    eventToEdit = event;
-                    selectedDate = dateKey;
-                    break;
-                }
-            }
-            
-            if (!eventToEdit) return;
-            
-            // Populate form
-            document.getElementById('eventModalTitle').textContent = 'Edit Event';
-            document.getElementById('eventId').value = eventToEdit.id;
-            document.getElementById('eventTitle').value = eventToEdit.title;
-            document.getElementById('eventDate').value = selectedDate;
-            document.getElementById('eventTime').value = eventToEdit.time;
-            document.getElementById('eventType').value = eventToEdit.type;
-            document.getElementById('eventPriority').value = eventToEdit.priority;
-            document.getElementById('eventDescription').value = eventToEdit.description;
-            document.getElementById('deleteEventBtn').style.display = 'inline-block';
-            
-            closeModal('dayEventsModal');
-            document.getElementById('eventModal').style.display = 'block';
-        }
-
-        function saveEvent() {
-            const form = document.getElementById('eventForm');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            
-            const eventId = document.getElementById('eventId').value;
-            const eventData = {
-                id: eventId ? parseInt(eventId) : Date.now(),
-                title: document.getElementById('eventTitle').value,
-                time: document.getElementById('eventTime').value,
-                type: document.getElementById('eventType').value,
-                priority: document.getElementById('eventPriority').value,
-                description: document.getElementById('eventDescription').value
-            };
-            
-            const dateString = document.getElementById('eventDate').value;
-            
-            if (!events[dateString]) {
-                events[dateString] = [];
-            }
-            
-            if (eventId) {
-                // Update existing event
-                // First, remove from old location
-                for (const dateKey in events) {
-                    events[dateKey] = events[dateKey].filter(e => e.id !== parseInt(eventId));
-                    if (events[dateKey].length === 0) {
-                        delete events[dateKey];
-                    }
-                }
-                // Add to new location
-                events[dateString].push(eventData);
-            } else {
-                // Add new event
-                events[dateString].push(eventData);
-            }
-            
-            // Sort events by time
-            events[dateString].sort((a, b) => a.time.localeCompare(b.time));
-            
+function saveEvent() {
+    console.log('saveEvent function called');
+    console.log('Current timestamp:', new Date().toISOString());
+    
+    const form = document.getElementById('eventForm');
+    console.log('Form element:', form);
+    
+    if (!form) {
+        alert('Form not found!');
+        return;
+    }
+    
+    if (!form.checkValidity()) {
+        console.log('Form validation failed');
+        form.reportValidity();
+        return;
+    }
+    
+    console.log('Form validation passed');
+    
+    // Debug: Check if all form elements exist
+    const eventId = document.getElementById('eventId');
+    const eventTitle = document.getElementById('eventTitle');
+    const eventDate = document.getElementById('eventDate');
+    const eventTime = document.getElementById('eventTime');
+    const eventPriority = document.getElementById('eventPriority');
+    const eventDescription = document.getElementById('eventDescription');
+    
+    console.log('Form elements found:');
+    console.log('eventId:', eventId);
+    console.log('eventTitle:', eventTitle);
+    console.log('eventDate:', eventDate);
+    console.log('eventTime:', eventTime);
+    console.log('eventPriority:', eventPriority);
+    console.log('eventDescription:', eventDescription);
+    
+    if (!eventTitle) {
+        alert('eventTitle element not found!');
+        return;
+    }
+    if (!eventDate) {
+        alert('eventDate element not found!');
+        return;
+    }
+    if (!eventTime) {
+        alert('eventTime element not found!');
+        return;
+    }
+    if (!eventPriority) {
+        alert('eventPriority element not found!');
+        return;
+    }
+    if (!eventDescription) {
+        alert('eventDescription element not found!');
+        return;
+    }
+    
+    const formData = new FormData();
+    
+    formData.append('title', eventTitle.value);
+    formData.append('event_date', eventDate.value);
+    formData.append('event_time', eventTime.value);
+    formData.append('priority', eventPriority.value);
+    formData.append('description', eventDescription.value);
+    
+    console.log('Form data prepared:', {
+        title: eventTitle.value,
+        event_date: eventDate.value,
+        event_time: eventTime.value,
+        priority: eventPriority.value,
+        description: eventDescription.value
+    });
+    
+    let url, method;
+    if (eventId && eventId.value) {
+        // Update existing event
+        url = `${BASE}/counselor/updateEvent`;
+        formData.append('event_id', eventId.value);
+    } else {
+        // Create new event
+        url = `${BASE}/counselor/createEvent`;
+    }
+    
+    console.log('Sending request to:', url);
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('Response received:', response);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
             closeModal('eventModal');
-            renderCalendar();
+            loadMonthEvents(); // Reload events from server
             updateTodaysEvents();
-            
-            // Show success message
-            showNotification('Event saved successfully!', 'success');
+            showNotification(data.message, 'success');
+        } else {
+            showNotification(data.message, 'error');
         }
+    })
+    .catch(error => {
+        console.error('Error saving event:', error);
+        showNotification('Error saving event', 'error');
+    });
+}
 
-        function deleteEvent() {
-            const eventId = document.getElementById('eventId').value;
-            if (!eventId) return;
-            
-            deleteEventConfirm(parseInt(eventId));
-        }
+function deleteEvent() {
+    const eventId = document.getElementById('eventId').value;
+    if (!eventId) return;
+    
+    deleteEventConfirm(parseInt(eventId));
+}
 
-        function deleteEventConfirm(eventId) {
-            if (!confirm('Are you sure you want to delete this event?')) {
-                return;
-            }
-            
-            // Remove event from all dates
-            for (const dateKey in events) {
-                events[dateKey] = events[dateKey].filter(e => e.id !== eventId);
-                if (events[dateKey].length === 0) {
-                    delete events[dateKey];
-                }
-            }
-            
+function deleteEventConfirm(eventId) {
+    if (!confirm('Are you sure you want to delete this event?')) {
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('event_id', eventId);
+    
+    fetch(`${BASE}/counselor/deleteEvent`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
             closeModal('eventModal');
             closeModal('dayEventsModal');
-            renderCalendar();
+            loadMonthEvents(); // Reload events from server
             updateTodaysEvents();
-            
-            showNotification('Event deleted successfully!', 'success');
+            showNotification(data.message, 'success');
+        } else {
+            showNotification(data.message, 'error');
         }
+    })
+    .catch(error => {
+        console.error('Error deleting event:', error);
+        showNotification('Error deleting event', 'error');
+    });
+}
 
-        function updateTodaysEvents() {
-            const today = new Date().toISOString().split('T')[0];
-            const todaysEvents = events[today] || [];
-            
+function updateTodaysEvents() {
+    const today = new Date().toISOString().split('T')[0];
+    
+    fetch(`${BASE}/counselor/getEventsByDate?date=${today}`)
+        .then(response => response.json())
+        .then(data => {
+            const todaysEvents = data.success ? data.events : [];
             const todaysEventsList = document.getElementById('todaysEventsList');
             
             if (todaysEvents.length === 0) {
@@ -289,113 +422,127 @@ let currentDate = new Date();
                             <h4>${event.title}</h4>
                             <p>${event.description}</p>
                         </div>
-                        <div class="event-time">${formatTime(event.time)}</div>
+                        <div class="event-time">${formatTime(event.event_time)}</div>
                     </div>
                 `).join('');
             }
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        function showNotification(message, type = 'info') {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                padding: 1rem 1.5rem;
-                background: ${type === 'success' ? '#10b981' : '#3b82f6'};
-                color: white;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                z-index: 3000;
-                animation: slideInRight 0.3s ease-out;
-                max-width: 300px;
-                font-weight: 500;
-            `;
-            
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease-out';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
-
-        // Add CSS animations for notifications
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOutRight {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        };
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const openModal = document.querySelector('.modal[style*="display: block"]');
-                if (openModal) {
-                    openModal.style.display = 'none';
-                }
-            }
-            
-            if (event.key === '+' && event.ctrlKey) {
-                event.preventDefault();
-                showAddEventModal();
-            }
+        })
+        .catch(error => {
+            console.error('Error updating today\'s events:', error);
         });
+}
 
-        // API simulation for accepting appointments
-        function acceptAppointment(appointmentData) {
-            const dateString = appointmentData.date;
-            const newEvent = {
-                id: Date.now(),
-                title: appointmentData.patientName,
-                time: appointmentData.time,
-                type: 'appointment',
-                description: appointmentData.reason || 'Patient appointment',
-                priority: 'normal'
-            };
-            
-            if (!events[dateString]) {
-                events[dateString] = [];
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 3000;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 300px;
+        font-weight: 500;
+    `;
+    
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
             }
-            
-            events[dateString].push(newEvent);
-            events[dateString].sort((a, b) => a.time.localeCompare(b.time));
-            
-            renderCalendar();
-            updateTodaysEvents();
-            
-            showNotification(`Appointment with ${appointmentData.patientName} has been scheduled!`, 'success');
+        }, 300);
+    }, 3000);
+}
+
+// Add CSS animations for notifications
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
         }
+    });
+};
 
-        // Make function available globally for appointment management integration
-        window.acceptAppointment = acceptAppointment;
+// Keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const openModal = document.querySelector('.modal[style*="display: block"]');
+        if (openModal) {
+            openModal.style.display = 'none';
+        }
+    }
+    
+    if (event.key === '+' && event.ctrlKey) {
+        event.preventDefault();
+        showAddEventModal();
+    }
+});
 
-        // Initialize calendar
-        renderCalendar();
-        updateTodaysEvents();
+// API simulation for accepting appointments
+function acceptAppointment(appointmentData) {
+    const formData = new FormData();
+    formData.append('title', appointmentData.patientName);
+    formData.append('event_date', appointmentData.date);
+    formData.append('event_time', appointmentData.time);
+    formData.append('priority', 'normal');
+    formData.append('description', appointmentData.reason || 'Patient appointment');
+    
+    fetch('/MindHeaven/counselor/createEvent', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadMonthEvents();
+            updateTodaysEvents();
+            showNotification(`Appointment with ${appointmentData.patientName} has been scheduled!`, 'success');
+        } else {
+            showNotification(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error accepting appointment:', error);
+        showNotification('Error scheduling appointment', 'error');
+    });
+}
+
+// Make function available globally for appointment management integration
+window.acceptAppointment = acceptAppointment;
+
+// Test if saveEvent function is available
+console.log('saveEvent function available:', typeof saveEvent);
+window.saveEvent = saveEvent; // Make sure it's globally available
+
+// Initialize calendar
+loadMonthEvents();
+updateTodaysEvents();

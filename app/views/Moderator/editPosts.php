@@ -694,15 +694,17 @@
                     }
                 } else if (contentType === 'video') {
                     var videoFile = document.getElementById('videoFile').files.length;
-                    if (!videoFile) {
+                    var videoContent = document.getElementById('videoDescription').value.trim();
+                    if (!videoFile && !videoContent) {
                         isValid = false;
-                        errorMessage = 'Please upload a video file.';
+                        errorMessage = 'Please provide video file or description.';
                     }
                 } else if (contentType === 'audio') {
                     var audioFile = document.getElementById('audioFile').files.length;
-                    if (!audioFile) {
+                    var audioContent = document.getElementById('audioDescription').value.trim();
+                    if (!audioFile && !audioContent) {
                         isValid = false;
-                        errorMessage = 'Please upload an audio file.';
+                        errorMessage = 'Please provide audio file or description.';
                     }
                 }
             }

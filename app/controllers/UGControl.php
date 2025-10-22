@@ -46,17 +46,26 @@ class UGControl{
             // Get resource statistics
             $stats = $resourceHub->getStats();
             
+            // Add last updated timestamp for debugging
+            $lastUpdated = date('Y-m-d H:i:s');
+            
             view('undergrad/resources', [
                 'resources' => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
-                'stats' => $stats
+                'stats' => $stats,
+                'lastUpdated' => $lastUpdated
             ]);
         } catch (Exception $e) {
+            // Log the error for debugging
+            error_log("ResourceHub Error: " . $e->getMessage());
+            
             // Fallback to static view if database fails
             view('undergrad/resources', [
                 'resources' => [],
                 'resourcesByCategory' => [],
-                'stats' => ['total_resources' => 0, 'published' => 0]
+                'stats' => ['total_resources' => 0, 'published' => 0],
+                'error' => 'Unable to load resources. Please try again later.',
+                'lastUpdated' => date('Y-m-d H:i:s')
             ]);
         }
     }

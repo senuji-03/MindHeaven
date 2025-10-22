@@ -123,6 +123,27 @@
             font-weight: 600;
         }
 
+        .sidebar-item.logout-item {
+            margin-top: auto;
+            border-top: 1px solid #e2e8f0;
+            background: #fef2f2;
+        }
+
+        .sidebar-item.logout-item:hover {
+            background: #fee2e2;
+            border-left-color: #dc2626;
+            color: #dc2626;
+        }
+
+        .sidebar-item.logout-item a {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .sidebar-item.logout-item:hover a {
+            color: #b91c1c;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;

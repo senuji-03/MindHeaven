@@ -10,6 +10,18 @@ class Router {
         $this->addRoute('POST', $uri, $action);
     }
 
+    public function delete($uri, $action) {
+        $this->addRoute('DELETE', $uri, $action);
+    }
+
+    public function put($uri, $action) {
+        $this->addRoute('PUT', $uri, $action);
+    }
+
+    public function patch($uri, $action) {
+        $this->addRoute('PATCH', $uri, $action);
+    }
+
     private function addRoute($method, $uri, $action) {
         $this->routes[] = [
             'method' => $method,
@@ -31,8 +43,29 @@ class Router {
         $requestedUri = trim($requestedUri, '/');
       
         foreach ($this->routes as $route) {
-            if ($route['method'] === $method && $route['uri'] === $requestedUri) {
-                return $this->runAction($route['action']);
+            if ($route['method'] === $method) {
+                // Check for exact match first
+                if ($route['uri'] === $requestedUri) {
+                    return $this->runAction($route['action']);
+                }
+                
+                // Check for parameterized routes
+                if (strpos($route['uri'], '{') !== false) {
+                    $pattern = preg_replace('/\{[^}]+\}/', '([^/]+)', $route['uri']);
+                    if (preg_match('#^' . $pattern . '$#', $requestedUri, $matches)) {
+                        // Extract parameters and add them to $_GET
+                        $paramNames = [];
+                        preg_match_all('/\{([^}]+)\}/', $route['uri'], $paramNames);
+                        
+                        for ($i = 1; $i < count($matches); $i++) {
+                            if (isset($paramNames[1][$i-1])) {
+                                $_GET[$paramNames[1][$i-1]] = $matches[$i];
+                            }
+                        }
+                        
+                        return $this->runAction($route['action']);
+                    }
+                }
             }
         }
 

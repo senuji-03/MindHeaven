@@ -363,7 +363,7 @@
 
                 <div class="form-group">
                     <label for="specialization">Mental Health Specialization *</label>
-                    <select id="specialization" name="specialization" required>
+                    <select id="specialization" name="specialization">
                         <option value="">Select your specialization...</option>
                         <option value="Clinical Psychology" <?= ($form_data['specialization'] ?? '') === 'Clinical Psychology' ? 'selected' : '' ?>>Clinical Psychology</option>
                         <option value="Counseling Psychology" <?= ($form_data['specialization'] ?? '') === 'Counseling Psychology' ? 'selected' : '' ?>>Counseling Psychology</option>

@@ -48,7 +48,15 @@ class LoginControl {
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
                 
-                $this->redirectToDashboard($user['role']);
+                // Special handling for University Representatives
+                // Check if this is a University Representative by username or other criteria
+                if (stripos($user['username'], 'university') !== false || 
+                    stripos($user['username'], 'rep') !== false ||
+                    stripos($user['username'], 'representative') !== false) {
+                    $_SESSION['role'] = 'university_rep';
+                }
+                
+                $this->redirectToDashboard($_SESSION['role']);
             } else {
                 $this->view('layouts/login', ['error' => 'Invalid username or password']);
             }
@@ -58,6 +66,17 @@ class LoginControl {
     }
     
     public function forgotPassword() {
+        // If user is already logged in, redirect to their dashboard
+        if (isset($_SESSION['user_id'])) {
+            $this->redirectToDashboard($_SESSION['role']);
+            return;
+        }
+        
+        $data = [];
+        $this->view('layouts/forgot-password', $data);
+    }
+    
+    public function processForgotPassword() {
         // If user is already logged in, redirect to their dashboard
         if (isset($_SESSION['user_id'])) {
             $this->redirectToDashboard($_SESSION['role']);
@@ -208,16 +227,22 @@ class LoginControl {
     }
     
     private function redirectToDashboard($role) {
+        // Debug: Log the role being processed
+        error_log("LoginControl: Redirecting user with role: " . $role);
+        
         $dashboardUrls = [
             'admin' => BASE_URL . '/admin',
             'call_responder' => BASE_URL . '/CallResponder',
             'counselor' => BASE_URL . '/counselor',
             'donor' => BASE_URL . '/DonationForm',
             'moderator' => BASE_URL . '/ModeratorDashboard',
-            'undergrad' => BASE_URL . '/ug'
+            'undergrad' => BASE_URL . '/ug',
+            'university_rep' => BASE_URL . '/UniversityRepresentative/dashboard',
+            'university_representative' => BASE_URL . '/UniversityRepresentative/dashboard'
         ];
         
         $url = $dashboardUrls[$role] ?? BASE_URL . '/ug';
+        error_log("LoginControl: Redirecting to URL: " . $url);
         header('Location: ' . $url);
         exit;
     }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Calendar</title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\calender.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/calender.css">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -34,14 +34,15 @@
             <ul class="sidebar-menu">
                 <!-- <li class="sidebar-item">📊 Dashboard</li>
                 <li class="sidebar-item active">📅 Calendar</li> -->
-                <li class="sidebar-item" ><a href="Cdashboard.php">📊 Dashboard</a></li>
+                <li class="sidebar-item" ><a href="dashboard">📊 Dashboard</a></li>
                 <li class="sidebar-item active"><a href="#" style="color: #2563eb;">📅 Calendar</a></li>
-                <li class="sidebar-item"><a href="appointmentmgt.php">🗓️ Appointment Management</a></li>
-                <li class="sidebar-item"><a href="sessionHistory.php">📋 Session History</a></li>
-                <li class="sidebar-item">💭 Forum</li>
-                <li class="sidebar-item">📚 Resource Hub</li>
-                <li class="sidebar-item"><a href="counselor_profile.php">👤 Profile</a></li>
+                <li class="sidebar-item"><a href="appointmentmgt">🗓️ Appointment Management</a></li>
+                <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
+                <li class="sidebar-item"><a href="forum">💭 Forum</a></li>
+                <li class="sidebar-item"><a href="resources">📚 Resource Hub</a></li>
+                <li class="sidebar-item"><a href="counselor_profile">👤 Profile</a></li>
                 <li class="sidebar-item">⚙️ Settings</li>
+                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
 
@@ -53,27 +54,24 @@
                     <h2 class="section-title">📅 Today's Schedule</h2>
                 </div>
                 <div id="todaysEventsList">
-                    <div class="event-item">
-                        <div class="event-details">
-                            <h4>Sarah Johnson</h4>
-                            <p>Anxiety and stress management session</p>
+                    <?php if (!empty($todaysEvents)): ?>
+                        <?php foreach ($todaysEvents as $event): ?>
+                            <div class="event-item">
+                                <div class="event-details">
+                                    <h4><?php echo htmlspecialchars($event->title); ?></h4>
+                                    <p><?php echo htmlspecialchars($event->description); ?></p>
+                                </div>
+                                <div class="event-time"><?php echo date('g:i A', strtotime($event->event_time)); ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="event-item">
+                            <div class="event-details">
+                                <h4>No events scheduled</h4>
+                                <p>You have a free day today!</p>
+                            </div>
                         </div>
-                        <div class="event-time">10:30 AM</div>
-                    </div>
-                    <div class="event-item">
-                        <div class="event-details">
-                            <h4>Michael Chen</h4>
-                            <p>Academic pressure and burnout session</p>
-                        </div>
-                        <div class="event-time">2:00 PM</div>
-                    </div>
-                    <div class="event-item">
-                        <div class="event-details">
-                            <h4>Team Meeting</h4>
-                            <p>Weekly counseling team sync</p>
-                        </div>
-                        <div class="event-time">4:30 PM</div>
-                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -134,25 +132,12 @@
                             <input type="time" id="eventTime" class="form-input" required>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label" for="eventType">Event Type</label>
-                            <select id="eventType" class="form-input" required>
-                                <option value="">Select Type</option>
-                                <option value="appointment">Patient Appointment</option>
-                                <option value="meeting">Team Meeting</option>
-                                <option value="break">Break/Personal Time</option>
-                                <option value="training">Training/Workshop</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="eventPriority">Priority</label>
-                            <select id="eventPriority" class="form-input" required>
-                                <option value="normal">Normal</option>
-                                <option value="urgent">Urgent</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label" for="eventPriority">Priority</label>
+                        <select id="eventPriority" class="form-input" required>
+                            <option value="normal">Normal</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="eventDescription">Description</label>
@@ -163,7 +148,7 @@
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button>
                 <button class="btn-danger" id="deleteEventBtn" onclick="deleteEvent()" style="display: none;">Delete</button>
-                <button class="btn-primary" onclick="saveEvent()">Save Event</button>
+                <button class="btn-primary" onclick="saveEvent()" id="saveEventBtn">Save Event</button>
             </div>
         </div>
     </div>
@@ -187,6 +172,35 @@
         </div>
     </div>
 
-    <script src="\MindHeaven\public\js\counselor\calender.js"></script>
+    <script>
+        // Pass PHP data to JavaScript
+        const BASE = '<?php echo BASE_URL; ?>';
+        const counselorId = <?php echo (int)$counselorId; ?>;
+        const eventsFromPHP = <?php echo $eventsForJS ?: '{}'; ?>;
+        
+        console.log('BASE URL:', BASE);
+        console.log('Counselor ID:', counselorId);
+        
+        
+        // Add event listener as backup
+        document.addEventListener('DOMContentLoaded', function() {
+            const saveBtn = document.getElementById('saveEventBtn');
+            const form = document.getElementById('eventForm');
+            
+            console.log('Save button found:', saveBtn);
+            console.log('Form found:', form);
+            
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function(e) {
+                    console.log('Save button clicked via event listener');
+                    e.preventDefault();
+                    saveEvent();
+                });
+            } else {
+                console.error('Save button not found!');
+            }
+        });
+    </script>
+    <script src="<?php echo BASE_URL; ?>/js/counselor/calender.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

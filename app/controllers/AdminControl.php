@@ -11,7 +11,7 @@ class AdminControl {
             
             // Get all users with their details (for general user management)
             $stmt = $pdo->prepare("
-                SELECT u.*, 
+                SELECT u.id, u.username, u.full_name, u.role, 
                        CASE 
                            WHEN u.role = 'counselor' THEN c.full_name
                            WHEN u.role = 'undergrad' THEN us.full_name
@@ -39,8 +39,8 @@ class AdminControl {
                     CASE 
                         WHEN u.role = 'counselor' THEN c.created_at
                         WHEN u.role = 'undergrad' THEN us.created_at
-                        ELSE NULL
-                    END DESC, u.id DESC
+                        ELSE u.id
+                    END DESC
             ");
             $stmt->execute();
             $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -117,7 +117,7 @@ class AdminControl {
         
         if (empty($role)) {
             $errors[] = 'Role is required';
-        } elseif (!in_array($role, ['admin', 'call_responder', 'counselor', 'donor', 'moderator', 'undergrad'])) {
+        } elseif (!in_array($role, ['admin', 'call_responder', 'counselor', 'donor', 'moderator', 'undergrad', 'university_rep'])) {
             $errors[] = 'Invalid role selected';
         }
         
@@ -203,14 +203,32 @@ class AdminControl {
                     exit;
                 }
                 
-                $stmt = $pdo->prepare("INSERT INTO counselors (user_id, full_name, email, phone_number, license_number, specialization, experience_years, bio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$userId, $fullName, $email, $phoneNumber, $licenseNumber, $specialization, $yearsExperience, $bio]);
+                // Try to insert with all fields first, fallback to basic fields if some columns don't exist
+                try {
+                    $stmt = $pdo->prepare("INSERT INTO counselors (user_id, full_name, email, phone_number, license_number, specialization, experience_years, bio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$userId, $fullName, $email, $phoneNumber, $licenseNumber, $specialization, $yearsExperience, $bio]);
+                } catch (PDOException $e) {
+                    // If the full insert fails, try with just the basic fields
+                    if (strpos($e->getMessage(), 'Unknown column') !== false) {
+                        $stmt = $pdo->prepare("INSERT INTO counselors (user_id, full_name, email, phone_number, license_number) VALUES (?, ?, ?, ?, ?)");
+                        $stmt->execute([$userId, $fullName, $email, $phoneNumber, $licenseNumber]);
+                    } else {
+                        throw $e; // Re-throw if it's not a column issue
+                    }
+                }
             } elseif ($role === 'undergrad') {
-                $university = trim($_POST['university'] ?? '');
-                $yearOfStudy = trim($_POST['year_of_study'] ?? '');
+                $stmt = $pdo->prepare("INSERT INTO undergraduate_students (user_id, full_name, email, phone_number) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$userId, $fullName, $email, $phoneNumber]);
+            } elseif ($role === 'university_rep') {
+                // For now, just create the user without additional data until university_representatives table is created
+                // TODO: Add university_representatives table and uncomment the following lines
+                /*
+                $universityName = trim($_POST['university_name'] ?? '');
+                $position = trim($_POST['position'] ?? '');
                 
-                $stmt = $pdo->prepare("INSERT INTO undergraduate_students (user_id, full_name, email, phone_number, university, year_of_study) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$userId, $fullName, $email, $phoneNumber, $university, $yearOfStudy]);
+                $stmt = $pdo->prepare("INSERT INTO university_representatives (user_id, full_name, email, phone_number, university_name, position) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$userId, $fullName, $email, $phoneNumber, $universityName, $position]);
+                */
             }
             
             $pdo->commit();
@@ -305,14 +323,32 @@ class AdminControl {
                     exit;
                 }
                 
-                $stmt = $pdo->prepare("UPDATE counselors SET full_name = ?, email = ?, phone_number = ?, license_number = ?, specialization = ?, experience_years = ?, bio = ? WHERE user_id = ?");
-                $stmt->execute([$fullName, $email, $phoneNumber, $licenseNumber, $specialization, $yearsExperience, $bio, $userId]);
+                // Try to update with all fields first, fallback to basic fields if some columns don't exist
+                try {
+                    $stmt = $pdo->prepare("UPDATE counselors SET full_name = ?, email = ?, phone_number = ?, license_number = ?, specialization = ?, experience_years = ?, bio = ? WHERE user_id = ?");
+                    $stmt->execute([$fullName, $email, $phoneNumber, $licenseNumber, $specialization, $yearsExperience, $bio, $userId]);
+                } catch (PDOException $e) {
+                    // If the full update fails, try with just the basic fields
+                    if (strpos($e->getMessage(), 'Unknown column') !== false) {
+                        $stmt = $pdo->prepare("UPDATE counselors SET full_name = ?, email = ?, phone_number = ?, license_number = ? WHERE user_id = ?");
+                        $stmt->execute([$fullName, $email, $phoneNumber, $licenseNumber, $userId]);
+                    } else {
+                        throw $e; // Re-throw if it's not a column issue
+                    }
+                }
             } elseif ($role === 'undergrad') {
-                $university = trim($_POST['university'] ?? '');
-                $yearOfStudy = trim($_POST['year_of_study'] ?? '');
+                $stmt = $pdo->prepare("UPDATE undergraduate_students SET full_name = ?, email = ?, phone_number = ? WHERE user_id = ?");
+                $stmt->execute([$fullName, $email, $phoneNumber, $userId]);
+            } elseif ($role === 'university_rep') {
+                // For now, just update the user without additional data until university_representatives table is created
+                // TODO: Add university_representatives table and uncomment the following lines
+                /*
+                $universityName = trim($_POST['university_name'] ?? '');
+                $position = trim($_POST['position'] ?? '');
                 
-                $stmt = $pdo->prepare("UPDATE undergraduate_students SET full_name = ?, email = ?, phone_number = ?, university = ?, year_of_study = ? WHERE user_id = ?");
-                $stmt->execute([$fullName, $email, $phoneNumber, $university, $yearOfStudy, $userId]);
+                $stmt = $pdo->prepare("UPDATE university_representatives SET full_name = ?, email = ?, phone_number = ?, university_name = ?, position = ? WHERE user_id = ?");
+                $stmt->execute([$fullName, $email, $phoneNumber, $universityName, $position, $userId]);
+                */
             }
             
             $pdo->commit();

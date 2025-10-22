@@ -340,6 +340,7 @@
                         <option value="moderator">Moderator</option>
                             <option value="call_responder">Call Responder</option>
                             <option value="donor">Donor</option>
+                            <option value="university_rep">University Representative</option>
                     </select>
                     </div>
                 </div>
@@ -415,8 +416,6 @@
                                 <th>Full Name</th>
                             <th>Email</th>
                                 <th>Phone</th>
-                                <th>University</th>
-                                <th>Year</th>
                                 <th>Created</th>
                             <th>Actions</th>
                         </tr>
@@ -430,8 +429,6 @@
                                         <td><?= htmlspecialchars($student['full_name']) ?></td>
                                         <td><?= htmlspecialchars($student['email']) ?></td>
                                         <td><?= htmlspecialchars($student['phone_number']) ?></td>
-                                        <td><?= htmlspecialchars($student['university'] ?? 'N/A') ?></td>
-                                        <td><?= htmlspecialchars($student['year_of_study'] ?? 'N/A') ?></td>
                                         <td><?= date('Y-m-d', strtotime($student['created_at'])) ?></td>
                                         <td>
                                             <button class="btn-icon btn-edit" onclick="openEditUndergradModal(<?= htmlspecialchars(json_encode($student)) ?>)">
@@ -553,6 +550,7 @@
                         <option value="moderator">Moderator</option>
                         <option value="call_responder">Call Responder</option>
                         <option value="donor">Donor</option>
+                        <option value="university_rep">University Representative</option>
                     </select>
                 </div>
 
@@ -613,6 +611,7 @@
                         <option value="moderator">Moderator</option>
                         <option value="call_responder">Call Responder</option>
                         <option value="donor">Donor</option>
+                        <option value="university_rep">University Representative</option>
                     </select>
                 </div>
 
@@ -659,20 +658,14 @@
                     <input type="tel" name="phone_number" required class="form-input" placeholder="0718580160">
                 </div>
 
-                <div class="form-row">
-                    <label>University</label>
-                    <input type="text" name="university" class="form-input" placeholder="Enter university name">
+                <div class="form-row" id="university_name_field" style="display: none;">
+                    <label>University Name</label>
+                    <input type="text" name="university_name" class="form-input" placeholder="Enter university name">
                 </div>
 
-                <div class="form-row">
-                    <label>Year of Study</label>
-                    <select name="year_of_study" class="form-input">
-                        <option value="">Select year</option>
-                        <option value="1">1st Year</option>
-                        <option value="2">2nd Year</option>
-                        <option value="3">3rd Year</option>
-                        <option value="4">4th Year</option>
-                    </select>
+                <div class="form-row" id="position_field" style="display: none;">
+                    <label>Position</label>
+                    <input type="text" name="position" class="form-input" placeholder="Enter position/title">
                 </div>
 
                 <div class="form-row">
@@ -804,21 +797,6 @@
                     <input type="tel" name="phone_number" id="edit_undergrad_phone_number" required class="form-input">
                 </div>
 
-                <div class="form-row">
-                    <label>University</label>
-                    <input type="text" name="university" id="edit_undergrad_university" class="form-input">
-                </div>
-
-                <div class="form-row">
-                    <label>Year of Study</label>
-                    <select name="year_of_study" id="edit_undergrad_year_of_study" class="form-input">
-                        <option value="">Select year</option>
-                        <option value="1">1st Year</option>
-                        <option value="2">2nd Year</option>
-                        <option value="3">3rd Year</option>
-                        <option value="4">4th Year</option>
-                    </select>
-                </div>
 
                 <div class="form-row">
                     <label>New Password (leave blank to keep current)</label>
@@ -990,8 +968,6 @@
             document.getElementById('edit_undergrad_full_name').value = student.full_name;
             document.getElementById('edit_undergrad_email').value = student.email;
             document.getElementById('edit_undergrad_phone_number').value = student.phone_number;
-            document.getElementById('edit_undergrad_university').value = student.university || '';
-            document.getElementById('edit_undergrad_year_of_study').value = student.year_of_study || '';
             document.getElementById('editUndergradModal').classList.add('active');
         }
 
@@ -1096,6 +1072,25 @@
                     alert('Passwords do not match!');
                 }
             });
+        });
+
+        // Show/hide University Representative fields based on role selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.querySelector('select[name="role"]');
+            const universityNameField = document.getElementById('university_name_field');
+            const positionField = document.getElementById('position_field');
+            
+            if (roleSelect) {
+                roleSelect.addEventListener('change', function() {
+                    if (this.value === 'university_rep') {
+                        universityNameField.style.display = 'block';
+                        positionField.style.display = 'block';
+                    } else {
+                        universityNameField.style.display = 'none';
+                        positionField.style.display = 'none';
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -1,8 +1,8 @@
 <?php
 $TITLE = 'MindHeaven — Habits';
 $CURRENT_PAGE = 'habits';
-$PAGE_CSS = ['/MindHeaven/public/css/undergrad/crisis.css'];
-$PAGE_JS  = ['/MindHeaven/public/js/undergrad/crisis.js'];
+$PAGE_CSS = ['/MindHeaven/public/css/undergrad/habits.css'];
+$PAGE_JS  = ['/MindHeaven/public/js/undergrad/habits.js'];
 
 require BASE_PATH.'/app/views/layouts/header.php';
 ?>
@@ -175,6 +175,16 @@ require BASE_PATH.'/app/views/layouts/header.php';
 
 .habit-item:hover {
   background: #f9fafb;
+}
+
+.habit-item.completed {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.habit-item.completed .habit-name {
+  opacity: 0.7;
+  text-decoration: line-through;
 }
 
 .habit-checkbox {
@@ -526,10 +536,31 @@ require BASE_PATH.'/app/views/layouts/header.php';
   z-index: 1000;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .modal.show {
   display: flex;
+  opacity: 1;
+}
+
+.modal[style*="flex"] {
+  display: flex !important;
+  opacity: 1;
+}
+
+/* Force modal visibility for debugging */
+#habitModal.show {
+  display: flex !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+#habitModal[style*="flex"] {
+  display: flex !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
 }
 
 .modal-content {
@@ -624,6 +655,281 @@ require BASE_PATH.'/app/views/layouts/header.php';
   justify-content: flex-end;
 }
 
+/* Enhanced Calendar Styles */
+.calendar-container {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.calendar-day-header {
+  padding: 1rem 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #e5e7eb;
+}
+
+.calendar-day {
+  background: white;
+  min-height: 100px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.calendar-day:hover {
+  background: #f8fafc;
+}
+
+.calendar-day.today {
+  background: #eff6ff;
+  border: 2px solid #3b82f6;
+}
+
+.calendar-day.selected {
+  background: #dbeafe;
+  border: 2px solid #1d4ed8;
+}
+
+.calendar-day-number {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.calendar-day-habits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+  width: 100%;
+}
+
+.habit-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 1px;
+}
+
+.habit-indicator.completed {
+  background: #10b981;
+}
+
+.habit-indicator.partial {
+  background: #f59e0b;
+}
+
+.habit-indicator.missed {
+  background: #ef4444;
+}
+
+.habit-indicator.future {
+  background: #d1d5db;
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-color.completed {
+  background: #10b981;
+}
+
+.legend-color.partial {
+  background: #f59e0b;
+}
+
+.legend-color.missed {
+  background: #ef4444;
+}
+
+.legend-color.future {
+  background: #d1d5db;
+}
+
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.calendar-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.calendar-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.calendar-btn:active {
+  background: #e5e7eb;
+}
+
+.calendar-month {
+  font-weight: 600;
+  color: #1f2937;
+  min-width: 150px;
+  text-align: center;
+}
+
+/* Day Detail Modal */
+.day-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.day-detail-content {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.day-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.day-detail-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.day-habits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.day-habit-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.day-habit-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.day-habit-name {
+  flex: 1;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.day-habit-status {
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+.day-habit-status.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.day-habit-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* No Habits State */
+.no-habits {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #6b7280;
+}
+
+.no-habits-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.no-habits h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.5rem 0;
+}
+
+.no-habits p {
+  margin: 0 0 2rem 0;
+  font-size: 1rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .habits-main {
@@ -670,6 +976,21 @@ require BASE_PATH.'/app/views/layouts/header.php';
   
   .calendar-day {
     font-size: 0.8rem;
+    min-height: 80px;
+  }
+  
+  .calendar-legend {
+    gap: 1rem;
+  }
+  
+  .calendar-controls {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .calendar-month {
+    min-width: 120px;
+    font-size: 0.9rem;
   }
 }
 </style>
@@ -697,7 +1018,11 @@ require BASE_PATH.'/app/views/layouts/header.php';
         </div>
       </div>
       <div class="hero-actions">
-        <button id="addHabitBtn" class="btn btn-primary">
+        <button id="testModalBtn" class="btn btn-primary" onclick="testModal();" style="background: #ef4444; margin-right: 1rem;">
+          <span class="btn-icon">🧪</span>
+          Test Modal
+        </button>
+        <button id="addHabitBtn" class="btn btn-primary" onclick="showAddHabitModal();">
           <span class="btn-icon">➕</span>
           Add New Habit
         </button>
@@ -715,130 +1040,58 @@ require BASE_PATH.'/app/views/layouts/header.php';
           <div class="progress-fill" id="todayProgress" style="width: 60%"></div>
         </div>
       </div>
+
     </div>
     
     <div class="habits-list" id="todayHabitsList">
-      <div class="habit-item">
-        <div class="habit-checkbox">
-          <input type="checkbox" id="habit-1" class="habit-check" data-habit="Drink 8 glasses of water">
-          <label for="habit-1" class="habit-label">
-            <span class="checkmark"></span>
-          </label>
-        </div>
-        <div class="habit-content">
-          <div class="habit-name">Drink 8 glasses of water</div>
-          <div class="habit-meta">
-            <span class="habit-category">Health</span>
-            <span class="habit-streak">🔥 7 days</span>
-          </div>
-        </div>
-        <div class="habit-actions">
-          <button class="habit-btn" title="Edit habit">
-            <span>✏️</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="habit-item">
-        <div class="habit-checkbox">
-          <input type="checkbox" id="habit-2" class="habit-check" data-habit="Exercise for 30 minutes">
-          <label for="habit-2" class="habit-label">
-            <span class="checkmark"></span>
-          </label>
-        </div>
-        <div class="habit-content">
-          <div class="habit-name">Exercise for 30 minutes</div>
-          <div class="habit-meta">
-            <span class="habit-category">Fitness</span>
-            <span class="habit-streak">🔥 5 days</span>
-          </div>
-        </div>
-        <div class="habit-actions">
-          <button class="habit-btn" title="Edit habit">
-            <span>✏️</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="habit-item">
-        <div class="habit-checkbox">
-          <input type="checkbox" id="habit-3" class="habit-check" data-habit="Sleep 7+ hours">
-          <label for="habit-3" class="habit-label">
-            <span class="checkmark"></span>
-          </label>
-        </div>
-        <div class="habit-content">
-          <div class="habit-name">Sleep 7+ hours</div>
-          <div class="habit-meta">
-            <span class="habit-category">Wellness</span>
-            <span class="habit-streak">🔥 12 days</span>
-          </div>
-        </div>
-        <div class="habit-actions">
-          <button class="habit-btn" title="Edit habit">
-            <span>✏️</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="habit-item">
-        <div class="habit-checkbox">
-          <input type="checkbox" id="habit-4" class="habit-check" data-habit="Read 20 minutes">
-          <label for="habit-4" class="habit-label">
-            <span class="checkmark"></span>
-          </label>
-        </div>
-        <div class="habit-content">
-          <div class="habit-name">Read 20 minutes</div>
-          <div class="habit-meta">
-            <span class="habit-category">Learning</span>
-            <span class="habit-streak">🔥 3 days</span>
-          </div>
-        </div>
-        <div class="habit-actions">
-          <button class="habit-btn" title="Edit habit">
-            <span>✏️</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="habit-item">
-        <div class="habit-checkbox">
-          <input type="checkbox" id="habit-5" class="habit-check" data-habit="Meditate 10 minutes">
-          <label for="habit-5" class="habit-label">
-            <span class="checkmark"></span>
-          </label>
-        </div>
-        <div class="habit-content">
-          <div class="habit-name">Meditate 10 minutes</div>
-          <div class="habit-meta">
-            <span class="habit-category">Mindfulness</span>
-            <span class="habit-streak">🔥 1 day</span>
-          </div>
-        </div>
-        <div class="habit-actions">
-          <button class="habit-btn" title="Edit habit">
-            <span>✏️</span>
-          </button>
-        </div>
-      </div>
+      <!-- Habits will be loaded dynamically here -->
     </div>
   </section>
 
   <!-- Habit Calendar -->
   <section class="habit-calendar">
     <div class="section-header">
-      <h2 class="section-title">Monthly Progress</h2>
+      <h2 class="section-title">📅 Monthly Progress</h2>
       <div class="calendar-controls">
-        <button class="calendar-btn" id="prevMonth">←</button>
+        <button class="calendar-btn" id="prevMonth" onclick="changeMonth(-1)">←</button>
         <span class="calendar-month" id="currentMonth">December 2024</span>
-        <button class="calendar-btn" id="nextMonth">→</button>
+        <button class="calendar-btn" id="nextMonth" onclick="changeMonth(1)">→</button>
+        <button class="calendar-btn" id="todayBtn" onclick="goToToday()">Today</button>
       </div>
     </div>
     
     <div class="calendar-container">
+      <div class="calendar-header">
+        <div class="calendar-day-header">Sun</div>
+        <div class="calendar-day-header">Mon</div>
+        <div class="calendar-day-header">Tue</div>
+        <div class="calendar-day-header">Wed</div>
+        <div class="calendar-day-header">Thu</div>
+        <div class="calendar-day-header">Fri</div>
+        <div class="calendar-day-header">Sat</div>
+      </div>
       <div class="calendar-grid" id="habitCalendar">
         <!-- Calendar will be generated by JavaScript -->
+      </div>
+    </div>
+    
+    <!-- Calendar Legend -->
+    <div class="calendar-legend">
+      <div class="legend-item">
+        <div class="legend-color completed"></div>
+        <span>Completed</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color partial"></div>
+        <span>Partial</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color missed"></div>
+        <span>Missed</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color future"></div>
+        <span>Future</span>
       </div>
     </div>
   </section>
@@ -985,58 +1238,414 @@ require BASE_PATH.'/app/views/layouts/header.php';
   </section>
 </main>
 
-<!-- Add Habit Modal -->
-<div id="addHabitModal" class="modal">
+<!-- Add/Edit Habit Modal -->
+<div class="modal" id="habitModal">
   <div class="modal-content">
     <div class="modal-header">
       <h3 class="modal-title">Add New Habit</h3>
-      <button class="modal-close" id="closeAddHabitModal">&times;</button>
+      <button class="modal-close" onclick="hideAddHabitModal()">×</button>
     </div>
     <div class="modal-body">
-      <form id="addHabitForm" class="habit-form">
+      <form id="habitForm">
+        <input type="hidden" id="habitId" name="habitId">
+        
         <div class="form-group">
-          <label for="habitName" class="form-label">Habit Name</label>
-          <input type="text" id="habitName" class="form-input" placeholder="e.g., Drink 8 glasses of water" required>
+          <label for="habitName" class="form-label">Habit Name *</label>
+          <input type="text" id="habitName" name="name" class="form-input" placeholder="e.g., Drink 8 glasses of water" required>
         </div>
         
         <div class="form-group">
-          <label for="habitCategory" class="form-label">Category</label>
-          <select id="habitCategory" class="form-select" required>
+          <label for="habitDescription" class="form-label">Description</label>
+          <textarea id="habitDescription" name="description" class="form-textarea" placeholder="Optional description of your habit..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="habitCategory" class="form-label">Category *</label>
+          <select id="habitCategory" name="category" class="form-select" required>
             <option value="">Select a category</option>
-            <option value="Health">Health</option>
-            <option value="Fitness">Fitness</option>
-            <option value="Learning">Learning</option>
-            <option value="Mindfulness">Mindfulness</option>
-            <option value="Wellness">Wellness</option>
-            <option value="Productivity">Productivity</option>
+            <option value="health">Health</option>
+            <option value="fitness">Fitness</option>
+            <option value="wellness">Wellness</option>
+            <option value="learning">Learning</option>
+            <option value="productivity">Productivity</option>
+            <option value="mindfulness">Mindfulness</option>
+            <option value="social">Social</option>
+            <option value="other">Other</option>
           </select>
         </div>
         
         <div class="form-group">
-          <label for="habitFrequency" class="form-label">Frequency</label>
-          <select id="habitFrequency" class="form-select" required>
+          <label for="habitFrequency" class="form-label">Frequency *</label>
+          <select id="habitFrequency" name="frequency" class="form-select" required>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="custom">Custom</option>
           </select>
         </div>
         
-        <div class="form-group">
-          <label for="habitReminder" class="form-label">Reminder Time (optional)</label>
-          <input type="time" id="habitReminder" class="form-input">
+        <div class="form-group" id="targetDaysGroup" style="display: none;">
+          <label for="habitTargetDays" class="form-label">Target Days per Week</label>
+          <input type="number" id="habitTargetDays" name="target_days" class="form-input" min="1" max="7" value="1">
         </div>
         
         <div class="form-group">
-          <label for="habitNotes" class="form-label">Notes (optional)</label>
-          <textarea id="habitNotes" class="form-textarea" placeholder="Any additional notes about this habit..."></textarea>
+          <label for="habitColor" class="form-label">Color</label>
+          <input type="color" id="habitColor" name="color" class="form-input" value="#10b981">
+        </div>
+        
+        <div class="form-group">
+          <label for="habitIcon" class="form-label">Icon</label>
+          <input type="text" id="habitIcon" name="icon" class="form-input" placeholder="🎯" value="🎯">
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" id="cancelAddHabit">Cancel</button>
-      <button class="btn btn-primary" id="saveHabit">Add Habit</button>
+      <button type="button" class="btn btn-outline modal-cancel" onclick="hideAddHabitModal()">Cancel</button>
+      <button type="submit" form="habitForm" class="btn btn-primary" onclick="handleSaveHabit(event)">
+        <span class="btn-icon">💾</span>
+        <span class="btn-text">Save Habit</span>
+      </button>
     </div>
   </div>
 </div>
+
+<!-- Day Detail Modal -->
+<div class="day-detail-modal" id="dayDetailModal">
+  <div class="day-detail-content">
+    <div class="day-detail-header">
+      <h3 class="day-detail-title" id="dayDetailTitle">Habits for December 15, 2024</h3>
+      <button class="modal-close" onclick="hideDayDetailModal()">×</button>
+    </div>
+    <div class="day-habits-list" id="dayHabitsList">
+      <!-- Day habits will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<script>
+// Set BASE_URL for JavaScript
+window.BASE_URL = '<?= BASE_URL ?>';
+
+
+function hideAddHabitModal() {
+    const modal = document.getElementById('habitModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.style.opacity = '0';
+        modal.classList.remove('show');
+        modal.style.border = 'none';
+        modal.style.backgroundColor = '';
+        document.body.style.overflow = '';
+    }
+}
+
+function testModal() {
+    alert('Button clicked!');
+    console.log('testModal function called!');
+    alert('testModal function called!');
+    
+    const modal = document.getElementById('habitModal');
+    console.log('Modal element found:', modal);
+    
+    if (modal) {
+        console.log('Showing test modal...');
+        
+        // Force show the modal with all necessary styles
+        modal.style.cssText = `
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 9999 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0,0,0,0.5) !important;
+            align-items: center !important;
+            justify-content: center !important;
+        `;
+        
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        
+        // Ensure modal content is visible
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.cssText = `
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                background: white !important;
+                border-radius: 1rem !important;
+                max-width: 500px !important;
+                width: 90% !important;
+                max-height: 90vh !important;
+                overflow-y: auto !important;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+                position: relative !important;
+                z-index: 10000 !important;
+            `;
+            console.log('Test modal content made visible');
+        }
+        
+        console.log('Test modal should now be visible');
+        
+    } else {
+        console.error('Modal not found!');
+        alert('Error: Modal not found!');
+    }
+}
+
+function showAddHabitModal() {
+    console.log('showAddHabitModal function called');
+    
+    const modal = document.getElementById('habitModal');
+    console.log('Modal element found:', modal);
+    
+    if (modal) {
+        console.log('Showing modal...');
+        
+        // Force show the modal with all necessary styles
+        modal.style.cssText = `
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 9999 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0,0,0,0.5) !important;
+            align-items: center !important;
+            justify-content: center !important;
+        `;
+        
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        
+        // Ensure modal content is visible
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.cssText = `
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                background: white !important;
+                border-radius: 1rem !important;
+                max-width: 500px !important;
+                width: 90% !important;
+                max-height: 90vh !important;
+                overflow-y: auto !important;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+                position: relative !important;
+                z-index: 10000 !important;
+            `;
+            console.log('Modal content made visible');
+        }
+        
+        // Set up form for adding new habit
+        setupFormForNewHabit();
+        
+        console.log('Modal should now be visible');
+        
+    } else {
+        console.error('Modal not found!');
+        alert('Error: Modal not found!');
+    }
+}
+
+function setupFormForNewHabit() {
+    // Reset form
+    const form = document.getElementById('habitForm');
+    if (form) {
+        form.reset();
+    }
+    
+    // Clear habit ID (indicates new habit)
+    const habitIdField = document.getElementById('habitId');
+    if (habitIdField) {
+        habitIdField.value = '';
+    }
+    
+    // Update modal title
+    const modalTitle = document.querySelector('#habitModal .modal-title');
+    if (modalTitle) {
+        modalTitle.textContent = 'Add New Habit';
+    }
+    
+    // Update submit button text
+    const submitBtn = document.querySelector('#habitForm button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<span class="btn-icon">💾</span><span class="btn-text">Save Habit</span>';
+    }
+    
+    // Set default values
+    const colorField = document.getElementById('habitColor');
+    if (colorField) {
+        colorField.value = '#10b981';
+    }
+    
+    const iconField = document.getElementById('habitIcon');
+    if (iconField) {
+        iconField.value = '🎯';
+    }
+    
+    // Hide target days group initially
+    const targetDaysGroup = document.getElementById('targetDaysGroup');
+    if (targetDaysGroup) {
+        targetDaysGroup.style.display = 'none';
+    }
+    
+    // Focus on name field
+    setTimeout(() => {
+        const nameField = document.getElementById('habitName');
+        if (nameField) {
+            nameField.focus();
+        }
+    }, 100);
+}
+
+// Handle save habit button click
+function handleSaveHabit(event) {
+    event.preventDefault(); // Prevent default form submission
+    
+    // Get the form element
+    const form = document.getElementById('habitForm');
+    if (form) {
+        // Trigger the form submit event
+        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    } else {
+        console.error('Form not found!');
+        alert('Error: Form not found. Please try again.');
+    }
+}
+
+// Functions are now available globally
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up Test Modal button
+    const testModalBtn = document.getElementById('testModalBtn');
+    if (testModalBtn) {
+        testModalBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            testModal();
+        });
+    }
+    
+    // Set up Add New Habit button
+    const addHabitBtn = document.getElementById('addHabitBtn');
+    if (addHabitBtn) {
+        addHabitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showAddHabitModal();
+        });
+    }
+    
+    // Set up form submission
+    const habitForm = document.getElementById('habitForm');
+    if (habitForm) {
+        habitForm.addEventListener('submit', handleHabitFormSubmit);
+    }
+    
+    // Add direct click handler to submit button as backup
+    const submitBtn = document.querySelector('#habitForm button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            handleHabitFormSubmit(e);
+        });
+    }
+    
+    // Handle frequency change to show/hide target days
+    const frequencySelect = document.getElementById('habitFrequency');
+    const targetDaysGroup = document.getElementById('targetDaysGroup');
+    if (frequencySelect && targetDaysGroup) {
+        frequencySelect.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                targetDaysGroup.style.display = 'block';
+            } else {
+                targetDaysGroup.style.display = 'none';
+            }
+        });
+    }
+});
+
+// Handle habit form submission
+async function handleHabitFormSubmit(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Validate required fields
+    if (!data.name || !data.category || !data.frequency) {
+        alert('Please fill in all required fields (Name, Category, Frequency)');
+        return;
+    }
+    
+    // Handle custom frequency and target days
+    if (data.frequency === 'custom') {
+        if (!data.target_days || data.target_days < 1 || data.target_days > 7) {
+            alert('Please enter a valid number of target days (1-7) for custom frequency');
+            return;
+        }
+        data.target_days = parseInt(data.target_days);
+    } else {
+        data.target_days = 1;
+    }
+    
+    // Format data for database
+    const habitData = {
+        name: data.name.trim(),
+        description: data.description ? data.description.trim() : null,
+        category: data.category,
+        frequency: data.frequency,
+        target_days: data.target_days,
+        color: data.color || '#10b981',
+        icon: data.icon || '🎯'
+    };
+    
+    try {
+        const response = await fetch(window.BASE_URL + '/api/habits/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(habitData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to save habit');
+        }
+        
+        // Show success message
+        alert('✅ Habit saved successfully!\n\nYour habit has been added to the database.');
+        
+        // Hide modal
+        hideAddHabitModal();
+        
+        // Reload habits (if the page has that functionality)
+        if (typeof loadHabits === 'function') {
+            await loadHabits();
+        }
+        if (typeof renderHabits === 'function') {
+            renderHabits();
+        }
+        if (typeof updateStats === 'function') {
+            updateStats();
+        }
+        
+    } catch (error) {
+        console.error('Error saving habit:', error);
+        alert('❌ Failed to save habit!\n\nError: ' + error.message + '\n\nPlease try again or contact support if the problem persists.');
+    }
+}
+</script>
+<script src="<?= BASE_URL ?>/js/undergrad/habits.js"></script>
 
 <?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>

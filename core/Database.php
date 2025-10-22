@@ -21,7 +21,7 @@ class Database {
                 self::$pdo = new PDO($dsn, DB_USER, DB_PASS);
                 self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $e) {
-                die('DB Connection failed: ' . $e->getMessage());
+                throw new Exception('DB Connection failed: ' . $e->getMessage());
             }
         }
         return self::$pdo;
