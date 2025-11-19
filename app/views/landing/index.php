@@ -4,15 +4,15 @@ ob_start();
 ?>
 
 <!-- Hero Section -->
-<section class="hero-section">
+<section class="hero-section" style="margin-left: -10px; float: right; width: 100%;">
         <div class="container">
             <div class="hero-content">
-            <h1 class="hero-title">Your Mental Health Matters</h1>
-            <p class="hero-subtitle">
+            <h1 class="hero-title" style="text-align: left; margin-left: 15px;">Your Mental Health Matters</h1>
+            <p class="hero-subtitle" style="text-align: leftt; margin-left: 15px;">
                 MindHeaven provides comprehensive mental health support, resources, and community for undergraduate students. 
                 Take control of your mental wellness journey with us.
             </p>
-            <div class="hero-buttons">
+            <div class="hero-buttons" style="text-align: right; margin-left: 15px;">
                 <a href="<?php echo BASE_URL; ?>/signup" class="btn btn-primary hero-btn">
                     <i class="fas fa-user-plus"></i>
                     Get Started Today
@@ -25,6 +25,7 @@ ob_start();
         </div>
     </div>
 </section>
+<div style="clear: both;"></div>
 
 <!-- Features Section -->
 <section class="features-section">

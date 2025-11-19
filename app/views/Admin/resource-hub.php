@@ -47,6 +47,10 @@
                 <span class="icon">⚙️</span>
                 Settings
             </a>
+            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
+                <span class="icon"></span>
+                Donation logs
+            </a>
         </nav>
 
         <div class="sidebar-footer">

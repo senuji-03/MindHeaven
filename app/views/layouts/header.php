@@ -19,35 +19,35 @@ function getNavigationItems($role) {
   $navItems = [
     'undergrad' => [
       'main' => [
-        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
-        ['icon' => '✅', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
-        ['icon' => '😊', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
-        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
+        ['icon' => '', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
+        ['icon' => '', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
+        ['icon' => '', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
+        ['icon' => '', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
       ],
       'support' => [
-        ['icon' => '📚', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
-        ['icon' => '💬', 'text' => 'Forum', 'url' => '/ug/forum', 'slug' => 'forum'],
-        ['icon' => '📞', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
-        ['icon' => 'ℹ️', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
+        ['icon' => '', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
+        ['icon' => '', 'text' => 'Forum', 'url' => '/ug/forum', 'slug' => 'forum'],
+        ['icon' => '', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
+        ['icon' => '', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
       ],
       'feedback' => [
-        ['icon' => '💬', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
+        ['icon' => '', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
  ]
       
     ],
     'admin' => [
       'main' => [
-        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/admin', 'slug' => 'dashboard'],
-        ['icon' => '👥', 'text' => 'Manage Users', 'url' => '/admin/manage-users', 'slug' => 'manage-users'],
-        ['icon' => '📚', 'text' => 'Resource Hub', 'url' => '/admin/resource-hub', 'slug' => 'resource-hub'],
+        ['icon' => '', 'text' => 'Dashboard', 'url' => '/admin', 'slug' => 'dashboard'],
+        ['icon' => '', 'text' => 'Manage Users', 'url' => '/admin/manage-users', 'slug' => 'manage-users'],
+        ['icon' => '', 'text' => 'Resource Hub', 'url' => '/admin/resource-hub', 'slug' => 'resource-hub'],
       ]
     ],
     'counselor' => [
       'main' => [
-        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/counselor', 'slug' => 'dashboard'],
-        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/counselor/appointments', 'slug' => 'appointments'],
-        ['icon' => '📆', 'text' => 'Calendar', 'url' => '/counselor/calender', 'slug' => 'calendar'],
-        ['icon' => '📋', 'text' => 'Session History', 'url' => '/counselor/session-history', 'slug' => 'session-history'],
+        ['icon' => '', 'text' => 'Dashboard', 'url' => '/counselor', 'slug' => 'dashboard'],
+        ['icon' => '', 'text' => 'Appointments', 'url' => '/counselor/appointments', 'slug' => 'appointments'],
+        ['icon' => '', 'text' => 'Calendar', 'url' => '/counselor/calender', 'slug' => 'calendar'],
+        ['icon' => '', 'text' => 'Session History', 'url' => '/counselor/session-history', 'slug' => 'session-history'],
       ]
     ],
     'moderator' => [
@@ -114,6 +114,7 @@ $navigationItems = getNavigationItems($userRole);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: rgba(255,255,255,0.1);
   }
   
   .brand {
@@ -129,16 +130,27 @@ $navigationItems = getNavigationItems($userRole);
   .brand-logo {
     width: 2.5rem;
     height: 2.5rem;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    border-radius: 0.75rem;
+    background: transparent;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .brand-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
   }
   
   .brand-name {
-    /* Always visible */
+    font-weight: bold;
+    font-size: 1.3rem;
+    color: #ffffff;
   }
   
   .sidebar-toggle {
@@ -455,7 +467,7 @@ $navigationItems = getNavigationItems($userRole);
     <div class="sidebar-header">
       <a class="brand" href="./" aria-label="MindHeaven Home">
         <div class="brand-logo">
-          <span class="logo-icon">🧠</span>
+          <img src="<?= BASE_URL ?>/images/profile pic.png" alt="MindHeaven Logo" class="brand-logo-img">
         </div>
         <span class="brand-name">MindHeaven</span>
       </a>
@@ -536,11 +548,11 @@ $navigationItems = getNavigationItems($userRole);
 <?php endif; ?>
 
           <a href="<?= BASE_URL ?>/donation" class="btn btn-donate">
-            <span class="btn-icon">💝</span>
+            <span class="btn-icon"></span>
             Donate
           </a>
           <a href="<?= BASE_URL ?>/ug/crisis" class="btn btn-crisis">
-            <span class="btn-icon">🆘</span>
+            <span class="btn-icon"></span>
             Crisis Support
           </a>
         </div>

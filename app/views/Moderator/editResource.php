@@ -267,19 +267,19 @@
         
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
-                <span class="icon">📊</span>
+                <!-- <span class="icon">📊</span> -->
                 Dashboard
             </a>
             <a href="<?= BASE_URL ?>/EditPosts" class="nav-item active">
-                <span class="icon">✏️</span>
+                <!-- <span class="icon">✏️</span> -->
                 Edit Resources
             </a>
             <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
-                <span class="icon">🚩</span>
+                <!-- <span class="icon">🚩</span> -->
                 Flagged Users
             </a>
             <a href="<?= BASE_URL ?>/WarnForm" class="nav-item">
-                <span class="icon">⚠️</span>
+                <!-- <span class="icon">⚠️</span> -->
                 Warn Users
             </a>
         </nav>
@@ -305,12 +305,12 @@
                     
                     <div class="form-rows">
                         <div class="form-row">
-                            <label for="title">📝 Resource Title</label>
+                            <label for="title">Resource Title</label>
                             <input id="title" type="text" name="title" value="<?= htmlspecialchars($resource['title']); ?>" placeholder="Enter a descriptive title for your resource" required>
                         </div>
                         
                         <div class="form-row">
-                            <label for="category">🏷️ Category</label>
+                            <label for="category">Category</label>
                             <select id="category" name="category" required>
                                 <option value="">Select a category</option>
                                 <option value="Mental Health Basics" <?= $resource['category'] === 'Mental Health Basics' ? 'selected' : '' ?>>Mental Health Basics</option>
@@ -326,7 +326,7 @@
                         </div>
                         
                         <div class="form-row">
-                            <label for="contentTypeSelect">📄 Content Type</label>
+                            <label for="contentTypeSelect">Content Type</label>
                             <select name="content_type" id="contentTypeSelect" required>
                                 <option value="">Select content type</option>
                                 <option value="article" <?= $resource['content_type'] === 'article' ? 'selected' : '' ?>>📝 Article</option>
@@ -336,17 +336,17 @@
                         </div>
                         
                         <div class="form-row">
-                            <label for="summary">📋 Summary</label>
+                            <label for="summary">Summary</label>
                             <textarea id="summary" name="summary" rows="3" placeholder="Brief description of what this resource covers..." required><?= htmlspecialchars($resource['summary']); ?></textarea>
                         </div>
                         
                         <div class="form-row">
-                            <label for="tags">🏷️ Tags</label>
+                            <label for="tags">Tags</label>
                             <input id="tags" type="text" name="tags" value="<?= htmlspecialchars($resource['tags']); ?>" placeholder="Enter tags separated by commas (e.g., anxiety, stress, coping)" />
                         </div>
                         
                         <div class="form-row">
-                            <label for="status">📊 Status</label>
+                            <label for="status">Status</label>
                             <select name="status" id="status">
                                 <option value="draft" <?= $resource['status'] === 'draft' ? 'selected' : '' ?>>📝 Draft</option>
                                 <option value="published" <?= $resource['status'] === 'published' ? 'selected' : '' ?>>✅ Published</option>
@@ -403,7 +403,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="videoDescription">📝 Video Description</label>
+                            <label for="videoDescription">Video Description</label>
                             <textarea id="videoDescription" name="content" rows="6" placeholder="Describe what this video covers and any key points..."><?= htmlspecialchars($resource['content']); ?></textarea>
                         </div>
                     </div>
@@ -419,7 +419,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="audioDescription">📝 Audio Description</label>
+                            <label for="audioDescription">Audio Description</label>
                             <textarea id="audioDescription" name="content" rows="6" placeholder="Describe what this audio covers and any key points..."><?= htmlspecialchars($resource['content']); ?></textarea>
                         </div>
                     </div>

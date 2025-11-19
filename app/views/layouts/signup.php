@@ -287,7 +287,7 @@
                            id="email" 
                            name="email" 
                            value="<?= htmlspecialchars($form_data['email'] ?? '') ?>"
-                           placeholder="your.email@university.edu">
+                           placeholder="2023is030@stu.ucsc.cmb.ac.lk">
                 </div>
 
                 <div class="form-group">
@@ -414,6 +414,18 @@
             
             if (password !== confirmPassword) {
                 this.setCustomValidity('Passwords do not match');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Email validation for university email format
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value;
+            const emailPattern = /^[0-9]{4}[a-z]{2}[0-9]{3}@stu\.ucsc\.cmb\.ac\.lk$/;
+            
+            if (email && !emailPattern.test(email)) {
+                this.setCustomValidity('Please enter a valid university email address (e.g., 2023is030@stu.ucsc.cmb.ac.lk)');
             } else {
                 this.setCustomValidity('');
             }

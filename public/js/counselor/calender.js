@@ -54,6 +54,13 @@ function createDayElement(day, isOtherMonth, year, month) {
     const today = new Date();
     const dayDate = new Date(year, month, day);
     
+    // Check if this is a past date (before today)
+    const isPastDate = dayDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    if (isPastDate) {
+        dayElement.classList.add('past-date');
+    }
+    
     if (!isOtherMonth && 
         dayDate.toDateString() === today.toDateString()) {
         dayElement.classList.add('today');
@@ -77,7 +84,13 @@ function createDayElement(day, isOtherMonth, year, month) {
         </div>
     `;
     
-    dayElement.addEventListener('click', () => showDayEvents(dateString, day, month + 1, year));
+    // Only allow clicking on future dates or today
+    if (!isPastDate) {
+        dayElement.addEventListener('click', () => showDayEvents(dateString, day, month + 1, year));
+    } else {
+        dayElement.style.cursor = 'not-allowed';
+        dayElement.title = 'Past dates cannot be selected';
+    }
     
     return dayElement;
 }
@@ -184,9 +197,13 @@ function showAddEventModal() {
     document.getElementById('eventId').value = '';
     document.getElementById('deleteEventBtn').style.display = 'none';
     
-    // Set default date to today
+    // Set default date to today and set minimum date to today
     const today = new Date();
-    document.getElementById('eventDate').value = today.toISOString().split('T')[0];
+    const todayString = today.toISOString().split('T')[0];
+    const eventDateInput = document.getElementById('eventDate');
+    
+    eventDateInput.value = todayString;
+    eventDateInput.min = todayString; // Prevent selecting past dates
     
     document.getElementById('eventModal').style.display = 'block';
 }
@@ -195,7 +212,15 @@ function addEventForDay() {
     closeModal('dayEventsModal');
     showAddEventModal();
     if (selectedDate) {
-        document.getElementById('eventDate').value = selectedDate;
+        const eventDateInput = document.getElementById('eventDate');
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Only set the date if it's not in the past
+        if (selectedDate >= today) {
+            eventDateInput.value = selectedDate;
+        } else {
+            eventDateInput.value = today;
+        }
     }
 }
 
@@ -258,20 +283,39 @@ function populateEditForm(eventToEdit) {
 }
 
 function saveEvent() {
-    console.log('saveEvent function called');
+    console.log('=== saveEvent function called ===');
     console.log('Current timestamp:', new Date().toISOString());
     
     const form = document.getElementById('eventForm');
     console.log('Form element:', form);
     
     if (!form) {
+        console.error('Form not found!');
         alert('Form not found!');
         return;
     }
     
+    console.log('Form found, proceeding with validation...');
+    
     if (!form.checkValidity()) {
         console.log('Form validation failed');
         form.reportValidity();
+        return;
+    }
+    
+    // Additional validation: Check if selected date is not in the past
+    const eventDateInput = document.getElementById('eventDate');
+    if (!eventDateInput) {
+        alert('Event date input not found!');
+        return;
+    }
+    
+    const selectedDate = new Date(eventDateInput.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    
+    if (selectedDate < today) {
+        showNotification('Cannot create events for past dates', 'error');
         return;
     }
     
@@ -280,7 +324,7 @@ function saveEvent() {
     // Debug: Check if all form elements exist
     const eventId = document.getElementById('eventId');
     const eventTitle = document.getElementById('eventTitle');
-    const eventDate = document.getElementById('eventDate');
+    const eventDateElement = document.getElementById('eventDate');
     const eventTime = document.getElementById('eventTime');
     const eventPriority = document.getElementById('eventPriority');
     const eventDescription = document.getElementById('eventDescription');
@@ -288,7 +332,7 @@ function saveEvent() {
     console.log('Form elements found:');
     console.log('eventId:', eventId);
     console.log('eventTitle:', eventTitle);
-    console.log('eventDate:', eventDate);
+    console.log('eventDateElement:', eventDateElement);
     console.log('eventTime:', eventTime);
     console.log('eventPriority:', eventPriority);
     console.log('eventDescription:', eventDescription);
@@ -297,7 +341,7 @@ function saveEvent() {
         alert('eventTitle element not found!');
         return;
     }
-    if (!eventDate) {
+    if (!eventDateElement) {
         alert('eventDate element not found!');
         return;
     }
@@ -317,14 +361,14 @@ function saveEvent() {
     const formData = new FormData();
     
     formData.append('title', eventTitle.value);
-    formData.append('event_date', eventDate.value);
+    formData.append('event_date', eventDateElement.value);
     formData.append('event_time', eventTime.value);
     formData.append('priority', eventPriority.value);
     formData.append('description', eventDescription.value);
     
     console.log('Form data prepared:', {
         title: eventTitle.value,
-        event_date: eventDate.value,
+        event_date: eventDateElement.value,
         event_time: eventTime.value,
         priority: eventPriority.value,
         description: eventDescription.value
@@ -341,6 +385,7 @@ function saveEvent() {
     }
     
     console.log('Sending request to:', url);
+    console.log('Form data:', Object.fromEntries(formData.entries()));
     
     fetch(url, {
         method: 'POST',
@@ -348,22 +393,31 @@ function saveEvent() {
     })
     .then(response => {
         console.log('Response received:', response);
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         return response.json();
     })
     .then(data => {
         console.log('Response data:', data);
         if (data.success) {
+            console.log('Event saved successfully');
             closeModal('eventModal');
             loadMonthEvents(); // Reload events from server
             updateTodaysEvents();
-            showNotification(data.message, 'success');
+            showNotification(data.message || 'Event saved successfully!', 'success');
         } else {
-            showNotification(data.message, 'error');
+            console.error('Server returned error:', data.message);
+            showNotification(data.message || 'Failed to save event', 'error');
         }
     })
     .catch(error => {
         console.error('Error saving event:', error);
-        showNotification('Error saving event', 'error');
+        showNotification('Error saving event: ' + error.message, 'error');
     });
 }
 

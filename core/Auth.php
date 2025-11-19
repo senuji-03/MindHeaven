@@ -60,4 +60,14 @@ class Auth {
     public static function isDonor() {
         return self::hasRole('donor');
     }
+    
+    /**
+     * Set security headers to prevent caching and back-button access
+     */
+    public static function setSecurityHeaders() {
+        header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+    }
 }

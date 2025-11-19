@@ -12,7 +12,11 @@ class LoginControl {
         // Check for registration success message
         $data = [];
         if (isset($_GET['registered']) && $_GET['registered'] == '1') {
-            $data['success'] = 'Account created successfully! You can now login with your credentials.';
+            if (isset($_GET['pending_approval']) && $_GET['pending_approval'] == '1') {
+                $data['success'] = 'Account created successfully! Your counselor account is pending admin approval. You will be able to login once approved.';
+            } else {
+                $data['success'] = 'Account created successfully! You can now login with your credentials.';
+            }
             if (isset($_GET['username'])) {
                 $data['username'] = $_GET['username'];
             }
@@ -43,6 +47,18 @@ class LoginControl {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($user && password_verify($password, $user['password'])) {
+                // Check if counselor is approved
+                if ($user['role'] === 'counselor') {
+                    $stmt = $pdo->prepare("SELECT is_approved FROM counselors WHERE user_id = ?");
+                    $stmt->execute([$user['id']]);
+                    $counselor = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if (!$counselor || !$counselor['is_approved']) {
+                        $this->view('layouts/login', ['error' => 'Your counselor account is pending approval. Please wait for admin approval before logging in.']);
+                        return;
+                    }
+                }
+                
                 // Login successful
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
@@ -220,6 +236,9 @@ class LoginControl {
         // Clear all session data
         session_unset();
         session_destroy();
+        
+        // Add security headers to prevent caching and back-button access
+        Auth::setSecurityHeaders();
         
         // Redirect to login page
         header('Location: ' . BASE_URL . '/login');

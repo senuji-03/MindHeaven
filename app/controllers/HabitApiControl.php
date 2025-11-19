@@ -7,6 +7,18 @@ class HabitApiControl {
     private $habitModel;
 
     public function __construct() {
+        // Session is already started in index.php, no need to start again
+        // Protect all habit API routes - require authentication
+        if(!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+            http_response_code(401);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Authentication required']);
+            exit;
+        }
+        
+        // Add security headers to prevent caching and back-button access
+        Auth::setSecurityHeaders();
+        
         $this->habitModel = new Habit();
     }
 

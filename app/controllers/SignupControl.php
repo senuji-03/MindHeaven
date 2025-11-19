@@ -65,8 +65,8 @@ class SignupControl {
                 $errors[] = 'Email address is required for undergraduate students';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors[] = 'Please enter a valid email address';
-            } elseif (!preg_match('/^[a-zA-Z0-9._%+-]+@gmail\.com$/', $email)) {
-                $errors[] = 'Email must be a Gmail address (e.g., yourname@gmail.com)';
+            } elseif (!preg_match('/^[0-9]{4}[a-z]{2}[0-9]{3}@stu\.ucsc\.cmb\.ac\.lk$/', $email)) {
+                $errors[] = 'Email must be a valid university email address (e.g., 2023is030@stu.ucsc.cmb.ac.lk)';
             }
             
             if (empty($phoneNumber)) {
@@ -216,7 +216,11 @@ class SignupControl {
             $pdo->commit();
             
             // Registration successful - redirect to login with success message
-            header('Location: ' . BASE_URL . '/login?registered=1&username=' . urlencode($username));
+            if ($role === 'counselor') {
+                header('Location: ' . BASE_URL . '/login?registered=1&username=' . urlencode($username) . '&pending_approval=1');
+            } else {
+                header('Location: ' . BASE_URL . '/login?registered=1&username=' . urlencode($username));
+            }
             exit;
             
         } catch (Exception $e) {

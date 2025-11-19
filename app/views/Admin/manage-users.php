@@ -6,6 +6,49 @@
     <title>Manage Users - Admin | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
+        /* Remove scrollbar and add smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            overflow-x: hidden;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+        
+        /* For Firefox */
+        html {
+            scrollbar-width: none;
+        }
+        
+        /* Hero section styling */
+        .hero-title {
+            text-align: right;
+            margin-right: 20px;
+        }
+        
+        .hero-subtitle {
+            text-align: right;
+            margin-right: 20px;
+        }
+        
+        .hero-buttons {
+            text-align: right;
+            margin-right: 20px;
+        }
+        
         .alert {
             padding: 15px;
             margin-bottom: 20px;
@@ -53,6 +96,8 @@
         .badge-role-moderator { background-color: #f3e8ff; color: #7c3aed; }
         .badge-role-call_responder { background-color: #fecaca; color: #dc2626; }
         .badge-role-donor { background-color: #fde68a; color: #d97706; }
+        .btn-approve { background-color: #10b981; color: white; }
+        .btn-reject { background-color: #ef4444; color: white; }
         
         .btn-icon {
             padding: 6px 10px;
@@ -216,6 +261,170 @@
         .tab-content.active {
             display: block;
         }
+        
+        /* Enhanced Pending Counselors Styles */
+        .pending-counselor-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .pending-counselor-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .pending-counselor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .pending-counselor-info h4 {
+            margin: 0 0 5px 0;
+            color: #1f2937;
+            font-size: 18px;
+        }
+        
+        .pending-counselor-contact {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .pending-counselor-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .pending-counselor-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            color: #1f2937;
+        }
+        
+        .pending-counselor-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 15px;
+        }
+        
+        .btn-approve-enhanced {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-approve-enhanced:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-reject-enhanced {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-reject-enhanced:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            color: #4b5563;
+        }
+        
+        .empty-state p {
+            margin: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .pending-counselor-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .pending-counselor-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .pending-counselor-actions {
+                flex-direction: column;
+            }
+            
+            .pending-counselor-contact {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -235,18 +444,12 @@
                 <span class="icon">👥</span>
                 Manage Users
             </a>
-            <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
-                <span class="icon">📚</span>
-                Resource Hub
-            </a>
+           
             <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
                 <span class="icon">💬</span>
                 Moderate Forum
             </a>
-            <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item">
-                <span class="icon">👨‍⚕️</span>
-                Manage Counselors
-            </a>
+           
             <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
                 <span class="icon">📅</span>
                 Appointments
@@ -255,10 +458,11 @@
                 <span class="icon">📈</span>
                 Reports
             </a>
-            <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
-                <span class="icon">⚙️</span>
-                Settings
+            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
+                <span class="icon"></span>
+                Donation logs
             </a>
+            
         </nav>
 
         <div class="sidebar-footer">
@@ -281,6 +485,8 @@
                 </div>
             </div>
         </div>
+
+       
 
         <!-- Content -->
         <div class="content-wrapper">
@@ -324,10 +530,11 @@
                 <button class="tab-btn active" onclick="showTab('all-users')">All Users</button>
                 <button class="tab-btn" onclick="showTab('undergraduates')">Undergraduate Students</button>
                 <button class="tab-btn" onclick="showTab('counselors')">Counselors</button>
+                <button class="tab-btn" onclick="showTab('pending-counselors')">Pending Counselors (<?= count($pendingCounselors ?? []) ?>)</button>
             </div>
 
             <!-- All Users Tab -->
-            <div id="all-users-tab" class="tab-content">
+            <div id="all-users-tab" class="tab-content active">
             <!-- Filter Section -->
             <div class="filter-section">
                 <div class="filter-group">
@@ -507,6 +714,92 @@
                             <?php endif; ?>
                     </tbody>
                 </table>
+                </div>
+            </div>
+
+            <!-- Pending Counselors Tab - Enhanced UI -->
+            <div id="pending-counselors-tab" class="tab-content" style="display: none;">
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <input type="text" placeholder="Search pending counselors..." class="search-input" id="pendingCounselorSearchInput" onkeyup="filterPendingCounselors()">
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3 style="margin-bottom: 15px;">Pending Counselors (<?= count($pendingCounselors ?? []) ?>)</h3>
+                    
+                    <?php if(isset($pendingCounselors) && !empty($pendingCounselors)): ?>
+                        <div id="pendingCounselorCards">
+                            <?php foreach($pendingCounselors as $counselor): ?>
+                                <div class="pending-counselor-card">
+                                    <div class="pending-counselor-header">
+                                        <div class="pending-counselor-info">
+                                            <h4><?= htmlspecialchars($counselor['full_name']) ?></h4>
+                                            <div class="pending-counselor-contact">
+                                                <div class="contact-item">
+                                                    <span>📧</span>
+                                                    <span><?= htmlspecialchars($counselor['email']) ?></span>
+                                                </div>
+                                                <div class="contact-item">
+                                                    <span>📱</span>
+                                                    <span><?= htmlspecialchars($counselor['phone_number']) ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pending-counselor-badge">
+                                            Pending Approval
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pending-counselor-details">
+                                        <div class="detail-item">
+                                            <span class="detail-label">Username</span>
+                                            <span class="detail-value"><?= htmlspecialchars($counselor['username']) ?></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">License Number</span>
+                                            <span class="detail-value"><?= htmlspecialchars($counselor['license_number']) ?></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Specialization</span>
+                                            <span class="detail-value"><?= htmlspecialchars($counselor['specialization'] ?? 'N/A') ?></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Experience</span>
+                                            <span class="detail-value"><?= htmlspecialchars($counselor['experience_years'] ?? 'N/A') ?> years</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Applied Date</span>
+                                            <span class="detail-value"><?= date('Y-m-d', strtotime($counselor['created_at'])) ?></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pending-counselor-actions">
+                                        <form method="POST" action="<?= BASE_URL ?>/admin/approveCounselor" style="display: inline;">
+                                            <input type="hidden" name="counselor_id" value="<?= htmlspecialchars($counselor['user_id']) ?>">
+                                            <button type="submit" class="btn-approve-enhanced" onclick="return confirm('Approve this counselor?')">
+                                                <span>✅</span>
+                                                <span>Approve</span>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="<?= BASE_URL ?>/admin/rejectCounselor" style="display: inline;">
+                                            <input type="hidden" name="counselor_id" value="<?= htmlspecialchars($counselor['user_id']) ?>">
+                                            <button type="submit" class="btn-reject-enhanced" onclick="return confirm('Reject this counselor? This will deactivate their account.')">
+                                                <span>❌</span>
+                                                <span>Reject</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👨‍⚕️</div>
+                            <h3>No Pending Counselors</h3>
+                            <p>There are currently no counselor applications awaiting approval.</p>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -1051,6 +1344,17 @@
             });
         }
 
+        function filterPendingCounselors() {
+            const searchTerm = document.getElementById('pendingCounselorSearchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.pending-counselor-card');
+
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const show = !searchTerm || text.includes(searchTerm);
+                card.style.display = show ? '' : 'none';
+            });
+        }
+
         // Close modals when clicking outside
         window.onclick = function(event) {
             const modals = document.querySelectorAll('.modal');
@@ -1091,6 +1395,9 @@
                     }
                 });
             }
+            
+            // Ensure "All Users" tab is shown by default
+            showTab('all-users');
         });
     </script>
 </body>

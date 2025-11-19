@@ -103,6 +103,12 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
   color: #4f46e5;
 }
 
+#quickMoodBtn:hover {
+  background: transparent !important;
+  color: white !important;
+  border: 2px solid white !important;
+}
+
 .btn-danger {
   background: #ef4444;
   color: white;
@@ -553,7 +559,7 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
   <section class="dashboard-hero">
     <div class="hero-content">
       <div class="hero-text">
-        <h1 class="hero-title">Welcome back, Student! 👋</h1>
+        <h1 class="hero-title">Welcome back, Student!</h1>
         <p class="hero-subtitle">Here's your mental health overview for today</p>
         <div class="hero-stats">
           <div class="hero-stat">
@@ -567,16 +573,15 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
         </div>
       </div>
       <div class="hero-actions">
-        <a href = "/MindHeaven/public/ug/mood">
-        <b> <button id="quickMoodBtn" class="btn btn-outline" style="text-decoration: none; color: white !important;">
-        </b>
-          <span class="btn-icon">😊</span>
+        <a href="<?= BASE_URL ?>/ug/mood">
+        <button id="quickMoodBtn" class="btn btn-outline" style="text-decoration: none; color: white !important; background: transparent !important; border: 2px solid white !important;">
+          <span class="btn-icon"></span>
           Log Mood
-          </a>
         </button>
-        <a href = "/MindHeaven/public/ug/habits">
+        </a>
+        <a href="<?= BASE_URL ?>/ug/habits">
         <button id="quickHabitBtn" class="btn btn-outline">
-          <span class="btn-icon">✅</span>
+          <span class="btn-icon"></span>
           Add Habit
         </button>
         </a>
@@ -589,7 +594,7 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
     <div class="stats-grid">
       <div class="stat-card habits-card">
         <div class="stat-header">
-          <div class="stat-icon">✅</div>
+          
           <div class="stat-info">
             <h3 class="stat-title">Today's Habits</h3>
             <p class="stat-subtitle">Keep building healthy routines</p>
@@ -605,33 +610,33 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
           </div>
         </div>
         <div class="stat-actions">
-          <a href = "/MindHeaven/public/ug/mood" class="btn btn-small">View All</a>
+          <a href = "<?= BASE_URL ?>/ug/habits" class="btn btn-small">View All</a>
         </div>
       </div>
 
       <div class="stat-card mood-card">
         <div class="stat-header">
-          <div class="stat-icon">😊</div>
-          <div class="stat-info">
+          
+          <div class="stat-info" style="text-align: left">
             <h3 class="stat-title">Current Mood</h3>
             <p class="stat-subtitle">How are you feeling?</p>
           </div>
         </div>
         <div class="stat-content">
-          <div class="mood-display">
-            <span class="mood-emoji" id="currentMoodEmoji">😐</span>
-            <span class="mood-text" id="currentMoodText">Not logged today</span>
+          <div class="mood-display" style="text-align: left">
+            <span class="mood-emoji" id="currentMoodEmoji"></span>
+            <span class="mood-text" id="currentMoodText" style="text-align: left">Not logged today</span>
           </div>
-          <div class="mood-time" id="moodTime">Last logged: Never</div>
+          <div class="mood-time" id="moodTime" style="text-align: left" >Last logged: Never</div>
         </div>
         <div class="stat-actions">
-          <button id="logMoodBtn" class="btn btn-small btn-primary">Log Mood</button>
+          <a href="<?= BASE_URL ?>/ug/mood" class="btn btn-small btn-primary">Log Mood</a>
         </div>
       </div>
 
       <div class="stat-card appointments-card">
         <div class="stat-header">
-          <div class="stat-icon">📅</div>
+          
           <div class="stat-info">
             <h3 class="stat-title">Next Appointment</h3>
             <p class="stat-subtitle">Upcoming sessions</p>
@@ -645,34 +650,10 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
           </div>
         </div>
         <div class="stat-actions">
-          <a href="/MindHeaven/Undergrad_student/views/appointments.php" class="btn btn-small">Manage</a>
+          <a href="<?= BASE_URL ?>/ug/appointment"  class="btn btn-small">Manage</a>
         </div>
       </div>
 
-      <div class="stat-card wellness-card">
-        <div class="stat-header">
-          <div class="stat-icon">💚</div>
-          <div class="stat-info">
-            <h3 class="stat-title">Wellness Score</h3>
-            <p class="stat-subtitle">Your mental health progress</p>
-          </div>
-        </div>
-        <div class="stat-content">
-          <div class="wellness-score">
-            <div class="score-circle">
-              <span class="score-number">85</span>
-              <span class="score-label">/100</span>
-            </div>
-            <div class="score-trend">
-              <span class="trend-icon">📈</span>
-              <span class="trend-text">+5 this week</span>
-            </div>
-          </div>
-        </div>
-        <div class="stat-actions">
-          <a href="/MindHeaven/Undergrad_student/views/mood.php" class="btn btn-small">View Trends</a>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -717,35 +698,38 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
   <section class="dashboard-actions">
     <div class="actions-grid">
       <div class="action-card">
-        <div class="action-icon">🎯</div>
+        <!-- <div class="action-icon">🎯</div> -->
         <h4 class="action-title">Set Goals</h4>
         <p class="action-description">Create new wellness goals for this week</p>
+         <a href="<?= BASE_URL ?>/ug/appointment">
         <button class="btn btn-outline">Get Started</button>
+        </a>
       </div>
+      de
 
       <div class="action-card">
-        <div class="action-icon">📚</div>
+        <!-- <div class="action-icon">📚</div> -->
         <h4 class="action-title">Resources</h4>
         <p class="action-description">Explore mental health resources and tools</p>
         <a href="/MindHeaven/Undergrad_student/views/resources.php" class="btn btn-outline">Browse</a>
       </div>
 
       <div class="action-card">
-        <div class="action-icon">🤝</div>
+        <!-- <div class="action-icon">🤝</div> -->
         <h4 class="action-title">Support</h4>
         <p class="action-description">Connect with counselors and support groups</p>
         <a href="/MindHeaven/Undergrad_student/views/contact.php" class="btn btn-outline">Connect</a>
       </div>
 
       <div class="action-card">
-        <div class="action-icon">📋</div>
+        <!-- <div class="action-icon">📋</div> -->
         <h4 class="action-title">Self-Assessment Quiz</h4>
         <p class="action-description">Take a quick mental health assessment and get instant feedback</p>
         <a href="<?php echo BASE_URL; ?>/ug/quiz" class="btn btn-outline">Start Quiz</a>
       </div>
 
       <div class="action-card">
-        <div class="action-icon">🆘</div>
+        <!-- <div class="action-icon">🆘</div> -->
         <h4 class="action-title">Crisis Support</h4>
         <p class="action-description">Immediate help when you need it most</p>
         <a href="/MindHeaven/ug/crisis" class="btn btn-danger">Get Help</a>
@@ -813,5 +797,244 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
     </div>
   </div>
 </div>
+
+<script>
+// Chart implementation using vanilla JavaScript and HTML5 Canvas
+document.addEventListener('DOMContentLoaded', function() {
+    // Dummy data for Habit Progress
+    const habitData = {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            label: 'Completed Habits',
+            data: [4, 3, 5, 4, 6, 2, 5],
+            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+            borderColor: 'rgba(79, 70, 229, 1)',
+            borderWidth: 2,
+            fill: true
+        }]
+    };
+
+    // Dummy data for Mood Trends
+    const moodData = {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            label: 'Mood Score (1-10)',
+            data: [7, 6, 8, 7, 9, 5, 8],
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderColor: 'rgba(16, 185, 129, 1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+        }]
+    };
+
+    // Draw Habit Progress Chart
+    function drawHabitChart() {
+        const canvas = document.getElementById('habitChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+        
+        // Chart dimensions
+        const margin = 40;
+        const chartWidth = width - 2 * margin;
+        const chartHeight = height - 2 * margin;
+        
+        // Find max value for scaling
+        const maxValue = Math.max(...habitData.datasets[0].data);
+        
+        // Draw grid lines
+        ctx.strokeStyle = '#e5e7eb';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 5; i++) {
+            const y = margin + (chartHeight / 5) * i;
+            ctx.beginPath();
+            ctx.moveTo(margin, y);
+            ctx.lineTo(width - margin, y);
+            ctx.stroke();
+        }
+        
+        // Draw data line
+        ctx.strokeStyle = 'rgba(79, 70, 229, 1)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        habitData.labels.forEach((label, index) => {
+            const x = margin + (chartWidth / (habitData.labels.length - 1)) * index;
+            const y = height - margin - (habitData.datasets[0].data[index] / maxValue) * chartHeight;
+            
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        ctx.stroke();
+        
+        // Draw data points
+        ctx.fillStyle = 'rgba(79, 70, 229, 1)';
+        habitData.labels.forEach((label, index) => {
+            const x = margin + (chartWidth / (habitData.labels.length - 1)) * index;
+            const y = height - margin - (habitData.datasets[0].data[index] / maxValue) * chartHeight;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            ctx.fill();
+        });
+        
+        // Draw labels
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        habitData.labels.forEach((label, index) => {
+            const x = margin + (chartWidth / (habitData.labels.length - 1)) * index;
+            ctx.fillText(label, x, height - 20);
+        });
+        
+        // Draw Y-axis labels
+        ctx.textAlign = 'right';
+        for (let i = 0; i <= 5; i++) {
+            const value = Math.round((maxValue / 5) * i);
+            const y = height - margin - (chartHeight / 5) * i;
+            ctx.fillText(value.toString(), margin - 10, y + 4);
+        }
+    }
+
+    // Draw Mood Trends Chart
+    function drawMoodChart() {
+        const canvas = document.getElementById('moodChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+        
+        // Chart dimensions
+        const margin = 40;
+        const chartWidth = width - 2 * margin;
+        const chartHeight = height - 2 * margin;
+        
+        // Find max and min values for scaling
+        const maxValue = Math.max(...moodData.datasets[0].data);
+        const minValue = Math.min(...moodData.datasets[0].data);
+        const range = maxValue - minValue;
+        
+        // Draw grid lines
+        ctx.strokeStyle = '#e5e7eb';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 5; i++) {
+            const y = margin + (chartHeight / 5) * i;
+            ctx.beginPath();
+            ctx.moveTo(margin, y);
+            ctx.lineTo(width - margin, y);
+            ctx.stroke();
+        }
+        
+        // Draw area under curve
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.1)';
+        ctx.beginPath();
+        
+        moodData.labels.forEach((label, index) => {
+            const x = margin + (chartWidth / (moodData.labels.length - 1)) * index;
+            const normalizedValue = (moodData.datasets[0].data[index] - minValue) / range;
+            const y = height - margin - normalizedValue * chartHeight;
+            
+            if (index === 0) {
+                ctx.moveTo(x, height - margin);
+                ctx.lineTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        
+        // Close the area
+        ctx.lineTo(width - margin, height - margin);
+        ctx.lineTo(margin, height - margin);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Draw data line
+        ctx.strokeStyle = 'rgba(16, 185, 129, 1)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        moodData.labels.forEach((label, index) => {
+            const x = margin + (chartWidth / (moodData.labels.length - 1)) * index;
+            const normalizedValue = (moodData.datasets[0].data[index] - minValue) / range;
+            const y = height - margin - normalizedValue * chartHeight;
+            
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        ctx.stroke();
+        
+        // Draw data points
+        ctx.fillStyle = 'rgba(16, 185, 129, 1)';
+        moodData.labels.forEach((label, index) => {
+            const x = margin + (chartWidth / (moodData.labels.length - 1)) * index;
+            const normalizedValue = (moodData.datasets[0].data[index] - minValue) / range;
+            const y = height - margin - normalizedValue * chartHeight;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            ctx.fill();
+        });
+        
+        // Draw labels
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        moodData.labels.forEach((label, index) => {
+            const x = margin + (chartWidth / (moodData.labels.length - 1)) * index;
+            ctx.fillText(label, x, height - 20);
+        });
+        
+        // Draw Y-axis labels
+        ctx.textAlign = 'right';
+        for (let i = 0; i <= 5; i++) {
+            const value = Math.round(minValue + (range / 5) * i);
+            const y = height - margin - (chartHeight / 5) * i;
+            ctx.fillText(value.toString(), margin - 10, y + 4);
+        }
+    }
+
+    // Initialize charts
+    drawHabitChart();
+    drawMoodChart();
+
+    // Add time filter functionality
+    const habitTimeFilter = document.getElementById('habitTimeFilter');
+    const moodTimeFilter = document.getElementById('moodTimeFilter');
+
+    if (habitTimeFilter) {
+        habitTimeFilter.addEventListener('change', function() {
+            // Update habit data based on selected time period
+            const period = this.value;
+            // You can implement different data sets for different periods here
+            drawHabitChart();
+        });
+    }
+
+    if (moodTimeFilter) {
+        moodTimeFilter.addEventListener('change', function() {
+            // Update mood data based on selected time period
+            const period = this.value;
+            // You can implement different data sets for different periods here
+            drawMoodChart();
+        });
+    }
+});
+</script>
 
 

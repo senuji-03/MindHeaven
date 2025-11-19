@@ -38,10 +38,10 @@
                 <li class="sidebar-item active"><a href="#" style="color: #2563eb;">📅 Calendar</a></li>
                 <li class="sidebar-item"><a href="appointmentmgt">🗓️ Appointment Management</a></li>
                 <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
-                <li class="sidebar-item"><a href="forum">💭 Forum</a></li>
+      
                 <li class="sidebar-item"><a href="resources">📚 Resource Hub</a></li>
                 <li class="sidebar-item"><a href="counselor_profile">👤 Profile</a></li>
-                <li class="sidebar-item">⚙️ Settings</li>
+              
                 <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
@@ -182,22 +182,18 @@
         console.log('Counselor ID:', counselorId);
         
         
-        // Add event listener as backup
+        // Initialize calendar on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const saveBtn = document.getElementById('saveEventBtn');
-            const form = document.getElementById('eventForm');
+            console.log('Calendar page loaded');
+            console.log('BASE URL:', BASE);
+            console.log('Counselor ID:', counselorId);
             
-            console.log('Save button found:', saveBtn);
-            console.log('Form found:', form);
-            
-            if (saveBtn) {
-                saveBtn.addEventListener('click', function(e) {
-                    console.log('Save button clicked via event listener');
-                    e.preventDefault();
-                    saveEvent();
-                });
-            } else {
-                console.error('Save button not found!');
+            // Initialize calendar
+            if (typeof loadMonthEvents === 'function') {
+                loadMonthEvents();
+            }
+            if (typeof updateTodaysEvents === 'function') {
+                updateTodaysEvents();
             }
         });
     </script>

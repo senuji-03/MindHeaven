@@ -6,6 +6,18 @@
 
 class UniversityRepresentativeControl {
     
+    public function __construct() {
+        // Session is already started in index.php, no need to start again
+        // Protect all university representative routes
+        if(!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'university_rep' && $_SESSION['role'] !== 'university_representative')) {
+            header("Location: " . BASE_URL . "/login");
+            exit;
+        }
+        
+        // Add security headers to prevent caching and back-button access
+        Auth::setSecurityHeaders();
+    }
+    
     // Index method - redirects to dashboard
     public function index() {
         $this->dashboard();

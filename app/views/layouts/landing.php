@@ -38,6 +38,30 @@
             line-height: 1.6;
             color: var(--text-primary);
             background-color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Remove scrollbar and add smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+        
+        /* For Firefox */
+        html {
+            scrollbar-width: none;
         }
 
         /* Navigation */
@@ -578,10 +602,10 @@
                 
                 <div class="navbar-nav">
                     <a href="<?php echo BASE_URL; ?>/" class="nav-link active">Home</a>
-                    <a href="<?php echo BASE_URL; ?>/ug/resources" class="nav-link">Resource Hub</a>
-                    <a href="<?php echo BASE_URL; ?>/ug/forum" class="nav-link">Forum Discussion</a>
+                    <a href="<?php echo BASE_URL; ?>/public/resources" class="nav-link">Resource Hub</a>
+                    <a href="<?php echo BASE_URL; ?>/public/forum" class="nav-link">Forum Discussion</a>
                     <a href="<?php echo BASE_URL; ?>/donation" class="btn btn-donate">Donate Now</a>
-                    <a href="<?php echo BASE_URL; ?>/ug/crisis" class="btn btn-crisis">
+                    <a href="<?php echo BASE_URL; ?>/public/crisis" class="btn btn-crisis">
                         <i class="fas fa-exclamation-triangle"></i>
                         Crisis Support
                     </a>

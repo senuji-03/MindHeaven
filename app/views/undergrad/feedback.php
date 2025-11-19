@@ -490,9 +490,51 @@ $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
 .empty-state-text {
   margin-bottom: 2rem;
 }
+
+/* Back Button Styles */
+.back-button-container {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #f8fafc;
+  color: #475569;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+  background: #e2e8f0;
+  color: #334155;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+}
+
+.back-icon {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
 </style>
 
 <main class="feedback-main">
+  <!-- Back to Home Button -->
+  <div class="back-button-container">
+    <a href="<?= BASE_URL ?>/ug/" class="back-button">
+      <span class="back-icon">←</span>
+      Back to Home
+    </a>
+  </div>
+
   <!-- Hero Section -->
   <section class="feedback-hero">
     <h1>💬 Feedback System</h1>

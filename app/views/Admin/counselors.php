@@ -31,10 +31,7 @@
                 <span class="icon">💬</span>
                 Moderate Forum
             </a>
-            <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item active">
-                <span class="icon">👨‍⚕️</span>
-                Manage Counselors
-            </a>
+          
             <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
                 <span class="icon">📅</span>
                 Appointments

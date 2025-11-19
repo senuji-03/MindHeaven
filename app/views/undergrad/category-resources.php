@@ -86,7 +86,22 @@ require BASE_PATH.'/app/views/layouts/header.php';
     </div>
     
     <?php if (!empty($resources)): ?>
-      <div class="resources-grid">
+      <!-- Content Type Tabs -->
+      <div class="content-type-tabs">
+        <button class="tab-btn active" data-type="all">All Resources (<?= count($resources) ?>)</button>
+        <?php if (!empty($resourcesByType['article'])): ?>
+          <button class="tab-btn" data-type="article">Articles (<?= count($resourcesByType['article']) ?>)</button>
+        <?php endif; ?>
+        <?php if (!empty($resourcesByType['video'])): ?>
+          <button class="tab-btn" data-type="video">Videos (<?= count($resourcesByType['video']) ?>)</button>
+        <?php endif; ?>
+        <?php if (!empty($resourcesByType['audio'])): ?>
+          <button class="tab-btn" data-type="audio">Audio (<?= count($resourcesByType['audio']) ?>)</button>
+        <?php endif; ?>
+      </div>
+      
+      <!-- All Resources Grid -->
+      <div class="resources-grid" id="all-resources">
         <?php foreach ($resources as $resource): ?>
           <div class="resource-card" onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
             <div class="resource-header">
@@ -161,6 +176,87 @@ require BASE_PATH.'/app/views/layouts/header.php';
           </div>
         <?php endforeach; ?>
       </div>
+      
+      <!-- Filtered Resources by Type -->
+      <?php foreach (['article', 'video', 'audio'] as $type): ?>
+        <?php if (!empty($resourcesByType[$type])): ?>
+          <div class="resources-grid content-type-section" id="<?= $type ?>-resources" style="display: none;">
+            <?php foreach ($resourcesByType[$type] as $resource): ?>
+              <div class="resource-card" onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
+                <div class="resource-header">
+                  <div class="resource-type-icon">
+                    <?php if ($resource['content_type'] === 'video'): ?>
+                      🎥
+                    <?php elseif ($resource['content_type'] === 'audio'): ?>
+                      🎵
+                    <?php else: ?>
+                      📄
+                    <?php endif; ?>
+                  </div>
+                  <div class="resource-meta">
+                    <span class="resource-type"><?= strtoupper($resource['content_type']) ?></span>
+                    <span class="resource-date"><?= date('M d, Y', strtotime($resource['created_at'])) ?></span>
+                  </div>
+                </div>
+                
+                <div class="resource-content">
+                  <h3 class="resource-title"><?= htmlspecialchars($resource['title']) ?></h3>
+                  <p class="resource-summary"><?= htmlspecialchars($resource['summary']) ?></p>
+                  
+                  <?php if (!empty($resource['tags'])): ?>
+                    <div class="resource-tags">
+                      <?php 
+                      $tags = explode(',', $resource['tags']);
+                      foreach (array_slice($tags, 0, 3) as $tag): 
+                      ?>
+                        <span class="tag"><?= htmlspecialchars(trim($tag)) ?></span>
+                      <?php endforeach; ?>
+                      <?php if (count($tags) > 3): ?>
+                        <span class="tag-more">+<?= count($tags) - 3 ?> more</span>
+                      <?php endif; ?>
+                    </div>
+                  <?php endif; ?>
+                </div>
+                
+                <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
+                  <div class="resource-file">
+                    <?php 
+                    $fileExtension = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
+                    $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                    $fileExists = file_exists(BASE_PATH . '/public' . $resource['file_path']);
+                    ?>
+                    
+                    <?php if ($resource['content_type'] === 'article' && $isImage && $fileExists): ?>
+                      <img src="<?= BASE_URL . $resource['file_path'] ?>" alt="<?= htmlspecialchars($resource['title']) ?>" class="resource-thumbnail">
+                    <?php else: ?>
+                      <div class="resource-file-icon">
+                        <?php if ($resource['content_type'] === 'video'): ?>
+                          🎥
+                        <?php elseif ($resource['content_type'] === 'audio'): ?>
+                          🎵
+                        <?php else: ?>
+                          📄
+                        <?php endif; ?>
+                      </div>
+                    <?php endif; ?>
+                    
+                    <div class="resource-file-info">
+                      <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                      <?php if (!empty($resource['file_size'])): ?>
+                        <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                <?php endif; ?>
+                
+                <div class="resource-footer">
+                  <button class="btn btn-primary btn-small">View Details</button>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+      <?php endforeach; ?>
     <?php else: ?>
       <div class="empty-state">
         <div class="empty-icon">📚</div>
@@ -192,6 +288,51 @@ require BASE_PATH.'/app/views/layouts/header.php';
 .category-navigation {
   padding: 2rem 0;
   background: #f8fafc;
+}
+
+/* Content Type Tabs */
+.content-type-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab-btn:hover {
+  background: #f0f9ff;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.tab-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.content-type-section {
+  display: none;
+}
+
+.content-type-section.active {
+  display: grid;
 }
 
 .categories-grid {
@@ -582,6 +723,166 @@ require BASE_PATH.'/app/views/layouts/header.php';
   font-style: italic;
 }
 
+/* Enhanced Modal Styles */
+.resource-details {
+  line-height: 1.6;
+}
+
+.resource-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.resource-category {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.resource-type {
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.resource-date {
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.resource-summary h4,
+.resource-content h4,
+.resource-tags h4,
+.resource-file h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.resource-summary p,
+.resource-content div {
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.resource-file {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.resource-file h4 {
+  margin: 0 0 1rem 0;
+  color: #1e293b;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.resource-file img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.video-container,
+.audio-container {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.video-container video,
+.audio-container audio {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.file-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.file-info p {
+  margin: 0.25rem 0;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.article-content {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+  margin: 1rem 0;
+  line-height: 1.7;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tags-container .tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.resource-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.resource-actions .btn {
+  flex: 1;
+  text-align: center;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
 @media (max-width: 768px) {
   .categories-grid {
     grid-template-columns: 1fr;
@@ -594,6 +895,31 @@ require BASE_PATH.'/app/views/layouts/header.php';
   .modal-content {
     width: 95%;
     margin: 10% auto;
+  }
+  
+  .content-type-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .tab-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .resource-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .resource-actions .btn {
+    width: 100%;
+  }
+  
+  .video-container video,
+  .audio-container audio {
+    width: 100%;
+    max-width: none;
   }
 }
 </style>
@@ -612,6 +938,7 @@ function openResourceModal(resource) {
       <div class="resource-meta">
         <span class="resource-category">${resource.category}</span>
         <span class="resource-type">${resource.content_type.toUpperCase()}</span>
+        <span class="resource-date">${new Date(resource.created_at).toLocaleDateString()}</span>
       </div>
       <div class="resource-summary">
         <h4>Summary</h4>
@@ -619,19 +946,63 @@ function openResourceModal(resource) {
       </div>
   `;
   
-  // Add file display if exists
+  // Handle different content types with proper file paths
   if (resource.file_path && resource.file_name) {
     const fileExtension = resource.file_name.split('.').pop().toLowerCase();
     const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    const fullFilePath = '<?= BASE_URL ?>' + resource.file_path;
     
-    if (isImage) {
+    if (resource.content_type === 'article' && isImage) {
       contentHtml += `
         <div class="resource-file">
           <h4>Featured Image</h4>
-          <img src="${resource.file_path}" alt="${resource.title}" style="max-width: 100%; height: auto; border-radius: 8px;">
+          <img src="${fullFilePath}" alt="${resource.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;">
+          <div class="file-info">
+            <p><strong>File:</strong> ${resource.file_name}</p>
+            <p><strong>Size:</strong> ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
+          </div>
+        </div>
+      `;
+    } else if (resource.content_type === 'video') {
+      contentHtml += `
+        <div class="resource-file">
+          <h4>Video Content</h4>
+          <div class="video-container">
+            <video controls style="width: 100%; max-width: 600px; border-radius: 8px;">
+              <source src="${fullFilePath}" type="video/mp4">
+              <source src="${fullFilePath}" type="video/webm">
+              <source src="${fullFilePath}" type="video/ogg">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="file-info">
+            <p><strong>File:</strong> ${resource.file_name}</p>
+            <p><strong>Size:</strong> ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
+            <a href="${fullFilePath}" target="_blank" class="btn btn-secondary btn-small">Download Video</a>
+          </div>
+        </div>
+      `;
+    } else if (resource.content_type === 'audio') {
+      contentHtml += `
+        <div class="resource-file">
+          <h4>Audio Content</h4>
+          <div class="audio-container">
+            <audio controls style="width: 100%; max-width: 500px;">
+              <source src="${fullFilePath}" type="audio/mpeg">
+              <source src="${fullFilePath}" type="audio/wav">
+              <source src="${fullFilePath}" type="audio/ogg">
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+          <div class="file-info">
+            <p><strong>File:</strong> ${resource.file_name}</p>
+            <p><strong>Size:</strong> ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
+            <a href="${fullFilePath}" target="_blank" class="btn btn-secondary btn-small">Download Audio</a>
+          </div>
         </div>
       `;
     } else {
+      // Generic file display
       contentHtml += `
         <div class="resource-file">
           <h4>Media File</h4>
@@ -641,32 +1012,55 @@ function openResourceModal(resource) {
             </div>
             <p><strong>${resource.file_name}</strong></p>
             <p>Size: ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
-            <a href="${resource.file_path}" target="_blank" class="btn btn-primary">View/Download File</a>
+            <a href="${fullFilePath}" target="_blank" class="btn btn-primary">View/Download File</a>
           </div>
         </div>
       `;
     }
   }
   
-  // Add content
-  if (resource.content) {
+  // Add content for articles
+  if (resource.content && resource.content_type === 'article') {
     contentHtml += `
       <div class="resource-content">
-        <h4>Content</h4>
-        <div style="white-space: pre-wrap; line-height: 1.6;">${resource.content}</div>
+        <h4>Article Content</h4>
+        <div class="article-content" style="white-space: pre-wrap; line-height: 1.6; background: #f8fafc; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">${resource.content}</div>
+      </div>
+    `;
+  } else if (resource.content && (resource.content_type === 'video' || resource.content_type === 'audio')) {
+    contentHtml += `
+      <div class="resource-content">
+        <h4>Description</h4>
+        <div style="white-space: pre-wrap; line-height: 1.6; background: #f8fafc; padding: 1rem; border-radius: 8px;">${resource.content}</div>
       </div>
     `;
   }
   
   // Add tags if exist
   if (resource.tags) {
+    const tagsArray = resource.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
     contentHtml += `
       <div class="resource-tags">
         <h4>Tags</h4>
-        <p>${resource.tags}</p>
+        <div class="tags-container">
+          ${tagsArray.map(tag => `<span class="tag">${tag}</span>`).join('')}
+        </div>
       </div>
     `;
   }
+  
+  // Add action buttons
+  contentHtml += `
+    <div class="resource-actions">
+      <button class="btn btn-primary" onclick="window.open('${fullFilePath}', '_blank')">
+        ${resource.content_type === 'article' ? '📖 Read Full Article' : 
+          resource.content_type === 'video' ? '🎥 Watch Video' : '🎵 Listen to Audio'}
+      </button>
+      <button class="btn btn-secondary" onclick="shareResource('${resource.title}', '${fullFilePath}')">
+        📤 Share Resource
+      </button>
+    </div>
+  `;
   
   contentHtml += `</div>`;
   
@@ -694,6 +1088,66 @@ document.getElementById('emergencyBtn').onclick = function() {
     window.location.href = '<?= BASE_URL ?>/ug/crisis';
   }
 }
+
+// Share resource functionality
+function shareResource(title, filePath) {
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      text: 'Check out this resource from MindHeaven',
+      url: filePath
+    }).catch(err => console.log('Error sharing:', err));
+  } else {
+    // Fallback: copy to clipboard
+    const shareText = `${title}\n\nCheck out this resource: ${filePath}`;
+    navigator.clipboard.writeText(shareText).then(() => {
+      alert('Resource link copied to clipboard!');
+    }).catch(() => {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('Resource link copied to clipboard!');
+    });
+  }
+}
+
+// Content type tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const allResourcesSection = document.getElementById('all-resources');
+  const contentTypeSections = document.querySelectorAll('.content-type-section');
+  
+  tabButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const type = this.getAttribute('data-type');
+      
+      // Remove active class from all buttons
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      // Add active class to clicked button
+      this.classList.add('active');
+      
+      // Hide all sections
+      allResourcesSection.style.display = 'none';
+      contentTypeSections.forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Show selected section
+      if (type === 'all') {
+        allResourcesSection.style.display = 'grid';
+      } else {
+        const targetSection = document.getElementById(type + '-resources');
+        if (targetSection) {
+          targetSection.style.display = 'grid';
+        }
+      }
+    });
+  });
+});
 </script>
 
 <?

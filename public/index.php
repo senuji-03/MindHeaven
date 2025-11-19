@@ -24,7 +24,10 @@ $router->get('/logout', 'LoginControl@logout');
 $router->get('/signup', 'SignupControl@index');
 $router->post('/signup/register', 'SignupControl@register');
 
-
+// Public routes (no authorization required)
+$router->get('/public/resources', 'PublicControl@resources');
+$router->get('/public/forum', 'PublicControl@forum');
+$router->get('/public/crisis', 'PublicControl@crisis');
 
 $router->get('/ug', 'UGControl@index');
 $router->get('/ug/appointment', 'UGControl@appointment');
@@ -37,6 +40,7 @@ $router->get('/ug/mood', 'UGControl@mood');
 $router->get('/ug/about', 'UGControl@about');
 $router->get('/ug/forum', 'UGControl@forum');
 $router->get('/ug/quiz', 'UGControl@quiz');
+$router->get('/ug/goals', 'UGControl@goals');
 $router->get('/ug/profile', 'UGControl@profile');
 $router->get('/ug/profile/complete', 'UGControl@completeProfile');
 $router->post('/ug/profile/complete', 'UGControl@completeProfile');
@@ -52,6 +56,8 @@ $router->get('/admin/resource-hub', 'AdminControl@resourceHub');
 $router->get('/admin/moderate-forum', 'AdminControl@moderateForum');
 $router->get('/admin/counselors', 'AdminControl@counselors');
 $router->get('/admin/appointments', 'AdminControl@appointments');
+$router->get('/admin/get-appointments', 'AdminControl@getAppointments');
+$router->get('/admin/test-method', 'AdminControl@testMethod');
 $router->get('/admin/approve-counselors', 'AdminControl@approveCounselors');
 $router->get('/admin/reports', 'AdminControl@reports');
 $router->get('/admin/donations', 'AdminControl@donations');
@@ -65,6 +71,10 @@ $router->post('/admin/manage-users/create', 'AdminControl@createUser');
 $router->post('/admin/manage-users/update', 'AdminControl@updateUser');
 $router->post('/admin/manage-users/delete', 'AdminControl@deleteUser');
 
+// Admin counselor approval routes
+$router->post('/admin/approveCounselor', 'AdminControl@approveCounselor');
+$router->post('/admin/rejectCounselor', 'AdminControl@rejectCounselor');
+
 $router->get('/counselor', 'COControl@index');  
 $router->get('/counselor/dashboard', 'COControl@dashboard');
 $router->get('/counselor/appointmentmgt', 'COControl@appointmentmgt');
@@ -72,7 +82,7 @@ $router->get('/counselor/calender', 'COControl@calender');
 $router->get('/counselor/sessionHistory', 'COControl@sessionHistory');
 $router->get('/counselor/counselor_profile', 'COControl@counselorProfile');
 $router->get('/counselor/forum', 'UGControl@forum');
-$router->get('/counselor/resources', 'UGControl@resources');
+$router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
 
 // Counselor calendar API routes
 $router->post('/counselor/createEvent', 'COControl@createEvent');

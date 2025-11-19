@@ -14,8 +14,8 @@ class Counselor {
         $stmt = $this->pdo->prepare("
             INSERT INTO counselors (
                 user_id, full_name, email, phone_number, license_number,
-                specialization, experience_years, bio
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                specialization, experience_years, bio, is_approved
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
         ");
         
         $stmt->execute([
@@ -143,6 +143,30 @@ class Counselor {
             FROM counselors c 
             JOIN users u ON c.user_id = u.id 
             WHERE c.is_active = 1 AND c.is_approved = 1
+            ORDER BY c.created_at DESC
+        ";
+        
+        if ($limit) {
+            $sql .= " LIMIT ? OFFSET ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$limit, $offset]);
+        } else {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+        }
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get pending counselors (not approved yet)
+     */
+    public function getPending($limit = null, $offset = 0) {
+        $sql = "
+            SELECT c.*, u.username, u.role 
+            FROM counselors c 
+            JOIN users u ON c.user_id = u.id 
+            WHERE c.is_active = 1 AND c.is_approved = 0
             ORDER BY c.created_at DESC
         ";
         

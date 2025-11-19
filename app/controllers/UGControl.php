@@ -9,6 +9,9 @@ class UGControl{
             header("Location: " . BASE_URL . "/login");
             exit;
         }
+        
+        // Add security headers to prevent caching and back-button access
+        Auth::setSecurityHeaders();
     }
     public function index() {
         view('undergrad/home');
@@ -89,6 +92,10 @@ class UGControl{
             
             // Get all categories for navigation
             $allResources = $resourceHub->getAll('published');
+            
+            // Debug: Log resource counts
+            error_log("Category: $category, Resources found: " . count($categoryResources));
+            error_log("Total published resources: " . count($allResources));
             $allCategories = [];
             foreach ($allResources as $resource) {
                 $cat = $resource['category'];
@@ -114,10 +121,25 @@ class UGControl{
             
             $currentCategoryInfo = $categoryInfo[$category] ?? ['icon' => '📚', 'description' => 'Resources for ' . $category];
             
+            // Group resources by content type for better organization
+            $resourcesByType = [
+                'article' => [],
+                'video' => [],
+                'audio' => []
+            ];
+            
+            foreach ($categoryResources as $resource) {
+                $contentType = $resource['content_type'];
+                if (isset($resourcesByType[$contentType])) {
+                    $resourcesByType[$contentType][] = $resource;
+                }
+            }
+            
             view('undergrad/category-resources', [
                 'category' => $category,
                 'categoryInfo' => $currentCategoryInfo,
                 'resources' => $categoryResources,
+                'resourcesByType' => $resourcesByType,
                 'allCategories' => $allCategories,
                 'totalResources' => count($categoryResources)
             ]);
@@ -141,6 +163,10 @@ class UGControl{
     
     public function quiz() {
         view('undergrad/quiz');
+    }
+    
+    public function goals() {
+        view('undergrad/goals');
     }
 
     public function feedback() {

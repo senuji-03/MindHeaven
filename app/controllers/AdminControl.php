@@ -1,5 +1,18 @@
 <?php
 class AdminControl {
+    
+    public function __construct() {
+        // Session is already started in index.php, no need to start again
+        // Protect all admin routes
+        if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+            header("Location: " . BASE_URL . "/login");
+            exit;
+        }
+        
+        // Add security headers to prevent caching and back-button access
+        Auth::setSecurityHeaders();
+    }
+    
     public function index() {
         // This will load the main admin dashboard
         view('Admin/index');
@@ -67,10 +80,14 @@ class AdminControl {
             $stmt->execute();
             $counselors = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
+            // Get pending counselors
+            $pendingCounselors = $this->getPendingCounselors();
+            
             view('Admin/manage-users', [
                 'users' => $users,
                 'undergraduateStudents' => $undergraduateStudents,
-                'counselors' => $counselors
+                'counselors' => $counselors,
+                'pendingCounselors' => $pendingCounselors
             ]);
         } catch (Exception $e) {
             view('Admin/manage-users', [
@@ -443,5 +460,96 @@ class AdminControl {
 
     public function profile() {
         view('Admin/profile');
+    }
+
+    /**
+     * Get pending counselors for approval
+     */
+    public function getPendingCounselors() {
+        try {
+            require_once BASE_PATH . '/app/models/Counselor.php';
+            $counselorModel = new Counselor();
+            $pendingCounselors = $counselorModel->getPending();
+            
+            return $pendingCounselors;
+        } catch (Exception $e) {
+            error_log("AdminControl getPendingCounselors error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Approve a counselor
+     */
+    public function approveCounselor() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/manage-users');
+            exit;
+        }
+
+        $counselorId = $_POST['counselor_id'] ?? '';
+        $adminId = $_SESSION['user_id'];
+
+        if (empty($counselorId) || !is_numeric($counselorId)) {
+            header('Location: ' . BASE_URL . '/admin/manage-users?error=Invalid counselor ID');
+            exit;
+        }
+
+        try {
+            require_once BASE_PATH . '/app/models/Counselor.php';
+            $counselorModel = new Counselor();
+            
+            $result = $counselorModel->approve($counselorId, $adminId);
+            
+            if ($result) {
+                header('Location: ' . BASE_URL . '/admin/manage-users?success=Counselor approved successfully');
+            } else {
+                header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to approve counselor');
+            }
+            exit;
+            
+        } catch (Exception $e) {
+            error_log("AdminControl approveCounselor error: " . $e->getMessage());
+            header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to approve counselor');
+            exit;
+        }
+    }
+
+    /**
+     * Reject a counselor
+     */
+    public function rejectCounselor() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/manage-users');
+            exit;
+        }
+
+        $counselorId = $_POST['counselor_id'] ?? '';
+        $reason = trim($_POST['reason'] ?? '');
+
+        if (empty($counselorId) || !is_numeric($counselorId)) {
+            header('Location: ' . BASE_URL . '/admin/manage-users?error=Invalid counselor ID');
+            exit;
+        }
+
+        try {
+            $pdo = Database::getConnection();
+            
+            // Deactivate the counselor account
+            $stmt = $pdo->prepare("UPDATE counselors SET is_active = 0 WHERE user_id = ?");
+            $result = $stmt->execute([$counselorId]);
+            
+            if ($result) {
+                header('Location: ' . BASE_URL . '/admin/manage-users?success=Counselor rejected and account deactivated');
+            } else {
+                header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to reject counselor');
+            }
+            exit;
+            
+        } catch (Exception $e) {
+            error_log("AdminControl rejectCounselor error: " . $e->getMessage());
+            header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to reject counselor');
+            exit;
+        }
     }
 }

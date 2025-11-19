@@ -7,9 +7,9 @@ class ModeratorControl{
         try {
             $resourceHub = new ResourceHub();
             $resources = $resourceHub->getAll();
-            view('Moderator/editPosts', ['resources' => $resources]);
+            view('Moderator/editPosts', array('resources' => $resources));
         } catch (Exception $e) {
-            view('Moderator/editPosts', ['resources' => [], 'error' => 'Failed to load resources: ' . $e->getMessage()]);
+            view('Moderator/editPosts', array('resources' => array(), 'error' => 'Failed to load resources: ' . $e->getMessage()));
         }
     }
     
@@ -22,7 +22,17 @@ class ModeratorControl{
     }
     
     public function warn() {
-        view('Moderator/warnForm');
+        // Get user data from URL parameters
+        $data = array(
+            'userId' => isset($_GET['userId']) ? $_GET['userId'] : null,
+            'username' => isset($_GET['username']) ? $_GET['username'] : null,
+            'email' => isset($_GET['email']) ? $_GET['email'] : null,
+            'strikes' => isset($_GET['strikes']) ? $_GET['strikes'] : 0,
+            'joinDate' => isset($_GET['joinDate']) ? $_GET['joinDate'] : null,
+            'lastActivity' => isset($_GET['lastActivity']) ? $_GET['lastActivity'] : null
+        );
+        
+        view('Moderator/WarnForm', $data);
     }
     
     
@@ -36,32 +46,32 @@ class ModeratorControl{
             $resourceHub = new ResourceHub();
             
             // Get current user ID (assuming session is set)
-            $userId = $_SESSION['user_id'] ?? 1; // Fallback to 1 for testing
+            $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1; // Fallback to 1 for testing
             
             // Validate required fields
-            $title = trim($_POST['title'] ?? '');
-            $category = trim($_POST['category'] ?? '');
-            $contentType = trim($_POST['content_type'] ?? '');
-            $summary = trim($_POST['summary'] ?? '');
+            $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
+            $category = trim(isset($_POST['category']) ? $_POST['category'] : '');
+            $contentType = trim(isset($_POST['content_type']) ? $_POST['content_type'] : '');
+            $summary = trim(isset($_POST['summary']) ? $_POST['summary'] : '');
             
             if (empty($title) || empty($category) || empty($contentType) || empty($summary)) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=missing_fields');
                 exit;
             }
             
-            $data = [
+            $data = array(
                 'title' => $title,
                 'category' => $category,
                 'content_type' => $contentType,
                 'summary' => $summary,
-                'tags' => trim($_POST['tags'] ?? ''),
-                'status' => $_POST['status'] ?? 'draft',
+                'tags' => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
+                'status' => isset($_POST['status']) ? $_POST['status'] : 'draft',
                 'created_by' => $userId
-            ];
+            );
             
             // Handle content based on type
             if ($contentType === 'article') {
-                $data['content'] = trim($_POST['content'] ?? '');
+                $data['content'] = trim(isset($_POST['content']) ? $_POST['content'] : '');
                 
                 // Handle article image upload
                 if (isset($_FILES['article_image']) && $_FILES['article_image']['error'] === 0) {
@@ -74,7 +84,7 @@ class ModeratorControl{
                     }
                 }
             } else {
-                $data['content'] = trim($_POST['content'] ?? '');
+                $data['content'] = trim(isset($_POST['content']) ? $_POST['content'] : '');
                 
                 // Handle file upload for video/audio
                 $fileField = $contentType === 'video' ? 'video_file' : 'audio_file';
@@ -108,7 +118,7 @@ class ModeratorControl{
         }
         
         try {
-            $resourceId = (int)($_POST['id'] ?? 0);
+            $resourceId = (int)(isset($_POST['id']) ? $_POST['id'] : 0);
             if ($resourceId <= 0) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
                 exit;
@@ -126,7 +136,7 @@ class ModeratorControl{
     }
     
     public function editResource() {
-        $resourceId = (int)($_GET['id'] ?? 0);
+        $resourceId = (int)(isset($_GET['id']) ? $_GET['id'] : 0);
         if ($resourceId <= 0) {
             header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
             exit;
@@ -141,7 +151,7 @@ class ModeratorControl{
                 exit;
             }
             
-            view('Moderator/editResource', ['resource' => $resource]);
+            view('Moderator/editResource', array('resource' => $resource));
             
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/EditPosts?error=load_failed');
@@ -156,7 +166,7 @@ class ModeratorControl{
         }
         
         try {
-            $resourceId = (int)($_POST['id'] ?? 0);
+            $resourceId = (int)(isset($_POST['id']) ? $_POST['id'] : 0);
             if ($resourceId <= 0) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
                 exit;
@@ -165,25 +175,25 @@ class ModeratorControl{
             $resourceHub = new ResourceHub();
             
             // Validate required fields
-            $title = trim($_POST['title'] ?? '');
-            $category = trim($_POST['category'] ?? '');
-            $contentType = trim($_POST['content_type'] ?? '');
-            $summary = trim($_POST['summary'] ?? '');
+            $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
+            $category = trim(isset($_POST['category']) ? $_POST['category'] : '');
+            $contentType = trim(isset($_POST['content_type']) ? $_POST['content_type'] : '');
+            $summary = trim(isset($_POST['summary']) ? $_POST['summary'] : '');
             
             if (empty($title) || empty($category) || empty($contentType) || empty($summary)) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=missing_fields');
                 exit;
             }
             
-            $data = [
+            $data = array(
                 'title' => $title,
                 'category' => $category,
                 'content_type' => $contentType,
                 'summary' => $summary,
-                'tags' => trim($_POST['tags'] ?? ''),
-                'status' => $_POST['status'] ?? 'draft',
-                'content' => trim($_POST['content'] ?? '')
-            ];
+                'tags' => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
+                'status' => isset($_POST['status']) ? $_POST['status'] : 'draft',
+                'content' => trim(isset($_POST['content']) ? $_POST['content'] : '')
+            );
             
             $resourceHub->update($resourceId, $data);
             header('Location: ' . BASE_URL . '/EditPosts?updated=1');
@@ -207,15 +217,15 @@ class ModeratorControl{
         $targetPath = $uploadPath . $fileName;
         
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-            return [
+            return array(
                 'success' => true,
                 'path' => '/uploads/' . $uploadDir . '/' . $fileName,
                 'name' => $file['name'],
                 'size' => $file['size'],
                 'type' => $file['type']
-            ];
+            );
         }
         
-        return ['success' => false];
+        return array('success' => false);
     }
 }

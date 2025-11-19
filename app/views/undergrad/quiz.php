@@ -1,23 +1,22 @@
 <?php
+$TITLE = 'Mental Health Self-Assessment Quiz';
+$CURRENT_PAGE = 'quiz';
 require BASE_PATH.'/app/views/layouts/header.php';
 ?>
 
-<main id="main" class="main">
-  <div class="pagetitle">
-    <h1>📋 Mental Health Self-Assessment</h1>
-    <nav>
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>/ug">Home</a></li>
-        <li class="breadcrumb-item active">Self-Assessment Quiz</li>
-      </ol>
-    </nav>
-  </div>
+<main id="main" class="dashboard-main">
+  <!-- Welcome Hero Section -->
+  <section class="quiz-hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title"> Mental Health Self-Assessment</h1>
+        <p class="hero-subtitle">Take a quick assessment to understand your current mental health status</p>
+      </div>
+    </div>
+  </section>
 
-  <section class="section">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card">
-          <div class="card-body">
+  <section class="quiz-section">
+    <div class="quiz-container">
             <div id="quizContainer">
               <div id="quizIntro" class="quiz-section">
                 <div class="quiz-intro">
@@ -120,33 +119,75 @@ require BASE_PATH.'/app/views/layouts/header.php';
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 </main>
 
 <style>
 /* Quiz Styles */
+.dashboard-main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.quiz-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 3rem 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.hero-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
 .quiz-section {
   min-height: 400px;
 }
 
+.quiz-container {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
 .quiz-intro {
   text-align: center;
-  padding: 2rem;
+  padding: 3rem 2rem;
 }
 
 .quiz-intro h4 {
   color: #1f2937;
   margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .quiz-intro p {
   color: #6b7280;
   margin-bottom: 2rem;
   line-height: 1.6;
+  font-size: 1.1rem;
 }
 
 .quiz-info {
@@ -154,6 +195,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
   justify-content: center;
   gap: 2rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .quiz-info .info-item {
@@ -161,6 +203,10 @@ require BASE_PATH.'/app/views/layouts/header.php';
   align-items: center;
   gap: 0.5rem;
   color: #6b7280;
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
 }
 
 .info-icon {
@@ -169,6 +215,23 @@ require BASE_PATH.'/app/views/layouts/header.php';
 
 .quiz-progress {
   margin-bottom: 2rem;
+  padding: 0 2rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  transition: width 0.3s ease;
+  border-radius: 4px;
 }
 
 .progress-text {
@@ -177,17 +240,20 @@ require BASE_PATH.'/app/views/layouts/header.php';
   margin-top: 0.5rem;
   color: #6b7280;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .question-container {
   margin-bottom: 2rem;
+  padding: 0 2rem;
 }
 
 .question-title {
   color: #1f2937;
   margin-bottom: 1.5rem;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   line-height: 1.5;
+  font-weight: 600;
 }
 
 .question-options {
@@ -197,40 +263,49 @@ require BASE_PATH.'/app/views/layouts/header.php';
 }
 
 .option-btn {
-  padding: 1rem;
+  padding: 1.25rem 1.5rem;
   border: 2px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 12px;
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
   font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .option-btn:hover {
   border-color: #4f46e5;
-  background: #f0f9ff;
+  background: #f8faff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.1);
 }
 
 .option-btn.selected {
   border-color: #4f46e5;
   background: #eef2ff;
   color: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
 
 .quiz-navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 2rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
 }
 
 .results-container {
-  padding: 1rem;
+  padding: 3rem 2rem;
 }
 
 .results-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .results-header h4 {
@@ -351,10 +426,94 @@ require BASE_PATH.'/app/views/layouts/header.php';
   justify-content: center;
 }
 
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  color: white;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+}
+
+.btn-primary:hover {
+  background: #4338ca;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #4f46e5;
+  border: 2px solid #4f46e5;
+}
+
+.btn-outline:hover {
+  background: #4f46e5;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 @media (max-width: 768px) {
+  .dashboard-main {
+    padding: 1rem;
+  }
+  
+  .quiz-hero {
+    padding: 2rem 1rem;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
   .quiz-info {
     flex-direction: column;
     gap: 1rem;
+  }
+  
+  .quiz-container {
+    border-radius: 0.5rem;
+  }
+  
+  .quiz-intro {
+    padding: 2rem 1rem;
+  }
+  
+  .quiz-progress {
+    padding: 0 1rem;
+  }
+  
+  .question-container {
+    padding: 0 1rem;
+  }
+  
+  .quiz-navigation {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .results-container {
+    padding: 2rem 1rem;
   }
   
   .overall-score {
@@ -375,6 +534,10 @@ require BASE_PATH.'/app/views/layouts/header.php';
   .breakdown-value {
     min-width: auto;
     text-align: left;
+  }
+  
+  .results-actions {
+    flex-direction: column;
   }
 }
 </style>
@@ -523,8 +686,20 @@ function selectOption(optionIndex) {
   // Store answer
   quizAnswers[currentQuestion] = optionIndex;
   
-  // Enable next button
-  document.getElementById('nextQuestion').disabled = false;
+  // Enable next button with smooth transition
+  const nextBtn = document.getElementById('nextQuestion');
+  nextBtn.disabled = false;
+  nextBtn.style.opacity = '1';
+  nextBtn.style.transform = 'scale(1.02)';
+  
+  // Add visual feedback
+  const selectedBtn = document.querySelectorAll('.option-btn')[optionIndex];
+  selectedBtn.style.transform = 'scale(1.02)';
+  
+  setTimeout(() => {
+    nextBtn.style.transform = 'scale(1)';
+    selectedBtn.style.transform = 'scale(1)';
+  }, 150);
 }
 
 function updateProgress() {
@@ -538,11 +713,24 @@ function updateNavigation() {
   const nextBtn = document.getElementById('nextQuestion');
   
   prevBtn.style.display = currentQuestion > 0 ? 'block' : 'none';
-  nextBtn.textContent = currentQuestion === quizQuestions.length - 1 ? 'Finish' : 'Next';
+  nextBtn.textContent = currentQuestion === quizQuestions.length - 1 ? 'Finish Assessment' : 'Next Question';
   nextBtn.disabled = quizAnswers[currentQuestion] === undefined;
+  
+  // Add loading state for better UX
+  if (nextBtn.disabled) {
+    nextBtn.style.opacity = '0.6';
+  } else {
+    nextBtn.style.opacity = '1';
+  }
 }
 
 function nextQuestion() {
+  if (quizAnswers[currentQuestion] === undefined) {
+    // Show validation message
+    showValidationMessage('Please select an answer before continuing.');
+    return;
+  }
+  
   if (currentQuestion < quizQuestions.length - 1) {
     currentQuestion++;
     showQuestion();
@@ -550,6 +738,51 @@ function nextQuestion() {
     calculateResults();
     showResults();
   }
+}
+
+function showValidationMessage(message) {
+  // Remove existing validation message
+  const existingMsg = document.querySelector('.validation-message');
+  if (existingMsg) {
+    existingMsg.remove();
+  }
+  
+  // Create validation message
+  const validationMsg = document.createElement('div');
+  validationMsg.className = 'validation-message';
+  validationMsg.textContent = message;
+  validationMsg.style.cssText = `
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    margin: 1rem 2rem;
+    text-align: center;
+    font-weight: 500;
+    animation: slideIn 0.3s ease;
+  `;
+  
+  // Add animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Insert validation message
+  const questionContainer = document.querySelector('.question-container');
+  questionContainer.appendChild(validationMsg);
+  
+  // Remove message after 3 seconds
+  setTimeout(() => {
+    if (validationMsg.parentNode) {
+      validationMsg.remove();
+    }
+  }, 3000);
 }
 
 function previousQuestion() {
@@ -585,14 +818,32 @@ function calculateResults() {
 }
 
 function showResults() {
-  document.getElementById('quizQuestions').style.display = 'none';
-  document.getElementById('quizResults').style.display = 'block';
+  // Add loading animation
+  const questionsContainer = document.getElementById('quizQuestions');
+  questionsContainer.style.opacity = '0.5';
+  questionsContainer.style.transition = 'opacity 0.3s ease';
+  
+  setTimeout(() => {
+    questionsContainer.style.display = 'none';
+    document.getElementById('quizResults').style.display = 'block';
+    
+    // Animate results appearance
+    const resultsContainer = document.getElementById('quizResults');
+    resultsContainer.style.opacity = '0';
+    resultsContainer.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+      resultsContainer.style.opacity = '1';
+      resultsContainer.style.transform = 'translateY(0)';
+      resultsContainer.style.transition = 'all 0.5s ease';
+    }, 100);
+  }, 500);
   
   // Calculate overall score (lower is better)
   const overallScore = Math.round(100 - ((quizScores.anxiety + quizScores.depression + quizScores.stress) / 3));
   
-  // Update overall score
-  document.getElementById('overallScore').textContent = overallScore;
+  // Animate score counter
+  animateScoreCounter(overallScore);
   
   // Update score description
   const scoreTitle = document.getElementById('scoreTitle');
@@ -621,18 +872,56 @@ function showResults() {
   updateRecommendations();
 }
 
+function animateScoreCounter(targetScore) {
+  const scoreElement = document.getElementById('overallScore');
+  let currentScore = 0;
+  const increment = targetScore / 30; // 30 steps for smooth animation
+  
+  const counter = setInterval(() => {
+    currentScore += increment;
+    if (currentScore >= targetScore) {
+      currentScore = targetScore;
+      clearInterval(counter);
+    }
+    scoreElement.textContent = Math.round(currentScore);
+  }, 50);
+}
+
 function updateBreakdownScore(elementId, score) {
   const element = document.getElementById(elementId);
   const parent = element.parentElement;
   const valueElement = parent.nextElementSibling;
   
-  element.style.width = score + '%';
+  // Animate the progress bar
+  element.style.width = '0%';
+  element.style.transition = 'width 1s ease-in-out';
   
+  setTimeout(() => {
+    element.style.width = score + '%';
+  }, 200);
+  
+  // Determine level and color
   let level = 'Low';
-  if (score >= 70) level = 'High';
-  else if (score >= 40) level = 'Moderate';
+  let color = '#10b981'; // Green for low
   
-  valueElement.textContent = level;
+  if (score >= 70) {
+    level = 'High';
+    color = '#ef4444'; // Red for high
+  } else if (score >= 40) {
+    level = 'Moderate';
+    color = '#f59e0b'; // Orange for moderate
+  }
+  
+  // Update color
+  element.style.background = `linear-gradient(90deg, ${color}, ${color})`;
+  
+  // Update text with animation
+  valueElement.style.opacity = '0';
+  setTimeout(() => {
+    valueElement.textContent = level;
+    valueElement.style.opacity = '1';
+    valueElement.style.transition = 'opacity 0.3s ease';
+  }, 800);
 }
 
 function updateRecommendations() {
@@ -675,6 +964,3 @@ function retakeQuiz() {
 }
 </script>
 
-<?php
-require BASE_PATH.'/app/views/layouts/footer.php';
-?>

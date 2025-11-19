@@ -8,27 +8,39 @@ class ResourceHub {
     }
 
     public function create($data) {
-        $stmt = $this->pdo->prepare("
-            INSERT INTO resource_hub (
-                title, category, content_type, content, file_path, file_name, 
-                file_size, file_type, summary, tags, status, created_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        
-        return $stmt->execute([
-            $data['title'],
-            $data['category'],
-            $data['content_type'],
-            $data['content'] ?? null,
-            $data['file_path'] ?? null,
-            $data['file_name'] ?? null,
-            $data['file_size'] ?? null,
-            $data['file_type'] ?? null,
-            $data['summary'] ?? null,
-            $data['tags'] ?? null,
-            $data['status'] ?? 'draft',
-            $data['created_by']
-        ]);
+        try {
+            $stmt = $this->pdo->prepare("
+                INSERT INTO resource_hub (
+                    title, category, content_type, content, file_path, file_name, 
+                    file_size, file_type, summary, tags, status, created_by
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            
+            $result = $stmt->execute([
+                $data['title'],
+                $data['category'],
+                $data['content_type'],
+                $data['content'] ?? null,
+                $data['file_path'] ?? null,
+                $data['file_name'] ?? null,
+                $data['file_size'] ?? null,
+                $data['file_type'] ?? null,
+                $data['summary'] ?? null,
+                $data['tags'] ?? null,
+                $data['status'] ?? 'draft',
+                $data['created_by']
+            ]);
+            
+            // Log successful creation
+            if ($result) {
+                error_log("Resource created successfully: " . $data['title'] . " (Status: " . ($data['status'] ?? 'draft') . ")");
+            }
+            
+            return $result;
+        } catch (Exception $e) {
+            error_log("Resource creation failed: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function getAll($status = null) {
