@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Counselor Dashboard</title>
     <link rel="stylesheet" href="\MindHeaven\public\css\counselor\Cdashboard.css">
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
@@ -30,17 +32,22 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-       <div class="sidebar">
+        <div class="sidebar">
             <ul class="sidebar-menu">
-                 <li class="sidebar-item active"><a href="#" style="color: #2563eb;">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="calender">📅 Calendar</a></li>
-                <li class="sidebar-item "><a href="appointmentmgt">🗓 Appointment Management</a></li>
-                <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
-                <li class="sidebar-item"><a href="forum">💭 Forum</a></li>
-                <li class="sidebar-item"><a href="resources">📚 Resource Hub</a></li>
-                <li class="sidebar-item"><a href="counselor_profile">👤 Profile</a></li>
+                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/dashboard"
+                        style="color: #2563eb;">📊 Dashboard</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
+                <li class="sidebar-item "><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓 Appointment
+                        Management</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session
+                        History</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile">👤 Profile</a>
+                </li>
                 <li class="sidebar-item"><a href="#">⚙ Settings</a></li>
-                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
+                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout"
+                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
 
@@ -105,8 +112,10 @@
                     </div>
                     <div class="action-buttons">
                         <button class="btn btn-start" onclick="startMeeting('Sarah Johnson')">Start</button>
-                        <button class="btn btn-reschedule" onclick="reschedule('Sarah Johnson', 'Anxiety and stress management')">Reschedule</button>
-                        <button class="btn btn-feedback" onclick="sendFeedback('Sarah Johnson', 'Anxiety and stress management')">Feedback</button>
+                        <button class="btn btn-reschedule"
+                            onclick="reschedule('Sarah Johnson', 'Anxiety and stress management')">Reschedule</button>
+                        <button class="btn btn-feedback"
+                            onclick="sendFeedback('Sarah Johnson', 'Anxiety and stress management')">Feedback</button>
                     </div>
                 </div>
                 <div class="appointment-row">
@@ -123,8 +132,10 @@
                     </div>
                     <div class="action-buttons">
                         <button class="btn btn-start" onclick="startMeeting('Michael Chen')">Start</button>
-                        <button class="btn btn-reschedule" onclick="reschedule('Michael Chen', 'Academic pressure and burnout')">Reschedule</button>
-                        <button class="btn btn-feedback" onclick="sendFeedback('Michael Chen', 'Academic pressure and burnout')">Feedback</button>
+                        <button class="btn btn-reschedule"
+                            onclick="reschedule('Michael Chen', 'Academic pressure and burnout')">Reschedule</button>
+                        <button class="btn btn-feedback"
+                            onclick="sendFeedback('Michael Chen', 'Academic pressure and burnout')">Feedback</button>
                     </div>
                 </div>
                 <div class="appointment-row">
@@ -141,8 +152,10 @@
                     </div>
                     <div class="action-buttons">
                         <button class="btn btn-start" onclick="startMeeting('Emily Davis')">Start</button>
-                        <button class="btn btn-reschedule" onclick="reschedule('Emily Davis', 'Social anxiety and relationship issues')">Reschedule</button>
-                        <button class="btn btn-feedback" onclick="sendFeedback('Emily Davis', 'Social anxiety and relationship issues')">Feedback</button>
+                        <button class="btn btn-reschedule"
+                            onclick="reschedule('Emily Davis', 'Social anxiety and relationship issues')">Reschedule</button>
+                        <button class="btn btn-feedback"
+                            onclick="sendFeedback('Emily Davis', 'Social anxiety and relationship issues')">Feedback</button>
                     </div>
                 </div>
             </div>
@@ -164,7 +177,9 @@
                             <span class="star">★</span>
                         </div>
                     </div>
-                    <p class="feedback-text">Dr. Smith was incredibly helpful and understanding. The session really helped me manage my anxiety better. I feel more confident about handling stressful situations now.</p>
+                    <p class="feedback-text">Dr. Smith was incredibly helpful and understanding. The session really
+                        helped me manage my anxiety better. I feel more confident about handling stressful situations
+                        now.</p>
                 </div>
                 <div class="feedback-item">
                     <div class="feedback-header">
@@ -177,7 +192,8 @@
                             <span class="star">☆</span>
                         </div>
                     </div>
-                    <p class="feedback-text">Great counseling session. The techniques shared for managing time and reducing academic stress were very practical. Looking forward to the next session.</p>
+                    <p class="feedback-text">Great counseling session. The techniques shared for managing time and
+                        reducing academic stress were very practical. Looking forward to the next session.</p>
                 </div>
                 <div class="feedback-item">
                     <div class="feedback-header">
@@ -190,7 +206,8 @@
                             <span class="star">★</span>
                         </div>
                     </div>
-                    <p class="feedback-text">Excellent support during a difficult time. The counselor provided valuable insights and coping strategies that have made a real difference in my daily life.</p>
+                    <p class="feedback-text">Excellent support during a difficult time. The counselor provided valuable
+                        insights and coping strategies that have made a real difference in my daily life.</p>
                 </div>
             </div>
         </div>
@@ -234,7 +251,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="rescheduleReason">Reason for Rescheduling</label>
-                        <textarea id="rescheduleReason" class="form-textarea" placeholder="Please provide a reason for rescheduling..." required></textarea>
+                        <textarea id="rescheduleReason" class="form-textarea"
+                            placeholder="Please provide a reason for rescheduling..." required></textarea>
                     </div>
                 </form>
             </div>
@@ -271,7 +289,9 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="feedbackMessage">Feedback Message</label>
-                        <textarea id="feedbackMessage" class="form-textarea" placeholder="Share your observations, recommendations, or encouragement for the patient..." required></textarea>
+                        <textarea id="feedbackMessage" class="form-textarea"
+                            placeholder="Share your observations, recommendations, or encouragement for the patient..."
+                            required></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -292,7 +312,9 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="actionItems">Action Items / Next Steps</label>
-                        <textarea id="actionItems" class="form-textarea" placeholder="List any homework, exercises, or tasks for the patient to complete..." style="min-height: 80px;"></textarea>
+                        <textarea id="actionItems" class="form-textarea"
+                            placeholder="List any homework, exercises, or tasks for the patient to complete..."
+                            style="min-height: 80px;"></textarea>
                     </div>
                 </form>
             </div>
@@ -305,4 +327,5 @@
 
     <script src="\MindHeaven\public\js\counselor\Cdashboard.js"></script>
 </body>
+
 </html>

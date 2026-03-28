@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -206,8 +207,15 @@
         }
 
         @keyframes pulse-crisis {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+            }
         }
 
         /* Profile Dropdown */
@@ -500,28 +508,28 @@
             .hero-title {
                 font-size: 2.5rem;
             }
-            
+
             .hero-buttons {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .navbar-nav {
                 flex-direction: column;
                 gap: 1rem;
                 align-items: stretch;
             }
-            
+
             .navbar-nav .btn-donate,
             .navbar-nav .btn-crisis {
                 text-align: center;
                 justify-content: center;
             }
-            
+
             .section-title h2 {
                 font-size: 2rem;
             }
-            
+
             .profile-menu {
                 right: auto;
                 left: 0;
@@ -535,6 +543,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -546,26 +555,80 @@
         }
 
         /* Utility Classes */
-        .text-center { text-align: center; }
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
-        .mb-1 { margin-bottom: 0.25rem; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mb-3 { margin-bottom: 1rem; }
-        .mb-4 { margin-bottom: 1.5rem; }
-        .mb-5 { margin-bottom: 3rem; }
-        .mt-1 { margin-top: 0.25rem; }
-        .mt-2 { margin-top: 0.5rem; }
-        .mt-3 { margin-top: 1rem; }
-        .mt-4 { margin-top: 1.5rem; }
-        .mt-5 { margin-top: 3rem; }
-        .p-1 { padding: 0.25rem; }
-        .p-2 { padding: 0.5rem; }
-        .p-3 { padding: 1rem; }
-        .p-4 { padding: 1.5rem; }
-        .p-5 { padding: 3rem; }
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+
+        .mt-5 {
+            margin-top: 3rem;
+        }
+
+        .p-1 {
+            padding: 0.25rem;
+        }
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-3 {
+            padding: 1rem;
+        }
+
+        .p-4 {
+            padding: 1.5rem;
+        }
+
+        .p-5 {
+            padding: 3rem;
+        }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -575,18 +638,18 @@
                     <i class="fas fa-heart"></i>
                     MindHeaven
                 </a>
-                
+
                 <div class="navbar-nav">
                     <a href="<?php echo BASE_URL; ?>/" class="nav-link active">Home</a>
                     <a href="<?php echo BASE_URL; ?>/ug/resources" class="nav-link">Resource Hub</a>
-                    <a href="<?php echo BASE_URL; ?>/ug/forum" class="nav-link">Forum Discussion</a>
+                    <a href="<?php echo BASE_URL; ?>/forum" class="nav-link">Forum Discussion</a>
                     <a href="<?php echo BASE_URL; ?>/donation" class="btn btn-donate">Donate Now</a>
                     <a href="<?php echo BASE_URL; ?>/ug/crisis" class="btn btn-crisis">
                         <i class="fas fa-exclamation-triangle"></i>
                         Crisis Support
                     </a>
                 </div>
-                
+
                 <div class="navbar-actions">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <!-- Profile Dropdown -->
@@ -631,24 +694,25 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h5>MindHeaven</h5>
-                    <p>Providing comprehensive mental health support for undergraduate students. Your mental wellness is our priority.</p>
+                    <p>Providing comprehensive mental health support for undergraduate students. Your mental wellness is
+                        our priority.</p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h5>Quick Links</h5>
                     <p><a href="<?php echo BASE_URL; ?>/">Home</a></p>
                     <p><a href="<?php echo BASE_URL; ?>/ug/resources">Resource Hub</a></p>
-                    <p><a href="<?php echo BASE_URL; ?>/ug/forum">Forum Discussion</a></p>
+                    <p><a href="<?php echo BASE_URL; ?>/forum">Forum Discussion</a></p>
                     <p><a href="<?php echo BASE_URL; ?>/donation">Donate</a></p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h5>Support</h5>
                     <p><a href="<?php echo BASE_URL; ?>/ug/crisis">Crisis Support</a></p>
                     <p><a href="<?php echo BASE_URL; ?>/ug/about">About Us</a></p>
                     <p><a href="<?php echo BASE_URL; ?>/ug/contact">Contact</a></p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h5>Contact Info</h5>
                     <p><i class="fas fa-envelope"></i> support@mindheaven.edu</p>
@@ -656,7 +720,7 @@
                     <p><i class="fas fa-map-marker-alt"></i> University Campus</p>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2024 MindHeaven. All rights reserved. | Privacy Policy | Terms of Service</p>
             </div>
@@ -665,7 +729,7 @@
 
     <script>
         // Navbar scroll effect
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
                 navbar.classList.add('scrolled');
@@ -695,10 +759,10 @@
         }
 
         // Close profile dropdown when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const profileDropdown = document.querySelector('.profile-dropdown');
             const profileMenu = document.getElementById('profileMenu');
-            
+
             if (profileDropdown && !profileDropdown.contains(event.target)) {
                 profileMenu.classList.remove('show');
             }
@@ -710,7 +774,7 @@
             rootMargin: '0px 0px -50px 0px'
         };
 
-        const observer = new IntersectionObserver(function(entries) {
+        const observer = new IntersectionObserver(function (entries) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('fade-in-up');
@@ -719,10 +783,11 @@
         }, observerOptions);
 
         // Observe all feature cards and other elements
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const elementsToAnimate = document.querySelectorAll('.feature-card, .stat-item, .section-title');
             elementsToAnimate.forEach(el => observer.observe(el));
         });
     </script>
 </body>
+
 </html>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -13,7 +15,7 @@
             <h2>🧠 Mind Haven</h2>
             <p>Admin Panel</p>
         </div>
-        
+
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/admin" class="nav-item active">
                 <span class="icon">📊</span>
@@ -73,45 +75,85 @@
         <!-- Content -->
         <div class="content-wrapper">
             <!-- Dashboard Cards -->
-            <section class="cards">
-                <div class="card">Total Users: 150</div>
-                <div class="card">Active Sessions: 12</div>
-                <div class="card">Donations This Month: $1200</div>
-                <div class="card">Upcoming Appointments: 5</div>
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">👤</div>
+                    <div class="stat-details">
+                        <h3>Total Users</h3>
+                        <div class="stat-number"><?= $totalUsers ?? 0 ?></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">🌐</div>
+                    <div class="stat-details">
+                        <h3>Active Sessions</h3>
+                        <div class="stat-number">12</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">💰</div>
+                    <div class="stat-details">
+                        <h3>Donations (Month)</h3>
+                        <div class="stat-number">$1,200</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">📅</div>
+                    <div class="stat-details">
+                        <h3>Upcoming Appointments</h3>
+                        <div class="stat-number">5</div>
+                    </div>
+                </div>
             </section>
 
             <!-- Calendar -->
-            <section class="calendar-section">
-                <h2>📅 Upcoming Appointments</h2>
-                <div id="calendar">
-                    <div class="appointment">
-                        <span class="date">2025-08-20</span> — Counseling with Student A
+            <section class="section-card">
+                <div class="section-header">
+                    <h2>📅 Upcoming Appointments</h2>
+                </div>
+                <div class="appointments-list">
+                    <div class="appointment-item">
+                        <span class="date">2025-08-20</span>
+                        <span class="details">Counseling with Student A</span>
                     </div>
-                    <div class="appointment">
-                        <span class="date">2025-08-22</span> — Counseling with Student B
+                    <div class="appointment-item">
+                        <span class="date">2025-08-22</span>
+                        <span class="details">Counseling with Student B</span>
                     </div>
                 </div>
             </section>
 
             <!-- System Alerts -->
-            <section class="alerts">
-                <h2>⚠️ System Alerts</h2>
-                <ul>
-                    <li>🚨 Scheduled Maintenance on 2025-08-25</li>
-                    <li>⚡ High server load detected</li>
-                </ul>
+            <section class="section-card">
+                <div class="section-header">
+                    <h2>⚠️ System Alerts</h2>
+                </div>
+                <div class="alert-item danger">
+                    <span class="alert-icon">🚨</span>
+                    <span>Scheduled Maintenance on 2025-08-25</span>
+                </div>
+                <div class="alert-item warning">
+                    <span class="alert-icon">⚡</span>
+                    <span>High server load detected</span>
+                </div>
             </section>
 
             <!-- Moderator Chat -->
-            <section class="chat-box">
-                <h2>💬 Moderator Chat (Complaint Resolution)</h2>
-                <div class="messages">
-                    <div class="msg moderator">Moderator: Complaint #12 needs urgent review.</div>
-                    <div class="msg admin">Admin: Got it, I'll check the system logs.</div>
+            <section class="section-card">
+                <div class="section-header">
+                    <h2>💬 Moderator Chat (Complaint Resolution)</h2>
                 </div>
-                <div class="chat-input">
-                    <input type="text" placeholder="Type your response...">
-                    <button>Send</button>
+                <div class="chat-container">
+                    <div class="chat-message moderator">
+                        <strong>Moderator:</strong> Complaint #12 needs urgent review.
+                    </div>
+                    <div class="chat-message admin">
+                        <strong>Admin:</strong> Got it, I'll check the system logs.
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" placeholder="Type your response...">
+                        <button class="send-btn">Send</button>
+                    </div>
                 </div>
             </section>
         </div>
@@ -119,4 +161,5 @@
 
     <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
 </body>
+
 </html>

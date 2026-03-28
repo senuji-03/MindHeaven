@@ -5,11 +5,12 @@ ob_start();
 
 <!-- Hero Section -->
 <section class="hero-section">
-        <div class="container">
-            <div class="hero-content">
+    <div class="container">
+        <div class="hero-content">
             <h1 class="hero-title">Your Mental Health Matters</h1>
             <p class="hero-subtitle">
-                MindHeaven provides comprehensive mental health support, resources, and community for undergraduate students. 
+                MindHeaven provides comprehensive mental health support, resources, and community for undergraduate
+                students.
                 Take control of your mental wellness journey with us.
             </p>
             <div class="hero-buttons">
@@ -33,7 +34,7 @@ ob_start();
             <h2>Why Choose MindHeaven?</h2>
             <p>We provide comprehensive mental health support tailored specifically for undergraduate students</p>
         </div>
-        
+
         <div class="features-grid">
             <div class="feature-item">
                 <div class="feature-card">
@@ -42,12 +43,12 @@ ob_start();
                     </div>
                     <h3 class="feature-title">Professional Counseling</h3>
                     <p class="feature-description">
-                        Connect with licensed mental health professionals through secure video sessions. 
+                        Connect with licensed mental health professionals through secure video sessions.
                         Get personalized support for anxiety, depression, stress, and more.
                     </p>
                 </div>
             </div>
-            
+
             <div class="feature-item">
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -55,12 +56,12 @@ ob_start();
                     </div>
                     <h3 class="feature-title">Peer Support Forum</h3>
                     <p class="feature-description">
-                        Join our anonymous discussion forum where students share experiences, 
+                        Join our anonymous discussion forum where students share experiences,
                         offer support, and build a community of understanding and empathy.
                     </p>
                 </div>
             </div>
-            
+
             <div class="feature-item">
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -68,12 +69,12 @@ ob_start();
                     </div>
                     <h3 class="feature-title">Self-Assessment Tools</h3>
                     <p class="feature-description">
-                        Take comprehensive mental health assessments and receive instant feedback 
+                        Take comprehensive mental health assessments and receive instant feedback
                         with personalized recommendations for your wellness journey.
                     </p>
                 </div>
             </div>
-            
+
             <div class="feature-item">
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -81,12 +82,12 @@ ob_start();
                     </div>
                     <h3 class="feature-title">Resource Hub</h3>
                     <p class="feature-description">
-                        Access curated mental health resources, articles, videos, and tools 
+                        Access curated mental health resources, articles, videos, and tools
                         designed specifically for college students and their unique challenges.
                     </p>
                 </div>
             </div>
-            
+
             <div class="feature-item">
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -94,12 +95,12 @@ ob_start();
                     </div>
                     <h3 class="feature-title">24/7 Crisis Support</h3>
                     <p class="feature-description">
-                        Immediate help when you need it most. Our crisis support team is available 
+                        Immediate help when you need it most. Our crisis support team is available
                         around the clock to provide emergency mental health assistance.
                     </p>
                 </div>
             </div>
-            
+
             <div class="feature-item">
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -107,7 +108,7 @@ ob_start();
                     </div>
                     <h3 class="feature-title">Progress Tracking</h3>
                     <p class="feature-description">
-                        Monitor your mental health journey with mood tracking, habit monitoring, 
+                        Monitor your mental health journey with mood tracking, habit monitoring,
                         and progress visualization tools to celebrate your growth.
                     </p>
                 </div>
@@ -147,7 +148,7 @@ ob_start();
             <h2>Ready to Start Your Mental Health Journey?</h2>
             <p>Join thousands of students who have found support, community, and healing through MindHeaven</p>
         </div>
-        
+
         <div class="cta-grid">
             <div class="cta-item">
                 <div class="feature-card cta-card">
@@ -156,7 +157,7 @@ ob_start();
                     </div>
                     <h3 class="feature-title">Get Started</h3>
                     <p class="feature-description">
-                        Create your free account and take our mental health assessment 
+                        Create your free account and take our mental health assessment
                         to get personalized recommendations.
                     </p>
                     <a href="<?php echo BASE_URL; ?>/signup" class="btn btn-primary">
@@ -165,7 +166,7 @@ ob_start();
                     </a>
                 </div>
             </div>
-            
+
             <div class="cta-item">
                 <div class="feature-card cta-card">
                     <div class="feature-icon">
@@ -173,7 +174,7 @@ ob_start();
                     </div>
                     <h3 class="feature-title">Support Others</h3>
                     <p class="feature-description">
-                        Help us continue providing free mental health services 
+                        Help us continue providing free mental health services
                         to students by making a donation.
                     </p>
                     <a href="<?php echo BASE_URL; ?>/donation" class="btn btn-success">
@@ -182,7 +183,7 @@ ob_start();
                     </a>
                 </div>
             </div>
-            
+
             <div class="cta-item">
                 <div class="feature-card cta-card">
                     <div class="feature-icon">
@@ -190,10 +191,10 @@ ob_start();
                     </div>
                     <h3 class="feature-title">Join Community</h3>
                     <p class="feature-description">
-                        Connect with peers in our supportive forum and share 
+                        Connect with peers in our supportive forum and share
                         your experiences with others who understand.
                     </p>
-                    <a href="<?php echo BASE_URL; ?>/ug/forum" class="btn btn-outline">
+                    <a href="<?php echo BASE_URL; ?>/forum" class="btn btn-outline">
                         <i class="fas fa-users"></i>
                         Join Forum
                     </a>
@@ -205,5 +206,5 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-require BASE_PATH.'/app/views/layouts/landing.php';
+require BASE_PATH . '/app/views/layouts/landing.php';
 ?>

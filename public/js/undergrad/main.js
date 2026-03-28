@@ -1,5 +1,5 @@
 // assets/js/main.js - Modern Sidebar Navigation
-(function(){
+(function () {
   // Sidebar functionality
   const sidebar = document.getElementById('sidebar');
   const sidebarToggle = document.getElementById('sidebarToggle');
@@ -12,7 +12,7 @@
     if (sidebar && mainWrapper) {
       sidebar.classList.toggle('collapsed');
       mainWrapper.classList.toggle('sidebar-collapsed');
-      
+
       // Save preference
       const isCollapsed = sidebar.classList.contains('collapsed');
       localStorage.setItem('sidebarCollapsed', isCollapsed);
@@ -25,7 +25,7 @@
       sidebar.classList.toggle('open');
       const isOpen = sidebar.classList.contains('open');
       mobileMenuToggle.setAttribute('aria-expanded', isOpen);
-      
+
       // Prevent body scroll when menu is open
       document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     }
@@ -44,7 +44,7 @@
   function handleBackToTop() {
     if (backToTop) {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      
+
       if (scrollTop > 300) {
         backToTop.classList.add('visible');
       } else {
@@ -65,10 +65,10 @@
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    
+
     // Update theme toggle icon
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
@@ -83,7 +83,7 @@
   function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    
+
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
       const icon = themeToggle.querySelector('.btn-icon');
@@ -119,7 +119,7 @@
     if (sidebar && sidebar.classList.contains('open')) {
       const isClickInsideSidebar = sidebar.contains(e.target);
       const isClickOnMobileToggle = mobileMenuToggle && mobileMenuToggle.contains(e.target);
-      
+
       if (!isClickInsideSidebar && !isClickOnMobileToggle) {
         sidebar.classList.remove('open');
         mobileMenuToggle.setAttribute('aria-expanded', 'false');
@@ -171,15 +171,19 @@
 
   // Add loading states to buttons
   document.querySelectorAll('button[type="submit"]').forEach(button => {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', function () {
       if (this.form && this.form.checkValidity()) {
         this.classList.add('loading');
-        this.disabled = true;
-        
-        // Re-enable after a delay (for demo purposes)
+        // Use setTimeout to allow form submission to trigger before disabling
+        const btn = this;
         setTimeout(() => {
-          this.classList.remove('loading');
-          this.disabled = false;
+          btn.disabled = true;
+        }, 0);
+
+        // Re-enable after a delay (for demo purposes or if validation fails)
+        setTimeout(() => {
+          btn.classList.remove('loading');
+          btn.disabled = false;
         }, 2000);
       }
     });

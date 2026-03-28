@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS habits (
     frequency ENUM('daily', 'weekly', 'custom') NOT NULL DEFAULT 'daily',
     target_days INT UNSIGNED DEFAULT 1 COMMENT 'Target days per week for weekly habits',
     color VARCHAR(7) DEFAULT '#10b981' COMMENT 'Hex color for habit display',
-    icon VARCHAR(50) DEFAULT '🎯' COMMENT 'Emoji or icon for habit',
+    icon VARCHAR(50) DEFAULT 'star' COMMENT 'Emoji or icon for habit',
     is_active BOOLEAN DEFAULT TRUE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

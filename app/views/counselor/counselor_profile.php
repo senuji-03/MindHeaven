@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Counselor Profile</title>
-     <link rel="stylesheet" href="\MindHeaven\public\css\counselor\counselor_profile.css">
+    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\counselor_profile.css">
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
@@ -32,15 +34,19 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <ul class="sidebar-menu">
-                 <li class="sidebar-item"><a href="dashboard">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="calender">📅 Calendar</a></li>
-                <li class="sidebar-item "><a href="appointmentmgt">🗓️ Appointment Management</a></li>
-                <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
-                <li class="sidebar-item"><a href="forum">💭 Forum</a></li>
-                <li class="sidebar-item"><a href="resources">📚 Resource Hub</a></li>
-                <li class="sidebar-item active">👤 Profile</li>
-                <li class="sidebar-item">⚙️ Settings</li>
-                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
+                <li class="sidebar-item "><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓️ Appointment
+                        Management</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session
+                        History</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
+                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile"
+                        style="color: #2563eb;">👤 Profile</a></li>
+                <li class="sidebar-item"><a href="#">⚙️ Settings</a></li>
+                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout"
+                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
 
@@ -49,7 +55,8 @@
             <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-picture-container">
-                    <img id="profilePic" src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-picture">
+                    <img id="profilePic" src="https://via.placeholder.com/150" alt="Profile Picture"
+                        class="profile-picture">
                     <button class="change-photo-btn" onclick="openPhotoModal()">📷</button>
                 </div>
                 <div class="profile-info">
@@ -119,7 +126,9 @@
                                 </div>
                                 <span class="qualification-year">2015 - 2019</span>
                             </div>
-                            <p class="qualification-description">Specialized in cognitive behavioral therapy and adolescent mental health. Research focus on anxiety disorders and stress management techniques.</p>
+                            <p class="qualification-description">Specialized in cognitive behavioral therapy and
+                                adolescent mental health. Research focus on anxiety disorders and stress management
+                                techniques.</p>
                         </div>
                         <div class="qualification-item">
                             <div class="qualification-header">
@@ -129,7 +138,8 @@
                                 </div>
                                 <span class="qualification-year">2012 - 2014</span>
                             </div>
-                            <p class="qualification-description">Advanced training in therapeutic techniques including CBT, DBT, and mindfulness-based interventions.</p>
+                            <p class="qualification-description">Advanced training in therapeutic techniques including
+                                CBT, DBT, and mindfulness-based interventions.</p>
                         </div>
                         <div class="qualification-item">
                             <div class="qualification-header">
@@ -139,7 +149,9 @@
                                 </div>
                                 <span class="qualification-year">2019 - Present</span>
                             </div>
-                            <p class="qualification-description">Providing individual and group therapy sessions for students and young adults. Specializing in academic stress, anxiety, depression, and relationship counseling.</p>
+                            <p class="qualification-description">Providing individual and group therapy sessions for
+                                students and young adults. Specializing in academic stress, anxiety, depression, and
+                                relationship counseling.</p>
                         </div>
                         <div class="qualification-item">
                             <div class="qualification-header">
@@ -149,7 +161,9 @@
                                 </div>
                                 <span class="qualification-year">2014 - 2019</span>
                             </div>
-                            <p class="qualification-description">Conducted psychological assessments and therapy for diverse patient populations. Developed treatment plans and collaborated with multidisciplinary teams.</p>
+                            <p class="qualification-description">Conducted psychological assessments and therapy for
+                                diverse patient populations. Developed treatment plans and collaborated with
+                                multidisciplinary teams.</p>
                         </div>
                     </div>
                 </div>
@@ -293,4 +307,5 @@
 
     <script src="\MindHeaven\public\js\counselor\counselor_profile.js"></script>
 </body>
+
 </html>

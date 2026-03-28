@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment History - Admin | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -13,7 +15,7 @@
             <h2>🧠 Mind Haven</h2>
             <p>Admin Panel</p>
         </div>
-        
+
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/admin" class="nav-item">
                 <span class="icon">📊</span>
@@ -157,7 +159,7 @@
                             <td>Dr. Emily Chen</td>
                             <td>Jan 22, 2025 - 2:00 PM</td>
                             <td><span class="badge role-moderator">Online</span></td>
-                            <td><span class="badge" style="background:#fff3cd;color:#856404;">Upcoming</span></td>
+                            <td><span class="badge status-suspended">Upcoming</span></td>
                             <td>
                                 <button class="btn-icon" title="View Details">👁️</button>
                                 <button class="btn-icon" title="Reschedule">📅</button>
@@ -180,7 +182,7 @@
                             <td>Dr. Sarah Johnson</td>
                             <td>Jan 23, 2025 - 3:00 PM</td>
                             <td><span class="badge role-moderator">Online</span></td>
-                            <td><span class="badge" style="background:#fff3cd;color:#856404;">Upcoming</span></td>
+                            <td><span class="badge status-suspended">Upcoming</span></td>
                             <td>
                                 <button class="btn-icon" title="View Details">👁️</button>
                                 <button class="btn-icon" title="Reschedule">📅</button>
@@ -210,4 +212,5 @@
 
     <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
 </body>
+
 </html>

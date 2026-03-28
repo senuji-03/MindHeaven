@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Counselors - Admin | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -13,7 +15,7 @@
             <h2>🧠 Mind Haven</h2>
             <p>Admin Panel</p>
         </div>
-        
+
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/admin" class="nav-item">
                 <span class="icon">📊</span>
@@ -72,16 +74,43 @@
 
         <!-- Content -->
         <div class="content-wrapper">
-            <section>
-                <h2>Counselor Directory</h2>
-                <table>
-                    <tr><th>Name</th><th>Status</th><th>Specialization</th><th>Actions</th></tr>
-                    <tr><td>Dr. Emily Clark</td><td>Active</td><td>Anxiety</td><td><button>Edit</button> <button>Disable</button></td></tr>
-                    <tr><td>Mr. John Miles</td><td>Onboarding</td><td>Relationship</td><td><button>Verify</button> <button>Reject</button></td></tr>
+            <section class="section-card">
+                <div class="section-header">
+                    <h2>Counselor Directory</h2>
+                </div>
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Specialization</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Dr. Emily Clark</td>
+                            <td><span class="badge status-active">Active</span></td>
+                            <td>Anxiety</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm">Edit</button>
+                                <button class="btn btn-danger btn-sm">Disable</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Mr. John Miles</td>
+                            <td><span class="badge status-suspended">Onboarding</span></td>
+                            <td>Relationship</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm">Verify</button>
+                                <button class="btn btn-secondary btn-sm">Reject</button>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </section>
         </div>
     </div>
 </body>
-</html>
 
+</html>

@@ -1,223 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users - Admin | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 6px;
+        .badge-active {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 0.85em;
             font-weight: 500;
         }
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        .badge-inactive {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 0.85em;
+            font-weight: 500;
         }
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+
+        .badge-suspended {
+            background-color: #fce8e8;
+            color: #d93025;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 0.85em;
+            font-weight: 500;
         }
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .users-table th,
-        .users-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .users-table th {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #374151;
-        }
-        .users-table tr:hover {
-            background-color: #f9fafb;
-        }
-        .badge {
+
+        .btn-action {
             padding: 4px 8px;
             border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .badge-role-admin { background-color: #fef3c7; color: #92400e; }
-        .badge-role-counselor { background-color: #dbeafe; color: #1e40af; }
-        .badge-role-undergrad { background-color: #dcfce7; color: #166534; }
-        .badge-role-moderator { background-color: #f3e8ff; color: #7c3aed; }
-        .badge-role-call_responder { background-color: #fecaca; color: #dc2626; }
-        .badge-role-donor { background-color: #fde68a; color: #d97706; }
-        
-        .btn-icon {
-            padding: 6px 10px;
-            margin: 2px;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 0.8em;
+            margin-right: 4px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 4px;
         }
-        .btn-edit {
-            background-color: #3b82f6;
-            color: white;
+
+        .btn-activate {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
         }
-        .btn-edit:hover {
-            background-color: #2563eb;
-        }
-        .btn-delete {
-            background-color: #ef4444;
-            color: white;
-        }
-        .btn-delete:hover {
-            background-color: #dc2626;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #6b7280;
-        }
-        .form-row {
-            margin-bottom: 15px;
-        }
-        .form-row label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
+
+        .btn-deactivate {
+            background-color: #e5e7eb;
             color: #374151;
         }
-        .form-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
+
+        .btn-suspend {
+            background-color: #fef08a;
+            color: #854d0e;
         }
-        .form-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+
+        .btn-reset {
+            background-color: #e0e7ff;
+            color: #3730a3;
         }
-        .form-actions {
+
+        .action-forms {
             display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .btn-primary {
-            background-color: #3b82f6;
-            color: white;
-        }
-        .btn-secondary {
-            background-color: #6b7280;
-            color: white;
-        }
-        .btn-danger {
-            background-color: #ef4444;
-            color: white;
-        }
-        .search-input {
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            width: 300px;
-        }
-        .filter-section {
-            margin-bottom: 20px;
-            padding: 20px;
-            background-color: #f9fafb;
-            border-radius: 8px;
-        }
-        .filter-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
             flex-wrap: wrap;
+            gap: 4px;
         }
-        
-        /* Tab Navigation Styles */
-        .tab-navigation {
-            display: flex;
-            border-bottom: 2px solid #e5e7eb;
-            margin-bottom: 20px;
-        }
-        
-        .tab-btn {
-            padding: 12px 24px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-weight: 500;
-            color: #6b7280;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        .tab-btn:hover {
-            color: #374151;
-            background-color: #f9fafb;
-        }
-        
-        .tab-btn.active {
-            color: #3b82f6;
-            border-bottom-color: #3b82f6;
-            background-color: #f0f9ff;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
+
+        .action-forms form {
+            margin: 0;
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -225,7 +85,7 @@
             <h2>🧠 Mind Haven</h2>
             <p>Admin Panel</p>
         </div>
-        
+
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/admin" class="nav-item">
                 <span class="icon">📊</span>
@@ -285,19 +145,19 @@
         <!-- Content -->
         <div class="content-wrapper">
             <!-- Success/Error Messages -->
-            <?php if(isset($_GET['success'])): ?>
+            <?php if (isset($_GET['success'])): ?>
                 <div class="alert alert-success">
                     <?= htmlspecialchars($_GET['success']) ?>
                 </div>
             <?php endif; ?>
 
-            <?php if(isset($_GET['error'])): ?>
+            <?php if (isset($_GET['error'])): ?>
                 <div class="alert alert-error">
                     <?= htmlspecialchars($_GET['error']) ?>
                 </div>
             <?php endif; ?>
 
-            <?php if(isset($error)): ?>
+            <?php if (isset($error)): ?>
                 <div class="alert alert-error">
                     <?= htmlspecialchars($error) ?>
                 </div>
@@ -307,9 +167,12 @@
             <div class="page-header">
                 <h2>User Management</h2>
                 <div style="display: flex; gap: 10px;">
-                <button class="btn btn-primary" onclick="openCreateModal()">
-                    ➕ Create New User
-                </button>
+                    <a href="<?= BASE_URL ?>/admin/suspended-users" class="btn btn-secondary">
+                        <span class="icon">🛑</span> Suspended Users
+                    </a>
+                    <button class="btn btn-primary" onclick="openCreateModal()">
+                        ➕ Create New User
+                    </button>
                     <button class="btn btn-primary" onclick="openCreateUndergradModal()">
                         🎓 Create Undergraduate
                     </button>
@@ -328,20 +191,21 @@
 
             <!-- All Users Tab -->
             <div id="all-users-tab" class="tab-content">
-            <!-- Filter Section -->
-            <div class="filter-section">
-                <div class="filter-group">
-                        <input type="text" placeholder="Search by name, email, or username..." class="search-input" id="searchInput" onkeyup="filterUsers()">
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <input type="text" placeholder="Search by name, email, or username..." class="search-input"
+                            id="searchInput" onkeyup="filterUsers()">
                         <select class="form-input" id="roleFilter" onchange="filterUsers()">
-                        <option value="">All Roles</option>
-                        <option value="admin">Admin</option>
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
                             <option value="counselor">Counselor</option>
                             <option value="undergrad">Undergraduate</option>
-                        <option value="moderator">Moderator</option>
+                            <option value="moderator">Moderator</option>
                             <option value="call_responder">Call Responder</option>
                             <option value="donor">Donor</option>
                             <option value="university_rep">University Representative</option>
-                    </select>
+                        </select>
                     </div>
                 </div>
 
@@ -355,34 +219,80 @@
                                 <th>Username</th>
                                 <th>Full Name</th>
                                 <th>Email</th>
-                                <th>Phone</th>
                                 <th>Role</th>
+                                <th>Status</th>
+                                <th>Strikes</th>
                                 <th>Created</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="usersTableBody">
-                            <?php if(isset($users) && !empty($users)): ?>
-                                <?php foreach($users as $user): ?>
+                            <?php if (isset($users) && !empty($users)): ?>
+                                <?php foreach ($users as $user): ?>
                                     <tr>
                                         <td><?= htmlspecialchars($user['id']) ?></td>
                                         <td><?= htmlspecialchars($user['username']) ?></td>
                                         <td><?= htmlspecialchars($user['display_name'] ?? $user['full_name']) ?></td>
                                         <td><?= htmlspecialchars($user['email'] ?? 'N/A') ?></td>
-                                        <td><?= htmlspecialchars($user['phone_number'] ?? 'N/A') ?></td>
                                         <td>
-                                            <span class="badge badge-role-<?= htmlspecialchars($user['role']) ?>">
+                                            <span class="badge role-<?= htmlspecialchars($user['role']) ?>">
                                                 <?= ucfirst(htmlspecialchars($user['role'])) ?>
                                             </span>
                                         </td>
-                                        <td><?= $user['created_at'] ? date('Y-m-d', strtotime($user['created_at'])) : 'N/A' ?></td>
                                         <td>
-                                            <button class="btn-icon btn-edit" onclick="openEditModal(<?= htmlspecialchars(json_encode($user)) ?>)">
-                                                ✏️ Edit
-                                            </button>
-                                            <button class="btn-icon btn-delete" onclick="deleteUser(<?= htmlspecialchars($user['id']) ?>)">
-                                                🗑️ Delete
-                                            </button>
+                                            <?php
+                                            $statusClass = 'badge-active';
+                                            if ($user['status'] === 'inactive')
+                                                $statusClass = 'badge-inactive';
+                                            if ($user['status'] === 'suspended')
+                                                $statusClass = 'badge-suspended';
+                                            ?>
+                                            <span class="<?= $statusClass ?>">
+                                                <?= ucfirst(htmlspecialchars($user['status'] ?? 'active')) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?= htmlspecialchars($user['strike_count'] ?? '0') ?>
+                                        </td>
+                                        <td><?= $user['created_at'] ? date('Y-m-d', strtotime($user['created_at'])) : 'N/A' ?>
+                                        </td>
+                                        <td>
+                                            <div class="action-forms">
+                                                <button class="btn-icon btn-edit" title="Edit"
+                                                    onclick='openEditModal(<?= htmlspecialchars(json_encode($user)) ?>)'>✏️</button>
+
+                                                <?php if (($user['status'] ?? 'active') !== 'active'): ?>
+                                                    <form action="<?= BASE_URL ?>/admin/manage-users/activate" method="POST"
+                                                        style="display:inline;">
+                                                        <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                                        <button type="submit" class="btn-action btn-activate"
+                                                            title="Activate">Activate</button>
+                                                    </form>
+                                                <?php endif; ?>
+
+                                                <?php if (($user['status'] ?? 'active') !== 'inactive'): ?>
+                                                    <form action="<?= BASE_URL ?>/admin/manage-users/deactivate" method="POST"
+                                                        style="display:inline;">
+                                                        <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                                        <button type="submit" class="btn-action btn-deactivate"
+                                                            title="Deactivate">Deactivate</button>
+                                                    </form>
+                                                <?php endif; ?>
+
+                                                <?php if (($user['status'] ?? 'active') !== 'suspended'): ?>
+                                                    <button class="btn-action btn-suspend" title="Suspend"
+                                                        onclick="openSuspendModal(<?= $user['id'] ?>)">Suspend</button>
+                                                <?php endif; ?>
+
+                                                <form action="<?= BASE_URL ?>/admin/manage-users/reset-strikes" method="POST"
+                                                    style="display:inline;">
+                                                    <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                                    <button type="submit" class="btn-action btn-reset"
+                                                        title="Reset Strikes">Reset Strikes</button>
+                                                </form>
+                                                <button class="btn-icon btn-delete" title="Delete"
+                                                    onclick="deleteUser(<?= htmlspecialchars($user['id']) ?>)">🗑️</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -402,50 +312,97 @@
             <div id="undergraduates-tab" class="tab-content" style="display: none;">
                 <div class="filter-section">
                     <div class="filter-group">
-                        <input type="text" placeholder="Search undergraduate students..." class="search-input" id="undergradSearchInput" onkeyup="filterUndergrads()">
+                        <input type="text" placeholder="Search undergraduate students..." class="search-input"
+                            id="undergradSearchInput" onkeyup="filterUndergrads()">
                     </div>
                 </div>
 
-            <div class="section-card">
-                    <h3 style="margin-bottom: 15px;">Undergraduate Students (<?= count($undergraduateStudents ?? []) ?>)</h3>
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
+                <div class="section-card">
+                    <h3 style="margin-bottom: 15px;">Undergraduate Students (<?= count($undergraduateStudents ?? []) ?>)
+                    </h3>
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
                                 <th>Username</th>
                                 <th>Full Name</th>
-                            <th>Email</th>
-                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Strikes</th>
                                 <th>Created</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
                         <tbody id="undergradTableBody">
-                            <?php if(isset($undergraduateStudents) && !empty($undergraduateStudents)): ?>
-                                <?php foreach($undergraduateStudents as $student): ?>
+                            <?php if (isset($undergraduateStudents) && !empty($undergraduateStudents)): ?>
+                                <?php foreach ($undergraduateStudents as $student): ?>
                                     <tr>
                                         <td><?= htmlspecialchars($student['id']) ?></td>
                                         <td><?= htmlspecialchars($student['username']) ?></td>
                                         <td><?= htmlspecialchars($student['full_name']) ?></td>
                                         <td><?= htmlspecialchars($student['email']) ?></td>
-                                        <td><?= htmlspecialchars($student['phone_number']) ?></td>
+                                        <td>
+                                            <?php
+                                            $statusClass = 'badge-active';
+                                            if ($student['status'] === 'inactive')
+                                                $statusClass = 'badge-inactive';
+                                            if ($student['status'] === 'suspended')
+                                                $statusClass = 'badge-suspended';
+                                            ?>
+                                            <span class="<?= $statusClass ?>">
+                                                <?= ucfirst(htmlspecialchars($student['status'] ?? 'active')) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?= htmlspecialchars($student['strike_count'] ?? '0') ?>
+                                        </td>
                                         <td><?= date('Y-m-d', strtotime($student['created_at'])) ?></td>
                                         <td>
-                                            <button class="btn-icon btn-edit" onclick="openEditUndergradModal(<?= htmlspecialchars(json_encode($student)) ?>)">
-                                                ✏️ Edit
-                                            </button>
-                                            <button class="btn-icon btn-delete" onclick="deleteUser(<?= htmlspecialchars($student['id']) ?>)">
-                                                🗑️ Delete
-                                            </button>
-                            </td>
-                        </tr>
+                                            <div class="action-forms">
+                                                <button class="btn-icon btn-edit" title="Edit"
+                                                    onclick='openEditUndergradModal(<?= htmlspecialchars(json_encode($student)) ?>)'>✏️</button>
+
+                                                <?php if (($student['status'] ?? 'active') !== 'active'): ?>
+                                                    <form action="<?= BASE_URL ?>/admin/manage-users/activate" method="POST"
+                                                        style="display:inline;">
+                                                        <input type="hidden" name="user_id" value="<?= $student['id'] ?>">
+                                                        <button type="submit" class="btn-action btn-activate"
+                                                            title="Activate">Activate</button>
+                                                    </form>
+                                                <?php endif; ?>
+
+                                                <?php if (($student['status'] ?? 'active') !== 'inactive'): ?>
+                                                    <form action="<?= BASE_URL ?>/admin/manage-users/deactivate" method="POST"
+                                                        style="display:inline;">
+                                                        <input type="hidden" name="user_id" value="<?= $student['id'] ?>">
+                                                        <button type="submit" class="btn-action btn-deactivate"
+                                                            title="Deactivate">Deactivate</button>
+                                                    </form>
+                                                <?php endif; ?>
+
+                                                <?php if (($student['status'] ?? 'active') !== 'suspended'): ?>
+                                                    <button class="btn-action btn-suspend" title="Suspend"
+                                                        onclick="openSuspendModal(<?= $student['id'] ?>)">Suspend</button>
+                                                <?php endif; ?>
+
+                                                <form action="<?= BASE_URL ?>/admin/manage-users/reset-strikes" method="POST"
+                                                    style="display:inline;">
+                                                    <input type="hidden" name="user_id" value="<?= $student['id'] ?>">
+                                                    <button type="submit" class="btn-action btn-reset"
+                                                        title="Reset Strikes">Reset Strikes</button>
+                                                </form>
+                                                <button class="btn-icon btn-delete" title="Delete"
+                                                    onclick="deleteUser(<?= htmlspecialchars($student['id']) ?>)">🗑️</button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
                                     <td colspan="9" style="text-align: center; padding: 40px; color: #6b7280;">
                                         No undergraduate students found
-                            </td>
-                        </tr>
+                                    </td>
+                                </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -456,7 +413,8 @@
             <div id="counselors-tab" class="tab-content" style="display: none;">
                 <div class="filter-section">
                     <div class="filter-group">
-                        <input type="text" placeholder="Search counselors..." class="search-input" id="counselorSearchInput" onkeyup="filterCounselors()">
+                        <input type="text" placeholder="Search counselors..." class="search-input"
+                            id="counselorSearchInput" onkeyup="filterCounselors()">
                     </div>
                 </div>
 
@@ -469,44 +427,85 @@
                                 <th>Username</th>
                                 <th>Full Name</th>
                                 <th>Email</th>
-                                <th>Phone</th>
                                 <th>Specialization</th>
-                                <th>Experience</th>
-                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Strikes</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="counselorTableBody">
-                            <?php if(isset($counselors) && !empty($counselors)): ?>
-                                <?php foreach($counselors as $counselor): ?>
+                            <?php if (isset($counselors) && !empty($counselors)): ?>
+                                <?php foreach ($counselors as $counselor): ?>
                                     <tr>
                                         <td><?= htmlspecialchars($counselor['id']) ?></td>
                                         <td><?= htmlspecialchars($counselor['username']) ?></td>
                                         <td><?= htmlspecialchars($counselor['full_name']) ?></td>
                                         <td><?= htmlspecialchars($counselor['email']) ?></td>
-                                        <td><?= htmlspecialchars($counselor['phone_number']) ?></td>
                                         <td><?= htmlspecialchars($counselor['specialization'] ?? 'N/A') ?></td>
-                                        <td><?= htmlspecialchars($counselor['experience_years'] ?? 'N/A') ?> years</td>
-                                        <td><?= date('Y-m-d', strtotime($counselor['created_at'])) ?></td>
                                         <td>
-                                            <button class="btn-icon btn-edit" onclick="openEditCounselorModal(<?= htmlspecialchars(json_encode($counselor)) ?>)">
-                                                ✏️ Edit
-                                            </button>
-                                            <button class="btn-icon btn-delete" onclick="deleteUser(<?= htmlspecialchars($counselor['id']) ?>)">
-                                                🗑️ Delete
-                                            </button>
-                            </td>
-                        </tr>
+                                            <?php
+                                            $statusClass = 'badge-active';
+                                            if ($counselor['status'] === 'inactive')
+                                                $statusClass = 'badge-inactive';
+                                            if ($counselor['status'] === 'suspended')
+                                                $statusClass = 'badge-suspended';
+                                            ?>
+                                            <span class="<?= $statusClass ?>">
+                                                <?= ucfirst(htmlspecialchars($counselor['status'] ?? 'active')) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?= htmlspecialchars($counselor['strike_count'] ?? '0') ?>
+                                        </td>
+                                        <td>
+                                            <div class="action-forms">
+                                                <button class="btn-icon btn-edit" title="Edit"
+                                                    onclick='openEditCounselorModal(<?= htmlspecialchars(json_encode($counselor)) ?>)'>✏️</button>
+
+                                                <?php if (($counselor['status'] ?? 'active') !== 'active'): ?>
+                                                    <form action="<?= BASE_URL ?>/admin/manage-users/activate" method="POST"
+                                                        style="display:inline;">
+                                                        <input type="hidden" name="user_id" value="<?= $counselor['id'] ?>">
+                                                        <button type="submit" class="btn-action btn-activate"
+                                                            title="Activate">Activate</button>
+                                                    </form>
+                                                <?php endif; ?>
+
+                                                <?php if (($counselor['status'] ?? 'active') !== 'inactive'): ?>
+                                                    <form action="<?= BASE_URL ?>/admin/manage-users/deactivate" method="POST"
+                                                        style="display:inline;">
+                                                        <input type="hidden" name="user_id" value="<?= $counselor['id'] ?>">
+                                                        <button type="submit" class="btn-action btn-deactivate"
+                                                            title="Deactivate">Deactivate</button>
+                                                    </form>
+                                                <?php endif; ?>
+
+                                                <?php if (($counselor['status'] ?? 'active') !== 'suspended'): ?>
+                                                    <button class="btn-action btn-suspend" title="Suspend"
+                                                        onclick="openSuspendModal(<?= $counselor['id'] ?>)">Suspend</button>
+                                                <?php endif; ?>
+
+                                                <form action="<?= BASE_URL ?>/admin/manage-users/reset-strikes" method="POST"
+                                                    style="display:inline;">
+                                                    <input type="hidden" name="user_id" value="<?= $counselor['id'] ?>">
+                                                    <button type="submit" class="btn-action btn-reset"
+                                                        title="Reset Strikes">Reset Strikes</button>
+                                                </form>
+                                                <button class="btn-icon btn-delete" title="Delete"
+                                                    onclick="deleteUser(<?= htmlspecialchars($counselor['id']) ?>)">🗑️</button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
                                     <td colspan="9" style="text-align: center; padding: 40px; color: #6b7280;">
                                         No counselors found
-                            </td>
-                        </tr>
+                                    </td>
+                                </tr>
                             <?php endif; ?>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -556,12 +555,14 @@
 
                 <div class="form-row">
                     <label>Password *</label>
-                    <input type="password" name="password" required class="form-input" placeholder="Enter password" minlength="6">
+                    <input type="password" name="password" required class="form-input" placeholder="Enter password"
+                        minlength="6">
                 </div>
 
-                    <div class="form-row">
-                        <label>Confirm Password *</label>
-                    <input type="password" name="confirm_password" required class="form-input" placeholder="Confirm password">
+                <div class="form-row">
+                    <label>Confirm Password *</label>
+                    <input type="password" name="confirm_password" required class="form-input"
+                        placeholder="Confirm password">
                 </div>
 
                 <div class="form-actions">
@@ -581,7 +582,7 @@
             </div>
             <form method="POST" action="<?= BASE_URL ?>/admin/manage-users/update">
                 <input type="hidden" name="user_id" id="edit_user_id">
-                
+
                 <div class="form-row">
                     <label>Username *</label>
                     <input type="text" name="username" id="edit_username" required class="form-input">
@@ -637,7 +638,7 @@
             </div>
             <form method="POST" action="<?= BASE_URL ?>/admin/manage-users/create">
                 <input type="hidden" name="role" value="undergrad">
-                
+
                 <div class="form-row">
                     <label>Username *</label>
                     <input type="text" name="username" required class="form-input" placeholder="Enter username">
@@ -670,16 +671,19 @@
 
                 <div class="form-row">
                     <label>Password *</label>
-                    <input type="password" name="password" required class="form-input" placeholder="Enter password" minlength="6">
+                    <input type="password" name="password" required class="form-input" placeholder="Enter password"
+                        minlength="6">
                 </div>
 
                 <div class="form-row">
                     <label>Confirm Password *</label>
-                    <input type="password" name="confirm_password" required class="form-input" placeholder="Confirm password">
+                    <input type="password" name="confirm_password" required class="form-input"
+                        placeholder="Confirm password">
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeCreateUndergradModal()">Cancel</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeCreateUndergradModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Create Student</button>
                 </div>
             </form>
@@ -695,7 +699,7 @@
             </div>
             <form method="POST" action="<?= BASE_URL ?>/admin/manage-users/create">
                 <input type="hidden" name="role" value="counselor">
-                
+
                 <div class="form-row">
                     <label>Username *</label>
                     <input type="text" name="username" required class="form-input" placeholder="Enter username">
@@ -718,7 +722,8 @@
 
                 <div class="form-row">
                     <label>License Number *</label>
-                    <input type="text" name="license_number" required class="form-input" placeholder="Enter professional license number">
+                    <input type="text" name="license_number" required class="form-input"
+                        placeholder="Enter professional license number">
                 </div>
 
                 <div class="form-row">
@@ -740,26 +745,31 @@
 
                 <div class="form-row">
                     <label>Years of Experience</label>
-                    <input type="number" name="years_experience" class="form-input" placeholder="Number of years" min="0" max="50">
+                    <input type="number" name="years_experience" class="form-input" placeholder="Number of years"
+                        min="0" max="50">
                 </div>
 
                 <div class="form-row">
                     <label>Professional Bio</label>
-                    <textarea name="bio" rows="4" class="form-input" placeholder="Tell us about your professional background..."></textarea>
+                    <textarea name="bio" rows="4" class="form-input"
+                        placeholder="Tell us about your professional background..."></textarea>
                 </div>
 
                 <div class="form-row">
                     <label>Password *</label>
-                    <input type="password" name="password" required class="form-input" placeholder="Enter password" minlength="6">
+                    <input type="password" name="password" required class="form-input" placeholder="Enter password"
+                        minlength="6">
                 </div>
 
                 <div class="form-row">
                     <label>Confirm Password *</label>
-                    <input type="password" name="confirm_password" required class="form-input" placeholder="Confirm password">
+                    <input type="password" name="confirm_password" required class="form-input"
+                        placeholder="Confirm password">
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeCreateCounselorModal()">Cancel</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeCreateCounselorModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Create Counselor</button>
                 </div>
             </form>
@@ -776,7 +786,7 @@
             <form method="POST" action="<?= BASE_URL ?>/admin/manage-users/update">
                 <input type="hidden" name="user_id" id="edit_undergrad_user_id">
                 <input type="hidden" name="role" value="undergrad">
-                
+
                 <div class="form-row">
                     <label>Username *</label>
                     <input type="text" name="username" id="edit_undergrad_username" required class="form-input">
@@ -821,7 +831,7 @@
             <form method="POST" action="<?= BASE_URL ?>/admin/manage-users/update">
                 <input type="hidden" name="user_id" id="edit_counselor_user_id">
                 <input type="hidden" name="role" value="counselor">
-                
+
                 <div class="form-row">
                     <label>Username *</label>
                     <input type="text" name="username" id="edit_counselor_username" required class="form-input">
@@ -844,7 +854,8 @@
 
                 <div class="form-row">
                     <label>License Number *</label>
-                    <input type="text" name="license_number" id="edit_counselor_license_number" required class="form-input">
+                    <input type="text" name="license_number" id="edit_counselor_license_number" required
+                        class="form-input">
                 </div>
 
                 <div class="form-row">
@@ -866,7 +877,8 @@
 
                 <div class="form-row">
                     <label>Years of Experience</label>
-                    <input type="number" name="years_experience" id="edit_counselor_years_experience" class="form-input" min="0" max="50">
+                    <input type="number" name="years_experience" id="edit_counselor_years_experience" class="form-input"
+                        min="0" max="50">
                 </div>
 
                 <div class="form-row">
@@ -907,6 +919,34 @@
         </div>
     </div>
 
+    <!-- Suspend User Modal -->
+    <div id="suspendModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Suspend User</h3>
+                <button class="close-btn" onclick="closeSuspendModal()">&times;</button>
+            </div>
+            <form method="POST" action="<?= BASE_URL ?>/admin/manage-users/suspend" id="suspendForm">
+                <input type="hidden" name="user_id" id="suspend_user_id">
+                <div class="form-row">
+                    <label>Duration</label>
+                    <select name="suspension_days" class="form-input">
+                        <option value="">Indefinite</option>
+                        <option value="1">1 Day</option>
+                        <option value="3">3 Days</option>
+                        <option value="7">1 Week</option>
+                        <option value="14">2 Weeks</option>
+                        <option value="30">1 Month</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeSuspendModal()">Cancel</button>
+                    <button type="submit" class="btn btn-suspend">Suspend User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Tab functions
         function showTab(tabName) {
@@ -914,15 +954,15 @@
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.style.display = 'none';
             });
-            
+
             // Remove active class from all tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
+
             // Show selected tab content
             document.getElementById(tabName + '-tab').style.display = 'block';
-            
+
             // Add active class to clicked tab button
             event.target.classList.add('active');
         }
@@ -1005,6 +1045,15 @@
             document.getElementById('deleteModal').classList.remove('active');
         }
 
+        function openSuspendModal(userId) {
+            document.getElementById('suspend_user_id').value = userId;
+            document.getElementById('suspendModal').classList.add('active');
+        }
+
+        function closeSuspendModal() {
+            document.getElementById('suspendModal').classList.remove('active');
+        }
+
         // Filter functions
         function filterUsers() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -1052,7 +1101,7 @@
         }
 
         // Close modals when clicking outside
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
                 if (event.target === modal) {
@@ -1063,10 +1112,10 @@
 
         // Password confirmation validation for all create forms
         document.querySelectorAll('form[action*="create"]').forEach(form => {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 const password = form.querySelector('input[name="password"]').value;
                 const confirmPassword = form.querySelector('input[name="confirm_password"]').value;
-                
+
                 if (password !== confirmPassword) {
                     e.preventDefault();
                     alert('Passwords do not match!');
@@ -1075,13 +1124,13 @@
         });
 
         // Show/hide University Representative fields based on role selection
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const roleSelect = document.querySelector('select[name="role"]');
             const universityNameField = document.getElementById('university_name_field');
             const positionField = document.getElementById('position_field');
-            
+
             if (roleSelect) {
-                roleSelect.addEventListener('change', function() {
+                roleSelect.addEventListener('change', function () {
                     if (this.value === 'university_rep') {
                         universityNameField.style.display = 'block';
                         positionField.style.display = 'block';
@@ -1094,4 +1143,5 @@
         });
     </script>
 </body>
+
 </html>
