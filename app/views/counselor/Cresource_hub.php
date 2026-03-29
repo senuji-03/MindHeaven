@@ -45,6 +45,14 @@
             font-weight: bold;
         }
 
+         .logo1 {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
         .logo-icon {
             width: 32px;
             height: 32px;
