@@ -1,57 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Event - University Representative | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/university-rep/style.css">
 </head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>University Representative</p>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
-                <span class="icon">📅</span>
-                Manage Events
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/announcements" class="nav-item">
-                <span class="icon">📰</span>
-                Announcements
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/resources" class="nav-item">
-                <span class="icon">📚</span>
-                Resources
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
-                <span class="icon">🏫</span>
-                University Profile
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/analytics" class="nav-item">
-                <span class="icon">📈</span>
-                Analytics
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
-                <span class="icon">👤</span>
-                My Profile
-            </a>
-        </nav>
 
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <span class="icon">🚪</span>
-                Logout
-            </a>
+<body>
+    <?php $isRep = isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'university_representative'; ?>
+    <?php if ($isRep): ?>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>🧠 Mind Haven</h2>
+                <p>University Representative</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
+                    <span class="icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
+                    <span class="icon">📅</span>
+                    Manage Events
+                </a>
+                <a href="<?= BASE_URL ?>/university-rep/announcements" class="nav-item">
+                    <span class="icon">📰</span>
+                    Announcements
+                </a>
+                <a href="<?= BASE_URL ?>/university-rep/resources" class="nav-item">
+                    <span class="icon">📚</span>
+                    Resources
+                </a>
+                <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
+                    <span class="icon">🏫</span>
+                    University Profile
+                </a>
+                <a href="<?= BASE_URL ?>/university-rep/analytics" class="nav-item">
+                    <span class="icon">📈</span>
+                    Analytics
+                </a>
+                <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
+                    <span class="icon">👤</span>
+                    My Profile
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="<?= BASE_URL ?>/logout" class="logout-btn">
+                    <span class="icon">🚪</span>
+                    Logout
+                </a>
+            </div>
         </div>
-    </div>
+    <?php else: ?>
+        <style>
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 2rem !important;
+            }
+
+            .topbar {
+                display: none !important;
+            }
+
+            .content-wrapper {
+                max-width: 1200px;
+                margin: 0 auto;
+                margin-top: 40px;
+            }
+        </style>
+    <?php endif; ?>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -75,20 +98,41 @@
             <div class="page-header">
                 <h2>📅 Event Details</h2>
                 <div class="header-actions">
-                    <a href="<?= BASE_URL ?>/university-rep/events/edit/<?= $event['id'] ?>" class="btn btn-primary">✏️ Edit Event</a>
-                    <a href="<?= BASE_URL ?>/university-rep/events" class="btn btn-secondary">← Back to Events</a>
+                    <?php if (isset($isOwner) && $isOwner): ?>
+                        <a href="<?= BASE_URL ?>/university-rep/events/edit/<?= $event['id'] ?>" class="btn btn-primary">✏️
+                            Edit Event</a>
+                    <?php endif; ?>
+                    <a href="<?= (isset($isOwner) && $isOwner) ? BASE_URL . '/university-rep/events' : BASE_URL . '/' ?>"
+                        class="btn btn-secondary">← Back</a>
                 </div>
             </div>
 
             <!-- Event Details Card -->
             <div class="event-details-card">
+                <!-- Event Image Banner -->
+                <?php if (!empty($event['image_path'])): ?>
+                    <div
+                        style="width: 100%; text-align: center; background-color: #f8fafc; border-bottom: 1px solid #e5e7eb; padding: 1rem 0;">
+                        <img src="<?= BASE_URL . '/' . htmlspecialchars($event['image_path']) ?>" alt="Event Poster"
+                            style="max-width: 100%; height: auto; max-height: 400px; display: inline-block;">
+                    </div>
+                <?php else: ?>
+                    <div
+                        style="width: 100%; height: 200px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #9ca3af;">
+                        <span style="font-size: 4rem;">📸</span>
+                        <span style="font-size: 1rem; margin-top: 0.5rem;">No Image Available</span>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Event Header -->
                 <div class="event-header">
                     <div class="event-title-section">
                         <h1><?= htmlspecialchars($event['event_title']) ?></h1>
                         <div class="event-meta">
-                            <span class="event-type">🎯 <?= ucfirst(str_replace('_', ' ', $event['event_type'])) ?></span>
-                            <span class="event-status status-<?= $event['status'] ?>"><?= ucfirst($event['status']) ?></span>
+                            <span class="event-type">🎯
+                                <?= ucfirst(str_replace('_', ' ', $event['event_type'])) ?></span>
+                            <span
+                                class="event-status status-<?= $event['status'] ?>"><?= ucfirst($event['status']) ?></span>
                         </div>
                     </div>
                 </div>
@@ -118,7 +162,8 @@
                         </div>
                         <div class="info-item">
                             <label>Accessibility:</label>
-                            <p><?= $event['open_for'] === 'all_universities' ? 'Open to All Universities' : 'Specific University Students Only' ?></p>
+                            <p><?= $event['open_for'] === 'all_universities' ? 'Open to All Universities' : 'Specific University Students Only' ?>
+                            </p>
                         </div>
                     </div>
 
@@ -131,7 +176,9 @@
                         </div>
                         <div class="info-item">
                             <label>Time:</label>
-                            <p><?= date('g:i A', strtotime($event['start_time'])) ?> - <?= date('g:i A', strtotime($event['end_time'])) ?></p>
+                            <p><?= date('g:i A', strtotime($event['start_time'])) ?> -
+                                <?= date('g:i A', strtotime($event['end_time'])) ?>
+                            </p>
                         </div>
                         <div class="info-item">
                             <label>Venue:</label>
@@ -142,52 +189,56 @@
                             <p><?= ucfirst($event['mode']) ?> Event</p>
                         </div>
                         <?php if ($event['max_participants']): ?>
-                        <div class="info-item">
-                            <label>Maximum Participants:</label>
-                            <p><?= htmlspecialchars($event['max_participants']) ?></p>
-                        </div>
+                            <div class="info-item">
+                                <label>Maximum Participants:</label>
+                                <p><?= htmlspecialchars($event['max_participants']) ?></p>
+                            </div>
                         <?php endif; ?>
                         <?php if ($event['registration_deadline']): ?>
-                        <div class="info-item">
-                            <label>Registration Deadline:</label>
-                            <p><?= date('F j, Y', strtotime($event['registration_deadline'])) ?></p>
-                        </div>
+                            <div class="info-item">
+                                <label>Registration Deadline:</label>
+                                <p><?= date('F j, Y', strtotime($event['registration_deadline'])) ?></p>
+                            </div>
                         <?php endif; ?>
                     </div>
 
                     <!-- Contact Information -->
                     <?php if ($event['contact_person'] || $event['contact_email'] || $event['contact_phone']): ?>
-                    <div class="info-section">
-                        <h3>📞 Contact Information</h3>
-                        <?php if ($event['contact_person']): ?>
-                        <div class="info-item">
-                            <label>Contact Person:</label>
-                            <p><?= htmlspecialchars($event['contact_person']) ?></p>
+                        <div class="info-section">
+                            <h3>📞 Contact Information</h3>
+                            <?php if ($event['contact_person']): ?>
+                                <div class="info-item">
+                                    <label>Contact Person:</label>
+                                    <p><?= htmlspecialchars($event['contact_person']) ?></p>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($event['contact_email']): ?>
+                                <div class="info-item">
+                                    <label>Email:</label>
+                                    <p><a
+                                            href="mailto:<?= htmlspecialchars($event['contact_email']) ?>"><?= htmlspecialchars($event['contact_email']) ?></a>
+                                    </p>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($event['contact_phone']): ?>
+                                <div class="info-item">
+                                    <label>Phone:</label>
+                                    <p><a
+                                            href="tel:<?= htmlspecialchars($event['contact_phone']) ?>"><?= htmlspecialchars($event['contact_phone']) ?></a>
+                                    </p>
+                                </div>
+                            <?php endif; ?>
                         </div>
-                        <?php endif; ?>
-                        <?php if ($event['contact_email']): ?>
-                        <div class="info-item">
-                            <label>Email:</label>
-                            <p><a href="mailto:<?= htmlspecialchars($event['contact_email']) ?>"><?= htmlspecialchars($event['contact_email']) ?></a></p>
-                        </div>
-                        <?php endif; ?>
-                        <?php if ($event['contact_phone']): ?>
-                        <div class="info-item">
-                            <label>Phone:</label>
-                            <p><a href="tel:<?= htmlspecialchars($event['contact_phone']) ?>"><?= htmlspecialchars($event['contact_phone']) ?></a></p>
-                        </div>
-                        <?php endif; ?>
-                    </div>
                     <?php endif; ?>
 
                     <!-- Additional Information -->
                     <?php if ($event['additional_info']): ?>
-                    <div class="info-section">
-                        <h3>ℹ️ Additional Information</h3>
-                        <div class="info-item">
-                            <p><?= nl2br(htmlspecialchars($event['additional_info'])) ?></p>
+                        <div class="info-section">
+                            <h3>ℹ️ Additional Information</h3>
+                            <div class="info-item">
+                                <p><?= nl2br(htmlspecialchars($event['additional_info'])) ?></p>
+                            </div>
                         </div>
-                    </div>
                     <?php endif; ?>
 
                     <!-- Event Metadata -->
@@ -206,9 +257,13 @@
 
                 <!-- Action Buttons -->
                 <div class="event-actions">
-                    <a href="<?= BASE_URL ?>/university-rep/events/edit/<?= $event['id'] ?>" class="btn btn-primary">✏️ Edit Event</a>
-                    <button onclick="deleteEvent(<?= $event['id'] ?>)" class="btn btn-danger">🗑️ Delete Event</button>
-                    <a href="<?= BASE_URL ?>/university-rep/events" class="btn btn-secondary">← Back to Events</a>
+                    <?php if (isset($isOwner) && $isOwner): ?>
+                        <a href="<?= BASE_URL ?>/university-rep/events/edit/<?= $event['id'] ?>" class="btn btn-primary">✏️
+                            Edit Event</a>
+                        <button onclick="deleteEvent(<?= $event['id'] ?>)" class="btn btn-danger">🗑️ Delete Event</button>
+                    <?php endif; ?>
+                    <a href="<?= (isset($isOwner) && $isOwner) ? BASE_URL . '/university-rep/events' : BASE_URL . '/' ?>"
+                        class="btn btn-secondary">← Back</a>
                 </div>
             </div>
         </div>
@@ -370,12 +425,12 @@
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '<?= BASE_URL ?>/university-rep/events/delete';
-                
+
                 const eventIdInput = document.createElement('input');
                 eventIdInput.type = 'hidden';
                 eventIdInput.name = 'event_id';
                 eventIdInput.value = eventId;
-                
+
                 form.appendChild(eventIdInput);
                 document.body.appendChild(form);
                 form.submit();
@@ -383,4 +438,5 @@
         }
     </script>
 </body>
+
 </html>

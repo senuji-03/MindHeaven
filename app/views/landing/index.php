@@ -141,6 +141,72 @@ ob_start();
     </div>
 </section>
 
+<!-- University Donation Events Section -->
+<?php if (!empty($eventsByUniversity)): ?>
+    <section class="features-section" style="background-color: #f8fafc; padding-bottom: 2rem;">
+        <div class="container">
+            <div class="section-title">
+                <h2>University Fundraising Events</h2>
+                <p>Support mental health initiatives across different universities</p>
+            </div>
+
+            <?php foreach ($eventsByUniversity as $uniName => $events): ?>
+                <div style="margin-bottom: 3rem;">
+                    <h3
+                        style="margin-bottom: 1.5rem; color: var(--primary-dark); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                        <i class="fas fa-university"></i> <?= htmlspecialchars($uniName) ?>
+                    </h3>
+                    <div class="features-grid">
+                        <?php foreach ($events as $event): ?>
+                            <div class="feature-item">
+                                <div class="feature-card"
+                                    style="padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100%;">
+                                    <?php if (!empty($event['image_path'])): ?>
+                                        <div
+                                            style="width: 100%; text-align: center; background-color: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+                                            <img src="<?= BASE_URL . '/' . htmlspecialchars($event['image_path']) ?>" alt="Event Image"
+                                                style="max-width: 100%; height: auto; max-height: 250px; display: block; margin: 0 auto;">
+                                        </div>
+                                    <?php else: ?>
+                                        <div
+                                            style="width: 100%; height: 200px; background: var(--border-color); display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-image" style="font-size: 3rem; color: #9ca3af;"></i>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
+                                        <h4
+                                            style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">
+                                            <?= htmlspecialchars($event['event_title']) ?>
+                                        </h4>
+                                        <p
+                                            style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; flex-grow: 1;">
+                                            <?= htmlspecialchars($event['short_description'] ?? 'Support this mental health initiative.') ?>
+                                        </p>
+                                        <div
+                                            style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600; margin-bottom: 1rem;">
+                                            <i class="far fa-calendar-alt"></i> Deadline:
+                                            <?= (!empty($event['event_date']) && strpos($event['event_date'], '0000') === false) ? htmlspecialchars(date('M d, Y', strtotime($event['event_date']))) : 'To be announced' ?>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+                                            <a href="<?= BASE_URL ?>/university-rep/events/view/<?= $event['id'] ?>"
+                                                class="btn btn-outline"
+                                                style="flex: 1; text-align: center; justify-content: center; padding: 0.5rem;">View
+                                                Details</a>
+                                            <a href="<?= BASE_URL ?>/donation?event_id=<?= $event['id'] ?>" class="btn btn-success"
+                                                style="flex: 1; text-align: center; justify-content: center; padding: 0.5rem;">Donate</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+<?php endif; ?>
+
 <!-- Call to Action Section -->
 <section class="features-section">
     <div class="container">

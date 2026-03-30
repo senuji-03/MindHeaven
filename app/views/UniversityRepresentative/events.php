@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Events - University Representative | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/university-rep/style.css">
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -13,7 +15,7 @@
             <h2>🧠 Mind Haven</h2>
             <p>University Representative</p>
         </div>
-        
+
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
                 <span class="icon">📊</span>
@@ -103,20 +105,33 @@
                 <?php if (isset($events) && !empty($events)): ?>
                     <?php foreach ($events as $event): ?>
                         <div class="event-card">
-                            <div class="event-image">
-                                <img src="https://via.placeholder.com/300x200" alt="Event Poster">
+                            <div class="event-image"
+                                style="background-color: #f8fafc; text-align: center; display: flex; align-items: center; justify-content: center; overflow: hidden; height: 200px;">
+                                <?php if (!empty($event['image_path'])): ?>
+                                    <img src="<?= BASE_URL . '/' . htmlspecialchars($event['image_path']) ?>" alt="Event Poster"
+                                        style="max-width: 100%; max-height: 100%; height: auto; display: block; margin: 0 auto; object-fit: contain;">
+                                <?php else: ?>
+                                    <div style="color: #9ca3af; display: flex; flex-direction: column; align-items: center;">
+                                        <span style="font-size: 3rem;">📸</span>
+                                        <span style="font-size: 0.875rem; margin-top: 0.5rem;">No Image</span>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="event-status <?= htmlspecialchars($event['status']) ?>">
                                     <?= ucfirst(htmlspecialchars($event['status'])) ?>
                                 </div>
                             </div>
                             <div class="event-content">
                                 <h3><?= htmlspecialchars($event['event_title']) ?></h3>
-                                <p class="event-type">🎯 <?= ucfirst(str_replace('_', ' ', htmlspecialchars($event['event_type']))) ?></p>
-                                <p class="event-date">📅 <?= date('F j, Y', strtotime($event['event_date'])) ?> | <?= date('g:i A', strtotime($event['start_time'])) ?> - <?= date('g:i A', strtotime($event['end_time'])) ?></p>
+                                <p class="event-type">🎯
+                                    <?= ucfirst(str_replace('_', ' ', htmlspecialchars($event['event_type']))) ?></p>
+                                <p class="event-date">📅 <?= date('F j, Y', strtotime($event['event_date'])) ?> |
+                                    <?= date('g:i A', strtotime($event['start_time'])) ?> -
+                                    <?= date('g:i A', strtotime($event['end_time'])) ?></p>
                                 <p class="event-venue">📍 <?= htmlspecialchars($event['venue']) ?></p>
                                 <p class="event-mode"><?= ucfirst(htmlspecialchars($event['mode'])) ?> Event</p>
                                 <?php if ($event['max_participants']): ?>
-                                    <p class="event-participants">👥 Max: <?= htmlspecialchars($event['max_participants']) ?> participants</p>
+                                    <p class="event-participants">👥 Max: <?= htmlspecialchars($event['max_participants']) ?>
+                                        participants</p>
                                 <?php endif; ?>
                                 <div class="event-stats">
                                     <span>📅 Created: <?= date('M j, Y', strtotime($event['created_at'])) ?></span>
@@ -126,9 +141,12 @@
                                 </div>
                             </div>
                             <div class="event-actions">
-                                <button class="btn-icon btn-view" title="View" onclick="viewEvent(<?= $event['id'] ?>)">👁️</button>
-                                <button class="btn-icon btn-edit" title="Edit" onclick="editEvent(<?= $event['id'] ?>)">✏️</button>
-                                <button class="btn-icon btn-delete" title="Delete" onclick="deleteEvent(<?= $event['id'] ?>)">🗑️</button>
+                                <button class="btn-icon btn-view" title="View"
+                                    onclick="viewEvent(<?= $event['id'] ?>)">👁️</button>
+                                <button class="btn-icon btn-edit" title="Edit"
+                                    onclick="editEvent(<?= $event['id'] ?>)">✏️</button>
+                                <button class="btn-icon btn-delete" title="Delete"
+                                    onclick="deleteEvent(<?= $event['id'] ?>)">🗑️</button>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -137,7 +155,8 @@
                         <div class="no-events-icon">📅</div>
                         <h3>No Events Found</h3>
                         <p>You haven't created any events yet. Start by creating your first event!</p>
-                        <a href="<?= BASE_URL ?>/university-rep/events/create" class="btn btn-primary">Create Your First Event</a>
+                        <a href="<?= BASE_URL ?>/university-rep/events/create" class="btn btn-primary">Create Your First
+                            Event</a>
                     </div>
                 <?php endif; ?>
             </div>
@@ -161,35 +180,35 @@
             border-radius: 12px;
             border: 2px dashed #cbd5e1;
         }
-        
+
         .no-events-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-        
+
         .no-events h3 {
             color: #475569;
             margin-bottom: 0.5rem;
         }
-        
+
         .no-events p {
             color: #64748b;
             margin-bottom: 1.5rem;
         }
-        
+
         .event-participants {
             color: #64748b;
             font-size: 0.875rem;
             margin: 0.25rem 0;
         }
-        
+
         .event-mode {
             color: #3b82f6;
             font-size: 0.875rem;
             margin: 0.25rem 0;
         }
     </style>
-    
+
     <script src="<?= BASE_URL ?>/js/university-rep/script.js"></script>
     <script>
         function viewEvent(eventId) {
@@ -208,12 +227,12 @@
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '<?= BASE_URL ?>/university-rep/events/delete';
-                
+
                 const eventIdInput = document.createElement('input');
                 eventIdInput.type = 'hidden';
                 eventIdInput.name = 'event_id';
                 eventIdInput.value = eventId;
-                
+
                 form.appendChild(eventIdInput);
                 document.body.appendChild(form);
                 form.submit();
@@ -221,10 +240,10 @@
         }
 
         // Search functionality
-        document.getElementById('searchEvents').addEventListener('input', function() {
+        document.getElementById('searchEvents').addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase();
             const eventCards = document.querySelectorAll('.event-card');
-            
+
             eventCards.forEach(card => {
                 const title = card.querySelector('h3').textContent.toLowerCase();
                 if (title.includes(searchTerm)) {
@@ -236,4 +255,5 @@
         });
     </script>
 </body>
+
 </html>
