@@ -41,7 +41,7 @@ class LoginControl
 
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare("SELECT id, username, password, role, status, is_deleted, suspended_until FROM users WHERE username = ?");
+            $stmt = $pdo->prepare("SELECT id, username, password, role, status, is_deleted, suspended_until, password_reset_required FROM users WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -71,20 +71,27 @@ class LoginControl
                     return;
                 }
 
+                // Check if password reset is required
+                if (isset($user['password_reset_required']) && $user['password_reset_required'] == 1) {
+                    $_SESSION['force_password_change_user_id'] = $user['id'];
+                    header('Location: ' . BASE_URL . '/login/forcePasswordChange');
+                    exit;
+                }
+
                 // Login successful
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
 
-                // Special handling for University Representatives
-                // Check if this is a University Representative by username or other criteria
+                $assignedRole = $user['role'];
                 if (
                     stripos($user['username'], 'university') !== false ||
                     stripos($user['username'], 'rep') !== false ||
                     stripos($user['username'], 'representative') !== false
                 ) {
-                    $_SESSION['role'] = 'university_rep';
+                    // Fallback to ensuring role string is strictly mapped for UI
+                    $assignedRole = 'university_representative';
                 }
+                $_SESSION['role'] = $assignedRole;
 
                 $this->redirectToDashboard($_SESSION['role']);
             } else {
@@ -92,6 +99,66 @@ class LoginControl
             }
         } catch (Exception $e) {
             $this->view('layouts/login', ['error' => 'Login failed. Please try again.']);
+        }
+    }
+
+    public function forcePasswordChange()
+    {
+        if (!isset($_SESSION['force_password_change_user_id'])) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+        $this->view('layouts/force-password-change', []);
+    }
+
+    public function processForcePasswordChange()
+    {
+        if (!isset($_SESSION['force_password_change_user_id'])) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/login/forcePasswordChange');
+            exit;
+        }
+
+        $password = $_POST['password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
+
+        if (empty($password) || strlen($password) < 6) {
+            $this->view('layouts/force-password-change', ['error' => 'Password must be at least 6 characters']);
+            return;
+        }
+
+        if ($password !== $confirmPassword) {
+            $this->view('layouts/force-password-change', ['error' => 'Passwords do not match']);
+            return;
+        }
+
+        try {
+            $userId = $_SESSION['force_password_change_user_id'];
+            $pdo = Database::getConnection();
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare("UPDATE users SET password = ?, password_reset_required = 0 WHERE id = ?");
+            $stmt->execute([$hashedPassword, $userId]);
+
+            // Now properly log them in by fetching their info again
+            $stmt = $pdo->prepare("SELECT id, username, role FROM users WHERE id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            unset($_SESSION['force_password_change_user_id']); // Clear the flag
+
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+
+            $assignedRole = $user['role'];
+            $_SESSION['role'] = $assignedRole;
+
+            $this->redirectToDashboard($_SESSION['role']);
+        } catch (Exception $e) {
+            $this->view('layouts/force-password-change', ['error' => 'Failed to update password.']);
         }
     }
 
@@ -265,8 +332,7 @@ class LoginControl
             'donor' => BASE_URL . '/DonationForm',
             'moderator' => BASE_URL . '/ModeratorDashboard',
             'undergraduate' => BASE_URL . '/ug',
-            'university_rep' => BASE_URL . '/UniversityRepresentative/dashboard',
-            'university_representative' => BASE_URL . '/UniversityRepresentative/dashboard'
+            'university_representative' => BASE_URL . '/university-rep/dashboard'
         ];
 
         if (isset($dashboardUrls[$role])) {

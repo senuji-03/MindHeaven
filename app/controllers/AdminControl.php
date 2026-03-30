@@ -145,8 +145,16 @@ class AdminControl
         $password = $_POST['password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
         $role = $_POST['role'] ?? '';
-        $fullName = trim($_POST['full_name'] ?? '');
+
         $email = trim($_POST['email'] ?? '');
+        if ($role === 'university_representative') {
+            $role = 'university_representative'; // ensure it matches enum
+            $username = $email;
+            $password = substr(md5(uniqid()), 0, 8); // Temporary password
+            $confirmPassword = $password;
+        }
+
+        $fullName = trim($_POST['full_name'] ?? '');
         $phoneNumber = trim($_POST['phone_number'] ?? '');
 
         $errors = [];
@@ -170,7 +178,7 @@ class AdminControl
 
         if (empty($role)) {
             $errors[] = 'Role is required';
-        } elseif (!in_array($role, ['admin', 'call_responder', 'counselor', 'donor', 'moderator', 'undergraduate', 'university_rep'])) {
+        } elseif (!in_array($role, ['admin', 'call_responder', 'counselor', 'donor', 'moderator', 'undergraduate', 'university_representative'])) {
             $errors[] = 'Invalid role selected';
         }
 
@@ -182,7 +190,7 @@ class AdminControl
             $errors[] = 'Email is required';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Please enter a valid email address';
-        } elseif (!preg_match('/^[a-zA-Z0-9._%+-]+@gmail\.com$/', $email)) {
+        } elseif ($role !== 'university_representative' && !preg_match('/^[a-zA-Z0-9._%+-]+@gmail\.com$/', $email)) {
             $errors[] = 'Email must be a Gmail address';
         }
 
@@ -215,6 +223,12 @@ class AdminControl
                     if ($stmt->fetch()) {
                         $errors[] = 'Email already exists';
                     }
+                } elseif ($role === 'university_representative') {
+                    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+                    $stmt->execute([$email]);
+                    if ($stmt->fetch()) {
+                        $errors[] = 'Email already exists';
+                    }
                 }
             } catch (Exception $e) {
                 $errors[] = 'Database error: ' . $e->getMessage();
@@ -231,9 +245,10 @@ class AdminControl
             $pdo = Database::getConnection();
             $pdo->beginTransaction();
 
+            $passwordResetRequired = ($role === 'university_representative') ? 1 : 0;
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("INSERT INTO users (username, password, role, email) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$username, $hashedPassword, $role, $email]);
+            $stmt = $pdo->prepare("INSERT INTO users (username, password, role, email, password_reset_required) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$username, $hashedPassword, $role, $email, $passwordResetRequired]);
             $userId = $pdo->lastInsertId();
 
             // Insert into role-specific table
@@ -272,16 +287,29 @@ class AdminControl
             } elseif ($role === 'undergraduate') {
                 $stmt = $pdo->prepare("INSERT INTO undergraduate_students (user_id, full_name, phone_number) VALUES (?, ?, ?)");
                 $stmt->execute([$userId, $fullName, $phoneNumber]);
-            } elseif ($role === 'university_rep') {
-                // For now, just create the user without additional data until university_representatives table is created
-                // TODO: Add university_representatives table and uncomment the following lines
-                /*
+            } elseif ($role === 'university_representative') {
                 $universityName = trim($_POST['university_name'] ?? '');
-                $position = trim($_POST['position'] ?? '');
+                $position = trim($_POST['position'] ?? 'University Representative');
 
-                $stmt = $pdo->prepare("INSERT INTO university_representatives (user_id, full_name, email, phone_number, university_name, position) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$userId, $fullName, $email, $phoneNumber, $universityName, $position]);
-                */
+                if (empty($universityName)) {
+                    throw new Exception("University name is required for University Representative.");
+                }
+
+                $stmt = $pdo->prepare("SELECT id FROM universities WHERE name = ?");
+                $stmt->execute([$universityName]);
+                $universityId = $stmt->fetchColumn();
+
+                if (!$universityId) {
+                    $stmt = $pdo->prepare("INSERT INTO universities (name) VALUES (?)");
+                    $stmt->execute([$universityName]);
+                    $universityId = $pdo->lastInsertId();
+                }
+
+                $stmt = $pdo->prepare("INSERT INTO university_representatives (user_id, university_id, position) VALUES (?, ?, ?)");
+                $stmt->execute([$userId, $universityId, $position]);
+
+                $_SESSION['temp_username'] = $username;
+                $_SESSION['temp_password'] = $password;
             }
 
             $pdo->commit();
@@ -348,13 +376,25 @@ class AdminControl
             $pdo->beginTransaction();
 
             // Update users table
-            if (!empty($password)) {
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?");
-                $stmt->execute([$username, $email, $hashedPassword, $userId]);
+            if ($role === 'university_representative') {
+                // Ignore email change for university rep
+                if (!empty($password)) {
+                    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ? WHERE id = ?");
+                    $stmt->execute([$username, $hashedPassword, $userId]);
+                } else {
+                    $stmt = $pdo->prepare("UPDATE users SET username = ? WHERE id = ?");
+                    $stmt->execute([$username, $userId]);
+                }
             } else {
-                $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
-                $stmt->execute([$username, $email, $userId]);
+                if (!empty($password)) {
+                    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?");
+                    $stmt->execute([$username, $email, $hashedPassword, $userId]);
+                } else {
+                    $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
+                    $stmt->execute([$username, $email, $userId]);
+                }
             }
 
             // Update role-specific table
@@ -393,16 +433,14 @@ class AdminControl
             } elseif ($role === 'undergraduate') {
                 $stmt = $pdo->prepare("UPDATE undergraduate_students SET full_name = ?, phone_number = ? WHERE user_id = ?");
                 $stmt->execute([$fullName, $phoneNumber, $userId]);
-            } elseif ($role === 'university_rep') {
-                // For now, just update the user without additional data until university_representatives table is created
-                // TODO: Add university_representatives table and uncomment the following lines
-                /*
-                $universityName = trim($_POST['university_name'] ?? '');
-                $position = trim($_POST['position'] ?? '');
+            } elseif ($role === 'university_representative') {
+                $universityId = $_POST['university_id'] ?? null;
+                $position = trim($_POST['position'] ?? 'University Representative');
 
-                $stmt = $pdo->prepare("UPDATE university_representatives SET full_name = ?, email = ?, phone_number = ?, university_name = ?, position = ? WHERE user_id = ?");
-                $stmt->execute([$fullName, $email, $phoneNumber, $universityName, $position, $userId]);
-                */
+                if ($universityId) {
+                    $stmt = $pdo->prepare("UPDATE university_representatives SET university_id = ?, position = ? WHERE user_id = ?");
+                    $stmt->execute([$universityId, $position, $userId]);
+                }
             }
 
             $pdo->commit();

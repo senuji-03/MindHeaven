@@ -18,6 +18,8 @@ $router->get('/login/forgot-password', 'LoginControl@forgotPassword');
 $router->post('/login/forgot-password', 'LoginControl@processForgotPassword');
 $router->get('/login/reset-password', 'LoginControl@resetPassword');
 $router->post('/login/reset-password', 'LoginControl@resetPassword');
+$router->get('/login/forcePasswordChange', 'LoginControl@forcePasswordChange');
+$router->post('/login/forcePasswordChange', 'LoginControl@processForcePasswordChange');
 $router->get('/logout', 'LoginControl@logout');
 
 // Signup routes

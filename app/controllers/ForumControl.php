@@ -43,7 +43,7 @@ class ForumControl
 
         // Access Control: University Reps cannot create threads
         $userRole = $_SESSION['role'] ?? '';
-        if ($userRole === 'university_rep' || $userRole === 'university_representative') { // Handle both variations just in case
+        if ($userRole === 'university_representative') { // Handle university representative role
             $_SESSION['error'] = "You do not have permission to create threads.";
             header('Location: ' . BASE_URL . '/forum');
             exit;
@@ -68,7 +68,7 @@ class ForumControl
 
         // Access Control
         $userRole = $_SESSION['role'] ?? '';
-        if ($userRole === 'university_rep' || $userRole === 'university_representative') {
+        if ($userRole === 'university_representative') {
             $_SESSION['error'] = "You do not have permission to create threads.";
             header('Location: ' . BASE_URL . '/forum');
             exit;
