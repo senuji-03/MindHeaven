@@ -7,6 +7,16 @@
      <link rel="stylesheet" href="\MindHeaven\public\css\counselor\counselor_profile.css">
 </head>
 <body>
+    <?php
+        $counselor = isset($counselor) && is_array($counselor) ? $counselor : array();
+        $c_full_name = isset($counselor['full_name']) ? $counselor['full_name'] : 'Counselor';
+        $c_email = isset($counselor['email']) ? $counselor['email'] : '';
+        $c_phone = isset($counselor['phone_number']) ? $counselor['phone_number'] : '';
+        $c_license = isset($counselor['license_number']) ? $counselor['license_number'] : '';
+        $c_spec = isset($counselor['specialization']) ? $counselor['specialization'] : '';
+        $c_exp = isset($counselor['experience_years']) ? $counselor['experience_years'] : '';
+        $c_bio = isset($counselor['bio']) ? $counselor['bio'] : '';
+    ?>
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-content">
@@ -36,10 +46,10 @@
                 <li class="sidebar-item"><a href="calender">📅 Calendar</a></li>
                 <li class="sidebar-item "><a href="appointmentmgt">🗓️ Appointment Management</a></li>
                 <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
-             
+                <li class="sidebar-item"><a href="forum">💭 Forum</a></li>
                 <li class="sidebar-item"><a href="resources">📚 Resource Hub</a></li>
                 <li class="sidebar-item active">👤 Profile</li>
-            
+                <li class="sidebar-item">⚙️ Settings</li>
                 <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
@@ -53,7 +63,7 @@
                     <button class="change-photo-btn" onclick="openPhotoModal()">📷</button>
                 </div>
                 <div class="profile-info">
-                    <h1 class="profile-name" id="profileName">Dr. Sarah Mitchell</h1>
+                    <h1 class="profile-name" id="profileName"><?php echo htmlspecialchars($c_full_name); ?></h1>
                     <div class="profile-stats">
                         <div class="stat-item">
                             <div class="stat-value" id="totalSessions">247</div>
@@ -81,25 +91,48 @@
                     <div class="info-grid" id="personalDetails">
                         <div class="info-item">
                             <label class="info-label">Full Name</label>
-                            <div class="info-value readonly">Dr. Sarah Mitchell</div>
+                            <div class="info-value readonly"><?php echo htmlspecialchars($c_full_name); ?></div>
                         </div>
                         <div class="info-item">
                             <label class="info-label">Mobile Number</label>
-                            <div class="info-value readonly">+94 77 123 4567</div>
+                            <div class="info-value readonly"><?php echo htmlspecialchars($c_phone); ?></div>
                         </div>
                         <div class="info-item">
                             <label class="info-label">Email Address</label>
-                            <div class="info-value readonly">sarah.mitchell@mindheaven.com</div>
+                            <div class="info-value readonly"><?php echo htmlspecialchars($c_email); ?></div>
                         </div>
                         <div class="info-item">
-                            <label class="info-label">Location</label>
-                            <div class="info-value" id="location">Colombo, Sri Lanka</div>
+                            <label class="info-label">License Number</label>
+                            <div class="info-value readonly"><?php echo htmlspecialchars($c_license); ?></div>
                         </div>
                     </div>
                 </div>
                 <div class="save-section" id="personalSave">
                     <button class="cancel-btn" onclick="cancelEdit('personal')">Cancel</button>
                     <button class="save-btn" onclick="saveSection('personal')">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- Professional Summary -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Professional Details</h2>
+                </div>
+                <div class="section-content">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label class="info-label">Specialization</label>
+                            <div class="info-value readonly"><?php echo htmlspecialchars($c_spec); ?></div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Years of Experience</label>
+                            <div class="info-value readonly"><?php echo htmlspecialchars((string)$c_exp); ?></div>
+                        </div>
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <label class="info-label">Bio</label>
+                            <div class="info-value readonly"><?php echo nl2br(htmlspecialchars($c_bio)); ?></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

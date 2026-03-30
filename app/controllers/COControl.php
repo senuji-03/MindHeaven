@@ -1,21 +1,14 @@
 <?php
 
 require_once BASE_PATH . '/app/models/Event.php';
+require_once BASE_PATH . '/app/models/Feedback.php';
+require_once BASE_PATH . '/app/models/Counselor.php';
+require_once BASE_PATH . '/app/models/Appointment.php';
 
 class COControl {
     private $eventModel;
     
     public function __construct() {
-        // Session is already started in index.php, no need to start again
-        // Protect all counselor routes
-        if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'counselor') {
-            header("Location: " . BASE_URL . "/login");
-            exit;
-        }
-        
-        // Add security headers to prevent caching and back-button access
-        Auth::setSecurityHeaders();
-        
         $this->eventModel = new Event();
     }
     
@@ -26,7 +19,50 @@ class COControl {
     }
     
     public function dashboard() {
-        view('/counselor/Cdashboard');
+        $counselorFeedback = array();
+        $upcomingAppointments = array();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!empty($_SESSION['user_id'])) {
+            $counselorModel = new Counselor();
+            $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+            if ($counselor && !empty($counselor['id'])) {
+                $feedbackModel = new Feedback();
+                $counselorFeedback = $feedbackModel->getCounselorFeedback((int) $counselor['id'], 10);
+            }
+
+            // Upcoming appointments booked by undergrads (appointments table)
+            $appointmentModel = new Appointment();
+            $upcomingAppointments = $appointmentModel->getUpcomingByCounselorUserId((int)$_SESSION['user_id'], 3);
+        }
+        view('/counselor/Cdashboard', array(
+            'counselorFeedback' => $counselorFeedback,
+            'upcomingAppointments' => $upcomingAppointments
+        ));
+    }
+
+    /**
+     * List all counselor feedback (from undergraduates) for the logged-in counselor.
+     */
+    public function feedbackList() {
+        $counselorFeedback = array();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (empty($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+        $counselorModel = new Counselor();
+        $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+        if (!$counselor || empty($counselor['id'])) {
+            view('/counselor/feedback_list', array('counselorFeedback' => array()));
+            return;
+        }
+        $feedbackModel = new Feedback();
+        $counselorFeedback = $feedbackModel->getCounselorFeedback((int) $counselor['id'], 100);
+        view('/counselor/feedback_list', array('counselorFeedback' => $counselorFeedback));
     }
     
     public function appointmentmgt() {
@@ -89,7 +125,18 @@ class COControl {
     }
     
     public function counselorProfile() {
-        view('/counselor/counselor_profile');
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (empty($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        $counselorModel = new Counselor();
+        $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+
+        view('/counselor/counselor_profile', array('counselor' => $counselor));
     }
     
     /**
@@ -347,7 +394,9 @@ class COControl {
         echo json_encode(array('success' => true, 'event' => $event));
     }
 
-    public function Cresource_hub() {
+
+     public function Cresource_hub() {
         view('/counselor/Cresource_hub');
     }
+    
 }

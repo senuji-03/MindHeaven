@@ -1,84 +1,30 @@
- 
- // Sample appointment data
-        let appointments = [
-            {
-                id: 1,
-                patientName: "Sarah Johnson",
-                email: "sarah.johnson@email.com",
-                phone: "+1 234-567-8901",
-                reason: "Anxiety and stress management",
-                requestedDate: "2024-08-24",
-                requestedTime: "10:30",
-                duration: "60 minutes",
-                mediaType: "video",
-                status: "pending",
-                urgency: "medium",
-                notes: "First time consultation. Patient mentioned experiencing high levels of stress at work.",
-                requestDate: "2024-08-20"
-            },
-            {
-                id: 2,
-                patientName: "Michael Chen",
-                email: "michael.chen@email.com",
-                phone: "+1 234-567-8902",
-                reason: "Academic pressure and burnout",
-                requestedDate: "2024-08-24",
-                requestedTime: "14:00",
-                duration: "45 minutes",
-                mediaType: "audio",
-                status: "pending",
-                urgency: "high",
-                notes: "Student struggling with final exams. Needs immediate support.",
-                requestDate: "2024-08-21"
-            },
-            {
-                id: 3,
-                patientName: "Emily Davis",
-                email: "emily.davis@email.com",
-                phone: "+1 234-567-8903",
-                reason: "Social anxiety and relationship issues",
-                requestedDate: "2024-08-25",
-                requestedTime: "11:00",
-                duration: "60 minutes",
-                mediaType: "video",
-                status: "accepted",
-                urgency: "low",
-                notes: "Follow-up session. Patient has shown good progress.",
-                requestDate: "2024-08-19"
-            },
-            {
-                id: 4,
-                patientName: "David Wilson",
-                email: "david.wilson@email.com",
-                phone: "+1 234-567-8904",
-                reason: "Depression and mood disorders",
-                requestedDate: "2024-08-23",
-                requestedTime: "15:30",
-                duration: "60 minutes",
-                mediaType: "video",
-                status: "rejected",
-                urgency: "medium",
-                notes: "Patient requested specific time slot that was not available.",
-                requestDate: "2024-08-22"
-            },
-            {
-                id: 5,
-                patientName: "Lisa Thompson",
-                email: "lisa.thompson@email.com",
-                phone: "+1 234-567-8905",
-                reason: "Family counseling session",
-                requestedDate: "2024-08-26",
-                requestedTime: "16:00",
-                duration: "90 minutes",
-                mediaType: "video",
-                status: "pending",
-                urgency: "medium",
-                notes: "Family session including spouse. Marriage counseling required.",
-                requestDate: "2024-08-21"
-            }
-        ];
+// Appointments loaded from backend for the logged-in counselor
+let appointments = [];
 
-        let currentRescheduleId = null;
+let currentRescheduleId = null;
+
+// Base URL injected from PHP view (see appointmentmgt.php)
+const BASE_URL = window.BASE_URL || '';
+
+// Load appointments for the current counselor from the backend
+function loadAppointments() {
+    fetch(BASE_URL + '/api/counselor/appointments')
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                appointments = data;
+            } else {
+                console.error('Unexpected appointments response format:', data);
+                appointments = [];
+            }
+            renderAppointments();
+        })
+        .catch(error => {
+            console.error('Failed to load appointments:', error);
+            appointments = [];
+            renderAppointments();
+        });
+}
 
         // Navigation Functions
         function showNotifications() {
@@ -196,14 +142,28 @@
             }
         }
 
-        // Update appointment status
+        // Update appointment status (accept / reject) and persist to backend
         function updateStatus(id, status) {
             const appointment = appointments.find(app => app.id === id);
-            if (appointment) {
-                appointment.status = status;
-                showSuccessMessage(`Appointment ${status} successfully!`);
-                renderAppointments();
-            }
+            if (!appointment) return;
+
+            fetch(BASE_URL + '/api/appointments/status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, status })
+            })
+                .then(response => response.json())
+                .then(() => {
+                    appointment.status = status;
+                    showSuccessMessage(`Appointment ${status} successfully!`);
+                    renderAppointments();
+                })
+                .catch(error => {
+                    console.error('Failed to update appointment status:', error);
+                    alert('Failed to update appointment status. Please try again.');
+                });
         }
 
         // Format date for display
@@ -283,18 +243,44 @@
                 return;
             }
             
-            // Update appointment
+            // Update appointment in backend
             const appointment = appointments.find(app => app.id === currentRescheduleId);
-            if (appointment) {
-                appointment.requestedDate = newDate;
-                appointment.requestedTime = newTime;
-                appointment.notes = appointment.notes + `\n\nRescheduled: ${reason}`;
-                
-                showSuccessMessage(`Appointment rescheduled successfully!\nNew Date: ${formatDate(newDate)}\nNew Time: ${formatTime(newTime)}`);
-                renderAppointments();
+            if (!appointment) {
+                closeModal('rescheduleModal');
+                return;
             }
-            
-            closeModal('rescheduleModal');
+
+            const payload = {
+                id: appointment.id,
+                title: appointment.reason || '',
+                type: appointment.mediaType || 'video',
+                date: newDate,
+                time: newTime,
+                notes: appointment.notes || ''
+            };
+
+            fetch(BASE_URL + '/api/appointments/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(response => response.json())
+                .then(() => {
+                    // Update local copy after successful backend update
+                    appointment.requestedDate = newDate;
+                    appointment.requestedTime = newTime;
+                    appointment.notes = (appointment.notes || '') + `\n\nRescheduled: ${reason}`;
+                    
+                    showSuccessMessage(`Appointment rescheduled successfully!\nNew Date: ${formatDate(newDate)}\nNew Time: ${formatTime(newTime)}`);
+                    renderAppointments();
+                    closeModal('rescheduleModal');
+                })
+                .catch(error => {
+                    console.error('Failed to reschedule appointment:', error);
+                    alert('Failed to reschedule appointment. Please try again.');
+                });
         }
 
         // Save to calendar
@@ -389,7 +375,7 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            renderAppointments();
+            loadAppointments();
             console.log('Appointment Management loaded successfully!');
             
             // Set today's date as default for date filter
