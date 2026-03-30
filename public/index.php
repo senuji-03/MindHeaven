@@ -61,6 +61,9 @@ $router->post('/admin/update-report-status', 'AdminControl@updateReportStatus');
 $router->post('/admin/edit-reported-content', 'AdminControl@editReportedContent'); // Edit content from report
 $router->post('/admin/suspend-user', 'AdminControl@suspendUser'); // Suspend user from report modal
 $router->post('/admin/update-system-flag-status', 'AdminControl@updateSystemFlagStatus'); // Process system flag update
+$router->get('/admin/university-events', 'AdminControl@universityEvents');
+$router->post('/admin/university-events/approve', 'AdminControl@approveUniversityEvent');
+$router->post('/admin/university-events/reject', 'AdminControl@rejectUniversityEvent');
 $router->get('/admin/donations', 'AdminControl@donations');
 $router->get('/admin/awareness', 'AdminControl@awareness');
 $router->get('/admin/monitoring', 'AdminControl@monitoring');
@@ -164,6 +167,7 @@ $router->get('/university-rep/events/view/{id}', 'UniversityRepresentativeContro
 $router->get('/university-rep/events/edit/{id}', 'UniversityRepresentativeControl@editEvent');
 $router->post('/university-rep/events/update', 'UniversityRepresentativeControl@updateEvent');
 $router->post('/university-rep/events/delete', 'UniversityRepresentativeControl@deleteEvent');
+$router->post('/university-rep/events/close', 'UniversityRepresentativeControl@closeEvent');
 
 // Announcements Management
 $router->get('/university-rep/announcements', 'UniversityRepresentativeControl@announcements');

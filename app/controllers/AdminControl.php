@@ -956,4 +956,97 @@ class AdminControl
         header('Location: ' . BASE_URL . '/admin/report-categories');
         exit;
     }
+
+    public function universityEvents()
+    {
+        try {
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("
+                SELECT e.*, u.name as university_name, u_rep.username as rep_email
+                FROM university_rep_events e
+                LEFT JOIN university_representatives ur ON e.university_rep_id = ur.user_id
+                LEFT JOIN universities u ON ur.university_id = u.id
+                LEFT JOIN users u_rep ON ur.user_id = u_rep.id
+                ORDER BY e.status ASC, u.name ASC, e.created_at DESC
+            ");
+            $stmt->execute();
+            $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Group by status, then by university
+            $groupedEvents = [
+                'pending' => [],
+                'approved' => [],
+                'rejected' => []
+            ];
+
+            foreach ($events as $event) {
+                $status = $event['status'];
+                $uniName = $event['university_name'] ?? 'Unknown University';
+                if (!isset($groupedEvents[$status])) {
+                    $groupedEvents[$status] = [];
+                }
+                if (!isset($groupedEvents[$status][$uniName])) {
+                    $groupedEvents[$status][$uniName] = [];
+                }
+                $groupedEvents[$status][$uniName][] = $event;
+            }
+
+            view('Admin/university-events', [
+                'groupedEvents' => $groupedEvents
+            ]);
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Failed to load events: ' . $e->getMessage();
+            view('Admin/university-events', [
+                'groupedEvents' => ['pending' => [], 'approved' => [], 'closed' => []]
+            ]);
+        }
+    }
+
+    public function approveUniversityEvent()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/university-events');
+            exit;
+        }
+
+        $eventId = $_POST['event_id'] ?? null;
+
+        if ($eventId) {
+            try {
+                $pdo = Database::getConnection();
+                $stmt = $pdo->prepare("UPDATE university_rep_events SET status = 'approved', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND status IN ('pending', 'rejected')");
+                $stmt->execute([$eventId]);
+                $_SESSION['success'] = 'Event approved successfully.';
+            } catch (Exception $e) {
+                $_SESSION['error'] = 'Failed to approve event: ' . $e->getMessage();
+            }
+        }
+
+        header('Location: ' . BASE_URL . '/admin/university-events');
+        exit;
+    }
+
+    public function rejectUniversityEvent()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/university-events');
+            exit;
+        }
+
+        $eventId = $_POST['event_id'] ?? null;
+
+        if ($eventId) {
+            try {
+                $pdo = Database::getConnection();
+                $stmt = $pdo->prepare("UPDATE university_rep_events SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND status = 'pending'");
+                $stmt->execute([$eventId]);
+                $_SESSION['success'] = 'Event rejected successfully.';
+            } catch (Exception $e) {
+                $_SESSION['error'] = 'Failed to reject event: ' . $e->getMessage();
+            }
+        }
+
+        header('Location: ' . BASE_URL . '/admin/university-events');
+        exit;
+    }
 }

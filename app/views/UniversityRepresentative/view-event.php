@@ -143,8 +143,17 @@
                     <div class="info-section">
                         <h3>📋 Basic Information</h3>
                         <div class="info-item">
+                            <label>University:</label>
+                            <p><?= htmlspecialchars($event['university_name'] ?? 'Not Specified') ?></p>
+                        </div>
+                        <div class="info-item">
                             <label>Description:</label>
                             <p><?= nl2br(htmlspecialchars($event['description'])) ?></p>
+                        </div>
+                        <div class="info-item">
+                            <label>Target Amount:</label>
+                            <p><?= $event['target_amount'] ? '$' . number_format((float) $event['target_amount'], 2) : 'Not specified or N/A' ?>
+                            </p>
                         </div>
                         <div class="info-item">
                             <label>Organized By:</label>
@@ -153,11 +162,27 @@
                         <div class="info-item">
                             <label>Target Audience:</label>
                             <p>
-                                <?php if (!empty($event['target_audience'])): ?>
-                                    <?= implode(', ', array_map('ucfirst', $event['target_audience'])) ?>
-                                <?php else: ?>
-                                    Not specified
-                                <?php endif; ?>
+                                <?php
+                                $ta = $event['target_audience'] ?? null;
+                                if (!empty($ta)) {
+                                    if (is_string($ta)) {
+                                        // Attempt JSON decode if it looks like a JSON array
+                                        if (strpos(trim($ta), '[') === 0 && ($decoded = json_decode($ta, true))) {
+                                            $ta = $decoded;
+                                        } else {
+                                            $ta = explode(',', $ta);
+                                        }
+                                    }
+
+                                    if (is_array($ta)) {
+                                        echo htmlspecialchars(implode(', ', array_map('ucfirst', array_map('trim', $ta))));
+                                    } else {
+                                        echo htmlspecialchars(ucfirst(trim($ta)));
+                                    }
+                                } else {
+                                    echo "Not specified";
+                                }
+                                ?>
                             </p>
                         </div>
                         <div class="info-item">
@@ -260,7 +285,24 @@
                     <?php if (isset($isOwner) && $isOwner): ?>
                         <a href="<?= BASE_URL ?>/university-rep/events/edit/<?= $event['id'] ?>" class="btn btn-primary">✏️
                             Edit Event</a>
+                        <?php if ($event['status'] !== 'closed'): ?>
+                            <form action="<?= BASE_URL ?>/university-rep/events/close" method="POST"
+                                style="margin: 0; display: inline-block;"
+                                onsubmit="return confirm('Are you sure you want to close this event?');">
+                                <input type="hidden" name="event_id" value="<?= $event['id'] ?>">
+                                <button type="submit" class="btn btn-secondary" style="background: #f59e0b;">🔒 Mark as
+                                    Closed</button>
+                            </form>
+                        <?php endif; ?>
                         <button onclick="deleteEvent(<?= $event['id'] ?>)" class="btn btn-danger">🗑️ Delete Event</button>
+                    <?php else: ?>
+                        <!-- Public Buttons -->
+                        <?php if ($event['status'] === 'approved'): ?>
+                            <button class="btn btn-primary" onclick="alert('Donation functionality coming soon!')">💖
+                                Donate</button>
+                            <button class="btn btn-secondary" onclick="alert('Payment confirmation feature coming soon!')">📝
+                                Request Confirmation</button>
+                        <?php endif; ?>
                     <?php endif; ?>
                     <a href="<?= (isset($isOwner) && $isOwner) ? BASE_URL . '/university-rep/events' : BASE_URL . '/' ?>"
                         class="btn btn-secondary">← Back</a>
@@ -434,8 +476,8 @@
                 form.appendChild(eventIdInput);
                 document.body.appendChild(form);
                 form.submit();
-            }
         }
+ }
     </script>
 </body>
 

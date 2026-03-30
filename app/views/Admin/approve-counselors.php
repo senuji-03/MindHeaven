@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -28,6 +28,7 @@
         <li><a href="<?= BASE_URL ?>/admin/donations">Donations</a></li>
         <li><a href="<?= BASE_URL ?>/admin/awareness">Awareness Programs</a></li>
         <li><a href="<?= BASE_URL ?>/admin/monitoring">System Monitoring</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/university-events">University Events</a></li>
         <li><a href="<?= BASE_URL ?>/admin/settings">Settings</a></li>
         <li><a href="<?= BASE_URL ?>/admin/profile">Profile</a></li>
       </ul>
@@ -341,3 +342,4 @@
     </style>
 </body>
 </html>
+

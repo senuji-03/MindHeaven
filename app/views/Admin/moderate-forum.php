@@ -45,7 +45,10 @@
         <span class="icon">📈</span>
         Reports
       </a>
-      <!-- Keywords and Automated Flags removed and moved to Moderate Forum -->
+      <!-- Keywords and Automated Flags removed and moved to Moderate Forum -->            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
+                <span class="icon">???</span>
+                University Events
+            </a>
       <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
         <span class="icon">⚙️</span>
         Settings

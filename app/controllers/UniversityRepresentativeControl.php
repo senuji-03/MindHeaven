@@ -222,8 +222,13 @@ class UniversityRepresentativeControl
             }
 
             // Fetch the event to view
-            $sql = "SELECT * FROM university_rep_events WHERE id = ?";
-            $stmt = $pdo->prepare($sql);
+            $stmt = $pdo->prepare("
+                SELECT e.*, u.name as university_name 
+                FROM university_rep_events e
+                LEFT JOIN university_representatives ur ON e.university_rep_id = ur.user_id
+                LEFT JOIN universities u ON ur.university_id = u.id
+                WHERE e.id = ?
+            ");
             $stmt->execute([$eventId]);
             $event = $stmt->fetch(PDO::FETCH_ASSOC);
 
