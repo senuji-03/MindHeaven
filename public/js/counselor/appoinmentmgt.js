@@ -26,30 +26,30 @@ function loadAppointments() {
         });
 }
 
-        // Navigation Functions
-        function showNotifications() {
-            alert('Notifications:\n• New appointment request from John Doe\n• Reminder: Session with Sarah in 30 mins\n• Weekly report is ready');
-        }
+// Navigation Functions
+function showNotifications() {
+    alert('Notifications:\n• New appointment request from John Doe\n• Reminder: Session with Sarah in 30 mins\n• Weekly report is ready');
+}
 
-        function showMessages() {
-            alert('Messages:\n• Sarah Johnson: Thank you for yesterday\'s session\n• Michael Chen: Can we reschedule tomorrow\'s appointment?\n• System: Weekly feedback summary available');
-        }
+function showMessages() {
+    alert('Messages:\n• Sarah Johnson: Thank you for yesterday\'s session\n• Michael Chen: Can we reschedule tomorrow\'s appointment?\n• System: Weekly feedback summary available');
+}
 
-        // Render appointments
-        function renderAppointments(appointmentsToRender = appointments) {
-            const appointmentsList = document.getElementById('appointmentsList');
-            
-            if (appointmentsToRender.length === 0) {
-                appointmentsList.innerHTML = `
+// Render appointments
+function renderAppointments(appointmentsToRender = appointments) {
+    const appointmentsList = document.getElementById('appointmentsList');
+
+    if (appointmentsToRender.length === 0) {
+        appointmentsList.innerHTML = `
                     <div style="text-align: center; padding: 3rem; color: #64748b;">
                         <h3>No appointments found</h3>
                         <p>No appointments match your current filters.</p>
                     </div>
                 `;
-                return;
-            }
+        return;
+    }
 
-            appointmentsList.innerHTML = appointmentsToRender.map(appointment => `
+    appointmentsList.innerHTML = appointmentsToRender.map(appointment => `
                 <div class="appointment-card ${appointment.status}" data-id="${appointment.id}">
                     <div class="appointment-header">
                         <div class="patient-info">
@@ -126,296 +126,268 @@ function loadAppointments() {
                     </div>
                 </div>
             `).join('');
-        }
+}
 
-        // Toggle appointment details
-        function toggleDetails(id) {
-            const details = document.getElementById(`details-${id}`);
-            const viewText = document.getElementById(`viewText-${id}`);
-            
-            if (details.classList.contains('show')) {
-                details.classList.remove('show');
-                viewText.textContent = 'View';
-            } else {
-                details.classList.add('show');
-                viewText.textContent = 'Hide';
-            }
-        }
+// Toggle appointment details
+function toggleDetails(id) {
+    const details = document.getElementById(`details-${id}`);
+    const viewText = document.getElementById(`viewText-${id}`);
 
-        // Update appointment status (accept / reject) and persist to backend
-        function updateStatus(id, status) {
-            const appointment = appointments.find(app => app.id === id);
-            if (!appointment) return;
+    if (details.classList.contains('show')) {
+        details.classList.remove('show');
+        viewText.textContent = 'View';
+    } else {
+        details.classList.add('show');
+        viewText.textContent = 'Hide';
+    }
+}
 
-            fetch(BASE_URL + '/api/appointments/status', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id, status })
-            })
-                .then(response => response.json())
-                .then(() => {
-                    appointment.status = status;
-                    showSuccessMessage(`Appointment ${status} successfully!`);
-                    renderAppointments();
-                })
-                .catch(error => {
-                    console.error('Failed to update appointment status:', error);
-                    alert('Failed to update appointment status. Please try again.');
-                });
-        }
+// Update appointment status (accept / reject) and persist to backend
+function updateStatus(id, status) {
+    const appointment = appointments.find(app => app.id === id);
+    if (!appointment) return;
 
-        // Format date for display
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            
-            if (date.toDateString() === today.toDateString()) {
-                return 'Today';
-            } else if (date.toDateString() === tomorrow.toDateString()) {
-                return 'Tomorrow';
-            } else {
-                return date.toLocaleDateString('en-US', { 
-                    weekday: 'short', 
-                    month: 'short', 
-                    day: 'numeric' 
-                });
-            }
-        }
+    fetch(BASE_URL + '/api/appointments/status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id, status })
+    })
+        .then(response => response.json())
+        .then(() => {
+            appointment.status = status;
+            showSuccessMessage(`Appointment ${status} successfully!`);
+            renderAppointments();
+        })
+        .catch(error => {
+            console.error('Failed to update appointment status:', error);
+            alert('Failed to update appointment status. Please try again.');
+        });
+}
 
-        // Format time for display
-        function formatTime(timeString) {
-            const [hours, minutes] = timeString.split(':');
-            const hour = parseInt(hours);
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            const displayHour = hour % 12 || 12;
-            return `${displayHour}:${minutes} ${ampm}`;
-        }
+// Format date for display
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-        // Filter appointments
-        function filterAppointments() {
-            const statusFilter = document.getElementById('statusFilter').value;
-            const dateFilter = document.getElementById('dateFilter').value;
-            const patientSearch = document.getElementById('patientSearch').value.toLowerCase();
+    if (date.toDateString() === today.toDateString()) {
+        return 'Today';
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+        return 'Tomorrow';
+    } else {
+        return date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+}
 
-            let filteredAppointments = appointments.filter(appointment => {
-                const statusMatch = statusFilter === 'all' || appointment.status === statusFilter || (statusFilter === 'accept' && appointment.status === 'accepted');
-                const dateMatch = !dateFilter || appointment.requestedDate === dateFilter;
-                const patientMatch = !patientSearch || appointment.patientName.toLowerCase().includes(patientSearch);
-                
-                return statusMatch && dateMatch && patientMatch;
-            });
+// Format time for display
+function formatTime(timeString) {
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+}
 
-            renderAppointments(filteredAppointments);
-        }
+// Filter appointments
+function filterAppointments() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const dateFilter = document.getElementById('dateFilter').value;
+    const patientSearch = document.getElementById('patientSearch').value.toLowerCase();
 
-        // Reschedule appointment
-        function reschedule(patientName, reason, appointmentId) {
-            currentRescheduleId = appointmentId;
-            
-            // Populate patient info
-            const patientInfoDiv = document.getElementById('reschedulePatientInfo');
-            patientInfoDiv.innerHTML = `
+    let filteredAppointments = appointments.filter(appointment => {
+        const statusMatch = statusFilter === 'all' || appointment.status === statusFilter || (statusFilter === 'accept' && appointment.status === 'accepted');
+        const dateMatch = !dateFilter || appointment.requestedDate === dateFilter;
+        const patientMatch = !patientSearch || appointment.patientName.toLowerCase().includes(patientSearch);
+
+        return statusMatch && dateMatch && patientMatch;
+    });
+
+    renderAppointments(filteredAppointments);
+}
+
+// Reschedule appointment
+function reschedule(patientName, reason, appointmentId) {
+    currentRescheduleId = appointmentId;
+
+    // Populate patient info
+    const patientInfoDiv = document.getElementById('reschedulePatientInfo');
+    patientInfoDiv.innerHTML = `
                 <h4>${patientName}</h4>
                 <p>Current reason: ${reason}</p>
             `;
-            
-            // Set minimum date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('newDate').min = today;
-            document.getElementById('newDate').value = today;
-            
-            // Show modal
-            document.getElementById('rescheduleModal').style.display = 'block';
-        }
 
-        // Submit reschedule
-        function submitReschedule() {
-            const newDate = document.getElementById('newDate').value;
-            const newTime = document.getElementById('newTime').value;
-            const reason = document.getElementById('rescheduleReason').value;
-            
-            if (!newDate || !newTime || !reason) {
-                alert('Please fill in all required fields.');
-                return;
-            }
-            
-            // Update appointment in backend
-            const appointment = appointments.find(app => app.id === currentRescheduleId);
-            if (!appointment) {
-                closeModal('rescheduleModal');
-                return;
-            }
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('newDate').min = today;
+    document.getElementById('newDate').value = today;
 
-            const payload = {
-                id: appointment.id,
-                title: appointment.reason || '',
-                type: appointment.mediaType || 'video',
-                date: newDate,
-                time: newTime,
-                notes: appointment.notes || ''
-            };
+    // Show modal
+    document.getElementById('rescheduleModal').style.display = 'block';
+}
 
-            fetch(BASE_URL + '/api/appointments/update', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            })
-                .then(response => response.json())
-                .then(() => {
-                    // Update local copy after successful backend update
-                    appointment.requestedDate = newDate;
-                    appointment.requestedTime = newTime;
-                    appointment.notes = (appointment.notes || '') + `\n\nRescheduled: ${reason}`;
-                    
-                    showSuccessMessage(`Appointment rescheduled successfully!\nNew Date: ${formatDate(newDate)}\nNew Time: ${formatTime(newTime)}`);
-                    renderAppointments();
-                    closeModal('rescheduleModal');
-                })
-                .catch(error => {
-                    console.error('Failed to reschedule appointment:', error);
-                    alert('Failed to reschedule appointment. Please try again.');
-                });
-        }
+// Submit reschedule
+function submitReschedule() {
+    const newDate = document.getElementById('newDate').value;
+    const newTime = document.getElementById('newTime').value;
+    const reason = document.getElementById('rescheduleReason').value;
 
-        // Save to calendar
-        function saveToCalendar(appointmentId) {
-            const appointment = appointments.find(app => app.id === appointmentId);
-            if (!appointment) return;
+    if (!newDate || !newTime || !reason) {
+        alert('Please fill in all required fields.');
+        return;
+    }
 
-            // Simulate saving to calendar and dashboard
-            // In a real application, this would make API calls to update the backend
-            
-            // Create calendar event object
-            const calendarEvent = {
-                id: appointment.id,
-                title: `Session with ${appointment.patientName}`,
-                date: appointment.requestedDate,
-                time: appointment.requestedTime,
-                duration: appointment.duration,
-                type: appointment.mediaType,
-                reason: appointment.reason,
-                patient: {
-                    name: appointment.patientName,
-                    email: appointment.email,
-                    phone: appointment.phone
-                }
-            };
+    // Update appointment in backend
+    const appointment = appointments.find(app => app.id === currentRescheduleId);
+    if (!appointment) {
+        closeModal('rescheduleModal');
+        return;
+    }
 
-            // Store in localStorage to simulate backend storage
-            let calendarEvents = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
-            let upcomingAppointments = JSON.parse(localStorage.getItem('upcomingAppointments') || '[]');
-            
-            // Check if already exists to avoid duplicates
-            const existingCalendarIndex = calendarEvents.findIndex(event => event.id === appointment.id);
-            const existingUpcomingIndex = upcomingAppointments.findIndex(app => app.id === appointment.id);
-            
-            if (existingCalendarIndex === -1) {
-                calendarEvents.push(calendarEvent);
-                localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents));
-            }
-            
-            // Create upcoming appointment object for dashboard
-            const upcomingAppointment = {
-                id: appointment.id,
-                patientName: appointment.patientName,
-                reason: appointment.reason,
-                date: appointment.requestedDate,
-                time: appointment.requestedTime,
-                mediaType: appointment.mediaType,
-                status: 'confirmed'
-            };
-            
-            if (existingUpcomingIndex === -1) {
-                upcomingAppointments.push(upcomingAppointment);
-                localStorage.setItem('upcomingAppointments', JSON.stringify(upcomingAppointments));
-            }
+    const payload = {
+        id: appointment.id,
+        title: appointment.reason || '',
+        type: appointment.mediaType || 'video',
+        date: newDate,
+        time: newTime,
+        notes: appointment.notes || ''
+    };
 
-            showSuccessMessage(`Appointment saved to calendar successfully!\nPatient: ${appointment.patientName}\nDate: ${formatDate(appointment.requestedDate)}\nTime: ${formatTime(appointment.requestedTime)}`);
-            
-            // Optional: You can also mark this appointment as 'scheduled' to distinguish from just 'accepted'
-            appointment.status = 'scheduled';
+    fetch(BASE_URL + '/api/appointments/update', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+        .then(response => response.json())
+        .then(() => {
+            // Update local copy after successful backend update
+            appointment.requestedDate = newDate;
+            appointment.requestedTime = newTime;
+            appointment.notes = (appointment.notes || '') + `\n\nRescheduled: ${reason}`;
+
+            showSuccessMessage(`Appointment rescheduled successfully!\nNew Date: ${formatDate(newDate)}\nNew Time: ${formatTime(newTime)}`);
             renderAppointments();
-        }
-
-        // Show success message
-        function showSuccessMessage(message) {
-            const successDiv = document.getElementById('successMessage');
-            successDiv.textContent = message;
-            successDiv.classList.add('show');
-            
-            setTimeout(() => {
-                successDiv.classList.remove('show');
-            }, 5000);
-        }
-
-        // Close modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            // Reset forms when closing
-            if (modalId === 'rescheduleModal') {
-                document.getElementById('rescheduleForm').reset();
-                currentRescheduleId = null;
-            }
-        }
-
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            const rescheduleModal = document.getElementById('rescheduleModal');
-            
-            if (event.target === rescheduleModal) {
-                closeModal('rescheduleModal');
-            }
-        }
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            loadAppointments();
-            console.log('Appointment Management loaded successfully!');
-            
-            // Set today's date as default for date filter
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateFilter').value = '';
+            closeModal('rescheduleModal');
+        })
+        .catch(error => {
+            console.error('Failed to reschedule appointment:', error);
+            alert('Failed to reschedule appointment. Please try again.');
         });
+}
 
-        // Additional utility functions for integration
+// Save to calendar
+function saveToCalendar(appointmentId) {
+    const appointment = appointments.find(app => app.id === appointmentId);
+    if (!appointment) return;
 
-        // Function to add new appointment request (can be called from other parts of the system)
-        function addNewAppointmentRequest(appointmentData) {
-            const newId = Math.max(...appointments.map(app => app.id)) + 1;
-            const newAppointment = {
-                id: newId,
-                ...appointmentData,
-                status: 'pending',
-                requestDate: new Date().toISOString().split('T')[0]
-            };
-            
-            appointments.unshift(newAppointment); // Add to beginning of array
-            renderAppointments();
-            showSuccessMessage('New appointment request received!');
+    const formData = new FormData();
+    formData.append('title', `Session with ${appointment.patientName}`);
+    formData.append('event_date', appointment.requestedDate);
+    formData.append('event_time', appointment.requestedTime);
+    formData.append('priority', 'normal');
+    formData.append('description', `Appointment Reason: ${appointment.reason || 'N/A'}\nType: ${appointment.mediaType} call`);
+
+    fetch(BASE_URL + '/counselor/createEvent', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccessMessage(`Appointment saved to calendar successfully!\nPatient: ${appointment.patientName}\nDate: ${formatDate(appointment.requestedDate)}\nTime: ${formatTime(appointment.requestedTime)}`);
+        } else if (data.message === 'Time conflict: Another event exists at this time') {
+            alert('Cannot save: an event already exists at this time in your calendar.');
+        } else {
+            alert('Failed to save to calendar: ' + (data.message || 'Unknown error.'));
         }
+    })
+    .catch(error => {
+        console.error('Error saving to calendar:', error);
+        alert('An error occurred while saving to calendar.');
+    });
+}
 
-        // Function to get appointment statistics
-        function getAppointmentStats() {
-            const stats = {
-                total: appointments.length,
-                pending: appointments.filter(app => app.status === 'pending').length,
-                accepted: appointments.filter(app => app.status === 'accept' || app.status === 'accepted').length,
-                rejected: appointments.filter(app => app.status === 'rejected').length,
-                scheduled: appointments.filter(app => app.status === 'scheduled').length
-            };
-            
-            return stats;
-        }
+// Show success message
+function showSuccessMessage(message) {
+    const successDiv = document.getElementById('successMessage');
+    successDiv.textContent = message;
+    successDiv.classList.add('show');
 
-        // Export functions for use in other pages
-        window.appointmentManager = {
-            addNewAppointmentRequest,
-            getAppointmentStats,
-            appointments: () => appointments // Return copy of appointments
-        };
+    setTimeout(() => {
+        successDiv.classList.remove('show');
+    }, 5000);
+}
+
+// Close modal
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    // Reset forms when closing
+    if (modalId === 'rescheduleModal') {
+        document.getElementById('rescheduleForm').reset();
+        currentRescheduleId = null;
+    }
+}
+
+// Close modal when clicking outside of it
+window.onclick = function (event) {
+    const rescheduleModal = document.getElementById('rescheduleModal');
+
+    if (event.target === rescheduleModal) {
+        closeModal('rescheduleModal');
+    }
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function () {
+    loadAppointments();
+    console.log('Appointment Management loaded successfully!');
+
+    // Set today's date as default for date filter
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dateFilter').value = '';
+});
+
+// Additional utility functions for integration
+
+// Function to add new appointment request (can be called from other parts of the system)
+function addNewAppointmentRequest(appointmentData) {
+    const newId = Math.max(...appointments.map(app => app.id)) + 1;
+    const newAppointment = {
+        id: newId,
+        ...appointmentData,
+        status: 'pending',
+        requestDate: new Date().toISOString().split('T')[0]
+    };
+
+    appointments.unshift(newAppointment); // Add to beginning of array
+    renderAppointments();
+    showSuccessMessage('New appointment request received!');
+}
+
+// Function to get appointment statistics
+function getAppointmentStats() {
+    const stats = {
+        total: appointments.length,
+        pending: appointments.filter(app => app.status === 'pending').length,
+        accepted: appointments.filter(app => app.status === 'accept' || app.status === 'accepted').length,
+        rejected: appointments.filter(app => app.status === 'rejected').length,
+        scheduled: appointments.filter(app => app.status === 'scheduled').length
+    };
+
+    return stats;
+}
+
+// Export functions for use in other pages
+window.appointmentManager = {
+    addNewAppointmentRequest,
+    getAppointmentStats,
+    appointments: () => appointments // Return copy of appointments
+};

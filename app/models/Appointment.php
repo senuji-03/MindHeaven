@@ -1,6 +1,7 @@
 <?php
 
-class Appointment {
+class Appointment
+{
     public function create(
         $studentUserId,
         $counselorUserId,
@@ -25,7 +26,7 @@ class Appointment {
             $time,
             $notes
         ]);
-        return (int)$pdo->lastInsertId();
+        return (int) $pdo->lastInsertId();
     }
 
     public function update(
@@ -38,30 +39,31 @@ class Appointment {
     ) {
         $pdo = Database::getConnection();
         error_log("Appointment model: Attempting to update appointment with ID: " . $id);
-        
+
         $stmt = $pdo->prepare("
             UPDATE appointments 
             SET title = ?, type = ?, date = ?, time = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ");
         $stmt->execute([$title, $type, $date, $time, $notes, $id]);
-        
+
         $updated = $stmt->rowCount() > 0;
         error_log("Appointment model: Update result - " . ($updated ? "SUCCESS" : "FAILED") . " (rows affected: " . $stmt->rowCount() . ")");
-        
+
         return $updated;
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $pdo = Database::getConnection();
         error_log("Appointment model: Attempting to delete appointment with ID: " . $id);
-        
+
         $stmt = $pdo->prepare("DELETE FROM appointments WHERE id = ?");
         $stmt->execute([$id]);
-        
+
         $deleted = $stmt->rowCount() > 0;
         error_log("Appointment model: Delete result - " . ($deleted ? "SUCCESS" : "FAILED") . " (rows affected: " . $stmt->rowCount() . ")");
-        
+
         return $deleted;
     }
 
@@ -69,7 +71,8 @@ class Appointment {
      * Get upcoming appointments for a counselor (booked by undergrads).
      * Only appointments that have been accepted by the counselor are returned.
      */
-    public function getUpcomingByCounselorUserId($counselorUserId, $limit = 3) {
+    public function getUpcomingByCounselorUserId($counselorUserId, $limit = 3)
+    {
         $pdo = Database::getConnection();
 
         $sql = "
@@ -85,10 +88,10 @@ class Appointment {
                 OR (a.date = CURDATE() AND a.time >= CURTIME())
               )
             ORDER BY a.date ASC, a.time ASC
-            LIMIT " . (int)$limit;
+            LIMIT " . (int) $limit;
 
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(array(':counselor_user_id' => (int)$counselorUserId));
+        $stmt->execute(array(':counselor_user_id' => (int) $counselorUserId));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -96,7 +99,8 @@ class Appointment {
      * Get all appointments for a counselor (booked by undergrads).
      * Used by the counselor Appointment Management view.
      */
-    public function getByCounselorUserId($counselorUserId) {
+    public function getByCounselorUserId($counselorUserId)
+    {
         $pdo = Database::getConnection();
 
         $sql = "
@@ -111,14 +115,15 @@ class Appointment {
         ";
 
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(array(':counselor_user_id' => (int)$counselorUserId));
+        $stmt->execute(array(':counselor_user_id' => (int) $counselorUserId));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
      * Update the status of an appointment (pending/accepted/rejected/etc.).
      */
-    public function updateStatus($id, $status) {
+    public function updateStatus($id, $status)
+    {
         $pdo = Database::getConnection();
 
         $stmt = $pdo->prepare("
