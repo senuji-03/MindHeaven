@@ -164,6 +164,27 @@ class Feedback {
     }
 
     /**
+     * Get counselor feedback (feedback_type = 'counselor') for a specific counselor.
+     * Used on counselor dashboard to show feedback from undergraduates.
+     */
+    public function getCounselorFeedback($counselor_id, $limit = 10) {
+        $sql = "SELECT f.*, 
+                COALESCE(us.full_name, u.full_name, u.username) as user_name, 
+                c.full_name as counselor_name 
+                FROM feedback f 
+                LEFT JOIN users u ON f.user_id = u.id 
+                LEFT JOIN undergraduate_students us ON f.user_id = us.user_id 
+                LEFT JOIN counselors c ON f.counselor_id = c.id 
+                WHERE f.feedback_type = 'counselor' AND f.counselor_id = :counselor_id 
+                ORDER BY f.created_at DESC 
+                LIMIT " . (int) $limit;
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(array(':counselor_id' => $counselor_id));
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Check if user owns the feedback
      */
     public function isOwner($feedback_id, $user_id) {
