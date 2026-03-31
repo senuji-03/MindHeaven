@@ -15,8 +15,13 @@ class CallResponderControl{
     }
     
     public function index() {
-        view('CallResponder/CallPage');
+        view('crisis/call_dashboard');
     }
+
+    public function dashboard() {
+        view('crisis/call_dashboard');
+    }
+
     public function success() {
         view('CallResponder/CallSuccess');
     }

@@ -318,7 +318,7 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
 
   <!-- Hero Section -->
   <section class="resources-hero">
-    <a href="<?= BASE_URL ?>/admin/resource-hub" class="btn btn-success hero-cta">Resource Hub</a>
+    <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="btn btn-success hero-cta">Resource Hub</a>
     <div class="hero-content">
       <div class="hero-text">
         <h1 class="hero-title">Moderator Dashboard 🛡</h1>

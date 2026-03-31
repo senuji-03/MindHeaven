@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 session_start();
 
@@ -12,12 +12,14 @@ $router = new Router();
 $router->get('/', 'LandingControl@index');
 $router->get('/landing', 'LandingControl@index');
 
-$router->get('/login', 'LoginControl@index'); 
+$router->get('/login', 'LoginControl@index');
+
 $router->post('/login/authenticate', 'LoginControl@authenticate');
 $router->get('/login/forgot-password', 'LoginControl@forgotPassword');
 $router->post('/login/forgot-password', 'LoginControl@processForgotPassword');
 $router->get('/login/reset-password', 'LoginControl@resetPassword');
-$router->post('/login/reset-password', 'LoginControl@resetPassword'); 
+$router->post('/login/reset-password', 'LoginControl@resetPassword');
+
 $router->get('/logout', 'LoginControl@logout');
 
 // Signup routes
@@ -75,7 +77,8 @@ $router->post('/admin/manage-users/delete', 'AdminControl@deleteUser');
 $router->post('/admin/approveCounselor', 'AdminControl@approveCounselor');
 $router->post('/admin/rejectCounselor', 'AdminControl@rejectCounselor');
 
-$router->get('/counselor', 'COControl@index');  
+$router->get('/counselor', 'COControl@index');
+
 $router->get('/counselor/dashboard', 'COControl@dashboard');
 $router->get('/counselor/appointmentmgt', 'COControl@appointmentmgt');
 $router->get('/counselor/calender', 'COControl@calender');
@@ -110,6 +113,7 @@ $router->get('/api/habits/stats', 'HabitApiControl@stats');
 $router->get('/api/habits/test', 'HabitApiControl@test');
 
 $router->get('/CallResponder', 'CallResponderControl@index');
+$router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');
 $router->get('/CallSuccess', 'CallResponderControl@success');
 
 $router->get('/donation', 'DonationControl@index');
@@ -124,6 +128,8 @@ $router->get('/ModeratorDashboard', 'ModeratorControl@ModeratorDashboard');
 $router->get('/WarnForm', 'ModeratorControl@warn');
 
 // Moderator resource management routes
+$router->get('/Moderator/resource-hub', 'ModeratorControl@resourceHub');
+$router->get('/Moderator/category-resources', 'ModeratorControl@categoryResources');
 $router->post('/Moderator/resource/create', 'ModeratorControl@createResource');
 $router->post('/Moderator/resource/delete', 'ModeratorControl@deleteResource');
 $router->get('/Moderator/resource/edit', 'ModeratorControl@editResource');

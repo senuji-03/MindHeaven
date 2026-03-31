@@ -4,3 +4,7 @@ RewriteBase /MindHeaven/public/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L]
+
+# Raise upload limits for file uploads (images, video, audio)
+php_value upload_max_filesize 20M
+php_value post_max_size 25M

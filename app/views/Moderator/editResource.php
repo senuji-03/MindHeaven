@@ -359,7 +359,7 @@
                     <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
                         <div class="current-file">
                             <?php if ($resource['content_type'] === 'article' && in_array(strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
-                                <img src="<?= BASE_URL . $resource['file_path']; ?>" alt="Current image" />
+                                <img src="<?= BASE_URL . '/' . $resource['file_path']; ?>" alt="Current image" />
                             <?php else: ?>
                                 <div style="width: 100px; height: 100px; background: #e5e7eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
                                     <?= $resource['content_type'] === 'video' ? '🎥' : '🎵'; ?>
@@ -370,7 +370,7 @@
                                 <p>Size: <?= number_format($resource['file_size'] / 1024 / 1024, 2); ?> MB | Type: <?= htmlspecialchars($resource['file_type']); ?></p>
                             </div>
                             <div class="file-actions">
-                                <a href="<?= BASE_URL . $resource['file_path']; ?>" target="_blank" class="btn btn-primary btn-small">👁️ View</a>
+                                <a href="<?= BASE_URL . '/' . $resource['file_path']; ?>" target="_blank" class="btn btn-primary btn-small">👁️ View</a>
                                 <button type="button" class="btn btn-secondary btn-small" onclick="removeCurrentFile()">🗑️ Remove</button>
                             </div>
                         </div>
@@ -504,10 +504,10 @@
             if (fileInput.files.length > 0) {
                 var fileName = fileInput.files[0].name;
                 var fileSize = (fileInput.files[0].size / 1024 / 1024).toFixed(2);
-                uploadArea.innerHTML = `
-                    <p>✅ <strong>${fileName}</strong> (${fileSize} MB)</p>
-                    <small>Click to change file</small>
-                `;
+                // Move the input OUT before touching innerHTML, then put it back
+                uploadArea.removeChild(fileInput);
+                uploadArea.innerHTML = `<p>✅ <strong>${fileName}</strong> (${fileSize} MB)</p><small>Click to change file</small>`;
+                uploadArea.appendChild(fileInput);
             }
         }
         
@@ -526,7 +526,7 @@
             }
         };
         
-        // Form validation
+        // Form validation + loading state (single submit listener)
         var form = document.getElementById('editResourceForm');
         form.addEventListener('submit', function(e) {
             var contentType = select.value;
@@ -563,20 +563,10 @@
             if (!isValid) {
                 e.preventDefault();
                 alert('❌ ' + errorMessage);
+                return;
             }
-        });
-        
-        // Auto-resize textareas
-        var textareas = document.querySelectorAll('textarea');
-        textareas.forEach(function(textarea) {
-            textarea.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = this.scrollHeight + 'px';
-            });
-        });
-        
-        // Add loading state to submit button
-        form.addEventListener('submit', function() {
+
+            // Valid — show loading state
             var submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.innerHTML = '⏳ Updating Resource...';

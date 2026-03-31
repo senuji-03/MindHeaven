@@ -103,7 +103,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
       <!-- All Resources Grid -->
       <div class="resources-grid" id="all-resources">
         <?php foreach ($resources as $resource): ?>
-          <div class="resource-card" onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
+          <div class="resource-card" data-resource="<?= htmlspecialchars(json_encode($resource), ENT_QUOTES, 'UTF-8') ?>">
             <div class="resource-header">
               <div class="resource-type-icon">
                 <?php if ($resource['content_type'] === 'video'): ?>
@@ -127,52 +127,49 @@ require BASE_PATH.'/app/views/layouts/header.php';
               <?php if (!empty($resource['tags'])): ?>
                 <div class="resource-tags">
                   <?php 
-                  $tags = explode(',', $resource['tags']);
+                  $tags = array_map('trim', explode(',', $resource['tags']));
                   foreach (array_slice($tags, 0, 3) as $tag): 
                   ?>
-                    <span class="tag"><?= htmlspecialchars(trim($tag)) ?></span>
+                    <span class="tag"><?= htmlspecialchars($tag) ?></span>
                   <?php endforeach; ?>
                   <?php if (count($tags) > 3): ?>
-                    <span class="tag-more">+<?= count($tags) - 3 ?> more</span>
+                    <span class="tag-more">+<?= count($tags) - 3 ?></span>
                   <?php endif; ?>
                 </div>
               <?php endif; ?>
             </div>
             
-            <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
+            <?php if ($resource['file_path']): ?>
               <div class="resource-file">
-                <?php 
-                $fileExtension = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
-                $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                $fileExists = file_exists(BASE_PATH . '/public' . $resource['file_path']);
+                <?php
+                $isImage = false;
+                if ($resource['file_name']) {
+                  $ext = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
+                  $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                }
                 ?>
                 
-                <?php if ($resource['content_type'] === 'article' && $isImage && $fileExists): ?>
-                  <img src="<?= BASE_URL . $resource['file_path'] ?>" alt="<?= htmlspecialchars($resource['title']) ?>" class="resource-thumbnail">
+                <?php if ($resource['content_type'] === 'article' && $isImage): ?>
+                  <img src="<?= BASE_URL ?>/<?= ltrim($resource['file_path'], '/') ?>" alt="<?= htmlspecialchars($resource['title']) ?>" class="resource-thumbnail">
+                  <div class="resource-file-info">
+                    <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                    <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
+                  </div>
                 <?php else: ?>
                   <div class="resource-file-icon">
-                    <?php if ($resource['content_type'] === 'video'): ?>
-                      🎥
-                    <?php elseif ($resource['content_type'] === 'audio'): ?>
-                      🎵
-                    <?php else: ?>
-                      📄
-                    <?php endif; ?>
+                    <?php if ($resource['content_type'] === 'video'): ?>🎬<?php elseif ($resource['content_type'] === 'audio'): ?>🎧<?php else: ?>📎<?php endif; ?>
+                  </div>
+                  <div class="resource-file-info">
+                    <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                    <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
                   </div>
                 <?php endif; ?>
                 
-                <div class="resource-file-info">
-                  <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
-                  <?php if (!empty($resource['file_size'])): ?>
-                    <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
-                  <?php endif; ?>
+                <div class="resource-footer">
+                  <button class="btn btn-primary btn-small">View Details</button>
                 </div>
               </div>
             <?php endif; ?>
-            
-            <div class="resource-footer">
-              <button class="btn btn-primary btn-small">View Details</button>
-            </div>
           </div>
         <?php endforeach; ?>
       </div>
@@ -182,7 +179,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
         <?php if (!empty($resourcesByType[$type])): ?>
           <div class="resources-grid content-type-section" id="<?= $type ?>-resources" style="display: none;">
             <?php foreach ($resourcesByType[$type] as $resource): ?>
-              <div class="resource-card" onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
+              <div class="resource-card" data-resource="<?= htmlspecialchars(json_encode($resource), ENT_QUOTES, 'UTF-8') ?>">
                 <div class="resource-header">
                   <div class="resource-type-icon">
                     <?php if ($resource['content_type'] === 'video'): ?>
@@ -206,52 +203,49 @@ require BASE_PATH.'/app/views/layouts/header.php';
                   <?php if (!empty($resource['tags'])): ?>
                     <div class="resource-tags">
                       <?php 
-                      $tags = explode(',', $resource['tags']);
+                      $tags = array_map('trim', explode(',', $resource['tags']));
                       foreach (array_slice($tags, 0, 3) as $tag): 
                       ?>
-                        <span class="tag"><?= htmlspecialchars(trim($tag)) ?></span>
+                        <span class="tag"><?= htmlspecialchars($tag) ?></span>
                       <?php endforeach; ?>
                       <?php if (count($tags) > 3): ?>
-                        <span class="tag-more">+<?= count($tags) - 3 ?> more</span>
+                        <span class="tag-more">+<?= count($tags) - 3 ?></span>
                       <?php endif; ?>
                     </div>
                   <?php endif; ?>
                 </div>
                 
-                <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
+                <?php if ($resource['file_path']): ?>
                   <div class="resource-file">
-                    <?php 
-                    $fileExtension = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
-                    $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                    $fileExists = file_exists(BASE_PATH . '/public' . $resource['file_path']);
+                    <?php
+                    $isImage = false;
+                    if ($resource['file_name']) {
+                      $ext = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
+                      $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                    }
                     ?>
                     
-                    <?php if ($resource['content_type'] === 'article' && $isImage && $fileExists): ?>
-                      <img src="<?= BASE_URL . $resource['file_path'] ?>" alt="<?= htmlspecialchars($resource['title']) ?>" class="resource-thumbnail">
+                    <?php if ($resource['content_type'] === 'article' && $isImage): ?>
+                      <img src="<?= BASE_URL ?>/<?= ltrim($resource['file_path'], '/') ?>" alt="<?= htmlspecialchars($resource['title']) ?>" class="resource-thumbnail">
+                      <div class="resource-file-info">
+                        <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                        <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
+                      </div>
                     <?php else: ?>
                       <div class="resource-file-icon">
-                        <?php if ($resource['content_type'] === 'video'): ?>
-                          🎥
-                        <?php elseif ($resource['content_type'] === 'audio'): ?>
-                          🎵
-                        <?php else: ?>
-                          📄
-                        <?php endif; ?>
+                        <?php if ($resource['content_type'] === 'video'): ?>🎬<?php elseif ($resource['content_type'] === 'audio'): ?>🎧<?php else: ?>📎<?php endif; ?>
+                      </div>
+                      <div class="resource-file-info">
+                        <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                        <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
                       </div>
                     <?php endif; ?>
                     
-                    <div class="resource-file-info">
-                      <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
-                      <?php if (!empty($resource['file_size'])): ?>
-                        <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
-                      <?php endif; ?>
+                    <div class="resource-footer">
+                      <button class="btn btn-primary btn-small">View Details</button>
                     </div>
                   </div>
                 <?php endif; ?>
-                
-                <div class="resource-footer">
-                  <button class="btn btn-primary btn-small">View Details</button>
-                </div>
               </div>
             <?php endforeach; ?>
           </div>
@@ -831,9 +825,20 @@ require BASE_PATH.'/app/views/layouts/header.php';
   padding: 1.5rem;
   border-radius: 8px;
   border-left: 4px solid #3b82f6;
-  margin: 1rem 0;
-  line-height: 1.7;
+  margin: 0.5rem 0;
+  line-height: 1.8;
+  color: #374151;
+  font-size: 1rem;
 }
+
+.article-content p { margin: 0 0 1rem 0; }
+.article-content h1, .article-content h2, .article-content h3 {
+  color: #1e293b; margin: 1.25rem 0 0.5rem 0;
+}
+.article-content ul, .article-content ol {
+  padding-left: 1.5rem; margin: 0.75rem 0;
+}
+.article-content img { max-width: 100%; border-radius: 6px; margin: 0.5rem 0; }
 
 .tags-container {
   display: flex;
@@ -927,11 +932,18 @@ require BASE_PATH.'/app/views/layouts/header.php';
 <script>
 // Resource modal functionality
 function openResourceModal(resource) {
-  const modal = document.getElementById('resourceModal');
-  const title = document.getElementById('resourceModalTitle');
-  const content = document.getElementById('resourceModalContent');
-  
-  title.textContent = resource.title;
+  console.log("openResourceModal called! Resource:", resource);
+  try {
+    const modal = document.getElementById('resourceModal');
+    const title = document.getElementById('resourceModalTitle');
+    const content = document.getElementById('resourceModalContent');
+    
+    if (!modal || !title || !content) {
+      console.error("Missing modal DOM elements:", {modal, title, content});
+      return;
+    }
+    
+    title.textContent = resource.title;
   
   let contentHtml = `
     <div class="resource-details">
@@ -947,10 +959,25 @@ function openResourceModal(resource) {
   `;
   
   // Handle different content types with proper file paths
+  // Build a clean absolute URL for the file, handling both:
+  //  - old format: /uploads/videos/file.mp4  (leading slash)
+  //  - new format: uploads/resources/file.jpg (no leading slash)
+  function buildFileUrl(filePath) {
+    if (!filePath) return '';
+    if (filePath.startsWith('http')) return filePath;
+    const clean = filePath.replace(/^\/+/, '');
+    return encodeURI('/MindHeaven/public/' + clean);
+  }
+
+  let fullFilePath = '';
+  if (resource.file_path) {
+    fullFilePath = buildFileUrl(resource.file_path);
+  }
+
   if (resource.file_path && resource.file_name) {
     const fileExtension = resource.file_name.split('.').pop().toLowerCase();
     const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
-    const fullFilePath = '<?= BASE_URL ?>' + resource.file_path;
+
     
     if (resource.content_type === 'article' && isImage) {
       contentHtml += `
@@ -1024,7 +1051,7 @@ function openResourceModal(resource) {
     contentHtml += `
       <div class="resource-content">
         <h4>Article Content</h4>
-        <div class="article-content" style="white-space: pre-wrap; line-height: 1.6; background: #f8fafc; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">${resource.content}</div>
+        <div class="article-content" style="line-height:1.8;color:#374151;font-size:1rem;">${resource.content}</div>
       </div>
     `;
   } else if (resource.content && (resource.content_type === 'video' || resource.content_type === 'audio')) {
@@ -1049,69 +1076,53 @@ function openResourceModal(resource) {
     `;
   }
   
-  // Add action buttons
-  contentHtml += `
-    <div class="resource-actions">
-      <button class="btn btn-primary" onclick="window.open('${fullFilePath}', '_blank')">
-        ${resource.content_type === 'article' ? '📖 Read Full Article' : 
-          resource.content_type === 'video' ? '🎥 Watch Video' : '🎵 Listen to Audio'}
-      </button>
-      <button class="btn btn-secondary" onclick="shareResource('${resource.title}', '${fullFilePath}')">
-        📤 Share Resource
-      </button>
-    </div>
-  `;
+  // Add action buttons (only for video/audio which have standalone playable files)
+  if (resource.content_type === 'video' || resource.content_type === 'audio') {
+    contentHtml += `
+      <div class="resource-actions">
+        <a href="${fullFilePath}" target="_blank" class="btn btn-primary">
+          ${resource.content_type === 'video' ? '🎥 Open Video' : '🎵 Open Audio'}
+        </a>
+      </div>
+    `;
+  }
+
   
   contentHtml += `</div>`;
   
   content.innerHTML = contentHtml;
-  modal.style.display = 'block';
+  modal.style.display = 'flex'; // The CSS expects flex for centering
+  modal.classList.add('open');
+  } catch (error) {
+    console.error("Error in openResourceModal:", error);
+    alert("An error occurred opening this resource. See console for details.");
+  }
 }
 
 // Close modal functionality
 document.getElementById('closeResourceModal').onclick = function() {
-  document.getElementById('resourceModal').style.display = 'none';
+  const modal = document.getElementById('resourceModal');
+  modal.classList.remove('open');
+  setTimeout(() => modal.style.display = 'none', 300); // Wait for fade transition
 }
 
 window.onclick = function(event) {
   const modal = document.getElementById('resourceModal');
   if (event.target === modal) {
-    modal.style.display = 'none';
+    modal.classList.remove('open');
+    setTimeout(() => modal.style.display = 'none', 300);
   }
 }
 
 // Emergency button functionality
-document.getElementById('emergencyBtn').onclick = function() {
-  if (confirm('Are you in immediate danger? If yes, call 911 or your local emergency number.')) {
-    window.location.href = 'tel:911';
-  } else {
-    window.location.href = '<?= BASE_URL ?>/ug/crisis';
-  }
-}
-
-// Share resource functionality
-function shareResource(title, filePath) {
-  if (navigator.share) {
-    navigator.share({
-      title: title,
-      text: 'Check out this resource from MindHeaven',
-      url: filePath
-    }).catch(err => console.log('Error sharing:', err));
-  } else {
-    // Fallback: copy to clipboard
-    const shareText = `${title}\n\nCheck out this resource: ${filePath}`;
-    navigator.clipboard.writeText(shareText).then(() => {
-      alert('Resource link copied to clipboard!');
-    }).catch(() => {
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = shareText;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      alert('Resource link copied to clipboard!');
-    });
+const emergencyBtn = document.getElementById('emergencyBtn');
+if (emergencyBtn) {
+  emergencyBtn.onclick = function() {
+    if (confirm('Are you in immediate danger? If yes, call 911 or your local emergency number.')) {
+      window.location.href = 'tel:911';
+    } else {
+      window.location.href = '<?= BASE_URL ?>/ug/crisis';
+    }
   }
 }
 
@@ -1120,6 +1131,21 @@ document.addEventListener('DOMContentLoaded', function() {
   const tabButtons = document.querySelectorAll('.tab-btn');
   const allResourcesSection = document.getElementById('all-resources');
   const contentTypeSections = document.querySelectorAll('.content-type-section');
+  
+  // Attach safe click listeners to all resource cards using data attributes
+  document.querySelectorAll('.resource-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const resourceData = this.getAttribute('data-resource');
+      if (resourceData) {
+        try {
+          const resource = JSON.parse(resourceData);
+          openResourceModal(resource);
+        } catch (e) {
+          console.error("Failed to parse resource data:", e);
+        }
+      }
+    });
+  });
   
   tabButtons.forEach(button => {
     button.addEventListener('click', function() {
