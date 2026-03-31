@@ -50,6 +50,7 @@ class AppointmentApiControl {
             $this->json(['error' => 'Failed to load appointments', 'detail' => $e->getMessage()], 500);
         }
     }
+
     public function listCounselors() {
         try {
             // Temporarily remove auth requirement for testing
