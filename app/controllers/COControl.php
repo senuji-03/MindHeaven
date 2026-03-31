@@ -34,7 +34,7 @@ class COControl {
 
             // Upcoming appointments booked by undergrads (appointments table)
             $appointmentModel = new Appointment();
-            $upcomingAppointments = $appointmentModel->getUpcomingByCounselorUserId((int)$_SESSION['user_id'], 3);
+            $upcomingAppointments = $appointmentModel->getUpcomingByCounselorUserId((int)$_SESSION['user_id'], 10);
         }
         view('/counselor/Cdashboard', array(
             'counselorFeedback' => $counselorFeedback,

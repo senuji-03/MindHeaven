@@ -113,13 +113,16 @@ class AppointmentApiControl {
     }
 
     public function create() {
-        // Temporarily remove auth requirement for testing
-        // Auth::requireRole('undergrad');
-        // $user = Auth::user();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $data = $this->getJsonInput();
         
-        // For testing, use a default user ID
-        $user = ['id' => 1]; // Replace with actual user ID when auth is enabled
+        if (empty($_SESSION['user_id'])) {
+            return $this->json(['error' => 'Not logged in'], 401);
+        }
+        $userId = (int)$_SESSION['user_id'];
 
         $required = ['counselor_user_id','title','type','date','time'];
         foreach ($required as $field) {
@@ -130,7 +133,7 @@ class AppointmentApiControl {
 
         try {
             $id = $this->appointmentModel->create(
-                (int)$user['id'],
+                $userId,
                 (int)$data['counselor_user_id'],
                 trim($data['title']),
                 trim($data['type']),
