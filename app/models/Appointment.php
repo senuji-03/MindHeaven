@@ -135,4 +135,28 @@ class Appointment
 
         return $stmt->rowCount() > 0;
     }
+
+    /**
+     * Get the total number of unique patients for a counselor.
+     */
+    public function getTotalPatients($counselorUserId)
+    {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT COUNT(DISTINCT student_user_id) as total FROM appointments WHERE counselor_user_id = ? AND status NOT IN ('reject', 'rejected')");
+        $stmt->execute([(int)$counselorUserId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? (int)$row['total'] : 0;
+    }
+
+    /**
+     * Get the number of sessions scheduled for today for a counselor.
+     */
+    public function getTodaysSessionsCount($counselorUserId)
+    {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM appointments WHERE counselor_user_id = ? AND date = CURDATE() AND status IN ('accept', 'accepted')");
+        $stmt->execute([(int)$counselorUserId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? (int)$row['count'] : 0;
+    }
 }

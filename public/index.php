@@ -165,4 +165,15 @@ $router->post('/university-rep/profile/update', 'UniversityRepresentativeControl
 
 
 
+// ========================================
+// CHAT SYSTEM ROUTES
+// ========================================
+$router->get('/chat', 'ChatControl@index');                       // Chat inbox (counselor & undergrad)
+$router->get('/chat/room', 'ChatControl@room');                   // Enter a chat room
+$router->post('/api/chat/start', 'ChatControl@startSession');     // CREATE: start/resume a session
+$router->get('/api/chat/messages', 'ChatControl@getMessages');    // READ:   fetch messages
+$router->post('/api/chat/send', 'ChatControl@sendMessage');       // CREATE: send a message
+$router->post('/api/chat/edit', 'ChatControl@editMessage');       // UPDATE: edit a message
+$router->post('/api/chat/delete', 'ChatControl@deleteMessage');   // DELETE: soft-delete a message
+
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

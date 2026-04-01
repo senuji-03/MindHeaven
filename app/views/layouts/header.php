@@ -19,19 +19,20 @@ function getNavigationItems($role) {
   $navItems = [
     'undergrad' => [
       'main' => [
-        ['icon' => '', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
-        ['icon' => '', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
-        ['icon' => '', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
-        ['icon' => '', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
+        ['icon' => '🏠', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
+        ['icon' => '✅', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
+        ['icon' => '😊', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
+        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
+        ['icon' => '💬', 'text' => 'Chat', 'url' => '/chat', 'slug' => 'chat'],
       ],
       'support' => [
-        ['icon' => '', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
-        ['icon' => '', 'text' => 'Forum', 'url' => '/ug/forum', 'slug' => 'forum'],
-        ['icon' => '', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
-        ['icon' => '', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
+        ['icon' => '📚', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
+        ['icon' => '💭', 'text' => 'Forum', 'url' => '/ug/forum', 'slug' => 'forum'],
+        ['icon' => '📞', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
+        ['icon' => 'ℹ️', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
       ],
       'feedback' => [
-        ['icon' => '', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
+        ['icon' => '⭐', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
  ]
       
     ],
@@ -259,7 +260,7 @@ $navigationItems = getNavigationItems($userRole);
   }
   
   .user-details {
-    /* Always visible */
+    /* layout handled by flexbox parent */
   }
   
   .user-name {

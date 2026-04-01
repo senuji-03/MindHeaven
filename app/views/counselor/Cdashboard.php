@@ -36,6 +36,7 @@
                 <li class="sidebar-item"><a href="calender">📅 Calendar</a></li>
                 <li class="sidebar-item "><a href="appointmentmgt">🗓 Appointment Management</a></li>
                 <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/chat">💬 Chat</a></li>
                 <li class="sidebar-item"><a href="forum">💭 Forum</a></li>
                 <li class="sidebar-item"><a href="resources">📚 Resource Hub</a></li>
                 <li class="sidebar-item"><a href="counselor_profile">👤 Profile</a></li>
@@ -47,12 +48,13 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Stats Cards -->
+            <?php $dashStats = isset($stats) ? $stats : array('totalPatients' => 0, 'todaysSessions' => 0, 'avgRating' => 0.0); ?>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Total Patients</div>
-                            <div class="stat-value">142</div>
+                            <div class="stat-value"><?php echo (int)$dashStats['totalPatients']; ?></div>
                         </div>
                         <div class="stat-icon">👥</div>
                     </div>
@@ -61,7 +63,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Today's Sessions</div>
-                            <div class="stat-value">8</div>
+                            <div class="stat-value"><?php echo (int)$dashStats['todaysSessions']; ?></div>
                         </div>
                         <div class="stat-icon">📅</div>
                     </div>
@@ -70,18 +72,9 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Average Rating</div>
-                            <div class="stat-value">4.8</div>
+                            <div class="stat-value"><?php echo number_format($dashStats['avgRating'], 1); ?></div>
                         </div>
                         <div class="stat-icon">⭐</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Success Rate</div>
-                            <div class="stat-value">94%</div>
-                        </div>
-                        <div class="stat-icon">📈</div>
                     </div>
                 </div>
             </div>
@@ -145,8 +138,8 @@
                         <?php echo $badgeText; ?>
                     </div>
                     <div class="action-buttons">
-                        <button class="btn btn-start" onclick="startMeeting('<?php echo addslashes($studentNameSafe); ?>')">Start</button>
-                        <button class="btn btn-reschedule" onclick="reschedule('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Reschedule</button>
+                        <button class="btn btn-start" onclick="startMeeting('<?php echo addslashes($studentNameSafe); ?>')">Start Session</button>
+                        <!-- <button class="btn btn-reschedule" onclick="reschedule('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Reschedule</button> -->
                         <button class="btn btn-feedback" onclick="sendFeedback('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Feedback</button>
                     </div>
                 </div>
@@ -195,16 +188,16 @@
     </div>
 
     <!-- Reschedule Modal -->
-    <div id="rescheduleModal" class="modal">
+    <!-- <div id="rescheduleModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Reschedule Appointment</h3>
                 <button class="close" onclick="closeModal('rescheduleModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div id="reschedulePatientInfo" class="patient-info-card">
+                <div id="reschedulePatientInfo" class="patient-info-card"> -->
                     <!-- Patient info will be populated here -->
-                </div>
+                <!-- </div>
                 <form id="rescheduleForm">
                     <div class="form-row">
                         <div class="form-group">
@@ -241,7 +234,7 @@
                 <button class="btn-primary" onclick="submitReschedule()">Reschedule Appointment</button>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Feedback Modal -->
     <div id="feedbackModal" class="modal">

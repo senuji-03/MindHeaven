@@ -21,6 +21,12 @@ class COControl {
     public function dashboard() {
         $counselorFeedback = array();
         $upcomingAppointments = array();
+        $stats = array(
+            'totalPatients' => 0,
+            'todaysSessions' => 0,
+            'avgRating' => 0.0
+        );
+        
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -30,15 +36,24 @@ class COControl {
             if ($counselor && !empty($counselor['id'])) {
                 $feedbackModel = new Feedback();
                 $counselorFeedback = $feedbackModel->getCounselorFeedback((int) $counselor['id'], 10);
+                
+                $feedbackStats = $feedbackModel->getStats(array('counselor_id' => $counselor['id']));
+                if ($feedbackStats && isset($feedbackStats['avg_rating'])) {
+                    $stats['avgRating'] = round((float)$feedbackStats['avg_rating'], 1);
+                }
             }
 
             // Upcoming appointments booked by undergrads (appointments table)
             $appointmentModel = new Appointment();
             $upcomingAppointments = $appointmentModel->getUpcomingByCounselorUserId((int)$_SESSION['user_id'], 10);
+            
+            $stats['totalPatients'] = $appointmentModel->getTotalPatients((int)$_SESSION['user_id']);
+            $stats['todaysSessions'] = $appointmentModel->getTodaysSessionsCount((int)$_SESSION['user_id']);
         }
         view('/counselor/Cdashboard', array(
             'counselorFeedback' => $counselorFeedback,
-            'upcomingAppointments' => $upcomingAppointments
+            'upcomingAppointments' => $upcomingAppointments,
+            'stats' => $stats
         ));
     }
 
