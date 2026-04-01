@@ -161,7 +161,8 @@ class COControl {
             'event_date' => isset($_POST['event_date']) ? $_POST['event_date'] : '',
             'event_time' => isset($_POST['event_time']) ? $_POST['event_time'] : '',
             'priority' => isset($_POST['priority']) ? $_POST['priority'] : 'normal',
-            'description' => isset($_POST['description']) ? $_POST['description'] : ''
+            'description' => isset($_POST['description']) ? $_POST['description'] : '',
+            'appointment_id' => isset($_POST['appointment_id']) ? $_POST['appointment_id'] : null
         );
         
         // Validate required fields

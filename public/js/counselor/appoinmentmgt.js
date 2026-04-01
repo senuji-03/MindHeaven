@@ -294,6 +294,7 @@ function saveToCalendar(appointmentId) {
     formData.append('event_time', appointment.requestedTime);
     formData.append('priority', 'normal');
     formData.append('description', `Appointment Reason: ${appointment.reason || 'N/A'}\nType: ${appointment.mediaType} call`);
+    formData.append('appointment_id', appointment.id);
 
     fetch(BASE_URL + '/counselor/createEvent', {
         method: 'POST',

@@ -61,8 +61,8 @@ class Event {
             return false;
         }
         
-        $sql = "INSERT INTO events (counselor_id, title, event_date, event_time, priority, description, created_at) 
-                VALUES (:counselor_id, :title, :event_date, :event_time, :priority, :description, NOW())";
+        $sql = "INSERT INTO events (counselor_id, title, event_date, event_time, priority, description, appointment_id, created_at) 
+                VALUES (:counselor_id, :title, :event_date, :event_time, :priority, :description, :appointment_id, NOW())";
         
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':counselor_id', $data['counselor_id'], PDO::PARAM_INT);
@@ -71,6 +71,9 @@ class Event {
         $stmt->bindParam(':event_time', $data['event_time'], PDO::PARAM_STR);
         $stmt->bindParam(':priority', $data['priority'], PDO::PARAM_STR);
         $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+        
+        $appointmentId = isset($data['appointment_id']) ? $data['appointment_id'] : null;
+        $stmt->bindParam(':appointment_id', $appointmentId, PDO::PARAM_INT);
         
         error_log("Event model: Attempting to create event with data: " . print_r($data, true));
         
@@ -115,6 +118,26 @@ class Event {
         $sql = "DELETE FROM events WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':id', $eventId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+    
+    /**
+     * Update an event's date and time mapped by its appointment ID
+     */
+    public function updateEventDateTimeByAppointmentId($appointmentId, $eventDate, $eventTime) {
+        if (!$this->db) return false;
+        
+        $sql = "UPDATE events SET 
+                event_date = :event_date, 
+                event_time = :event_time,
+                updated_at = NOW()
+                WHERE appointment_id = :appointment_id";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':event_date', $eventDate, PDO::PARAM_STR);
+        $stmt->bindParam(':event_time', $eventTime, PDO::PARAM_STR);
+        $stmt->bindParam(':appointment_id', $appointmentId, PDO::PARAM_INT);
+        
         return $stmt->execute();
     }
     

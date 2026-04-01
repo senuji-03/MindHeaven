@@ -179,6 +179,11 @@ class AppointmentApiControl {
             error_log("AppointmentApiControl: Model update result: " . ($result ? "SUCCESS" : "FAILED"));
             
             if ($result) {
+                // Keep the calendar in sync if this appointment was mapped
+                require_once '../app/models/Event.php';
+                $eventModel = new Event();
+                $eventModel->updateEventDateTimeByAppointmentId((int)$data['id'], $data['date'], $data['time']);
+
                 $this->json(['message' => 'Appointment updated successfully'], 200);
             } else {
                 $this->json(['error' => 'Appointment not found or could not be updated'], 404);
