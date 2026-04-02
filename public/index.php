@@ -72,6 +72,8 @@ $router->get('/counselor/appointmentmgt', 'COControl@appointmentmgt');
 $router->get('/counselor/calender', 'COControl@calender');
 $router->get('/counselor/sessionHistory', 'COControl@sessionHistory');
 $router->get('/counselor/counselor_profile', 'COControl@counselorProfile');
+$router->post('/counselor/updateProfile', 'COControl@updateProfile');
+$router->post('/api/counselor/qualifications/sync', 'COControl@syncQualifications');
 $router->get('/counselor/forum', 'UGControl@forum');
 $router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
 

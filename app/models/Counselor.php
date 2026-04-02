@@ -217,4 +217,83 @@ class Counselor {
         $stmt->execute(["%$specialization%"]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    /**
+     * Get qualifications for a counselor
+     */
+    public function getQualifications($counselorId) {
+        $stmt = $this->pdo->prepare("
+            SELECT * FROM counselor_qualifications 
+            WHERE counselor_id = ?
+            ORDER BY id ASC
+        ");
+        $stmt->execute([$counselorId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Sync qualifications for a counselor
+     */
+    public function syncQualifications($counselorId, $qualificationsList) {
+        $this->pdo->beginTransaction();
+        try {
+            // Get existing qualifications
+            $existing = $this->getQualifications($counselorId);
+            $existingIds = array_column($existing, 'id');
+            
+            $incomingIds = [];
+            foreach ($qualificationsList as $qual) {
+                if (!empty($qual['id'])) {
+                    $incomingIds[] = $qual['id'];
+                }
+            }
+            
+            // Delete missing qualifications
+            $toDelete = array_diff($existingIds, $incomingIds);
+            if (!empty($toDelete)) {
+                $placeholders = str_repeat('?,', count($toDelete) - 1) . '?';
+                $stmt = $this->pdo->prepare("DELETE FROM counselor_qualifications WHERE id IN ($placeholders) AND counselor_id = ?");
+                $deleteParams = array_merge($toDelete, [$counselorId]);
+                $stmt->execute($deleteParams);
+            }
+            
+            // Insert or Update remaining
+            $insertStmt = $this->pdo->prepare("
+                INSERT INTO counselor_qualifications (counselor_id, title, institution, year_range, description)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $updateStmt = $this->pdo->prepare("
+                UPDATE counselor_qualifications
+                SET title = ?, institution = ?, year_range = ?, description = ?
+                WHERE id = ? AND counselor_id = ?
+            ");
+            
+            foreach ($qualificationsList as $qual) {
+                if (empty($qual['id'])) {
+                    $insertStmt->execute([
+                        $counselorId,
+                        $qual['title'],
+                        $qual['institution'],
+                        $qual['year'],
+                        $qual['description']
+                    ]);
+                } else {
+                    $updateStmt->execute([
+                        $qual['title'],
+                        $qual['institution'],
+                        $qual['year'],
+                        $qual['description'],
+                        $qual['id'],
+                        $counselorId
+                    ]);
+                }
+            }
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            error_log("Error syncing qualifications: " . $e->getMessage());
+            return false;
+        }
+    }
 }

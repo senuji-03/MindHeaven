@@ -150,8 +150,83 @@ class COControl {
 
         $counselorModel = new Counselor();
         $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+        
+        $qualifications = [];
+        if ($counselor && !empty($counselor['id'])) {
+            $qualifications = $counselorModel->getQualifications($counselor['id']);
+        }
 
-        view('/counselor/counselor_profile', array('counselor' => $counselor));
+        view('/counselor/counselor_profile', array('counselor' => $counselor, 'qualifications' => $qualifications));
+    }
+
+    public function updateProfile() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(array('success' => false, 'message' => 'Method not allowed'));
+            return;
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['user_id'])) {
+            echo json_encode(array('success' => false, 'message' => 'Not logged in'));
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data) {
+            $data = $_POST;
+        }
+
+        $counselorModel = new Counselor();
+        $success = $counselorModel->update($_SESSION['user_id'], $data);
+
+        if ($success) {
+            echo json_encode(array('success' => true, 'message' => 'Profile updated successfully'));
+        } else {
+            echo json_encode(array('success' => false, 'message' => 'Failed to update profile or no changes made'));
+        }
+    }
+
+    public function syncQualifications() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(array('success' => false, 'message' => 'Method not allowed'));
+            return;
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['user_id'])) {
+            echo json_encode(array('success' => false, 'message' => 'Not logged in'));
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['qualifications'])) {
+            echo json_encode(array('success' => false, 'message' => 'No qualifications data provided'));
+            return;
+        }
+
+        $counselorModel = new Counselor();
+        $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+        
+        if (!$counselor || empty($counselor['id'])) {
+            echo json_encode(array('success' => false, 'message' => 'Counselor not found'));
+            return;
+        }
+
+        $success = $counselorModel->syncQualifications($counselor['id'], $data['qualifications']);
+
+        if ($success) {
+            echo json_encode(array('success' => true, 'message' => 'Qualifications sync successful'));
+        } else {
+            echo json_encode(array('success' => false, 'message' => 'Failed to sync qualifications'));
+        }
     }
     
     /**
