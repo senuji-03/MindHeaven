@@ -769,21 +769,7 @@
 
     <!-- Main Container -->
     <div class="main-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <ul class="sidebar-menu">
-                <li class="sidebar-item"><a href="dashboard">📊 Dashboard</a></li>
-                <li class="sidebar-item">📅 Calendar</a></li>
-                <li class="sidebar-item"><a href="appointmentmgt">🗓 Appointment Management</a></li>
-                <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
-              
-                <li class="sidebar-item active">📚 Resource Hub</li>
-                <li class="sidebar-item"><a href="counselor_profile">👤 Profile</a></li>
-                
-                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
-            </ul>
-        </div>
-
+        <?php include __DIR__ . '/sidebar.php'; ?>
 
         <!-- Main Content -->
         <div class="main-content">

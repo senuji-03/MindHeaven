@@ -31,21 +31,7 @@ $undergrads = isset($undergrads) ? $undergrads : [];
 
     <div class="main-container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <ul class="sidebar-menu">
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓 Appointment Management</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session History</a></li>
-                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/chat" style="color:#6366f1;">💬 Chat</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/Cresource_hub">📚 Resource Hub</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile">👤 Profile</a></li>
-                <li class="sidebar-item logout-item">
-                    <a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a>
-                </li>
-            </ul>
-        </div>
+        <?php include __DIR__ . '/sidebar.php'; ?>
 
         <!-- Main Content -->
         <div class="main-content" style="background:#0f172a; min-height:100vh; color:#e2e8f0;">
