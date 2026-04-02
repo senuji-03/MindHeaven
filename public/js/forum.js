@@ -13,17 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function initFilters() {
     const filterBtns = document.querySelectorAll('.filter-btn');
-    
+
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all buttons
             filterBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
             btn.classList.add('active');
-            
-            const filterType = btn.dataset.filter;
-            console.log(`Filter selected: ${filterType}`);
-            // In a real app, this would trigger an AJAX call or filter the list
+
+            const category = (btn.dataset.category || '').trim().toLowerCase();
+            const threads = document.querySelectorAll('.thread-card');
+
+            threads.forEach(thread => {
+                const threadCat = (thread.dataset.category || '').trim().toLowerCase();
+                if (category === 'all' || threadCat === category) {
+                    thread.style.display = '';
+                } else {
+                    thread.style.display = 'none';
+                }
+            });
         });
     });
 }

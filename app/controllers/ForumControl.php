@@ -18,22 +18,18 @@ class ForumControl
 
     public function index()
     {
-        // Load threads
         require_once BASE_PATH . '/app/models/Thread.php';
         $threadModel = new Thread();
 
-        $threads = $threadModel->getAll(20); // Get recent 20 threads
+        $threads    = $threadModel->getAll(20);
+        $categories = $threadModel->getCategories();
+        $userRole   = $_SESSION['role'] ?? 'guest';
 
-        // Pass user role for conditional UI
-        $userRole = $_SESSION['role'] ?? 'guest';
-
-        // Load view
-        // Note: We might need to adjust the view path if we create a dedicated forum view directory
-        // For now, reusing the structure but pointing to new file
         $this->view('forum/index', [
-            'threads' => $threads,
-            'userRole' => $userRole,
-            'PAGE_CSS' => [BASE_URL . '/css/forum.css']
+            'threads'    => $threads,
+            'categories' => $categories,
+            'userRole'   => $userRole,
+            'PAGE_CSS'   => [BASE_URL . '/css/forum.css']
         ]);
     }
 
@@ -41,16 +37,18 @@ class ForumControl
     {
         $this->requireAuth();
 
-        // Access Control: University Reps cannot create threads
         $userRole = $_SESSION['role'] ?? '';
-        if ($userRole === 'university_representative') { // Handle university representative role
+        if ($userRole === 'university_representative') {
             $_SESSION['error'] = "You do not have permission to create threads.";
             header('Location: ' . BASE_URL . '/forum');
             exit;
         }
 
-        // Render create form
-        $this->view('forum/create');
+        require_once BASE_PATH . '/app/models/Thread.php';
+        $threadModel = new Thread();
+        $categories  = $threadModel->getCategories();
+
+        $this->view('forum/create', ['categories' => $categories]);
     }
 
     public function store()

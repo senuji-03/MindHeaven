@@ -35,7 +35,7 @@ if (!$isEmbedded) {
                 $backLink = BASE_URL . '/forum?embed=true';
             } elseif (isset($_SESSION['role'])) {
                 if ($_SESSION['role'] === 'undergraduate') {
-                    $backLink = BASE_URL . '/ug/forum';
+                    $backLink = BASE_URL . '/forum';
                 } elseif ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'moderator') {
                     $backLink = BASE_URL . '/admin/moderate-forum';
                     $backText = 'Back to Moderation';
@@ -294,7 +294,330 @@ if (!$isEmbedded) {
         </div>
     </main>
 
+    <style>
+    /* ── Thread card (main post) ── */
+    .main-thread {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 2px 16px rgba(0,0,0,.06);
+        padding: 2rem 2.2rem;
+        margin-bottom: 1.6rem;
+    }
+
+    .thread-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.85rem;
+    }
+
+    .thread-heading {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.35;
+        margin: 0 0 1.1rem;
+    }
+
+    /* ── Author meta block ── */
+    .author-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.4rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .avatar-circle {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #6366f1;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .avatar-circle.small {
+        width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+    }
+
+    .meta-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .author-name {
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #1f2937;
+    }
+
+    .post-date {
+        font-size: 0.78rem;
+        color: #9ca3af;
+    }
+
+    /* ── Thread body content ── */
+    .thread-body {
+        font-size: 0.97rem;
+        line-height: 1.75;
+        color: #374151;
+        margin-bottom: 1.6rem;
+        padding: 1.2rem 1.4rem;
+        background: #f9fafb;
+        border-radius: 10px;
+        border-left: 3px solid #e0e7ff;
+    }
+
+    /* ── Thread actions (stats + delete/report) ── */
+    .thread-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.9rem;
+        border-top: 1px solid #f3f4f6;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .stats {
+        display: flex;
+        gap: 1.2rem;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .stats span {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .actions-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* ── Replies section ── */
+    .replies-section h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #374151;
+        margin: 0 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    /* ── Individual reply card ── */
+    .reply-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 1rem;
+        transition: box-shadow .15s;
+    }
+
+    .reply-card:hover {
+        box-shadow: 0 2px 12px rgba(0,0,0,.07);
+    }
+
+    .reply-card.is-reply {
+        margin-left: 2rem;
+        border-left: 3px solid #6366f1;
+        background: #fafafe;
+    }
+
+    .reply-header {
+        margin-bottom: 0.75rem;
+    }
+
+    .reply-body {
+        font-size: 0.93rem;
+        line-height: 1.7;
+        color: #374151;
+        margin-bottom: 0.9rem;
+    }
+
+    .reply-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.6rem;
+        border-top: 1px solid #f3f4f6;
+    }
+
+    .left-actions,
+    .right-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* ── Action buttons (flag, delete, reply) ── */
+    .btn-flag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.8rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: #f9fafb;
+        color: #6b7280;
+        cursor: pointer;
+        transition: background .15s, color .15s;
+    }
+
+    .btn-flag:hover {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .btn-delete-content {
+        color: #ef4444;
+        border-color: #fecaca;
+    }
+
+    .btn-delete-content:hover {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .btn-reply-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.8rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: #f9fafb;
+        color: #6b7280;
+        cursor: pointer;
+        transition: background .15s;
+        margin-left: 0 !important; /* override inline style */
+    }
+
+    .btn-reply-action:hover {
+        background: #ede9fe;
+        color: #6366f1;
+    }
+
+    .like-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.85rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: #f9fafb;
+        color: #6b7280;
+        cursor: pointer;
+        transition: background .15s, color .15s;
+    }
+
+    .like-btn.liked,
+    .like-btn:hover {
+        background: #fdf2f8;
+        color: #ec4899;
+        border-color: #fbcfe8;
+    }
+
+    /* ── Reply form card ── */
+    .reply-form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        padding: 1.6rem 1.8rem;
+        margin-top: 1.6rem;
+    }
+
+    .reply-form-card h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #374151;
+        margin: 0 0 1rem;
+    }
+
+    .reply-form-card .form-control {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.93rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        resize: vertical;
+        font-family: inherit;
+        transition: border-color .18s, box-shadow .18s;
+    }
+
+    .reply-form-card .form-control:focus {
+        border-color: #6366f1;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+        outline: none;
+    }
+
+    .reply-form-card .form-actions {
+        margin-top: 0.9rem;
+    }
+
+    /* ── Support sidebar card ── */
+    .support-card {
+        background: linear-gradient(135deg, #fdf2f8, #ede9fe);
+        border: 1px solid #e0e7ff;
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+    }
+
+    .support-card h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #4338ca;
+        margin: 0 0 0.65rem;
+    }
+
+    .support-card p {
+        font-size: 0.85rem;
+        color: #475569;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    /* ── Back link ── */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+        text-decoration: none;
+        margin-bottom: 1.2rem;
+        transition: color .15s;
+    }
+
+    .back-link:hover {
+        color: #6366f1;
+    }
+    </style>
+
     <!-- Report Modal -->
+
     <div id="reportModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">

@@ -96,9 +96,9 @@
           <button class="tab active" data-tab="preview">Preview</button>
           <button class="tab" data-tab="queue">Flagged Queue</button>
           <button class="tab" data-tab="auto-flags">Automated Flags</button>
-          <a href="<?= BASE_URL ?>/admin/report-categories" class="tab-link"
+          <a href="<?= BASE_URL ?>/admin/forum-categories" class="tab-link"
             style="text-decoration:none; display:flex; align-items:center;">
-            Customize Categories
+            Manage Thread Categories
           </a>
           <a href="<?= BASE_URL ?>/admin/keywords" class="tab-link"
             style="text-decoration:none; display:flex; align-items:center; margin-left:10px;">
@@ -106,10 +106,10 @@
           </a>
         </div>
         <div>
-          <!-- <button class="btn" onclick="bulkFlag()">Flag Selected</button> -->
-          <!-- <button class="btn secondary" onclick="bulkDelete()">Delete Selected</button> -->
+          <a href="<?= BASE_URL ?>/admin/forum-categories" class="btn">Categories</a>
         </div>
       </div>
+
 
       <!-- Embed/preview the UG forum page -->
       <section id="forumPreview" class="embed">

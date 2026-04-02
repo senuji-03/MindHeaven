@@ -80,6 +80,14 @@ $router->post('/admin/report-categories/update', 'AdminControl@updateReportCateg
 $router->post('/admin/report-categories/delete', 'AdminControl@deleteReportCategory');
 $router->post('/admin/report-categories/activate', 'AdminControl@activateReportCategory');
 
+// Forum Thread Category Management (forum_categories — NOT report_categories)
+$router->get('/admin/forum-categories', 'AdminControl@forumCategories');
+$router->post('/admin/forum-categories/create', 'AdminControl@createForumCategory');
+$router->post('/admin/forum-categories/update', 'AdminControl@updateForumCategory');
+$router->post('/admin/forum-categories/delete', 'AdminControl@deleteForumCategory');
+$router->post('/admin/forum-categories/activate', 'AdminControl@activateForumCategory');
+
+
 // Report API Routes (for frontend)
 $router->get('/report/categories', 'ReportControl@getCategories');
 $router->post('/report/submit', 'ReportControl@submit');

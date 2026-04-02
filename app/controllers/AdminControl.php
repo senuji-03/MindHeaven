@@ -271,19 +271,9 @@ class AdminControl
                     exit;
                 }
 
-                // Try to insert with all fields first, fallback to basic fields if some columns don't exist
-                try {
-                    $stmt = $pdo->prepare("INSERT INTO counselors (user_id, full_name, phone_number, license_number, specializations, years_experience, bio) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$userId, $fullName, $phoneNumber, $licenseNumber, $specialization, $yearsExperience, $bio]);
-                } catch (PDOException $e) {
-                    // If the full insert fails, try with just the basic fields
-                    if (strpos($e->getMessage(), 'Unknown column') !== false) {
-                        $stmt = $pdo->prepare("INSERT INTO counselors (user_id, full_name, phone_number, license_number) VALUES (?, ?, ?, ?)");
-                        $stmt->execute([$userId, $fullName, $phoneNumber, $licenseNumber]);
-                    } else {
-                        throw $e; // Re-throw if it's not a column issue
-                    }
-                }
+                // Explicit schema mapping for counselor insert
+                $stmt = $pdo->prepare("INSERT INTO counselors (user_id, full_name, phone_number, license_number, specialization, years_experience, bio, approved_by, approved_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)");
+                $stmt->execute([$userId, $fullName, $phoneNumber, $licenseNumber, $specialization, $yearsExperience, $bio]);
             } elseif ($role === 'undergraduate') {
                 $stmt = $pdo->prepare("INSERT INTO undergraduate_students (user_id, full_name, phone_number) VALUES (?, ?, ?)");
                 $stmt->execute([$userId, $fullName, $phoneNumber]);
@@ -417,19 +407,9 @@ class AdminControl
                     exit;
                 }
 
-                // Try to update with all fields first, fallback to basic fields if some columns don't exist
-                try {
-                    $stmt = $pdo->prepare("UPDATE counselors SET full_name = ?, phone_number = ?, license_number = ?, specializations = ?, years_experience = ?, bio = ? WHERE user_id = ?");
-                    $stmt->execute([$fullName, $phoneNumber, $licenseNumber, $specialization, $yearsExperience, $bio, $userId]);
-                } catch (PDOException $e) {
-                    // If the full update fails, try with just the basic fields
-                    if (strpos($e->getMessage(), 'Unknown column') !== false) {
-                        $stmt = $pdo->prepare("UPDATE counselors SET full_name = ?, phone_number = ?, license_number = ? WHERE user_id = ?");
-                        $stmt->execute([$fullName, $phoneNumber, $licenseNumber, $userId]);
-                    } else {
-                        throw $e; // Re-throw if it's not a column issue
-                    }
-                }
+                // Explicit mapping for counselor update
+                $stmt = $pdo->prepare("UPDATE counselors SET full_name = ?, phone_number = ?, license_number = ?, specialization = ?, years_experience = ?, bio = ? WHERE user_id = ?");
+                $stmt->execute([$fullName, $phoneNumber, $licenseNumber, $specialization, $yearsExperience, $bio, $userId]);
             } elseif ($role === 'undergraduate') {
                 $stmt = $pdo->prepare("UPDATE undergraduate_students SET full_name = ?, phone_number = ? WHERE user_id = ?");
                 $stmt->execute([$fullName, $phoneNumber, $userId]);
@@ -1049,4 +1029,98 @@ class AdminControl
         header('Location: ' . BASE_URL . '/admin/university-events');
         exit;
     }
-}
+
+    // -------------------------------------------------------
+    // Forum Thread Category Management (forum_categories table)
+    // NOT to be confused with report_categories
+    // -------------------------------------------------------
+
+    public function forumCategories()
+    {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->query("SELECT id, name, description, is_active, sort_order FROM forum_categories ORDER BY sort_order ASC, id ASC");
+        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        view('admin/customize-forum-categories', ['categories' => $categories]);
+    }
+
+    public function createForumCategory()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/forum-categories');
+            exit;
+        }
+        $name = trim($_POST['name'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        if (empty($name)) {
+            $_SESSION['error'] = 'Category name is required.';
+            header('Location: ' . BASE_URL . '/admin/forum-categories');
+            exit;
+        }
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("INSERT INTO forum_categories (name, description) VALUES (?, ?)");
+        $stmt->execute([$name, $description]);
+        $_SESSION['success'] = 'Forum category created.';
+        header('Location: ' . BASE_URL . '/admin/forum-categories');
+        exit;
+    }
+
+    public function updateForumCategory()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/forum-categories');
+            exit;
+        }
+        $id          = (int) ($_POST['id'] ?? 0);
+        $name        = trim($_POST['name'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        if (!$id || empty($name)) {
+            $_SESSION['error'] = 'Invalid request.';
+            header('Location: ' . BASE_URL . '/admin/forum-categories');
+            exit;
+        }
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("UPDATE forum_categories SET name = ?, description = ? WHERE id = ?");
+        $stmt->execute([$name, $description, $id]);
+        $_SESSION['success'] = 'Forum category updated.';
+        header('Location: ' . BASE_URL . '/admin/forum-categories');
+        exit;
+    }
+
+    public function deleteForumCategory()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/forum-categories');
+            exit;
+        }
+        $id = (int) ($_POST['id'] ?? 0);
+        if (!$id) {
+            $_SESSION['error'] = 'Invalid request.';
+            header('Location: ' . BASE_URL . '/admin/forum-categories');
+            exit;
+        }
+        $pdo = Database::getConnection();
+        $pdo->prepare("UPDATE forum_categories SET is_active = 0 WHERE id = ?")->execute([$id]);
+        $_SESSION['success'] = 'Forum category deactivated.';
+        header('Location: ' . BASE_URL . '/admin/forum-categories');
+        exit;
+    }
+
+    public function activateForumCategory()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/forum-categories');
+            exit;
+        }
+        $id = (int) ($_POST['id'] ?? 0);
+        if (!$id) {
+            $_SESSION['error'] = 'Invalid request.';
+            header('Location: ' . BASE_URL . '/admin/forum-categories');
+            exit;
+        }
+        $pdo = Database::getConnection();
+        $pdo->prepare("UPDATE forum_categories SET is_active = 1 WHERE id = ?")->execute([$id]);
+        $_SESSION['success'] = 'Forum category reactivated.';
+        header('Location: ' . BASE_URL . '/admin/forum-categories');
+        exit;
+    }
+}

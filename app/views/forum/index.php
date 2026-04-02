@@ -69,10 +69,13 @@ if (!$isEmbedded) {
 
                 <div class="filter-wrapper">
                     <button class="filter-btn active" data-category="all">All</button>
-                    <button class="filter-btn" data-category="General">General</button>
-                    <button class="filter-btn" data-category="Academics">Academics</button>
-                    <button class="filter-btn" data-category="Relationships">Relationships</button>
-                    <button class="filter-btn" data-category="Stress">Stress</button>
+                    <?php foreach ($categories as $cat): ?>
+                        <button class="filter-btn" 
+                                data-category="<?php echo htmlspecialchars($cat['name']); ?>"
+                                title="<?php echo htmlspecialchars($cat['description']); ?>">
+                            <?php echo htmlspecialchars($cat['name']); ?>
+                        </button>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
@@ -149,7 +152,7 @@ if (!$isEmbedded) {
 
 
     <!-- Reuse previous JS for category filtering or adapt it -->
-    <script src="<?php echo BASE_URL; ?>/public/js/forum.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/forum.js"></script>
     <?php
     if (!$isEmbedded) {
         include BASE_PATH . '/app/views/layouts/footer.php';

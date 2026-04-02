@@ -313,4 +313,14 @@ class Thread
 
         return $activities;
     }
+    /**
+     * Get all active forum categories (thread categories, not report categories)
+     */
+    public function getCategories()
+    {
+        $stmt = $this->pdo->query(
+            "SELECT name, description FROM forum_categories WHERE is_active = 1 ORDER BY sort_order ASC"
+        );
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

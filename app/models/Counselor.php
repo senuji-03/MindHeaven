@@ -16,15 +16,15 @@ class Counselor
     {
         $stmt = $this->pdo->prepare("
             INSERT INTO counselors (
-                user_id, full_name, email, phone_number, license_number,
-                specializations, years_experience, bio
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                user_id, full_name, phone_number, license_number,
+                specialization, years_experience, bio,
+                approved_by, approved_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)
         ");
 
         $stmt->execute([
             $userId,
             $data['full_name'],
-            $data['email'],
             $data['phone_number'],
             $data['license_number'],
             $data['specialization'] ?? null,
@@ -60,10 +60,9 @@ class Counselor
 
         $allowedFields = [
             'full_name',
-            'email',
             'phone_number',
             'license_number',
-            'specializations',
+            'specialization',
             'years_experience',
             'bio',
             'hourly_rate'
@@ -180,10 +179,10 @@ class Counselor
     {
         $stmt = $this->pdo->prepare("
             UPDATE counselors 
-            SET status = 'approved'
+            SET is_approved = 1, approved_at = CURRENT_TIMESTAMP, approved_by = ?
             WHERE user_id = ?
         ");
-        return $stmt->execute([$userId]);
+        return $stmt->execute([$approvedBy, $userId]);
     }
 
     /**

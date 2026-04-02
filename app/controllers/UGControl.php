@@ -148,28 +148,9 @@ class UGControl
 
     public function forum()
     {
-        try {
-            require_once BASE_PATH . '/app/models/Thread.php';
-            $threadModel = new Thread();
-
-            $threads = $threadModel->getAll(20); // Fetch recent threads
-            $stats = $threadModel->getForumStats(); // Fetch forum stats
-            $recentActivity = $threadModel->getRecentActivity(5); // Fetch recent activity feed
-
-            view('undergrad/forum', [
-                'threads' => $threads,
-                'stats' => $stats,
-                'recentActivity' => $recentActivity
-            ]);
-        } catch (Exception $e) {
-            error_log("Forum Load Error: " . $e->getMessage());
-            view('undergrad/forum', [
-                'threads' => [],
-                'stats' => ['active_threads' => 0, 'total_posts' => 0, 'online_now' => 0],
-                'recentActivity' => [],
-                'error' => 'Unable to load thoughts.'
-            ]);
-        }
+        // Redirect to the canonical forum page (ForumControl@index) for consistency.
+        header('Location: ' . BASE_URL . '/forum');
+        exit;
     }
 
     public function quiz()
