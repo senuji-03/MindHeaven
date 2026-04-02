@@ -328,9 +328,35 @@
                 return;
             }
             
-            document.getElementById('profilePic').src = selectedPhoto;
-            alert('Profile picture updated successfully!');
-            closePhotoModal();
+            const fileInput = document.getElementById('photoUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                 alert('No file found.');
+                 return;
+            }
+            
+            const formData = new FormData();
+            formData.append('profile_picture', file);
+            
+            fetch('/MindHeaven/public/counselor/uploadProfilePhoto', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('profilePic').src = data.url;
+                    alert('Profile picture updated successfully!');
+                    closePhotoModal();
+                } else {
+                    alert(data.message || 'Failed to update profile picture.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('An error occurred.');
+            });
         }
 
         // Close modal when clicking outside

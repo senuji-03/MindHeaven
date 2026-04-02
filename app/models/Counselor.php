@@ -55,7 +55,7 @@ class Counselor {
         
         $allowedFields = [
             'full_name', 'email', 'phone_number', 'license_number', 
-            'specialization', 'years_experience', 'bio', 'hourly_rate'
+            'specialization', 'years_experience', 'bio', 'hourly_rate', 'profile_picture'
         ];
         
         foreach ($allowedFields as $field) {

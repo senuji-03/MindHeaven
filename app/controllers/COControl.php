@@ -151,7 +151,7 @@ class COControl {
         $counselorModel = new Counselor();
         $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
         
-        $qualifications = [];
+        $qualifications = array();
         if ($counselor && !empty($counselor['id'])) {
             $qualifications = $counselorModel->getQualifications($counselor['id']);
         }
@@ -226,6 +226,68 @@ class COControl {
             echo json_encode(array('success' => true, 'message' => 'Qualifications sync successful'));
         } else {
             echo json_encode(array('success' => false, 'message' => 'Failed to sync qualifications'));
+        }
+    }
+
+    public function uploadProfilePhoto() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(array('success' => false, 'message' => 'Method not allowed'));
+            return;
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['user_id'])) {
+            echo json_encode(array('success' => false, 'message' => 'Not logged in'));
+            return;
+        }
+
+        if (!isset($_FILES['profile_picture']) || $_FILES['profile_picture']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(array('success' => false, 'message' => 'No valid file uploaded'));
+            return;
+        }
+
+        $file = $_FILES['profile_picture'];
+        
+        // Basic validation
+        $allowedTypes = array('image/jpeg', 'image/png', 'image/gif', 'image/webp');
+        if (!in_array($file['type'], $allowedTypes)) {
+            echo json_encode(array('success' => false, 'message' => 'Invalid file format. Please upload JPG, PNG, GIF or WEBP.'));
+            return;
+        }
+        
+        // Max size: 5MB
+        if ($file['size'] > 5 * 1024 * 1024) {
+             echo json_encode(array('success' => false, 'message' => 'File size exceeds 5MB limit.'));
+             return;
+        }
+        
+        $uploadDirBase = BASE_PATH . '/public/uploads/counselor_profiles/';
+        if (!is_dir($uploadDirBase)) {
+            mkdir($uploadDirBase, 0777, true);
+        }
+        
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $fileName = 'counselor_' . $_SESSION['user_id'] . '_' . time() . '.' . $extension;
+        $targetFile = $uploadDirBase . $fileName;
+        
+        if (move_uploaded_file($file['tmp_name'], $targetFile)) {
+            // Success, update db
+            $publicUrl = BASE_URL . '/public/uploads/counselor_profiles/' . $fileName;
+            
+            $counselorModel = new Counselor();
+            $success = $counselorModel->update($_SESSION['user_id'], array('profile_picture' => $publicUrl));
+            
+            if ($success) {
+                 echo json_encode(array('success' => true, 'message' => 'Profile picture uploaded.', 'url' => $publicUrl));
+            } else {
+                 echo json_encode(array('success' => false, 'message' => 'Database update failed.'));
+            }
+        } else {
+             echo json_encode(array('success' => false, 'message' => 'Failed to move uploaded file.'));
         }
     }
     

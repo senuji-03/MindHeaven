@@ -16,6 +16,7 @@
         $c_spec = isset($counselor['specialization']) ? $counselor['specialization'] : '';
         $c_exp = isset($counselor['experience_years']) ? $counselor['experience_years'] : '';
         $c_bio = isset($counselor['bio']) ? $counselor['bio'] : '';
+        $c_profile_pic = isset($counselor['profile_picture']) && !empty($counselor['profile_picture']) ? $counselor['profile_picture'] : 'https://via.placeholder.com/150';
         $qualifications = isset($qualifications) && is_array($qualifications) ? $qualifications : [];
     ?>
     <!-- Navigation Bar -->
@@ -48,7 +49,7 @@
             <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-picture-container">
-                    <img id="profilePic" src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-picture">
+                    <img id="profilePic" src="<?php echo htmlspecialchars($c_profile_pic); ?>" alt="Profile Picture" class="profile-picture">
                     <button class="change-photo-btn" onclick="openPhotoModal()">📷</button>
                 </div>
                 <div class="profile-info">
