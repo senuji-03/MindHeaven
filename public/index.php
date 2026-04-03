@@ -24,10 +24,7 @@ $router->get('/logout', 'LoginControl@logout');
 $router->get('/signup', 'SignupControl@index');
 $router->post('/signup/register', 'SignupControl@register');
 
-// Public routes (no authorization required)
-$router->get('/public/resources', 'PublicControl@resources');
-$router->get('/public/forum', 'PublicControl@forum');
-$router->get('/public/crisis', 'PublicControl@crisis');
+
 
 $router->get('/ug', 'UGControl@index');
 $router->get('/ug/appointment', 'UGControl@appointment');
@@ -40,7 +37,6 @@ $router->get('/ug/mood', 'UGControl@mood');
 $router->get('/ug/about', 'UGControl@about');
 $router->get('/ug/forum', 'UGControl@forum');
 $router->get('/ug/quiz', 'UGControl@quiz');
-$router->get('/ug/goals', 'UGControl@goals');
 $router->get('/ug/profile', 'UGControl@profile');
 $router->get('/ug/profile/complete', 'UGControl@completeProfile');
 $router->post('/ug/profile/complete', 'UGControl@completeProfile');
@@ -56,8 +52,6 @@ $router->get('/admin/resource-hub', 'AdminControl@resourceHub');
 $router->get('/admin/moderate-forum', 'AdminControl@moderateForum');
 $router->get('/admin/counselors', 'AdminControl@counselors');
 $router->get('/admin/appointments', 'AdminControl@appointments');
-$router->get('/admin/get-appointments', 'AdminControl@getAppointments');
-$router->get('/admin/test-method', 'AdminControl@testMethod');
 $router->get('/admin/approve-counselors', 'AdminControl@approveCounselors');
 $router->get('/admin/reports', 'AdminControl@reports');
 $router->get('/admin/donations', 'AdminControl@donations');
@@ -71,16 +65,16 @@ $router->post('/admin/manage-users/create', 'AdminControl@createUser');
 $router->post('/admin/manage-users/update', 'AdminControl@updateUser');
 $router->post('/admin/manage-users/delete', 'AdminControl@deleteUser');
 
-// Admin counselor approval routes
-$router->post('/admin/approveCounselor', 'AdminControl@approveCounselor');
-$router->post('/admin/rejectCounselor', 'AdminControl@rejectCounselor');
-
 $router->get('/counselor', 'COControl@index');  
 $router->get('/counselor/dashboard', 'COControl@dashboard');
+$router->get('/counselor/feedback', 'COControl@feedbackList');
 $router->get('/counselor/appointmentmgt', 'COControl@appointmentmgt');
 $router->get('/counselor/calender', 'COControl@calender');
 $router->get('/counselor/sessionHistory', 'COControl@sessionHistory');
 $router->get('/counselor/counselor_profile', 'COControl@counselorProfile');
+$router->post('/counselor/updateProfile', 'COControl@updateProfile');
+$router->post('/counselor/uploadProfilePhoto', 'COControl@uploadProfilePhoto');
+$router->post('/api/counselor/qualifications/sync', 'COControl@syncQualifications');
 $router->get('/counselor/forum', 'UGControl@forum');
 $router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
 
@@ -92,12 +86,14 @@ $router->get('/counselor/getEventsByDate', 'COControl@getEventsByDate');
 $router->get('/counselor/getEventsByMonth', 'COControl@getEventsByMonth');
 $router->get('/counselor/getEventById', 'COControl@getEventById');
 
-// Minimal Appointment APIs (create + counselors list)
+// Minimal Appointment APIs (create + counselors list + counselor view)
 $router->get('/api/counselors', 'AppointmentApiControl@listCounselors');
 $router->get('/api/test', 'AppointmentApiControl@test');
 $router->post('/api/appointments/create', 'AppointmentApiControl@create');
 $router->put('/api/appointments/update', 'AppointmentApiControl@update');
 $router->delete('/api/appointments/delete', 'AppointmentApiControl@delete');
+$router->get('/api/counselor/appointments', 'AppointmentApiControl@listForCounselor');
+$router->post('/api/appointments/status', 'AppointmentApiControl@updateStatus');
 
 // Habits API
 $router->get('/api/habits', 'HabitApiControl@list');
@@ -171,5 +167,16 @@ $router->get('/university-rep/profile', 'UniversityRepresentativeControl@profile
 $router->post('/university-rep/profile/update', 'UniversityRepresentativeControl@updateProfile');
 
 
+
+// ========================================
+// CHAT SYSTEM ROUTES
+// ========================================
+$router->get('/chat', 'ChatControl@index');                       // Chat inbox (counselor & undergrad)
+$router->get('/chat/room', 'ChatControl@room');                   // Enter a chat room
+$router->post('/api/chat/start', 'ChatControl@startSession');     // CREATE: start/resume a session
+$router->get('/api/chat/messages', 'ChatControl@getMessages');    // READ:   fetch messages
+$router->post('/api/chat/send', 'ChatControl@sendMessage');       // CREATE: send a message
+$router->post('/api/chat/edit', 'ChatControl@editMessage');       // UPDATE: edit a message
+$router->post('/api/chat/delete', 'ChatControl@deleteMessage');   // DELETE: soft-delete a message
 
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

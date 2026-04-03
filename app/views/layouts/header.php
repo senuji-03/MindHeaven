@@ -24,6 +24,7 @@ function getNavigationItems($role)
   $navItems = [
     'undergrad' => [
       'main' => [
+<<<<<<< HEAD
         ['icon' => 'fas fa-th-large', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
         ['icon' => 'fas fa-check-circle', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
         ['icon' => 'fas fa-smile', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
@@ -38,6 +39,24 @@ function getNavigationItems($role)
       'feedback' => [
         ['icon' => 'fas fa-comment-dots', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
       ]
+=======
+        ['icon' => '🏠', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
+        ['icon' => '✅', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
+        ['icon' => '😊', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
+        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
+        ['icon' => '💬', 'text' => 'Chat', 'url' => '/chat', 'slug' => 'chat'],
+      ],
+      'support' => [
+        ['icon' => '📚', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
+        ['icon' => '💭', 'text' => 'Forum', 'url' => '/ug/forum', 'slug' => 'forum'],
+        ['icon' => '📞', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
+        ['icon' => 'ℹ️', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
+      ],
+      'feedback' => [
+        ['icon' => '⭐', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
+ ]
+      
+>>>>>>> origin/counselor
     ],
     'admin' => [
       'main' => [
@@ -103,6 +122,7 @@ $navigationItems = getNavigationItems($userRole);
   <?php endforeach; ?>
 
   <style>
+<<<<<<< HEAD
     /* ── Design System Tokens ── */
     :root {
       --primary: #3D8B6E;
@@ -148,6 +168,341 @@ $navigationItems = getNavigationItems($userRole);
     }
 
     /* ── Sidebar ── */
+=======
+  /* Header Inline Styles */
+  .sidebar {
+    position: fixed;
+  left: 0;
+  top: 0;
+  width: 240px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+  color: white;
+  z-index: 1000;
+  overflow-y: auto;
+  transform: none !important; /* Force no transform */
+  }
+  
+  .sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.1);
+  }
+  
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  
+  .brand-logo {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: transparent;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .brand-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  
+  .brand-name {
+    font-weight: bold;
+    font-size: 1.3rem;
+    color: #ffffff;
+  }
+  
+  .sidebar-toggle {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-toggle:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .sidebar-nav {
+    padding: 1rem 0;
+  }
+  
+  .nav-section {
+    margin-bottom: 2rem;
+  }
+  
+  .nav-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+    margin: 0 0 1rem 0;
+    padding: 0 1.5rem;
+  }
+  
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    color: #d1d5db;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+  }
+  
+  .nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+  }
+  
+  .nav-link.active {
+    background: rgba(79, 70, 229, 0.2);
+    color: white;
+    border-left-color: #4f46e5;
+  }
+  
+  .nav-icon {
+    font-size: 1.2rem;
+    width: 1.5rem;
+    text-align: center;
+  }
+  
+  .nav-text {
+    /* Always visible */
+  }
+  
+  .crisis-link {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444 !important;
+  }
+  
+  .crisis-link:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
+  
+  .sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+  
+  .user-details {
+    /* layout handled by flexbox parent */
+  }
+  
+  .user-name {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+  }
+  
+  .user-role {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+  
+  .main-wrapper {
+    margin-left: 380px;
+    min-height: 100vh;
+    background: #f9fafb;
+  }
+  
+  .top-header {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-menu-toggle:hover {
+    background: #f3f4f6;
+  }
+  
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .bar {
+    width: 1.5rem;
+    height: 2px;
+    background: #374151;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+  }
+  
+  .header-title h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .header-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6b7280;
+    position: relative;
+  }
+  
+  .header-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+  }
+  
+  /* Button Styles from Landing Page */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  
+  .btn-donate {
+    background: #10b981;
+    color: white;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+  }
+  
+  .btn-donate:hover {
+    background: #059669;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  }
+  
+  .btn-crisis {
+    background: #ef4444;
+    color: white;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+  }
+  
+  .btn-crisis:hover {
+    background: #dc2626;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+  }
+  
+  .btn-icon {
+    font-size: 1rem;
+  }
+  
+  .notification-badge {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.125rem 0.375rem;
+    border-radius: 9999px;
+    min-width: 1.25rem;
+    text-align: center;
+  }
+  
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+>>>>>>> origin/counselor
     .sidebar {
       position: fixed;
       left: 0;

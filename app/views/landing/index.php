@@ -183,8 +183,74 @@ ob_start();
     </div>
 </section>
 
+<<<<<<< HEAD
 <!-- ======== TESTIMONIALS ======== -->
 <section class="section">
+=======
+<!-- Meet Our Counselors Section -->
+<?php
+$counselors = isset($counselors) && is_array($counselors) ? $counselors : [];
+if (!empty($counselors)):
+?>
+<section class="counselors-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Meet Our Counselors</h2>
+            <p>Our licensed mental health professionals are here to support your journey toward wellness</p>
+        </div>
+        <div class="counselors-grid">
+            <?php foreach ($counselors as $counselor): 
+                $pic = !empty($counselor['profile_picture']) ? htmlspecialchars($counselor['profile_picture']) : '';
+                $name = htmlspecialchars($counselor['full_name'] ?? 'Counselor');
+                $spec = htmlspecialchars($counselor['specialization'] ?? 'Mental Health');
+                $exp  = !empty($counselor['experience_years']) ? (int)$counselor['experience_years'] : null;
+                $bio  = !empty($counselor['bio']) ? htmlspecialchars($counselor['bio']) : 'Dedicated to helping students thrive emotionally and mentally.';
+                $bioShort = mb_strlen($bio) > 120 ? mb_substr($bio, 0, 120) . '…' : $bio;
+                // Generate initials avatar color from name
+                $colors = ['#4f46e5','#06b6d4','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
+                $colorIndex = array_sum(array_map('ord', str_split(substr($name, 0, 3)))) % count($colors);
+                $avatarColor = $colors[$colorIndex];
+                $initials = implode('', array_map(fn($w) => strtoupper($w[0]), array_filter(explode(' ', $name))));
+                $initials = substr($initials, 0, 2);
+            ?>
+            <div class="counselor-card">
+                <div class="counselor-card-inner">
+                    <div class="counselor-avatar-wrap">
+                        <?php if ($pic): ?>
+                            <img src="<?php echo $pic; ?>" alt="<?php echo $name; ?>" class="counselor-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="counselor-avatar-initials" style="background: <?php echo $avatarColor; ?>; display: none;"><?php echo $initials; ?></div>
+                        <?php else: ?>
+                            <div class="counselor-avatar-initials" style="background: <?php echo $avatarColor; ?>;"><?php echo $initials; ?></div>
+                        <?php endif; ?>
+                        <div class="counselor-status-dot"></div>
+                    </div>
+                    <div class="counselor-card-body">
+                        <h3 class="counselor-name"><?php echo $name; ?></h3>
+                        <span class="counselor-spec-badge"><?php echo $spec; ?></span>
+                        <?php if ($exp !== null): ?>
+                        <div class="counselor-exp">
+                            <i class="fas fa-briefcase"></i> <?php echo $exp; ?> year<?php echo $exp !== 1 ? 's' : ''; ?> of experience
+                        </div>
+                        <?php endif; ?>
+                        <p class="counselor-bio"><?php echo $bioShort; ?></p>
+                    </div>
+                    <div class="counselor-card-footer">
+                        <a href="<?php echo BASE_URL; ?>/ug/appointment" class="btn btn-primary counselor-book-btn">
+                            <i class="fas fa-calendar-check"></i> Book Session
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- Call to Action Section -->
+
+<section class="features-section">
+>>>>>>> origin/counselor
     <div class="container">
         <div class="section-header">
             <span class="section-label">Student voices</span>

@@ -29,85 +29,107 @@
             editingSection = section;
             
             if (section === 'personal') {
-                // Make location editable
-                const locationDiv = document.getElementById('location');
-                const currentLocation = locationDiv.textContent;
-                originalData.location = currentLocation;
-                locationDiv.innerHTML = `<input type="text" value="${currentLocation}">`;
+                const fullNameObj = document.getElementById('c_full_name');
+                const phoneObj = document.getElementById('c_phone');
+                
+                originalData.fullName = fullNameObj.textContent;
+                originalData.phone = phoneObj.textContent;
+                
+                fullNameObj.contentEditable = true;
+                phoneObj.contentEditable = true;
+                fullNameObj.style.background = '#fff8e1';
+                phoneObj.style.background = '#fff8e1';
+                
                 document.getElementById('personalSave').classList.add('active');
             } 
-            else if (section === 'qualification') {
-                // Enable editing for qualifications
-                const qualItems = document.querySelectorAll('.qualification-item');
-                originalData.qualifications = [];
+            else if (section === 'professional') {
+                const specObj = document.getElementById('c_spec');
+                const expObj = document.getElementById('c_exp');
+                const bioObj = document.getElementById('c_bio');
                 
-                qualItems.forEach((item, index) => {
-                    const title = item.querySelector('.qualification-title').textContent;
-                    const institution = item.querySelector('.qualification-institution').textContent;
-                    const year = item.querySelector('.qualification-year').textContent;
-                    const description = item.querySelector('.qualification-description').textContent;
-                    
-                    originalData.qualifications.push({title, institution, year, description});
-                    
+                originalData.spec = specObj.textContent;
+                originalData.exp = expObj.textContent;
+                originalData.bio = bioObj.textContent;
+                
+                specObj.contentEditable = true;
+                expObj.contentEditable = true;
+                bioObj.contentEditable = true;
+                specObj.style.background = '#fff8e1';
+                expObj.style.background = '#fff8e1';
+                bioObj.style.background = '#fff8e1';
+                
+                document.getElementById('professionalSave').classList.add('active');
+            }
+            else if (section === 'qualification') {
+                const list = document.getElementById('qualificationList');
+                originalData.qualificationHTML = list.innerHTML;
+                
+                const qualItems = document.querySelectorAll('.qualification-item');
+                
+                qualItems.forEach((item) => {
                     item.querySelector('.qualification-title').contentEditable = true;
                     item.querySelector('.qualification-institution').contentEditable = true;
                     item.querySelector('.qualification-year').contentEditable = true;
                     item.querySelector('.qualification-description').contentEditable = true;
                     
                     item.style.background = '#fff8e1';
+                    
+                    if (!item.querySelector('.delete-qual-btn')) {
+                        const delBtn = document.createElement('button');
+                        delBtn.className = 'delete-qual-btn';
+                        delBtn.innerHTML = '🗑️';
+                        delBtn.style.cssText = 'position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; font-size: 1.2rem;';
+                        delBtn.onclick = function() {
+                            if (confirm('Delete this qualification?')) {
+                                item.remove();
+                            }
+                        };
+                        item.style.position = 'relative';
+                        item.appendChild(delBtn);
+                    }
                 });
                 
                 document.getElementById('qualificationSave').classList.add('active');
-            }
-            else if (section === 'timeslots') {
-                // Enable time slot checkboxes
-                const checkboxes = document.querySelectorAll('#timeSlotsGrid input[type="checkbox"]');
-                originalData.timeslots = {};
-                
-                checkboxes.forEach(checkbox => {
-                    originalData.timeslots[checkbox.id] = checkbox.checked;
-                    checkbox.disabled = false;
-                });
-                
-                document.getElementById('timeslotsSave').classList.add('active');
             }
         }
 
         function cancelEdit(section) {
             if (section === 'personal') {
-                const locationDiv = document.getElementById('location');
-                locationDiv.textContent = originalData.location;
+                const fullNameObj = document.getElementById('c_full_name');
+                const phoneObj = document.getElementById('c_phone');
+                
+                fullNameObj.textContent = originalData.fullName;
+                phoneObj.textContent = originalData.phone;
+                
+                fullNameObj.contentEditable = false;
+                phoneObj.contentEditable = false;
+                fullNameObj.style.background = '';
+                phoneObj.style.background = '';
+                
                 document.getElementById('personalSave').classList.remove('active');
             }
-            else if (section === 'qualification') {
-                const qualItems = document.querySelectorAll('.qualification-item');
+            else if (section === 'professional') {
+                const specObj = document.getElementById('c_spec');
+                const expObj = document.getElementById('c_exp');
+                const bioObj = document.getElementById('c_bio');
                 
-                qualItems.forEach((item, index) => {
-                    const original = originalData.qualifications[index];
-                    item.querySelector('.qualification-title').textContent = original.title;
-                    item.querySelector('.qualification-institution').textContent = original.institution;
-                    item.querySelector('.qualification-year').textContent = original.year;
-                    item.querySelector('.qualification-description').textContent = original.description;
-                    
-                    item.querySelector('.qualification-title').contentEditable = false;
-                    item.querySelector('.qualification-institution').contentEditable = false;
-                    item.querySelector('.qualification-year').contentEditable = false;
-                    item.querySelector('.qualification-description').contentEditable = false;
-                    
-                    item.style.background = '#f8fafc';
-                });
+                specObj.textContent = originalData.spec;
+                expObj.textContent = originalData.exp;
+                bioObj.textContent = originalData.bio;
                 
-                document.getElementById('qualificationSave').classList.remove('active');
+                specObj.contentEditable = false;
+                expObj.contentEditable = false;
+                bioObj.contentEditable = false;
+                specObj.style.background = '';
+                expObj.style.background = '';
+                bioObj.style.background = '';
+                
+                document.getElementById('professionalSave').classList.remove('active');
             }
-            else if (section === 'timeslots') {
-                const checkboxes = document.querySelectorAll('#timeSlotsGrid input[type="checkbox"]');
-                
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = originalData.timeslots[checkbox.id];
-                    checkbox.disabled = true;
-                });
-                
-                document.getElementById('timeslotsSave').classList.remove('active');
+            else if (section === 'qualification') {
+                const list = document.getElementById('qualificationList');
+                list.innerHTML = originalData.qualificationHTML;
+                document.getElementById('qualificationSave').classList.remove('active');
             }
             
             editingSection = null;
@@ -116,48 +138,164 @@
 
         function saveSection(section) {
             if (section === 'personal') {
-                const locationInput = document.querySelector('#location input');
-                const newLocation = locationInput.value.trim();
+                const fullNameObj = document.getElementById('c_full_name');
+                const phoneObj = document.getElementById('c_phone');
                 
-                if (!newLocation) {
-                    alert('Location cannot be empty.');
+                const fullName = fullNameObj.textContent.trim();
+                const phone = phoneObj.textContent.trim();
+                
+                if (!fullName) {
+                    alert('Full Name cannot be empty.');
                     return;
                 }
                 
-                document.getElementById('location').textContent = newLocation;
-                document.getElementById('personalSave').classList.remove('active');
+                fetch('/MindHeaven/public/counselor/updateProfile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ full_name: fullName, phone_number: phone })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fullNameObj.contentEditable = false;
+                        phoneObj.contentEditable = false;
+                        fullNameObj.style.background = '';
+                        phoneObj.style.background = '';
+                        document.getElementById('personalSave').classList.remove('active');
+                        alert('Personal details updated successfully!');
+                        editingSection = null;
+                        originalData = {};
+                    } else {
+                        alert(data.message || 'Failed to update personal details.');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('An error occurred.');
+                });
+            }
+            else if (section === 'professional') {
+                const specObj = document.getElementById('c_spec');
+                const expObj = document.getElementById('c_exp');
+                const bioObj = document.getElementById('c_bio');
                 
-                alert('Personal details updated successfully!');
+                const spec = specObj.textContent.trim();
+                const exp = expObj.textContent.trim();
+                const bio = bioObj.textContent.trim();
+                
+                fetch('/MindHeaven/public/counselor/updateProfile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ specialization: spec, years_experience: exp, bio: bio })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        specObj.contentEditable = false;
+                        expObj.contentEditable = false;
+                        bioObj.contentEditable = false;
+                        specObj.style.background = '';
+                        expObj.style.background = '';
+                        bioObj.style.background = '';
+                        document.getElementById('professionalSave').classList.remove('active');
+                        alert('Professional details updated successfully!');
+                        editingSection = null;
+                        originalData = {};
+                    } else {
+                        alert(data.message || 'Failed to update professional details.');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('An error occurred.');
+                });
             }
             else if (section === 'qualification') {
-                const qualItems = document.querySelectorAll('.qualification-item');
+                const qualItems = document.querySelectorAll('.qualification-item:not(.empty-state)');
+                const qualifications = [];
                 
                 qualItems.forEach(item => {
-                    item.querySelector('.qualification-title').contentEditable = false;
-                    item.querySelector('.qualification-institution').contentEditable = false;
-                    item.querySelector('.qualification-year').contentEditable = false;
-                    item.querySelector('.qualification-description').contentEditable = false;
-                    item.style.background = '#f8fafc';
+                    qualifications.push({
+                        id: item.dataset.id || '',
+                        title: item.querySelector('.qualification-title').textContent.trim(),
+                        institution: item.querySelector('.qualification-institution').textContent.trim(),
+                        year: item.querySelector('.qualification-year').textContent.trim(),
+                        description: item.querySelector('.qualification-description').textContent.trim(),
+                    });
                 });
                 
-                document.getElementById('qualificationSave').classList.remove('active');
-                
-                alert('Qualifications updated successfully!');
+                fetch('/MindHeaven/public/api/counselor/qualifications/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qualifications: qualifications })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Qualifications successfully updated!');
+                        location.reload(); // Reload to reflect any new DB IDs
+                    } else {
+                        alert(data.message || 'Failed to update qualifications.');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('An error occurred.');
+                });
             }
-            else if (section === 'timeslots') {
-                const checkboxes = document.querySelectorAll('#timeSlotsGrid input[type="checkbox"]');
-                
-                checkboxes.forEach(checkbox => {
-                    checkbox.disabled = true;
-                });
-                
-                document.getElementById('timeslotsSave').classList.remove('active');
-                
-                alert('Time slots updated successfully!');
+        }
+
+        function addQualification() {
+            if (editingSection && editingSection !== 'qualification') {
+                alert('Please save or cancel the current edit first.');
+                return;
             }
             
-            editingSection = null;
-            originalData = {};
+            const list = document.getElementById('qualificationList');
+            
+            if (editingSection !== 'qualification') {
+               originalData.qualificationHTML = list.innerHTML;
+               editingSection = 'qualification';
+               document.getElementById('qualificationSave').classList.add('active');
+               
+               const qualItems = document.querySelectorAll('.qualification-item');
+               qualItems.forEach((item) => {
+                   item.querySelector('.qualification-title').contentEditable = true;
+                   item.querySelector('.qualification-institution').contentEditable = true;
+                   item.querySelector('.qualification-year').contentEditable = true;
+                   item.querySelector('.qualification-description').contentEditable = true;
+                   item.style.background = '#fff8e1';
+                   
+                   if (!item.querySelector('.delete-qual-btn')) {
+                       const delBtn = document.createElement('button');
+                       delBtn.className = 'delete-qual-btn';
+                       delBtn.innerHTML = '🗑️';
+                       delBtn.style.cssText = 'position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; font-size: 1.2rem;';
+                       delBtn.onclick = function() {
+                           if (confirm('Delete this qualification?')) {
+                               item.remove();
+                           }
+                       };
+                       item.style.position = 'relative';
+                       item.appendChild(delBtn);
+                   }
+               });
+            }
+
+            const newItemHTML = `
+                <div class="qualification-item" style="background: #fff8e1; position: relative;">
+                    <div class="qualification-header">
+                        <div>
+                            <div class="qualification-title" contenteditable="true">New Qualification</div>
+                            <div class="qualification-institution" contenteditable="true">Institution Name</div>
+                        </div>
+                        <span class="qualification-year" contenteditable="true">Year</span>
+                    </div>
+                    <p class="qualification-description" contenteditable="true">Description</p>
+                    <button class="delete-qual-btn" style="position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; font-size: 1.2rem;" onclick="if(confirm('Delete this qualification?')) this.parentElement.remove();">🗑️</button>
+                </div>
+            `;
+            list.insertAdjacentHTML('afterbegin', newItemHTML);
         }
 
         // Photo Upload Functions
@@ -190,9 +328,35 @@
                 return;
             }
             
-            document.getElementById('profilePic').src = selectedPhoto;
-            alert('Profile picture updated successfully!');
-            closePhotoModal();
+            const fileInput = document.getElementById('photoUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                 alert('No file found.');
+                 return;
+            }
+            
+            const formData = new FormData();
+            formData.append('profile_picture', file);
+            
+            fetch('/MindHeaven/public/counselor/uploadProfilePhoto', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('profilePic').src = data.url;
+                    alert('Profile picture updated successfully!');
+                    closePhotoModal();
+                } else {
+                    alert(data.message || 'Failed to update profile picture.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('An error occurred.');
+            });
         }
 
         // Close modal when clicking outside

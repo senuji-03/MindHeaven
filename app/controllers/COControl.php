@@ -1,21 +1,14 @@
 <?php
 
 require_once BASE_PATH . '/app/models/Event.php';
+require_once BASE_PATH . '/app/models/Feedback.php';
+require_once BASE_PATH . '/app/models/Counselor.php';
+require_once BASE_PATH . '/app/models/Appointment.php';
 
 class COControl {
     private $eventModel;
     
     public function __construct() {
-        // Session is already started in index.php, no need to start again
-        // Protect all counselor routes
-        if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'counselor') {
-            header("Location: " . BASE_URL . "/login");
-            exit;
-        }
-        
-        // Add security headers to prevent caching and back-button access
-        Auth::setSecurityHeaders();
-        
         $this->eventModel = new Event();
     }
     
@@ -26,7 +19,65 @@ class COControl {
     }
     
     public function dashboard() {
-        view('/counselor/Cdashboard');
+        $counselorFeedback = array();
+        $upcomingAppointments = array();
+        $stats = array(
+            'totalPatients' => 0,
+            'todaysSessions' => 0,
+            'avgRating' => 0.0
+        );
+        
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!empty($_SESSION['user_id'])) {
+            $counselorModel = new Counselor();
+            $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+            if ($counselor && !empty($counselor['id'])) {
+                $feedbackModel = new Feedback();
+                $counselorFeedback = $feedbackModel->getCounselorFeedback((int) $counselor['id'], 10);
+                
+                $feedbackStats = $feedbackModel->getStats(array('counselor_id' => $counselor['id']));
+                if ($feedbackStats && isset($feedbackStats['avg_rating'])) {
+                    $stats['avgRating'] = round((float)$feedbackStats['avg_rating'], 1);
+                }
+            }
+
+            // Upcoming appointments booked by undergrads (appointments table)
+            $appointmentModel = new Appointment();
+            $upcomingAppointments = $appointmentModel->getUpcomingByCounselorUserId((int)$_SESSION['user_id'], 10);
+            
+            $stats['totalPatients'] = $appointmentModel->getTotalPatients((int)$_SESSION['user_id']);
+            $stats['todaysSessions'] = $appointmentModel->getTodaysSessionsCount((int)$_SESSION['user_id']);
+        }
+        view('/counselor/Cdashboard', array(
+            'counselorFeedback' => $counselorFeedback,
+            'upcomingAppointments' => $upcomingAppointments,
+            'stats' => $stats
+        ));
+    }
+
+    /**
+     * List all counselor feedback (from undergraduates) for the logged-in counselor.
+     */
+    public function feedbackList() {
+        $counselorFeedback = array();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (empty($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+        $counselorModel = new Counselor();
+        $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+        if (!$counselor || empty($counselor['id'])) {
+            view('/counselor/feedback_list', array('counselorFeedback' => array()));
+            return;
+        }
+        $feedbackModel = new Feedback();
+        $counselorFeedback = $feedbackModel->getCounselorFeedback((int) $counselor['id'], 100);
+        view('/counselor/feedback_list', array('counselorFeedback' => $counselorFeedback));
     }
     
     public function appointmentmgt() {
@@ -89,7 +140,155 @@ class COControl {
     }
     
     public function counselorProfile() {
-        view('/counselor/counselor_profile');
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (empty($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        $counselorModel = new Counselor();
+        $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+        
+        $qualifications = array();
+        if ($counselor && !empty($counselor['id'])) {
+            $qualifications = $counselorModel->getQualifications($counselor['id']);
+        }
+
+        view('/counselor/counselor_profile', array('counselor' => $counselor, 'qualifications' => $qualifications));
+    }
+
+    public function updateProfile() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(array('success' => false, 'message' => 'Method not allowed'));
+            return;
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['user_id'])) {
+            echo json_encode(array('success' => false, 'message' => 'Not logged in'));
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data) {
+            $data = $_POST;
+        }
+
+        $counselorModel = new Counselor();
+        $success = $counselorModel->update($_SESSION['user_id'], $data);
+
+        if ($success) {
+            echo json_encode(array('success' => true, 'message' => 'Profile updated successfully'));
+        } else {
+            echo json_encode(array('success' => false, 'message' => 'Failed to update profile or no changes made'));
+        }
+    }
+
+    public function syncQualifications() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(array('success' => false, 'message' => 'Method not allowed'));
+            return;
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['user_id'])) {
+            echo json_encode(array('success' => false, 'message' => 'Not logged in'));
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['qualifications'])) {
+            echo json_encode(array('success' => false, 'message' => 'No qualifications data provided'));
+            return;
+        }
+
+        $counselorModel = new Counselor();
+        $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
+        
+        if (!$counselor || empty($counselor['id'])) {
+            echo json_encode(array('success' => false, 'message' => 'Counselor not found'));
+            return;
+        }
+
+        $success = $counselorModel->syncQualifications($counselor['id'], $data['qualifications']);
+
+        if ($success) {
+            echo json_encode(array('success' => true, 'message' => 'Qualifications sync successful'));
+        } else {
+            echo json_encode(array('success' => false, 'message' => 'Failed to sync qualifications'));
+        }
+    }
+
+    public function uploadProfilePhoto() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(array('success' => false, 'message' => 'Method not allowed'));
+            return;
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['user_id'])) {
+            echo json_encode(array('success' => false, 'message' => 'Not logged in'));
+            return;
+        }
+
+        if (!isset($_FILES['profile_picture']) || $_FILES['profile_picture']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(array('success' => false, 'message' => 'No valid file uploaded'));
+            return;
+        }
+
+        $file = $_FILES['profile_picture'];
+        
+        // Basic validation
+        $allowedTypes = array('image/jpeg', 'image/png', 'image/gif', 'image/webp');
+        if (!in_array($file['type'], $allowedTypes)) {
+            echo json_encode(array('success' => false, 'message' => 'Invalid file format. Please upload JPG, PNG, GIF or WEBP.'));
+            return;
+        }
+        
+        // Max size: 5MB
+        if ($file['size'] > 5 * 1024 * 1024) {
+             echo json_encode(array('success' => false, 'message' => 'File size exceeds 5MB limit.'));
+             return;
+        }
+        
+        $uploadDirBase = BASE_PATH . '/public/uploads/counselor_profiles/';
+        if (!is_dir($uploadDirBase)) {
+            mkdir($uploadDirBase, 0777, true);
+        }
+        
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $fileName = 'counselor_' . $_SESSION['user_id'] . '_' . time() . '.' . $extension;
+        $targetFile = $uploadDirBase . $fileName;
+        
+        if (move_uploaded_file($file['tmp_name'], $targetFile)) {
+            // Success, update db
+            $publicUrl = BASE_URL . '/uploads/counselor_profiles/' . $fileName;
+            
+            $counselorModel = new Counselor();
+            $success = $counselorModel->update($_SESSION['user_id'], array('profile_picture' => $publicUrl));
+            
+            if ($success) {
+                 echo json_encode(array('success' => true, 'message' => 'Profile picture uploaded.', 'url' => $publicUrl));
+            } else {
+                 echo json_encode(array('success' => false, 'message' => 'Database update failed.'));
+            }
+        } else {
+             echo json_encode(array('success' => false, 'message' => 'Failed to move uploaded file.'));
+        }
     }
     
     /**
@@ -114,7 +313,8 @@ class COControl {
             'event_date' => isset($_POST['event_date']) ? $_POST['event_date'] : '',
             'event_time' => isset($_POST['event_time']) ? $_POST['event_time'] : '',
             'priority' => isset($_POST['priority']) ? $_POST['priority'] : 'normal',
-            'description' => isset($_POST['description']) ? $_POST['description'] : ''
+            'description' => isset($_POST['description']) ? $_POST['description'] : '',
+            'appointment_id' => isset($_POST['appointment_id']) ? $_POST['appointment_id'] : null
         );
         
         // Validate required fields
@@ -347,7 +547,9 @@ class COControl {
         echo json_encode(array('success' => true, 'event' => $event));
     }
 
-    public function Cresource_hub() {
+
+     public function Cresource_hub() {
         view('/counselor/Cresource_hub');
     }
+    
 }

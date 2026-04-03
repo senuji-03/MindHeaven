@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Appointment Management</title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\appoinmentmgt.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/appoinmentmgt.css">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -30,18 +30,7 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <ul class="sidebar-menu">
-                <li class="sidebar-item"><a href="dashboard">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="calender">📅 Calendar</a></li>
-                <li class="sidebar-item active"><a href="#" style="color: #2563eb;">🗓️ Appointment Management</a></li>
-                <li class="sidebar-item"><a href="sessionHistory">📋 Session History</a></li>
-        
-                <li class="sidebar-item"><a href="resources">📚 Resource Hub</a></li>
-                <li class="sidebar-item"><a href="counselor_profile">👤 Profile</a></li>
-                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout" onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
-            </ul>
-        </div>
+        <?php include __DIR__ . '/sidebar.php'; ?>
 
         <!-- Main Content -->
         <div class="main-content">
@@ -62,7 +51,7 @@
                         <select class="filter-input" id="statusFilter" onchange="filterAppointments()">
                             <option value="all">All Requests</option>
                             <option value="pending">Pending</option>
-                            <option value="accepted">Accepted</option>
+                            <option value="accept">Accepted</option>
                             <option value="rejected">Rejected</option>
                         </select>
                     </div>
@@ -133,6 +122,10 @@
         </div>
     </div>
 
-    <script src="\MindHeaven\public\js\counselor\appoinmentmgt.js"></script>
+    <script>
+        // Expose BASE_URL to JavaScript so we can call APIs reliably
+        window.BASE_URL = '<?php echo BASE_URL; ?>';
+    </script>
+    <script src="<?php echo BASE_URL; ?>/js/counselor/appoinmentmgt.js"></script>
 </body>
 </html>
