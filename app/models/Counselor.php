@@ -147,9 +147,11 @@ class Counselor {
         ";
         
         if ($limit) {
-            $sql .= " LIMIT ? OFFSET ?";
+            $sql .= " LIMIT :limit OFFSET :offset";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$limit, $offset]);
+            $stmt->bindValue(':limit',  (int)$limit,  PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+            $stmt->execute();
         } else {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
@@ -157,6 +159,7 @@ class Counselor {
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     /**
      * Get pending counselors (not approved yet)

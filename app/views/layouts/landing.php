@@ -588,7 +588,161 @@
         .p-3 { padding: 1rem; }
         .p-4 { padding: 1.5rem; }
         .p-5 { padding: 3rem; }
+        /* ===== Counselors Section ===== */
+        .counselors-section {
+            padding: 6rem 0;
+            background: #ffffff;
+        }
+
+        .counselors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 2rem;
+        }
+
+        .counselor-card {
+            perspective: 1000px;
+        }
+
+        .counselor-card-inner {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            height: 100%;
+        }
+
+        .counselor-card-inner:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(79, 70, 229, 0.2);
+        }
+
+        /* Avatar */
+        .counselor-avatar-wrap {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .counselor-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+        }
+
+        .counselor-avatar-initials {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: 4px solid rgba(255,255,255,0.4);
+        }
+
+        .counselor-status-dot {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 14px;
+            height: 14px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50%       { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        }
+
+        /* Card body */
+        .counselor-card-body {
+            padding: 1.5rem 1.5rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .counselor-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .counselor-spec-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(79,70,229,0.1), rgba(6,182,212,0.1));
+            color: var(--primary-color);
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 0.25rem 0.85rem;
+            border: 1px solid rgba(79,70,229,0.2);
+            width: fit-content;
+        }
+
+        .counselor-exp {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .counselor-exp i {
+            color: var(--accent-color);
+        }
+
+        .counselor-bio {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Card footer */
+        .counselor-card-footer {
+            padding: 1rem 1.5rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .counselor-book-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.65rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .counselors-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
+
 </head>
 <body>
     <!-- Navigation -->

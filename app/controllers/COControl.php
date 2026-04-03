@@ -276,7 +276,7 @@ class COControl {
         
         if (move_uploaded_file($file['tmp_name'], $targetFile)) {
             // Success, update db
-            $publicUrl = BASE_URL . '/public/uploads/counselor_profiles/' . $fileName;
+            $publicUrl = BASE_URL . '/uploads/counselor_profiles/' . $fileName;
             
             $counselorModel = new Counselor();
             $success = $counselorModel->update($_SESSION['user_id'], array('profile_picture' => $publicUrl));
