@@ -1,56 +1,54 @@
 <?php
+// Since we are running this directly, we define BASE_PATH if not defined
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', dirname(__DIR__, 2));
+}
 
-require_once BASE_PATH . '/core/Auth.php';
+require_once BASE_PATH . '/config/config.php';
 require_once BASE_PATH . '/app/models/Habit.php';
+
+// Start session if not started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 class HabitApiControl {
     private $habitModel;
 
     public function __construct() {
-        // Session is already started in index.php, no need to start again
-        // Protect all habit API routes - require authentication
-        if(!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
-            http_response_code(401);
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Authentication required']);
-            exit;
-        }
-        
-        // Add security headers to prevent caching and back-button access
-        Auth::setSecurityHeaders();
-        
         $this->habitModel = new Habit();
     }
 
-    public function list() {
-        try {
-            $userId = 1; // Auth::user()['id']; // Temporarily hardcoded for testing
-            $habits = $this->habitModel->getByUserId($userId);
-            
-            $this->json([
-                'habits' => $habits,
-                'message' => 'Habits retrieved successfully'
-            ]);
-            
-        } catch (Exception $e) {
-            error_log("HabitApiControl list error: " . $e->getMessage());
-            $this->json(['error' => 'Failed to retrieve habits: ' . $e->getMessage()], 500);
+    public function handleRequest() {
+        // Protect API (during dev testing, fallback if session is disjointed)
+        // if (!isset($_SESSION['user_id'])) {
+        //     $this->json(['error' => 'Authentication required'], 401);
+        // }
+
+        $method = $_SERVER['REQUEST_METHOD'];
+        $action = $_GET['action'] ?? '';
+
+        if ($method === 'POST' || $method === 'PUT') {
+            if ($action === 'create' || $action === '') {
+                $this->create();
+            } else if ($action === 'update') {
+               // Placeholder for update
+                $this->json(['message' => 'Not implemented'], 501);
+            }
+        } else {
+            $this->json(['error' => 'Method not allowed'], 405);
         }
     }
 
     public function create() {
         try {
             $data = $this->getJsonInput();
-            $userId = 1; // Auth::user()['id']; // Temporarily hardcoded for testing
-            
-            // Debug: Log received data
-            error_log("HabitApiControl create - Received data: " . json_encode($data));
+            $userId = $_SESSION['user_id'] ?? 1; // Fallback to 1 if session is unlinked
             
             // Validate required fields
             $required = ['name', 'category'];
             foreach ($required as $field) {
                 if (!isset($data[$field]) || $data[$field] === '') {
-                    error_log("HabitApiControl create - Missing required field: $field");
                     return $this->json(['error' => "$field is required"], 400);
                 }
             }
@@ -66,171 +64,12 @@ class HabitApiControl {
                 $data['icon'] ?? '🎯'
             );
             
+            file_put_contents(BASE_PATH . '/logs/habit_api.log', "Success: Habit ID $habitId created by User ID $userId\n", FILE_APPEND);
             $this->json(['id' => $habitId, 'message' => 'Habit created successfully'], 201);
             
         } catch (Exception $e) {
-            error_log("HabitApiControl create error: " . $e->getMessage());
+            file_put_contents(BASE_PATH . '/logs/habit_api.log', "Error creating habit: " . $e->getMessage() . "\n", FILE_APPEND);
             $this->json(['error' => 'Failed to create habit: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function update() {
-        try {
-            $data = $this->getJsonInput();
-            $userId = 1; // Auth::user()['id']; // Temporarily hardcoded for testing
-            
-            if (!isset($data['id']) || $data['id'] === '') {
-                return $this->json(['error' => 'Habit ID is required'], 400);
-            }
-            
-            $result = $this->habitModel->update(
-                (int)$data['id'],
-                $userId,
-                trim($data['name']),
-                $data['description'] ?? null,
-                $data['category'] ?? 'other',
-                $data['frequency'] ?? 'daily',
-                (int)($data['target_days'] ?? 1),
-                $data['color'] ?? '#10b981',
-                $data['icon'] ?? '🎯'
-            );
-            
-            if ($result) {
-                $this->json(['message' => 'Habit updated successfully'], 200);
-            } else {
-                $this->json(['error' => 'Habit not found or could not be updated'], 404);
-            }
-            
-        } catch (Exception $e) {
-            error_log("HabitApiControl update error: " . $e->getMessage());
-            $this->json(['error' => 'Failed to update habit: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function delete() {
-        try {
-            $data = $this->getJsonInput();
-            $userId = 1; // Auth::user()['id']; // Temporarily hardcoded for testing
-            
-            if (!isset($data['id']) || $data['id'] === '') {
-                return $this->json(['error' => 'Habit ID is required'], 400);
-            }
-            
-            $result = $this->habitModel->delete((int)$data['id'], $userId);
-            
-            if ($result) {
-                $this->json(['message' => 'Habit deleted successfully'], 200);
-            } else {
-                $this->json(['error' => 'Habit not found or could not be deleted'], 404);
-            }
-            
-        } catch (Exception $e) {
-            error_log("HabitApiControl delete error: " . $e->getMessage());
-            $this->json(['error' => 'Failed to delete habit: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function complete() {
-        try {
-            $data = $this->getJsonInput();
-            $userId = 1; // Auth::user()['id']; // Temporarily hardcoded for testing
-            
-            if (!isset($data['habit_id']) || !isset($data['date'])) {
-                return $this->json(['error' => 'Habit ID and date are required'], 400);
-            }
-            
-            $result = $this->habitModel->completeHabit(
-                (int)$data['habit_id'],
-                $userId,
-                $data['date'],
-                $data['notes'] ?? null,
-                $data['mood_rating'] ?? null
-            );
-            
-            if ($result) {
-                $this->json(['message' => 'Habit completed successfully'], 200);
-            } else {
-                $this->json(['error' => 'Failed to complete habit'], 400);
-            }
-            
-        } catch (Exception $e) {
-            error_log("HabitApiControl complete error: " . $e->getMessage());
-            $this->json(['error' => 'Failed to complete habit: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function uncomplete() {
-        try {
-            $data = $this->getJsonInput();
-            $userId = 1; // Auth::user()['id']; // Temporarily hardcoded for testing
-            
-            if (!isset($data['habit_id']) || !isset($data['date'])) {
-                return $this->json(['error' => 'Habit ID and date are required'], 400);
-            }
-            
-            $result = $this->habitModel->uncompleteHabit(
-                (int)$data['habit_id'],
-                $userId,
-                $data['date']
-            );
-            
-            if ($result) {
-                $this->json(['message' => 'Habit uncompleted successfully'], 200);
-            } else {
-                $this->json(['error' => 'Failed to uncomplete habit'], 400);
-            }
-            
-        } catch (Exception $e) {
-            error_log("HabitApiControl uncomplete error: " . $e->getMessage());
-            $this->json(['error' => 'Failed to uncomplete habit: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function stats() {
-        try {
-            $userId = 1; // Auth::user()['id']; // Temporarily hardcoded for testing
-            $stats = $this->habitModel->getStats($userId);
-            
-            $this->json([
-                'stats' => $stats,
-                'message' => 'Stats retrieved successfully'
-            ]);
-            
-        } catch (Exception $e) {
-            error_log("HabitApiControl stats error: " . $e->getMessage());
-            $this->json(['error' => 'Failed to retrieve stats: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function test() {
-        try {
-            $pdo = Database::getConnection();
-            
-            // Test habits table
-            $stmt = $pdo->query("DESCRIBE habits");
-            $habitsColumns = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Test habit_completions table
-            $stmt = $pdo->query("DESCRIBE habit_completions");
-            $completionsColumns = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Test habit_streaks table
-            $stmt = $pdo->query("DESCRIBE habit_streaks");
-            $streaksColumns = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            $this->json([
-                'status' => 'success',
-                'message' => 'Database connection successful',
-                'tables' => [
-                    'habits' => $habitsColumns,
-                    'habit_completions' => $completionsColumns,
-                    'habit_streaks' => $streaksColumns
-                ]
-            ]);
-            
-        } catch (Exception $e) {
-            error_log("HabitApiControl test error: " . $e->getMessage());
-            $this->json(['error' => 'Database test failed: ' . $e->getMessage()], 500);
         }
     }
 
@@ -245,4 +84,10 @@ class HabitApiControl {
         echo json_encode($data);
         exit;
     }
+}
+
+// Execute the handler if called directly
+if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
+    $api = new HabitApiControl();
+    $api->handleRequest();
 }

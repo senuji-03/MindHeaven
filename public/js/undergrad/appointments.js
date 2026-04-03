@@ -5,7 +5,7 @@ let appointments = [];
 let isSubmitting = false;
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM loaded, initializing appointments page');
     console.log('BASE_URL available:', window.BASE_URL);
     initializeAppointmentsPage();
@@ -13,28 +13,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeAppointmentsPage() {
     console.log('Appointments page initialized');
-    
+
     // Load appointments from localStorage
     loadAppointments();
-    
+
     // Load counselors and appointment types
     loadCounselors();
     loadAppointmentTypes();
-    
+
     // Set up form validation
     setupFormValidation();
-    
+
     // Set up form submission
     setupFormSubmission();
-    
+
     // Set up event listeners
     setupEventListeners();
-    
+
     // Add direct button click handler for testing
     const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
     if (submitBtn) {
         console.log('Adding direct click handler to submit button');
-        submitBtn.addEventListener('click', function(e) {
+        submitBtn.addEventListener('click', function (e) {
             console.log('Submit button clicked directly');
             e.preventDefault();
             if (validateForm()) {
@@ -44,10 +44,10 @@ function initializeAppointmentsPage() {
     } else {
         console.log('Submit button not found');
     }
-    
+
     // Update stats
     updateStats();
-    
+
     // Render appointments
     renderAppointments();
 }
@@ -56,13 +56,13 @@ function initializeAppointmentsPage() {
 function setupFormValidation() {
     const form = document.getElementById('appointmentForm');
     const inputs = form.querySelectorAll('input[required], select[required]');
-    
+
     inputs.forEach(input => {
-        input.addEventListener('blur', function() {
+        input.addEventListener('blur', function () {
             validateField(this);
         });
-        
-        input.addEventListener('input', function() {
+
+        input.addEventListener('input', function () {
             clearFieldError(this);
         });
     });
@@ -72,40 +72,40 @@ function validateField(field) {
     const value = field.value.trim();
     const fieldName = field.name || field.id;
     const errorElement = document.getElementById(fieldName.replace('appointment', '') + 'Error');
-    
+
     // Clear previous error
     clearFieldError(field);
-    
+
     // Required field validation
     if (field.hasAttribute('required') && !value) {
         showFieldError(field, 'This field is required');
         return false;
     }
-    
+
     // Date validation
     if (field.type === 'date' && value) {
         const selectedDate = new Date(value);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         if (selectedDate < today) {
             showFieldError(field, 'Appointment date cannot be in the past');
             return false;
         }
     }
-    
+
     // Time validation
     if (field.type === 'time' && value) {
         const selectedTime = value;
         const [hours, minutes] = selectedTime.split(':').map(Number);
-        
+
         // Check if time is within business hours (8 AM - 6 PM)
         if (hours < 8 || hours > 18) {
             showFieldError(field, 'Appointments are only available between 8 AM and 6 PM');
             return false;
         }
     }
-    
+
     return true;
 }
 
@@ -132,16 +132,16 @@ function clearFieldError(field) {
 function setupFormSubmission() {
     const form = document.getElementById('appointmentForm');
     console.log('Setting up form submission for:', form);
-    
-    form.addEventListener('submit', function(e) {
+
+    form.addEventListener('submit', function (e) {
         console.log('Form submit event triggered');
         e.preventDefault();
-        
+
         if (isSubmitting) {
             console.log('Already submitting, returning');
             return;
         }
-        
+
         console.log('Calling validateForm');
         if (validateForm()) {
             console.log('Validation passed, calling submitForm');
@@ -158,14 +158,14 @@ function validateForm() {
     const inputs = form.querySelectorAll('input[required], select[required]');
     console.log('Found required inputs:', inputs.length);
     let isValid = true;
-    
+
     inputs.forEach(input => {
         console.log('Validating field:', input.name, 'value:', input.value);
         if (!validateField(input)) {
             isValid = false;
         }
     });
-    
+
     console.log('Form validation result:', isValid);
     return isValid;
 }
@@ -176,24 +176,24 @@ function submitForm() {
         console.log('Already submitting, returning');
         return;
     }
-    
+
     isSubmitting = true;
     const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
     console.log('Submit button found:', submitBtn);
-    
+
     // Show loading state
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="btn-icon">⏳</span><span class="btn-text">Saving...</span>';
-    
+
     // Collect form data
     const formData = new FormData(document.getElementById('appointmentForm'));
     const data = Object.fromEntries(formData.entries());
     console.log('Form data collected:', data);
-    
+
     // Get appointment ID
     const appointmentId = document.getElementById('appointmentId').value;
     console.log('Appointment ID:', appointmentId);
-    
+
     // Create appointment object
     const appointment = {
         id: appointmentId || Date.now(),
@@ -207,11 +207,11 @@ function submitForm() {
         createdAt: appointmentId ? appointments.find(a => a.id == appointmentId)?.createdAt : new Date().toISOString(),
         updatedAt: new Date().toISOString()
     };
-    
+
     // Determine if this is an update or create operation
     const isUpdate = appointmentId && appointmentId !== '';
     console.log('Is update operation:', isUpdate, 'Appointment ID:', appointmentId);
-    
+
     // Save to database via API
     saveAppointmentToDatabase(appointment, appointmentId, submitBtn, isUpdate);
 }
@@ -229,20 +229,20 @@ async function saveAppointmentToDatabase(appointment, appointmentId, submitBtn, 
             time: appointment.time,
             notes: appointment.notes || null
         };
-        
+
         // Add ID for update operations
         if (isUpdate) {
             appointmentData.id = parseInt(appointmentId);
         }
-        
+
         console.log('Submitting appointment data:', appointmentData);
-        
+
         // Determine API endpoint and method
         const endpoint = isUpdate ? '/api/appointments/update' : '/api/appointments/create';
         const method = isUpdate ? 'PUT' : 'POST';
-        
+
         console.log('Using endpoint:', endpoint, 'method:', method);
-        
+
         // Send to API
         const response = await fetch(window.BASE_URL + endpoint, {
             method: method,
@@ -251,18 +251,18 @@ async function saveAppointmentToDatabase(appointment, appointmentId, submitBtn, 
             },
             body: JSON.stringify(appointmentData)
         });
-        
+
         console.log('API response status:', response.status);
-        
+
         if (!response.ok) {
             const errorData = await response.json();
             console.error('API error:', errorData);
             throw new Error(errorData.error || 'Failed to save appointment');
         }
-        
+
         const result = await response.json();
         console.log(isUpdate ? 'Appointment updated:' : 'Appointment created:', result);
-        
+
         if (isUpdate) {
             // Update existing appointment in local array
             const index = appointments.findIndex(a => a.id == appointmentId);
@@ -275,23 +275,23 @@ async function saveAppointmentToDatabase(appointment, appointmentId, submitBtn, 
             // Add to local appointments array
             appointments.push(appointment);
         }
-        
+
         // Save to localStorage for local display
         saveAppointments();
-        
+
         // Reset form
         resetForm();
-        
+
         // Update UI
         updateStats();
         renderAppointments();
-        
+
         // Show success message
         const action = isUpdate ? 'updated' : 'booked';
         const actionPast = isUpdate ? 'updated' : 'saved';
         showAlert(`Appointment ${action} successfully!`, 'success');
         alert(`✅ Appointment ${action} successfully!\n\nDetails:\n• Title: ${appointment.title}\n• Type: ${appointment.type}\n• Date: ${appointment.date}\n• Time: ${appointment.time}\n\nYour appointment has been ${actionPast} to the database.`);
-        
+
     } catch (error) {
         console.error('Error saving appointment:', error);
         showAlert('Failed to save appointment: ' + error.message, 'error');
@@ -308,10 +308,10 @@ async function saveAppointmentToDatabase(appointment, appointmentId, submitBtn, 
 function setupEventListeners() {
     // Reset form button
     document.getElementById('resetAppointmentForm').addEventListener('click', resetForm);
-    
+
     // Import demo data
     document.getElementById('importDemoAppointments').addEventListener('click', importDemoAppointments);
-    
+
     // Export CSV
     document.getElementById('exportAppointmentsCsv').addEventListener('click', exportAppointmentsCsv);
 }
@@ -326,7 +326,7 @@ function loadAppointments() {
 async function loadCounselors() {
     try {
         console.log('Loading counselors from:', window.BASE_URL + '/api/counselors');
-        
+
         // First test if API is working
         try {
             const testResponse = await fetch(window.BASE_URL + '/api/test');
@@ -335,29 +335,29 @@ async function loadCounselors() {
         } catch (testError) {
             console.error('API test failed:', testError);
         }
-        
+
         const response = await fetch(window.BASE_URL + '/api/counselors');
         console.log('Response status:', response.status);
         console.log('Response ok:', response.ok);
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error('Response error:', errorText);
             throw new Error(`Failed to load counselors: ${response.status} ${errorText}`);
         }
-        
+
         const counselors = await response.json();
         console.log('Counselors data:', counselors);
-        
+
         const counselorSelect = document.getElementById('appointmentCounselor');
         counselorSelect.innerHTML = '<option value="">Select a counselor...</option>';
-        
+
         if (counselors.length === 0) {
             counselorSelect.innerHTML = '<option value="">No counselors available</option>';
             console.log('No counselors found');
             return;
         }
-        
+
         counselors.forEach(counselor => {
             const option = document.createElement('option');
             option.value = counselor.id;
@@ -367,7 +367,7 @@ async function loadCounselors() {
             }
             counselorSelect.appendChild(option);
         });
-        
+
         console.log('Counselors loaded successfully:', counselors.length);
     } catch (error) {
         console.error('Error loading counselors:', error);
@@ -381,7 +381,7 @@ function loadAppointmentTypes() {
     const typeSelect = document.getElementById('appointmentType');
     const types = [
         'Individual Therapy',
-        'Group Therapy', 
+        'Group Therapy',
         'Crisis Intervention',
         'Assessment',
         'Follow-up Session',
@@ -389,7 +389,7 @@ function loadAppointmentTypes() {
         'Family Therapy',
         'Couples Counseling'
     ];
-    
+
     typeSelect.innerHTML = '<option value="">Select appointment type...</option>';
     types.forEach(type => {
         const option = document.createElement('option');
@@ -411,9 +411,9 @@ function getAppointments() {
 function editAppointment(id) {
     const appointment = appointments.find(a => a.id == id);
     if (!appointment) return;
-    
+
     console.log('Editing appointment:', appointment);
-    
+
     // Populate form
     document.getElementById('appointmentId').value = appointment.id;
     document.getElementById('appointmentTitle').value = appointment.title;
@@ -421,33 +421,33 @@ function editAppointment(id) {
     document.getElementById('appointmentDate').value = appointment.date;
     document.getElementById('appointmentTime').value = appointment.time;
     document.getElementById('appointmentNotes').value = appointment.notes || '';
-    
+
     // Populate counselor if available
     if (appointment.counselor_user_id) {
         document.getElementById('appointmentCounselor').value = appointment.counselor_user_id;
     }
-    
+
     // Update form title to indicate edit mode
     const formTitle = document.querySelector('.booking-form-card h2');
     if (formTitle) {
         formTitle.textContent = '✏️ Edit Appointment';
     }
-    
+
     // Update submit button text
     const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
     if (submitBtn) {
         submitBtn.innerHTML = '<span class="btn-icon">💾</span><span class="btn-text">Update Appointment</span>';
     }
-    
+
     // Show cancel edit button
     showCancelEditButton();
-    
+
     // Scroll to form
-    document.querySelector('.booking-form-card').scrollIntoView({ 
+    document.querySelector('.booking-form-card').scrollIntoView({
         behavior: 'smooth',
         block: 'start'
     });
-    
+
     // Focus on title field
     document.getElementById('appointmentTitle').focus();
 }
@@ -456,7 +456,7 @@ async function deleteAppointment(id) {
     if (confirm('Are you sure you want to delete this appointment?')) {
         try {
             console.log('Deleting appointment with ID:', id);
-            
+
             // Call API to delete from database
             const response = await fetch(window.BASE_URL + '/api/appointments/delete', {
                 method: 'DELETE',
@@ -465,25 +465,25 @@ async function deleteAppointment(id) {
                 },
                 body: JSON.stringify({ id: id })
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to delete appointment');
             }
-            
+
             const result = await response.json();
             console.log('Delete API response:', result);
-            
+
             // Remove from local array
             appointments = appointments.filter(a => a.id != id);
             saveAppointments();
             updateStats();
             renderAppointments();
-            
+
             // Show success message
             showAlert('Appointment deleted successfully from database!', 'success');
             alert('✅ Appointment deleted successfully!\n\nThe appointment has been removed from the database.');
-            
+
         } catch (error) {
             console.error('Error deleting appointment:', error);
             showAlert('Failed to delete appointment: ' + error.message, 'error');
@@ -508,22 +508,22 @@ function updateAppointmentStatus(id, status) {
 function renderAppointments() {
     const tbody = document.getElementById('appointmentsTableBody');
     const emptyState = document.getElementById('appointmentsEmptyState');
-    
+
     if (appointments.length === 0) {
         emptyState.style.display = 'block';
         tbody.innerHTML = '';
         return;
     }
-    
+
     emptyState.style.display = 'none';
-    
+
     // Sort appointments by date and time
     const sortedAppointments = [...appointments].sort((a, b) => {
         const dateA = new Date(a.date + ' ' + a.time);
         const dateB = new Date(b.date + ' ' + b.time);
         return dateA - dateB;
     });
-    
+
     tbody.innerHTML = sortedAppointments.map(appointment => `
         <tr>
             <td>
@@ -561,7 +561,7 @@ function updateStats() {
     const completed = appointments.filter(a => a.status === 'completed').length;
     const upcoming = appointments.filter(a => a.status === 'scheduled' && new Date(a.date + ' ' + a.time) > new Date()).length;
     const attendanceRate = total > 0 ? Math.round((completed / total) * 100) : 0;
-    
+
     document.getElementById('totalAppointments').textContent = total;
     document.getElementById('completedAppointments').textContent = completed;
     document.getElementById('upcomingAppointments').textContent = upcoming;
@@ -572,22 +572,22 @@ function updateStats() {
 function resetForm() {
     document.getElementById('appointmentForm').reset();
     document.getElementById('appointmentId').value = '';
-    
+
     // Reset form title to create mode
     const formTitle = document.querySelector('.booking-form-card h2');
     if (formTitle) {
         formTitle.textContent = '📝 Book / Edit Appointment';
     }
-    
+
     // Reset submit button text
     const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
     if (submitBtn) {
         submitBtn.innerHTML = '<span class="btn-icon">💾</span><span class="btn-text">Save Appointment</span>';
     }
-    
+
     // Hide cancel edit button
     hideCancelEditButton();
-    
+
     // Clear all error states
     const inputs = document.querySelectorAll('#appointmentForm input, #appointmentForm select, #appointmentForm textarea');
     inputs.forEach(input => {
@@ -606,7 +606,7 @@ function showCancelEditButton() {
         cancelBtn.className = 'btn outline';
         cancelBtn.innerHTML = '<span class="btn-icon">❌</span><span class="btn-text">Cancel Edit</span>';
         cancelBtn.onclick = cancelEdit;
-        
+
         // Insert after the reset button
         const resetBtn = document.getElementById('resetAppointmentForm');
         resetBtn.parentNode.insertBefore(cancelBtn, resetBtn.nextSibling);
@@ -663,7 +663,7 @@ function importDemoAppointments() {
             updatedAt: new Date().toISOString()
         }
     ];
-    
+
     appointments = [...appointments, ...demoAppointments];
     saveAppointments();
     updateStats();
@@ -676,7 +676,7 @@ function exportAppointmentsCsv() {
         showAlert('No appointments to export', 'info');
         return;
     }
-    
+
     const csvContent = [
         ['Title', 'Type', 'Date', 'Time', 'Status', 'Notes', 'Created At'],
         ...appointments.map(appointment => [
@@ -689,7 +689,7 @@ function exportAppointmentsCsv() {
             formatDateTime(appointment.createdAt)
         ])
     ].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -699,7 +699,7 @@ function exportAppointmentsCsv() {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    
+
     showAlert('Appointments exported successfully!', 'success');
 }
 
@@ -753,7 +753,7 @@ function showAlert(message, type = 'info') {
     // Remove existing alerts
     const existingAlerts = document.querySelectorAll('.alert');
     existingAlerts.forEach(alert => alert.remove());
-    
+
     // Create new alert
     const alert = document.createElement('div');
     alert.className = `alert ${type}`;
@@ -761,11 +761,11 @@ function showAlert(message, type = 'info') {
         <span class="alert-icon">${getAlertIcon(type)}</span>
         <span class="alert-message">${message}</span>
     `;
-    
+
     // Insert at top of main content
     const main = document.getElementById('main');
     main.insertBefore(alert, main.firstChild);
-    
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
         if (alert.parentNode) {

@@ -385,42 +385,42 @@
   .appointments-hero {
     padding: var(--space-2xl) var(--space-lg);
   }
-  
+
   .appointments-hero h1 {
     font-size: var(--text-3xl);
   }
-  
+
   .hero-subtitle {
     font-size: var(--text-lg);
   }
-  
+
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .card-tools {
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-sm);
   }
-  
+
   .appointments-table {
     font-size: var(--text-xs);
   }
-  
+
   .appointments-table th,
   .appointments-table td {
     padding: var(--space-md) var(--space-sm);
   }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: var(--space-xs);
@@ -431,16 +431,16 @@
   .appointments-hero h1 {
     font-size: var(--text-2xl);
   }
-  
+
   .stat-item {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .empty-state {
     padding: var(--space-2xl) var(--space-lg);
   }
-  
+
   .empty-state-icon {
     font-size: 3rem;
   }
@@ -467,8 +467,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Success/Error Messages */
@@ -499,4 +504,3 @@
   color: #1d4ed8;
   border: 1px solid #93c5fd;
 }
-

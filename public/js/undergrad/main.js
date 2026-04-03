@@ -1,5 +1,5 @@
 // assets/js/main.js - Modern Sidebar Navigation
-(function(){
+(function () {
   // Sidebar functionality
   const sidebar = document.getElementById('sidebar');
   const sidebarToggle = document.getElementById('sidebarToggle');
@@ -7,12 +7,12 @@
   const mainWrapper = document.querySelector('.main-wrapper');
   const backToTop = document.getElementById('backToTop');
 
-  // Sidebar toggle functionality
+  // Sidebar toggle functionality — only allow collapse on mobile
   function toggleSidebar() {
-    if (sidebar && mainWrapper) {
+    if (sidebar && mainWrapper && window.innerWidth <= 768) {
       sidebar.classList.toggle('collapsed');
       mainWrapper.classList.toggle('sidebar-collapsed');
-      
+
       // Save preference
       const isCollapsed = sidebar.classList.contains('collapsed');
       localStorage.setItem('sidebarCollapsed', isCollapsed);
@@ -25,18 +25,28 @@
       sidebar.classList.toggle('open');
       const isOpen = sidebar.classList.contains('open');
       mobileMenuToggle.setAttribute('aria-expanded', isOpen);
-      
+
       // Prevent body scroll when menu is open
       document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     }
   }
 
-  // Initialize sidebar state
+  // Initialize sidebar state — only collapse on mobile, always show on desktop
   function initializeSidebar() {
-    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-    if (isCollapsed && sidebar && mainWrapper) {
-      sidebar.classList.add('collapsed');
-      mainWrapper.classList.add('sidebar-collapsed');
+    if (sidebar && mainWrapper) {
+      // On desktop, always show the sidebar
+      if (window.innerWidth > 768) {
+        sidebar.classList.remove('collapsed');
+        mainWrapper.classList.remove('sidebar-collapsed');
+        localStorage.removeItem('sidebarCollapsed');
+      } else {
+        // On mobile, respect the saved preference
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (isCollapsed) {
+          sidebar.classList.add('collapsed');
+          mainWrapper.classList.add('sidebar-collapsed');
+        }
+      }
     }
   }
 
@@ -44,7 +54,7 @@
   function handleBackToTop() {
     if (backToTop) {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      
+
       if (scrollTop > 300) {
         backToTop.classList.add('visible');
       } else {
@@ -65,10 +75,10 @@
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    
+
     // Update theme toggle icon
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
@@ -83,7 +93,7 @@
   function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    
+
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
       const icon = themeToggle.querySelector('.btn-icon');
@@ -119,7 +129,7 @@
     if (sidebar && sidebar.classList.contains('open')) {
       const isClickInsideSidebar = sidebar.contains(e.target);
       const isClickOnMobileToggle = mobileMenuToggle && mobileMenuToggle.contains(e.target);
-      
+
       if (!isClickInsideSidebar && !isClickOnMobileToggle) {
         sidebar.classList.remove('open');
         mobileMenuToggle.setAttribute('aria-expanded', 'false');
@@ -171,11 +181,11 @@
 
   // Add loading states to buttons
   document.querySelectorAll('button[type="submit"]').forEach(button => {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', function () {
       if (this.form && this.form.checkValidity()) {
         this.classList.add('loading');
         this.disabled = true;
-        
+
         // Re-enable after a delay (for demo purposes)
         setTimeout(() => {
           this.classList.remove('loading');

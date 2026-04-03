@@ -2,9 +2,9 @@
 $TITLE = 'MindHeaven — Contact & Support';
 $CURRENT_PAGE = 'contact';
 $PAGE_CSS = ['/MindHeaven/public/css/undergrad/contact.css'];
-$PAGE_JS  = ['/MindHeaven/public/css/undergrad/contact.js'];
+$PAGE_JS = ['/MindHeaven/public/css/undergrad/contact.js'];
 
-require BASE_PATH.'/app/views/layouts/header.php';
+require BASE_PATH . '/app/views/layouts/header.php';
 ?>
 
 <main id="main" class="container contact">
@@ -39,19 +39,19 @@ require BASE_PATH.'/app/views/layouts/header.php';
                 <div class="error-message" id="lastNameError"></div>
               </div>
             </div>
-            
+
             <div class="form-group">
               <label for="email" class="label">Email Address *</label>
               <input type="email" id="email" name="email" class="input" required>
               <div class="error-message" id="emailError"></div>
             </div>
-            
+
             <div class="form-group">
               <label for="phone" class="label">Phone Number</label>
               <input type="tel" id="phone" name="phone" class="input">
               <div class="error-message" id="phoneError"></div>
             </div>
-            
+
             <div class="form-group">
               <label for="subject" class="label">Subject *</label>
               <select id="subject" name="subject" class="input" required>
@@ -66,13 +66,14 @@ require BASE_PATH.'/app/views/layouts/header.php';
               </select>
               <div class="error-message" id="subjectError"></div>
             </div>
-            
+
             <div class="form-group">
               <label for="message" class="label">Message *</label>
-              <textarea id="message" name="message" class="input" rows="6" placeholder="Please describe your inquiry in detail..." required></textarea>
+              <textarea id="message" name="message" class="input" rows="6"
+                placeholder="Please describe your inquiry in detail..." required></textarea>
               <div class="error-message" id="messageError"></div>
             </div>
-            
+
             <div class="form-group">
               <label class="checkbox-label">
                 <input type="checkbox" id="urgent" name="urgent">
@@ -80,16 +81,17 @@ require BASE_PATH.'/app/views/layouts/header.php';
                 This is an urgent matter requiring immediate attention
               </label>
             </div>
-            
+
             <div class="form-group">
               <label class="checkbox-label">
                 <input type="checkbox" id="privacy" name="privacy" required>
                 <span class="checkmark"></span>
-                I agree to the <a href="#" onclick="showPrivacyPolicy()">Privacy Policy</a> and consent to data processing *
+                I agree to the <a href="#" onclick="showPrivacyPolicy()">Privacy Policy</a> and consent to data
+                processing *
               </label>
               <div class="error-message" id="privacyError"></div>
             </div>
-            
+
             <div class="form-actions">
               <button type="submit" class="btn primary" id="submitBtn">
                 <span class="btn-text">Send Message</span>
@@ -117,7 +119,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
                 <a href="mailto:support@mindheaven.edu" class="btn small">Send Email</a>
               </div>
             </div>
-            
+
             <div class="contact-info-item">
               <div class="contact-icon">📞</div>
               <div class="contact-details">
@@ -127,7 +129,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
                 <a href="tel:+15551234567" class="btn small">Call Now</a>
               </div>
             </div>
-            
+
             <div class="contact-info-item">
               <div class="contact-icon">💬</div>
               <div class="contact-details">
@@ -136,14 +138,14 @@ require BASE_PATH.'/app/views/layouts/header.php';
                 <button class="btn small outline" onclick="openLiveChat()">Start Chat</button>
               </div>
             </div>
-            
+
             <div class="contact-info-item">
               <div class="contact-icon">🏫</div>
               <div class="contact-details">
                 <h3>Office Location</h3>
                 <p>Student Wellness Center<br>
-                123 University Drive<br>
-                Campus, ST 12345</p>
+                  123 University Drive<br>
+                  Campus, ST 12345</p>
                 <button class="btn small ghost" onclick="getDirections()">Get Directions</button>
               </div>
             </div>
@@ -181,7 +183,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
           </div>
         </div>
       </div>
-      
+
       <div class="card col-6">
         <div class="card-header">
           <h2>📋 Response Times</h2>
@@ -229,47 +231,52 @@ require BASE_PATH.'/app/views/layouts/header.php';
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-answer">
-              <p>Click on "Forgot Password" on the login page and enter your email address. You'll receive a reset link within a few minutes.</p>
+              <p>Click on "Forgot Password" on the login page and enter your email address. You'll receive a reset link
+                within a few minutes.</p>
             </div>
           </div>
-          
+
           <div class="faq-item">
             <button class="faq-question" onclick="toggleFAQ(this)">
               <span>Is my data secure and private?</span>
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-answer">
-              <p>Yes, we use industry-standard encryption and follow strict privacy guidelines. Your data is never shared without your explicit consent.</p>
+              <p>Yes, we use industry-standard encryption and follow strict privacy guidelines. Your data is never
+                shared without your explicit consent.</p>
             </div>
           </div>
-          
+
           <div class="faq-item">
             <button class="faq-question" onclick="toggleFAQ(this)">
               <span>Can I use this system on my mobile device?</span>
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-answer">
-              <p>Absolutely! MindHeaven is fully responsive and works great on smartphones, tablets, and desktop computers.</p>
+              <p>Absolutely! MindHeaven is fully responsive and works great on smartphones, tablets, and desktop
+                computers.</p>
             </div>
           </div>
-          
+
           <div class="faq-item">
             <button class="faq-question" onclick="toggleFAQ(this)">
               <span>What if I'm having a mental health crisis?</span>
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-answer">
-              <p>If you're in immediate danger, call 911 or 988 (Suicide & Crisis Lifeline). For non-emergency support, contact our crisis support team through the crisis page.</p>
+              <p>If you're in immediate danger, call 911 or 988 (Suicide & Crisis Lifeline). For non-emergency support,
+                contact our crisis support team through the crisis page.</p>
             </div>
           </div>
-          
+
           <div class="faq-item">
             <button class="faq-question" onclick="toggleFAQ(this)">
               <span>How do I schedule an appointment with a counselor?</span>
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-answer">
-              <p>Use the Appointments page to book sessions with available counselors. You can also call our counseling center directly at (555) 123-4567.</p>
+              <p>Use the Appointments page to book sessions with available counselors. You can also call our counseling
+                center directly at (555) 123-4567.</p>
             </div>
           </div>
         </div>
@@ -310,16 +317,18 @@ require BASE_PATH.'/app/views/layouts/header.php';
       <div class="privacy-content">
         <h4>Data Collection</h4>
         <p>We collect only the information necessary to provide you with support and improve our services.</p>
-        
+
         <h4>Data Usage</h4>
-        <p>Your information is used solely for responding to your inquiries and providing mental health support services.</p>
-        
+        <p>Your information is used solely for responding to your inquiries and providing mental health support
+          services.</p>
+
         <h4>Data Protection</h4>
         <p>We implement industry-standard security measures to protect your personal information.</p>
-        
+
         <h4>Data Sharing</h4>
-        <p>We never share your personal information with third parties without your explicit consent, except as required by law.</p>
-        
+        <p>We never share your personal information with third parties without your explicit consent, except as required
+          by law.</p>
+
         <h4>Your Rights</h4>
         <p>You have the right to access, update, or delete your personal information at any time.</p>
       </div>
@@ -330,5 +339,4 @@ require BASE_PATH.'/app/views/layouts/header.php';
   </div>
 </div>
 
-<?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>
-
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

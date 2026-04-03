@@ -1,564 +1,678 @@
-<?php 
-$TITLE = 'Undegraduate Dashboard';
+<?php
+$TITLE = 'Dashboard';
 $CURRENT_PAGE = 'dashboard';
-$PAGE_CSS = ['/MindHeaven/Undergrad_student/assets/css/dashboard.css'];
-$PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
-
-//include __DIR__ . '/layout/header.php';
+$PAGE_CSS = [];
+$PAGE_JS = [];
 ?>
 
 <style>
-/* Dashboard Inline Styles */
-.dashboard-main {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+/* ── Design System Tokens ── */
+:root {
+    --primary: #3D8B6E;
+    --primary-dark: #2A6B52;
+    --primary-light: #6BB89A;
+    --accent-warm: #E8A87C;
+    --accent-calm: #A8C5DA;
+    --bg-deep: #1C2B2A;
+    --bg-soft: #F5F0E8;
+    --bg-mid: #EEF6F2;
+    --text-primary: #1E3A34;
+    --text-secondary: #6B8C7E;
+    --surface: #FFFFFF;
+    --crisis: #D64F4F;
+    --success: #4CAF82;
+    --border: #D6E4DD;
+    --shadow-sm: 0 1px 3px rgba(30,58,52,0.06);
+    --shadow-md: 0 4px 12px rgba(30,58,52,0.08);
+    --shadow-lg: 0 12px 32px rgba(30,58,52,0.10);
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-full: 9999px;
 }
 
+/* ── Dashboard Layout ── */
+.dashboard-main {
+    padding: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ── Hero Section ── */
 .dashboard-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 3rem 2rem;
-  border-radius: 1rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+    color: white;
+    padding: 36px 32px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-hero::before {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: -60px;
+    right: -40px;
+}
+
+.dashboard-hero::after {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(232,168,124,0.1);
+    bottom: -30px;
+    left: 20%;
 }
 
 .hero-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-greeting {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-bottom: 4px;
+    font-weight: 500;
 }
 
 .hero-title {
-  font-size: 2.5rem;
-  margin: 0 0 0.5rem 0;
-  font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    font-family: 'DM Sans', system-ui, sans-serif;
 }
 
 .hero-subtitle {
-  font-size: 1.1rem;
-  opacity: 0.9;
-  margin: 0 0 1.5rem 0;
+    font-size: 0.92rem;
+    opacity: 0.85;
+    margin: 0 0 20px 0;
+    line-height: 1.6;
 }
 
 .hero-stats {
-  display: flex;
-  gap: 2rem;
+    display: flex;
+    gap: 24px;
 }
 
 .hero-stat {
-  text-align: center;
+    text-align: center;
+    background: rgba(255,255,255,0.12);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    backdrop-filter: blur(8px);
 }
 
-.stat-number {
-  display: block;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
+.hero-stat .stat-number {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: white;
 }
 
-.stat-label {
-  font-size: 0.9rem;
-  opacity: 0.8;
+.hero-stat .stat-label {
+    font-size: 0.78rem;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
 }
 
 .hero-actions {
-  display: flex;
-  gap: 1rem;
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
+/* ── Buttons ── */
 .btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-full);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .btn-primary {
-  background: #4f46e5;
-  color: white;
+    background: var(--primary);
+    color: white;
 }
 
 .btn-primary:hover {
-  background: #4338ca;
-  transform: translateY(-2px);
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(61,139,110,0.3);
+}
+
+.btn-outline-white {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    backdrop-filter: blur(4px);
+}
+
+.btn-outline-white:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.6);
 }
 
 .btn-outline {
-  background: transparent;
-  color: white;
-  border: 2px solid white;
+    background: transparent;
+    color: var(--primary);
+    border: 1.5px solid var(--border);
 }
 
 .btn-outline:hover {
-  background: white;
-  color: #4f46e5;
-}
-
-#quickMoodBtn:hover {
-  background: transparent !important;
-  color: white !important;
-  border: 2px solid white !important;
+    border-color: var(--primary);
+    background: var(--bg-mid);
 }
 
 .btn-danger {
-  background: #ef4444;
-  color: white;
+    background: var(--crisis);
+    color: white;
 }
 
 .btn-danger:hover {
-  background: #dc2626;
+    background: #c14343;
+    transform: translateY(-1px);
 }
 
 .btn-small {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+    padding: 8px 16px;
+    font-size: 0.82rem;
 }
 
+.btn-icon {
+    font-size: 1rem;
+}
+
+/* ── Stats Grid ── */
 .dashboard-stats {
-  margin-bottom: 3rem;
+    margin-bottom: 28px;
 }
 
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
 }
 
 .stat-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
+    background: var(--surface);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
 }
 
 .stat-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
-.stat-icon {
-  font-size: 2rem;
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f3f4f6;
-  border-radius: 0.75rem;
+.stat-icon-box {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: white;
 }
+
+.stat-icon-box.teal { background: var(--primary); }
+.stat-icon-box.warm { background: var(--accent-warm); }
+.stat-icon-box.calm { background: var(--accent-calm); }
+.stat-icon-box.green { background: var(--success); }
+.stat-icon-box.red { background: var(--crisis); }
 
 .stat-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: #1f2937;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+    color: var(--text-primary);
 }
 
 .stat-subtitle {
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
 }
 
 .stat-content {
-  margin-bottom: 1rem;
+    margin-bottom: 14px;
 }
 
 .stat-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-family: 'DM Sans', system-ui, sans-serif;
 }
 
 .progress-bar {
-  width: 100%;
-  height: 0.5rem;
-  background: #e5e7eb;
-  border-radius: 0.25rem;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
+    width: 100%;
+    height: 6px;
+    background: var(--bg-mid);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: 6px;
 }
 
 .progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #10b981, #059669);
-  transition: width 0.3s ease;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: var(--radius-full);
+    transition: width 0.6s ease;
 }
 
 .progress-text {
-  font-size: 0.9rem;
-  color: #6b7280;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
 }
 
 .mood-display {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
 }
 
 .mood-emoji {
-  font-size: 2rem;
+    font-size: 2rem;
 }
 
 .mood-text {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1f2937;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .mood-time {
-  font-size: 0.9rem;
-  color: #6b7280;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
 }
 
 .appointment-info {
-  color: #1f2937;
+    color: var(--text-primary);
 }
 
 .appointment-time {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.appointment-type {
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin-bottom: 0.25rem;
+.appointment-time i {
+    color: var(--primary);
+    font-size: 0.85rem;
 }
 
+.appointment-type,
 .appointment-location {
-  font-size: 0.9rem;
-  color: #6b7280;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
 }
 
-.wellness-score {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.stat-actions {
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
 }
 
-.score-circle {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #059669);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.score-number {
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.score-label {
-  font-size: 0.8rem;
-  opacity: 0.8;
-}
-
-.score-trend {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #10b981;
-  font-size: 0.9rem;
-}
-
+/* ── Analytics Grid ── */
 .dashboard-analytics {
-  margin-bottom: 3rem;
+    margin-bottom: 28px;
+}
+
+.section-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: block;
 }
 
 .analytics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 }
 
 .analytics-card {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
-  overflow: hidden;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
 .card-header {
-  padding: 1.5rem 1.5rem 0 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    padding: 20px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .card-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
 }
 
 .time-filter {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  background: white;
-  font-size: 0.9rem;
+    padding: 6px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.time-filter:focus {
+    border-color: var(--primary);
 }
 
 .card-content {
-  padding: 1.5rem;
+    padding: 20px 24px;
 }
 
+/* ── Quick Actions ── */
 .dashboard-actions {
-  margin-bottom: 2rem;
+    margin-bottom: 28px;
 }
 
 .actions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
 }
 
 .action-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
-  text-align: center;
-  transition: all 0.3s ease;
+    background: var(--surface);
+    padding: 24px 20px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .action-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
 }
 
-.action-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+.action-icon-box {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 14px;
 }
 
 .action-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
 }
 
 .action-description {
-  color: #6b7280;
-  margin: 0 0 1.5rem 0;
-  line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0 0 16px 0;
+    line-height: 1.55;
+    font-size: 0.83rem;
+    flex: 1;
 }
 
-/* Modal Styles */
+/* ── Modal ── */
 .modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(28,43,42,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
 }
 
-.modal.show {
-  display: flex;
-}
+.modal.show { display: flex; }
 
 .modal-content {
-  background: white;
-  border-radius: 1rem;
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    max-width: 520px;
+    width: 92%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .modal-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
 }
 
 .modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
+    background: var(--bg-mid);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
 }
 
 .modal-close:hover {
-  background: #f3f4f6;
-  color: #1f2937;
+    background: var(--border);
+    color: var(--text-primary);
 }
 
 .modal-body {
-  padding: 1.5rem;
+    padding: 24px;
 }
 
 .mood-selector {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
 }
 
 .mood-option {
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
+    background: var(--bg-mid);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 14px 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    font-family: inherit;
 }
 
 .mood-option:hover {
-  border-color: #4f46e5;
-  background: #f0f9ff;
+    border-color: var(--primary-light);
+    background: var(--surface);
+    transform: translateY(-2px);
 }
 
 .mood-option.selected {
-  border-color: #4f46e5;
-  background: #eef2ff;
+    border-color: var(--primary);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px rgba(61,139,110,0.12);
 }
 
-.mood-emoji {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 0.5rem;
+.mood-option .mood-emoji {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 6px;
 }
 
 .mood-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #374151;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .mood-details {
-  margin-top: 1.5rem;
+    margin-top: 20px;
 }
 
 .form-label {
-  display: block;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.5rem;
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    font-size: 0.85rem;
 }
 
 .intensity-slider {
-  width: 100%;
-  margin-bottom: 0.5rem;
+    width: 100%;
+    margin-bottom: 6px;
+    accent-color: var(--primary);
 }
 
 .intensity-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
 }
 
 .form-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-family: inherit;
-  resize: vertical;
-  min-height: 80px;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.25s ease;
+}
+
+.form-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(61,139,110,0.12);
 }
 
 .modal-footer {
-  padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+    padding: 16px 24px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
 }
 
-/* Responsive Design */
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .analytics-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 768px) {
-  .dashboard-main {
-    padding: 1rem;
-    margin-left: 480px; 
-  }
-  
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .hero-stats {
-    justify-content: center;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .analytics-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .actions-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .mood-selector {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .dashboard-main { padding: 16px; }
+    .hero-content { flex-direction: column; text-align: center; }
+    .hero-stats { justify-content: center; }
+    .hero-actions { justify-content: center; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .actions-grid { grid-template-columns: repeat(2, 1fr); }
+    .mood-selector { grid-template-columns: repeat(2, 1fr); }
 }
 
+@media (max-width: 480px) {
+    .actions-grid { grid-template-columns: 1fr; }
+}
 </style>
 
 <main id="main" class="dashboard-main">
-  <!-- Welcome Hero Section -->
+  <!-- Welcome Hero -->
   <section class="dashboard-hero">
     <div class="hero-content">
       <div class="hero-text">
+        <div class="hero-greeting">Good day 👋</div>
         <h1 class="hero-title">Welcome back, Student!</h1>
         <p class="hero-subtitle">Here's your mental health overview for today</p>
         <div class="hero-stats">
@@ -568,33 +682,29 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
           </div>
           <div class="hero-stat">
             <span class="stat-number">85%</span>
-            <span class="stat-label">Wellness Score</span>
+            <span class="stat-label">Wellness</span>
           </div>
         </div>
       </div>
       <div class="hero-actions">
-        <a href="<?= BASE_URL ?>/ug/mood">
-        <button id="quickMoodBtn" class="btn btn-outline" style="text-decoration: none; color: white !important; background: transparent !important; border: 2px solid white !important;">
-          <span class="btn-icon"></span>
-          Log Mood
-        </button>
+        <a href="<?= BASE_URL ?>/ug/mood" class="btn btn-outline-white">
+          <span class="btn-icon">😊</span> Log Mood
         </a>
-        <a href="<?= BASE_URL ?>/ug/habits">
-        <button id="quickHabitBtn" class="btn btn-outline">
-          <span class="btn-icon"></span>
-          Add Habit
-        </button>
+        <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-outline-white">
+          <span class="btn-icon">✨</span> Add Habit
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Quick Stats Grid -->
+  <!-- Stats Grid -->
   <section class="dashboard-stats">
+    <span class="section-label">Overview</span>
     <div class="stats-grid">
-      <div class="stat-card habits-card">
+      <!-- Habits Card -->
+      <div class="stat-card">
         <div class="stat-header">
-          
+          <div class="stat-icon-box teal">✓</div>
           <div class="stat-info">
             <h3 class="stat-title">Today's Habits</h3>
             <p class="stat-subtitle">Keep building healthy routines</p>
@@ -602,41 +712,41 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
         </div>
         <div class="stat-content">
           <div class="stat-number">3/5</div>
-          <div class="stat-progress">
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 60%"></div>
-            </div>
-            <span class="progress-text">60% Complete</span>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 60%"></div>
           </div>
+          <span class="progress-text">60% Complete</span>
         </div>
         <div class="stat-actions">
-          <a href = "<?= BASE_URL ?>/ug/habits" class="btn btn-small">View All</a>
+          <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-small btn-outline">View All</a>
         </div>
       </div>
 
-      <div class="stat-card mood-card">
+      <!-- Mood Card -->
+      <div class="stat-card">
         <div class="stat-header">
-          
-          <div class="stat-info" style="text-align: left">
+          <div class="stat-icon-box warm">☀️</div>
+          <div class="stat-info">
             <h3 class="stat-title">Current Mood</h3>
             <p class="stat-subtitle">How are you feeling?</p>
           </div>
         </div>
         <div class="stat-content">
-          <div class="mood-display" style="text-align: left">
+          <div class="mood-display">
             <span class="mood-emoji" id="currentMoodEmoji"></span>
-            <span class="mood-text" id="currentMoodText" style="text-align: left">Not logged today</span>
+            <span class="mood-text" id="currentMoodText">Not logged today</span>
           </div>
-          <div class="mood-time" id="moodTime" style="text-align: left" >Last logged: Never</div>
+          <div class="mood-time" id="moodTime">Last logged: Never</div>
         </div>
         <div class="stat-actions">
           <a href="<?= BASE_URL ?>/ug/mood" class="btn btn-small btn-primary">Log Mood</a>
         </div>
       </div>
 
-      <div class="stat-card appointments-card">
+      <!-- Appointments Card -->
+      <div class="stat-card">
         <div class="stat-header">
-          
+          <div class="stat-icon-box calm">📅</div>
           <div class="stat-info">
             <h3 class="stat-title">Next Appointment</h3>
             <p class="stat-subtitle">Upcoming sessions</p>
@@ -644,32 +754,30 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
         </div>
         <div class="stat-content">
           <div class="appointment-info">
-            <div class="appointment-time">Tomorrow, 3:00 PM</div>
+            <div class="appointment-time"><i class="fas fa-clock"></i> Tomorrow, 3:00 PM</div>
             <div class="appointment-type">Counseling Session</div>
             <div class="appointment-location">Student Health Center</div>
           </div>
         </div>
         <div class="stat-actions">
-          <a href="<?= BASE_URL ?>/ug/appointment"  class="btn btn-small">Manage</a>
+          <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-small btn-outline">Manage</a>
         </div>
       </div>
-
     </div>
   </section>
 
-  <!-- Charts and Analytics -->
+  <!-- Analytics -->
   <section class="dashboard-analytics">
+    <span class="section-label">Analytics</span>
     <div class="analytics-grid">
       <div class="analytics-card">
         <div class="card-header">
           <h3 class="card-title">Habit Progress</h3>
-          <div class="card-actions">
-            <select class="time-filter" id="habitTimeFilter">
-              <option value="7">Last 7 days</option>
-              <option value="30" selected>Last 30 days</option>
-              <option value="90">Last 90 days</option>
-            </select>
-          </div>
+          <select class="time-filter" id="habitTimeFilter">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
         </div>
         <div class="card-content">
           <canvas id="habitChart" width="400" height="200"></canvas>
@@ -679,13 +787,11 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
       <div class="analytics-card">
         <div class="card-header">
           <h3 class="card-title">Mood Trends</h3>
-          <div class="card-actions">
-            <select class="time-filter" id="moodTimeFilter">
-              <option value="7">Last 7 days</option>
-              <option value="30" selected>Last 30 days</option>
-              <option value="90">Last 90 days</option>
-            </select>
-          </div>
+          <select class="time-filter" id="moodTimeFilter">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
         </div>
         <div class="card-content">
           <canvas id="moodChart" width="400" height="200"></canvas>
@@ -696,49 +802,47 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
 
   <!-- Quick Actions -->
   <section class="dashboard-actions">
+    <span class="section-label">Quick Actions</span>
     <div class="actions-grid">
       <div class="action-card">
-        <!-- <div class="action-icon">🎯</div> -->
+        <div class="action-icon-box" style="background:var(--primary);">🎯</div>
         <h4 class="action-title">Set Goals</h4>
         <p class="action-description">Create new wellness goals for this week</p>
-         <a href="<?= BASE_URL ?>/ug/appointment">
-        <button class="btn btn-outline">Get Started</button>
-        </a>
+        <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-small btn-outline">Get Started</a>
       </div>
-      de
 
       <div class="action-card">
-        <!-- <div class="action-icon">📚</div> -->
+        <div class="action-icon-box" style="background:var(--accent-calm);">📚</div>
         <h4 class="action-title">Resources</h4>
         <p class="action-description">Explore mental health resources and tools</p>
-        <a href="/MindHeaven/Undergrad_student/views/resources.php" class="btn btn-outline">Browse</a>
+        <a href="<?= BASE_URL ?>/ug/resources" class="btn btn-small btn-outline">Browse</a>
       </div>
 
       <div class="action-card">
-        <!-- <div class="action-icon">🤝</div> -->
+        <div class="action-icon-box" style="background:var(--accent-warm);">🤝</div>
         <h4 class="action-title">Support</h4>
-        <p class="action-description">Connect with counselors and support groups</p>
-        <a href="/MindHeaven/Undergrad_student/views/contact.php" class="btn btn-outline">Connect</a>
+        <p class="action-description">Connect with counselors and groups</p>
+        <a href="<?= BASE_URL ?>/ug/contact" class="btn btn-small btn-outline">Connect</a>
       </div>
 
       <div class="action-card">
-        <!-- <div class="action-icon">📋</div> -->
-        <h4 class="action-title">Self-Assessment Quiz</h4>
-        <p class="action-description">Take a quick mental health assessment and get instant feedback</p>
-        <a href="<?php echo BASE_URL; ?>/ug/quiz" class="btn btn-outline">Start Quiz</a>
+        <div class="action-icon-box" style="background:var(--primary-light);">📋</div>
+        <h4 class="action-title">Self-Assessment</h4>
+        <p class="action-description">Take a quick mental health check-in</p>
+        <a href="<?= BASE_URL ?>/ug/quiz" class="btn btn-small btn-outline">Start Quiz</a>
       </div>
 
       <div class="action-card">
-        <!-- <div class="action-icon">🆘</div> -->
+        <div class="action-icon-box" style="background:var(--crisis);">🆘</div>
         <h4 class="action-title">Crisis Support</h4>
         <p class="action-description">Immediate help when you need it most</p>
-        <a href="/MindHeaven/ug/crisis" class="btn btn-danger">Get Help</a>
+        <a href="<?= BASE_URL ?>/ug/crisis" class="btn btn-small btn-danger">Get Help</a>
       </div>
     </div>
   </section>
 </main>
 
-<!-- Quick Mood Logging Modal -->
+<!-- Mood Modal -->
 <div id="moodModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -799,242 +903,92 @@ $PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/dashboard.js'];
 </div>
 
 <script>
-// Chart implementation using vanilla JavaScript and HTML5 Canvas
 document.addEventListener('DOMContentLoaded', function() {
-    // Dummy data for Habit Progress
+    // ── Chart Colors (Design System) ──
+    const primaryColor = '#3D8B6E';
+    const primaryLightColor = 'rgba(61,139,110,0.12)';
+    const successColor = '#4CAF82';
+    const successLightColor = 'rgba(76,175,130,0.12)';
+    const gridColor = '#D6E4DD';
+    const labelColor = '#6B8C7E';
+
+    // Dummy data
     const habitData = {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Completed Habits',
-            data: [4, 3, 5, 4, 6, 2, 5],
-            backgroundColor: 'rgba(79, 70, 229, 0.1)',
-            borderColor: 'rgba(79, 70, 229, 1)',
-            borderWidth: 2,
-            fill: true
-        }]
+        data: [4, 3, 5, 4, 6, 2, 5]
     };
-
-    // Dummy data for Mood Trends
     const moodData = {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Mood Score (1-10)',
-            data: [7, 6, 8, 7, 9, 5, 8],
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            borderColor: 'rgba(16, 185, 129, 1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4
-        }]
+        data: [7, 6, 8, 7, 9, 5, 8]
     };
 
-    // Draw Habit Progress Chart
-    function drawHabitChart() {
-        const canvas = document.getElementById('habitChart');
+    function drawChart(canvasId, data, color, fillColor) {
+        const canvas = document.getElementById(canvasId);
         if (!canvas) return;
-        
         const ctx = canvas.getContext('2d');
-        const width = canvas.width;
-        const height = canvas.height;
-        
-        // Clear canvas
-        ctx.clearRect(0, 0, width, height);
-        
-        // Chart dimensions
-        const margin = 40;
-        const chartWidth = width - 2 * margin;
-        const chartHeight = height - 2 * margin;
-        
-        // Find max value for scaling
-        const maxValue = Math.max(...habitData.datasets[0].data);
-        
-        // Draw grid lines
-        ctx.strokeStyle = '#e5e7eb';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 5; i++) {
-            const y = margin + (chartHeight / 5) * i;
-            ctx.beginPath();
-            ctx.moveTo(margin, y);
-            ctx.lineTo(width - margin, y);
-            ctx.stroke();
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+        const m = 40, cw = W - 2*m, ch = H - 2*m;
+        const max = Math.max(...data.data);
+        const min = Math.min(...data.data);
+        const range = max - min || 1;
+
+        // Grid
+        ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+            const y = m + (ch/4)*i;
+            ctx.beginPath(); ctx.moveTo(m, y); ctx.lineTo(W-m, y); ctx.stroke();
         }
-        
-        // Draw data line
-        ctx.strokeStyle = 'rgba(79, 70, 229, 1)';
-        ctx.lineWidth = 2;
+
+        // Area fill
+        ctx.fillStyle = fillColor;
         ctx.beginPath();
-        
-        habitData.labels.forEach((label, index) => {
-            const x = margin + (chartWidth / (habitData.labels.length - 1)) * index;
-            const y = height - margin - (habitData.datasets[0].data[index] / maxValue) * chartHeight;
-            
-            if (index === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
+        data.data.forEach((v, i) => {
+            const x = m + (cw/(data.data.length-1))*i;
+            const y = H - m - ((v-min)/range)*ch;
+            i === 0 ? (ctx.moveTo(x, H-m), ctx.lineTo(x, y)) : ctx.lineTo(x, y);
+        });
+        ctx.lineTo(W-m, H-m); ctx.closePath(); ctx.fill();
+
+        // Line
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
+        data.data.forEach((v, i) => {
+            const x = m + (cw/(data.data.length-1))*i;
+            const y = H - m - ((v-min)/range)*ch;
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         });
         ctx.stroke();
-        
-        // Draw data points
-        ctx.fillStyle = 'rgba(79, 70, 229, 1)';
-        habitData.labels.forEach((label, index) => {
-            const x = margin + (chartWidth / (habitData.labels.length - 1)) * index;
-            const y = height - margin - (habitData.datasets[0].data[index] / maxValue) * chartHeight;
-            
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, 2 * Math.PI);
-            ctx.fill();
+
+        // Dots
+        ctx.fillStyle = color;
+        data.data.forEach((v, i) => {
+            const x = m + (cw/(data.data.length-1))*i;
+            const y = H - m - ((v-min)/range)*ch;
+            ctx.beginPath(); ctx.arc(x, y, 4, 0, 2*Math.PI); ctx.fill();
+            // White inner
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, 2, 0, 2*Math.PI); ctx.fill();
+            ctx.fillStyle = color;
         });
-        
-        // Draw labels
-        ctx.fillStyle = '#6b7280';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        habitData.labels.forEach((label, index) => {
-            const x = margin + (chartWidth / (habitData.labels.length - 1)) * index;
-            ctx.fillText(label, x, height - 20);
+
+        // X labels
+        ctx.fillStyle = labelColor; ctx.font = '12px DM Sans, sans-serif'; ctx.textAlign = 'center';
+        data.labels.forEach((l, i) => {
+            ctx.fillText(l, m + (cw/(data.labels.length-1))*i, H - 16);
         });
-        
-        // Draw Y-axis labels
+
+        // Y labels
         ctx.textAlign = 'right';
-        for (let i = 0; i <= 5; i++) {
-            const value = Math.round((maxValue / 5) * i);
-            const y = height - margin - (chartHeight / 5) * i;
-            ctx.fillText(value.toString(), margin - 10, y + 4);
+        for (let i = 0; i <= 4; i++) {
+            const val = Math.round(min + (range/4)*i);
+            ctx.fillText(val, m-8, H - m - (ch/4)*i + 4);
         }
     }
 
-    // Draw Mood Trends Chart
-    function drawMoodChart() {
-        const canvas = document.getElementById('moodChart');
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        const width = canvas.width;
-        const height = canvas.height;
-        
-        // Clear canvas
-        ctx.clearRect(0, 0, width, height);
-        
-        // Chart dimensions
-        const margin = 40;
-        const chartWidth = width - 2 * margin;
-        const chartHeight = height - 2 * margin;
-        
-        // Find max and min values for scaling
-        const maxValue = Math.max(...moodData.datasets[0].data);
-        const minValue = Math.min(...moodData.datasets[0].data);
-        const range = maxValue - minValue;
-        
-        // Draw grid lines
-        ctx.strokeStyle = '#e5e7eb';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 5; i++) {
-            const y = margin + (chartHeight / 5) * i;
-            ctx.beginPath();
-            ctx.moveTo(margin, y);
-            ctx.lineTo(width - margin, y);
-            ctx.stroke();
-        }
-        
-        // Draw area under curve
-        ctx.fillStyle = 'rgba(16, 185, 129, 0.1)';
-        ctx.beginPath();
-        
-        moodData.labels.forEach((label, index) => {
-            const x = margin + (chartWidth / (moodData.labels.length - 1)) * index;
-            const normalizedValue = (moodData.datasets[0].data[index] - minValue) / range;
-            const y = height - margin - normalizedValue * chartHeight;
-            
-            if (index === 0) {
-                ctx.moveTo(x, height - margin);
-                ctx.lineTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        });
-        
-        // Close the area
-        ctx.lineTo(width - margin, height - margin);
-        ctx.lineTo(margin, height - margin);
-        ctx.closePath();
-        ctx.fill();
-        
-        // Draw data line
-        ctx.strokeStyle = 'rgba(16, 185, 129, 1)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        
-        moodData.labels.forEach((label, index) => {
-            const x = margin + (chartWidth / (moodData.labels.length - 1)) * index;
-            const normalizedValue = (moodData.datasets[0].data[index] - minValue) / range;
-            const y = height - margin - normalizedValue * chartHeight;
-            
-            if (index === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        });
-        ctx.stroke();
-        
-        // Draw data points
-        ctx.fillStyle = 'rgba(16, 185, 129, 1)';
-        moodData.labels.forEach((label, index) => {
-            const x = margin + (chartWidth / (moodData.labels.length - 1)) * index;
-            const normalizedValue = (moodData.datasets[0].data[index] - minValue) / range;
-            const y = height - margin - normalizedValue * chartHeight;
-            
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, 2 * Math.PI);
-            ctx.fill();
-        });
-        
-        // Draw labels
-        ctx.fillStyle = '#6b7280';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        moodData.labels.forEach((label, index) => {
-            const x = margin + (chartWidth / (moodData.labels.length - 1)) * index;
-            ctx.fillText(label, x, height - 20);
-        });
-        
-        // Draw Y-axis labels
-        ctx.textAlign = 'right';
-        for (let i = 0; i <= 5; i++) {
-            const value = Math.round(minValue + (range / 5) * i);
-            const y = height - margin - (chartHeight / 5) * i;
-            ctx.fillText(value.toString(), margin - 10, y + 4);
-        }
-    }
+    drawChart('habitChart', habitData, primaryColor, primaryLightColor);
+    drawChart('moodChart', moodData, successColor, successLightColor);
 
-    // Initialize charts
-    drawHabitChart();
-    drawMoodChart();
-
-    // Add time filter functionality
-    const habitTimeFilter = document.getElementById('habitTimeFilter');
-    const moodTimeFilter = document.getElementById('moodTimeFilter');
-
-    if (habitTimeFilter) {
-        habitTimeFilter.addEventListener('change', function() {
-            // Update habit data based on selected time period
-            const period = this.value;
-            // You can implement different data sets for different periods here
-            drawHabitChart();
-        });
-    }
-
-    if (moodTimeFilter) {
-        moodTimeFilter.addEventListener('change', function() {
-            // Update mood data based on selected time period
-            const period = this.value;
-            // You can implement different data sets for different periods here
-            drawMoodChart();
-        });
-    }
+    // Time filter redraws
+    document.getElementById('habitTimeFilter')?.addEventListener('change', () => drawChart('habitChart', habitData, primaryColor, primaryLightColor));
+    document.getElementById('moodTimeFilter')?.addEventListener('change', () => drawChart('moodChart', moodData, successColor, successLightColor));
 });
 </script>
-
-

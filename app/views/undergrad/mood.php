@@ -2,9 +2,9 @@
 $TITLE = 'MindHeaven — Mood Tracker';
 $CURRENT_PAGE = 'mood';
 $PAGE_CSS = ['/MindHeaven/public/css/undergrad/mood.css'];
-$PAGE_JS  = ['/MindHeaven/Undergrad_student/assets/js/mood.js'];
+$PAGE_JS = ['/MindHeaven/Undergrad_student/assets/js/mood.js'];
 
-require BASE_PATH.'/app/views/layouts/header.php';
+require BASE_PATH . '/app/views/layouts/header.php';
 ?>
 
 <main id="main" class="container mood">
@@ -60,7 +60,8 @@ require BASE_PATH.'/app/views/layouts/header.php';
         </div>
         <div class="mood-details" id="moodDetails" style="display: none;">
           <h3>Tell us more about your mood</h3>
-          <textarea id="moodNotes" class="input" rows="3" placeholder="What's contributing to how you're feeling today? (optional)"></textarea>
+          <textarea id="moodNotes" class="input" rows="3"
+            placeholder="What's contributing to how you're feeling today? (optional)"></textarea>
           <div class="mood-actions">
             <button class="btn primary" onclick="saveMoodEntry()">Save Mood</button>
             <button class="btn outline" onclick="cancelMoodEntry()">Cancel</button>
@@ -88,7 +89,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
           </div>
         </div>
       </div>
-      
+
       <div class="card col-4">
         <div class="card-header">
           <h2>📈 This Month</h2>
@@ -104,7 +105,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
           </div>
         </div>
       </div>
-      
+
       <div class="card col-4">
         <div class="card-header">
           <h2>🎯 Streak</h2>
@@ -153,7 +154,7 @@ require BASE_PATH.'/app/views/layouts/header.php';
           <canvas id="moodChart" width="400" height="200"></canvas>
         </div>
       </div>
-      
+
       <div class="card col-6">
         <div class="card-header">
           <h2>🎨 Mood Distribution</h2>
@@ -225,7 +226,8 @@ require BASE_PATH.'/app/views/layouts/header.php';
       </div>
       <div class="mood-notes">
         <h4>Additional Notes</h4>
-        <textarea id="modalMoodNotes" class="input" rows="3" placeholder="Any additional thoughts about your mood today?"></textarea>
+        <textarea id="modalMoodNotes" class="input" rows="3"
+          placeholder="Any additional thoughts about your mood today?"></textarea>
       </div>
       <div class="modal-actions">
         <button class="btn primary" onclick="saveDetailedMood()">Save Mood Entry</button>
@@ -235,4 +237,4 @@ require BASE_PATH.'/app/views/layouts/header.php';
   </div>
 </div>
 
-<?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>
