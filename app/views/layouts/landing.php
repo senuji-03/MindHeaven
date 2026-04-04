@@ -240,8 +240,15 @@
         }
 
         @keyframes pulse-crisis {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+            }
         }
 
         /* Profile Dropdown */
@@ -534,28 +541,28 @@
             .hero-title {
                 font-size: 2.5rem;
             }
-            
+
             .hero-buttons {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .navbar-nav {
                 flex-direction: column;
                 gap: 1rem;
                 align-items: stretch;
             }
-            
+
             .navbar-nav .btn-donate,
             .navbar-nav .btn-crisis {
                 text-align: center;
                 justify-content: center;
             }
-            
+
             .section-title h2 {
                 font-size: 2rem;
             }
-            
+
             .profile-menu {
                 right: auto;
                 left: 0;
@@ -569,6 +576,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -580,6 +588,7 @@
         }
 
         /* Utility Classes */
+<<<<<<< HEAD
         .text-center { text-align: center; }
         .text-left { text-align: left; }
         .text-right { text-align: right; }
@@ -750,6 +759,78 @@
             .counselors-grid {
                 grid-template-columns: 1fr;
             }
+=======
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+
+        .mt-5 {
+            margin-top: 3rem;
+        }
+
+        .p-1 {
+            padding: 0.25rem;
+        }
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-3 {
+            padding: 1rem;
+        }
+
+        .p-4 {
+            padding: 1.5rem;
+        }
+
+        .p-5 {
+            padding: 3rem;
+>>>>>>> origin/uni-representative
         }
     </style>
 
@@ -778,6 +859,7 @@
                 <a href="<?php echo BASE_URL; ?>/donation" class="btn btn-donate">
                     <i class="fas fa-heart"></i> Donate
                 </a>
+<<<<<<< HEAD
                 <a href="<?php echo BASE_URL; ?>/public/crisis" class="btn btn-crisis">
                     <i class="fas fa-phone-alt"></i> Crisis Support
                 </a>
@@ -801,6 +883,43 @@
                             <a href="<?php echo BASE_URL; ?>/logout" class="profile-item">
                                 <i class="fas fa-sign-out-alt"></i> Logout
                             </a>
+=======
+
+                <div class="navbar-nav">
+                    <a href="<?php echo BASE_URL; ?>/" class="nav-link active">Home</a>
+                    <a href="<?php echo BASE_URL; ?>/ug/resources" class="nav-link">Resource Hub</a>
+                    <a href="<?php echo BASE_URL; ?>/forum" class="nav-link">Forum Discussion</a>
+                    <a href="<?php echo BASE_URL; ?>/donation" class="btn btn-donate">Donate Now</a>
+                    <a href="<?php echo BASE_URL; ?>/ug/crisis" class="btn btn-crisis">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Crisis Support
+                    </a>
+                </div>
+
+                <div class="navbar-actions">
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown">
+                            <button class="btn btn-profile" onclick="toggleProfileDropdown()">
+                                <i class="fas fa-user-circle"></i>
+                                <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="profile-menu" id="profileMenu">
+                                <a href="<?php echo BASE_URL; ?>/ug" class="profile-item">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    Dashboard
+                                </a>
+                                <a href="<?php echo BASE_URL; ?>/ug/profile" class="profile-item">
+                                    <i class="fas fa-user"></i>
+                                    Profile
+                                </a>
+                                <a href="<?php echo BASE_URL; ?>/logout" class="profile-item">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </div>
+>>>>>>> origin/uni-representative
                         </div>
                     </div>
                 <?php else: ?>
@@ -819,6 +938,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
+<<<<<<< HEAD
             <div class="footer-grid">
                 <div class="footer-brand">
                     <a href="<?php echo BASE_URL; ?>/" class="navbar-brand" style="color:white;">
@@ -837,6 +957,21 @@
                         <li><a href="<?php echo BASE_URL; ?>/public/forum">Forum</a></li>
                         <li><a href="<?php echo BASE_URL; ?>/donation">Donate</a></li>
                     </ul>
+=======
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h5>MindHeaven</h5>
+                    <p>Providing comprehensive mental health support for undergraduate students. Your mental wellness is
+                        our priority.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h5>Quick Links</h5>
+                    <p><a href="<?php echo BASE_URL; ?>/">Home</a></p>
+                    <p><a href="<?php echo BASE_URL; ?>/ug/resources">Resource Hub</a></p>
+                    <p><a href="<?php echo BASE_URL; ?>/forum">Forum Discussion</a></p>
+                    <p><a href="<?php echo BASE_URL; ?>/donation">Donate</a></p>
+>>>>>>> origin/uni-representative
                 </div>
 
                 <div class="footer-section">
@@ -872,10 +1007,21 @@
     </footer>
 
     <script>
+<<<<<<< HEAD
         // Navbar scroll
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
             navbar.classList.toggle('scrolled', window.scrollY > 40);
+=======
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+>>>>>>> origin/uni-representative
         });
 
         // Mobile menu
@@ -886,6 +1032,7 @@
             navMenu.classList.toggle('open');
         }
 
+<<<<<<< HEAD
         // Profile dropdown
         function toggleProfileDropdown() {
             const menu = document.getElementById('profileMenu');
@@ -902,6 +1049,25 @@
 
         // Scroll animations — progressive enhancement
         const observer = new IntersectionObserver((entries) => {
+=======
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const profileDropdown = document.querySelector('.profile-dropdown');
+            const profileMenu = document.getElementById('profileMenu');
+
+            if (profileDropdown && !profileDropdown.contains(event.target)) {
+                profileMenu.classList.remove('show');
+            }
+        });
+
+        // Add fade-in animation to elements
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+>>>>>>> origin/uni-representative
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
@@ -909,6 +1075,7 @@
             });
         }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 
+<<<<<<< HEAD
         document.addEventListener('DOMContentLoaded', () => {
             // Mark body so CSS knows JS is active
             document.body.classList.add('js-loaded');
@@ -930,6 +1097,12 @@
                 const t = document.querySelector(a.getAttribute('href'));
                 if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
+=======
+        // Observe all feature cards and other elements
+        document.addEventListener('DOMContentLoaded', function () {
+            const elementsToAnimate = document.querySelectorAll('.feature-card, .stat-item, .section-title');
+            elementsToAnimate.forEach(el => observer.observe(el));
+>>>>>>> origin/uni-representative
         });
     </script>
 </body>

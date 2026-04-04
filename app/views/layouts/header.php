@@ -48,15 +48,25 @@ function getNavigationItems($role)
       ],
       'support' => [
         ['icon' => '📚', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
+<<<<<<< HEAD
         ['icon' => '💭', 'text' => 'Forum', 'url' => '/ug/forum', 'slug' => 'forum'],
+=======
+        ['icon' => '💬', 'text' => 'Forum', 'url' => '/forum', 'slug' => 'forum'],
+>>>>>>> origin/uni-representative
         ['icon' => '📞', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
         ['icon' => 'ℹ️', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
       ],
       'feedback' => [
+<<<<<<< HEAD
         ['icon' => '⭐', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
  ]
       
 >>>>>>> origin/counselor
+=======
+        ['icon' => '💬', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
+      ]
+
+>>>>>>> origin/uni-representative
     ],
     'admin' => [
       'main' => [
@@ -117,11 +127,13 @@ $navigationItems = getNavigationItems($userRole);
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="/MindHeaven/public/css/undergrad/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <?php foreach ($PAGE_CSS as $css): ?>
     <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>">
   <?php endforeach; ?>
 
   <style>
+<<<<<<< HEAD
 <<<<<<< HEAD
     /* ── Design System Tokens ── */
     :root {
@@ -503,10 +515,14 @@ $navigationItems = getNavigationItems($userRole);
   /* Responsive Design */
   @media (max-width: 768px) {
 >>>>>>> origin/counselor
+=======
+    /* Header Inline Styles */
+>>>>>>> origin/uni-representative
     .sidebar {
       position: fixed;
       left: 0;
       top: 0;
+<<<<<<< HEAD
       width: 280px;
       height: 100vh;
       background: var(--bg-deep);
@@ -589,6 +605,81 @@ $navigationItems = getNavigationItems($userRole);
       color: rgba(255, 255, 255, 0.35);
       margin: 0;
       padding: 12px 20px 6px;
+=======
+      width: 240px;
+      height: 100vh;
+      background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+      color: white;
+      z-index: 1000;
+      overflow-y: auto;
+      transform: none !important;
+      /* Force no transform */
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .brand-logo {
+      width: 2.5rem;
+      height: 2.5rem;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .brand-name {
+      /* Always visible */
+    }
+
+    .sidebar-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar-nav {
+      padding: 1rem 0;
+    }
+
+    .nav-section {
+      margin-bottom: 2rem;
+    }
+
+    .nav-section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9ca3af;
+      margin: 0 0 1rem 0;
+      padding: 0 1.5rem;
+>>>>>>> origin/uni-representative
     }
 
     .nav-list {
@@ -600,6 +691,7 @@ $navigationItems = getNavigationItems($userRole);
     .nav-link {
       display: flex;
       align-items: center;
+<<<<<<< HEAD
       gap: 12px;
       padding: 10px 20px;
       color: rgba(255, 255, 255, 0.6);
@@ -626,10 +718,35 @@ $navigationItems = getNavigationItems($userRole);
     .nav-icon {
       font-size: 0.9rem;
       width: 20px;
+=======
+      gap: 1rem;
+      padding: 0.75rem 1.5rem;
+      color: #d1d5db;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .nav-link.active {
+      background: rgba(79, 70, 229, 0.2);
+      color: white;
+      border-left-color: #4f46e5;
+    }
+
+    .nav-icon {
+      font-size: 1.2rem;
+      width: 1.5rem;
+>>>>>>> origin/uni-representative
       text-align: center;
       opacity: 0.8;
     }
 
+<<<<<<< HEAD
     .nav-link.active .nav-icon {
       opacity: 1;
     }
@@ -648,28 +765,68 @@ $navigationItems = getNavigationItems($userRole);
     .sidebar-footer {
       padding: 16px 20px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
+=======
+    .nav-text {
+      /* Always visible */
+    }
+
+    .crisis-link {
+      background: rgba(239, 68, 68, 0.1);
+      border-left-color: #ef4444 !important;
+    }
+
+    .crisis-link:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+>>>>>>> origin/uni-representative
     }
 
     .user-info {
       display: flex;
       align-items: center;
+<<<<<<< HEAD
       gap: 12px;
     }
 
     .user-avatar {
       width: 36px;
       height: 36px;
+=======
+      gap: 1rem;
+    }
+
+    .user-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+>>>>>>> origin/uni-representative
       background: rgba(255, 255, 255, 0.1);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+<<<<<<< HEAD
       font-size: 0.9rem;
+=======
+      font-size: 1.2rem;
+    }
+
+    .user-details {
+      /* Always visible */
+>>>>>>> origin/uni-representative
     }
 
     .user-name {
       font-weight: 600;
       color: white;
+<<<<<<< HEAD
       font-size: 0.88rem;
       margin-bottom: 1px;
     }
@@ -713,13 +870,40 @@ $navigationItems = getNavigationItems($userRole);
       height: 60px;
       display: flex;
       align-items: center;
+=======
+      margin-bottom: 0.25rem;
+    }
+
+    .user-role {
+      font-size: 0.875rem;
+      color: #9ca3af;
+    }
+
+    .main-wrapper {
+      margin-left: 380px;
+      min-height: 100vh;
+      background: #f9fafb;
+    }
+
+    .top-header {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+>>>>>>> origin/uni-representative
     }
 
     .header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
+<<<<<<< HEAD
       width: 100%;
+=======
+>>>>>>> origin/uni-representative
       max-width: 1200px;
       margin: 0 auto;
     }
@@ -728,6 +912,7 @@ $navigationItems = getNavigationItems($userRole);
       display: none;
       background: none;
       border: none;
+<<<<<<< HEAD
       padding: 8px;
       cursor: pointer;
       border-radius: var(--radius-sm);
@@ -736,11 +921,22 @@ $navigationItems = getNavigationItems($userRole);
 
     .mobile-menu-toggle:hover {
       background: var(--bg-mid);
+=======
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle:hover {
+      background: #f3f4f6;
+>>>>>>> origin/uni-representative
     }
 
     .hamburger {
       display: flex;
       flex-direction: column;
+<<<<<<< HEAD
       gap: 4px;
     }
 
@@ -844,6 +1040,105 @@ $navigationItems = getNavigationItems($userRole);
       border-radius: var(--radius-sm);
       z-index: 9999;
       font-weight: 600;
+=======
+      gap: 0.25rem;
+    }
+
+    .bar {
+      width: 1.5rem;
+      height: 2px;
+      background: #374151;
+      border-radius: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-btn {
+      background: none;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #6b7280;
+      position: relative;
+    }
+
+    .header-btn:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    /* Button Styles from Landing Page */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+
+    .btn-donate {
+      background: #10b981;
+      color: white;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-donate:hover {
+      background: #059669;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-crisis {
+      background: #ef4444;
+      color: white;
+      box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-crisis:hover {
+      background: #dc2626;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-icon {
+      font-size: 1rem;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+      background: #ef4444;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.125rem 0.375rem;
+      border-radius: 9999px;
+      min-width: 1.25rem;
+      text-align: center;
+>>>>>>> origin/uni-representative
     }
 
     .sr-only {
@@ -858,11 +1153,18 @@ $navigationItems = getNavigationItems($userRole);
       border: 0;
     }
 
+<<<<<<< HEAD
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
+=======
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+>>>>>>> origin/uni-representative
       }
 
       .sidebar.open {
@@ -877,14 +1179,28 @@ $navigationItems = getNavigationItems($userRole);
         display: block;
       }
 
+<<<<<<< HEAD
       .top-header {
         padding: 0 16px;
       }
 
+=======
+>>>>>>> origin/uni-representative
       .header-title {
         flex: 1;
         text-align: center;
       }
+<<<<<<< HEAD
+=======
+
+      .header-actions {
+        gap: 0.25rem;
+      }
+
+      .header-btn {
+        padding: 0.5rem;
+      }
+>>>>>>> origin/uni-representative
     }
   </style>
   <script src="/MindHeaven/public/js/undergrad/main.js" defer></script>
@@ -913,7 +1229,11 @@ $navigationItems = getNavigationItems($userRole);
               <li>
                 <a class="nav-link <?= is_active($item['slug'], $CURRENT_PAGE) ?> <?= $item['class'] ?? '' ?>"
                   href="<?= BASE_URL . $item['url'] ?>">
+<<<<<<< HEAD
                   <span class="nav-icon"><i class="<?= $item['icon'] ?>"></i></span>
+=======
+                  <span class="nav-icon"><?= $item['icon'] ?></span>
+>>>>>>> origin/uni-representative
                   <span class="nav-text"><?= $item['text'] ?></span>
                 </a>
               </li>
@@ -963,6 +1283,7 @@ $navigationItems = getNavigationItems($userRole);
 
         <div class="header-actions">
           <?php if (Auth::check()): ?>
+<<<<<<< HEAD
             <a href="<?= BASE_URL ?>/logout">
               <button class="header-btn" type="button" aria-label="Logout">
                 <i class="fas fa-sign-out-alt"></i> Logout
@@ -972,6 +1293,19 @@ $navigationItems = getNavigationItems($userRole);
             <a href="<?= BASE_URL ?>/login">
               <button class="header-btn" type="button" aria-label="Login">
                 <i class="fas fa-sign-in-alt"></i> Login
+=======
+            <!-- Logged-in user: show Logout -->
+            <a href="<?= BASE_URL ?>/logout">
+              <button class="header-btn" type="button" aria-label="Logout">
+                <span class="btn-icon">🚪</span> Logout
+              </button>
+            </a>
+          <?php else: ?>
+            <!-- Not logged in: show Login -->
+            <a href="<?= BASE_URL ?>/login">
+              <button class="header-btn" type="button" aria-label="Login">
+                <span class="btn-icon">🔑</span> Login
+>>>>>>> origin/uni-representative
               </button>
             </a>
           <?php endif; ?>

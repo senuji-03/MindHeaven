@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Support Forum | MindHeaven</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="../../../public/css/style.css"> 
+    <!-- Forum CSS -->
+    <link rel="stylesheet" href="../../../public/css/forum.css">
+</head>
+<body>
+
+    <!-- Main Container -->
+    <main class="forum-container">
+        
+        <!-- Header Section -->
+        <header class="forum-header">
+            <div class="header-content">
+                <h1>Student Support Forum</h1>
+                <p class="subtitle">A safe space for emotional support, academic stress, and well-being.</p>
+            </div>
+            <!-- Create Button (Visible to logged-in users) -->
+            <!-- Note: Logic for visibility to be handled by backend/JS, showing by default for UI dev -->
+            <a href="create_thread.html" class="btn-create-thread">
+                <i class="fas fa-plus"></i> Create New Thread
+            </a>
+        </header>
+
+        <!-- Search & Filter Section -->
+        <section class="forum-controls">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="threadSearch" placeholder="Search discussions...">
+            </div>
+            
+            <div class="filter-wrapper">
+                <button class="filter-btn active" data-filter="latest">Latest</button>
+                <button class="filter-btn" data-filter="popular">Most Discussed</button>
+            </div>
+        </section>
+
+        <!-- Threads List Section -->
+        <section class="threads-list" id="threadsContainer">
+            
+            <!-- Thread Card Example 1 -->
+            <article class="thread-card">
+                <div class="thread-main">
+                    <h2 class="thread-title"><a href="thread.html">Feeling overwhelmed with finals coming up</a></h2>
+                    <p class="thread-preview">I've been studying non-stop but I still feel like I'm not ready. Does anyone have tips for managing exam anxiety?</p>
+                    
+                    <div class="thread-meta">
+                        <div class="author-info">
+                            <span class="author-avatar" style="background-color: #a8d5e2;">S</span>
+                            <span class="author-name">Student123</span>
+                            <span class="role-badge role-student">Student</span>
+                        </div>
+                        <span class="meta-dot">•</span>
+                        <span class="timestamp">2 hours ago</span>
+                    </div>
+                </div>
+
+                <div class="thread-stats">
+                    <div class="stat-item" title="Replies">
+                        <i class="far fa-comment-alt"></i>
+                        <span>14</span>
+                    </div>
+                    <div class="stat-item" title="Likes">
+                        <i class="far fa-heart"></i>
+                        <span>32</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Thread Card Example 2 (Counselor Reply) -->
+            <article class="thread-card">
+                <div class="thread-main">
+                    <h2 class="thread-title"><a href="thread.html">How to deal with unexpected homesickness?</a></h2>
+                    <p class="thread-preview">It's my first semester and I didn't think I'd miss home this much. It's affecting my focus...</p>
+                    
+                    <div class="thread-meta">
+                        <div class="author-info">
+                            <span class="author-avatar counselor-avatar"><i class="fas fa-user-md"></i></span>
+                            <span class="author-name">Dr. Emily Stone</span>
+                            <span class="role-badge role-counselor">Counselor</span>
+                        </div>
+                        <span class="meta-dot">•</span>
+                        <span class="timestamp">Yesterday</span>
+                    </div>
+                </div>
+
+                <div class="thread-stats">
+                    <div class="stat-item" title="Replies">
+                        <i class="far fa-comment-alt"></i>
+                        <span>8</span>
+                    </div>
+                    <div class="stat-item" title="Likes">
+                        <i class="far fa-heart"></i>
+                        <span>21</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Thread Card Example 3 (Flagged) -->
+            <article class="thread-card flagged-thread">
+                <div class="thread-main">
+                    <div class="flagged-notice"><i class="fas fa-exclamation-circle"></i> Flagged for review</div>
+                    <h2 class="thread-title"><a href="thread.html">Regarding the recent policy changes...</a></h2>
+                    <p class="thread-preview">[Content hidden pending review]</p>
+                    
+                    <div class="thread-meta">
+                        <div class="author-info">
+                            <span class="author-avatar" style="background-color: #ffd166;">K</span>
+                            <span class="author-name">KevinModerator</span>
+                            <span class="role-badge role-moderator">Moderator</span>
+                        </div>
+                        <span class="meta-dot">•</span>
+                        <span class="timestamp">3 days ago</span>
+                    </div>
+                </div>
+
+                <div class="thread-actions">
+                     <button class="btn-action btn-approve"><i class="fas fa-check"></i></button>
+                     <button class="btn-action btn-remove"><i class="fas fa-trash"></i></button>
+                </div>
+            </article>
+
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../../../public/js/forum.js"></script>
+</body>
+</html>

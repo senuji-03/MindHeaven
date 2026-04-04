@@ -12,12 +12,14 @@ $router = new Router();
 $router->get('/', 'LandingControl@index');
 $router->get('/landing', 'LandingControl@index');
 
-$router->get('/login', 'LoginControl@index'); 
+$router->get('/login', 'LoginControl@index');
 $router->post('/login/authenticate', 'LoginControl@authenticate');
 $router->get('/login/forgot-password', 'LoginControl@forgotPassword');
 $router->post('/login/forgot-password', 'LoginControl@processForgotPassword');
 $router->get('/login/reset-password', 'LoginControl@resetPassword');
-$router->post('/login/reset-password', 'LoginControl@resetPassword'); 
+$router->post('/login/reset-password', 'LoginControl@resetPassword');
+$router->get('/login/forcePasswordChange', 'LoginControl@forcePasswordChange');
+$router->post('/login/forcePasswordChange', 'LoginControl@processForcePasswordChange');
 $router->get('/logout', 'LoginControl@logout');
 
 // Signup routes
@@ -48,35 +50,75 @@ $router->get('/ug/feedback/get', 'UGControl@getFeedbackById');
 
 $router->get('/admin', 'AdminControl@index'); // Admin dashboard
 $router->get('/admin/manage-users', 'AdminControl@manageUsers');
+$router->get('/admin/suspended-users', 'AdminControl@suspendedUsers');
 $router->get('/admin/resource-hub', 'AdminControl@resourceHub');
 $router->get('/admin/moderate-forum', 'AdminControl@moderateForum');
 $router->get('/admin/counselors', 'AdminControl@counselors');
 $router->get('/admin/appointments', 'AdminControl@appointments');
 $router->get('/admin/approve-counselors', 'AdminControl@approveCounselors');
 $router->get('/admin/reports', 'AdminControl@reports');
+$router->post('/admin/update-report-status', 'AdminControl@updateReportStatus'); // Process report update
+$router->post('/admin/edit-reported-content', 'AdminControl@editReportedContent'); // Edit content from report
+$router->post('/admin/suspend-user', 'AdminControl@suspendUser'); // Suspend user from report modal
+$router->post('/admin/update-system-flag-status', 'AdminControl@updateSystemFlagStatus'); // Process system flag update
+$router->get('/admin/university-events', 'AdminControl@universityEvents');
+$router->post('/admin/university-events/approve', 'AdminControl@approveUniversityEvent');
+$router->post('/admin/university-events/reject', 'AdminControl@rejectUniversityEvent');
 $router->get('/admin/donations', 'AdminControl@donations');
 $router->get('/admin/awareness', 'AdminControl@awareness');
 $router->get('/admin/monitoring', 'AdminControl@monitoring');
 $router->get('/admin/settings', 'AdminControl@settings');
 $router->get('/admin/profile', 'AdminControl@profile');
 
+// Report Categories Management
+$router->get('/admin/report-categories', 'AdminControl@manageReportCategories');
+$router->post('/admin/report-categories/create', 'AdminControl@createReportCategory');
+$router->post('/admin/report-categories/update', 'AdminControl@updateReportCategory');
+$router->post('/admin/report-categories/create', 'AdminControl@createReportCategory');
+$router->post('/admin/report-categories/update', 'AdminControl@updateReportCategory');
+$router->post('/admin/report-categories/update', 'AdminControl@updateReportCategory');
+$router->post('/admin/report-categories/delete', 'AdminControl@deleteReportCategory');
+$router->post('/admin/report-categories/activate', 'AdminControl@activateReportCategory');
+
+// Forum Thread Category Management (forum_categories — NOT report_categories)
+$router->get('/admin/forum-categories', 'AdminControl@forumCategories');
+$router->post('/admin/forum-categories/create', 'AdminControl@createForumCategory');
+$router->post('/admin/forum-categories/update', 'AdminControl@updateForumCategory');
+$router->post('/admin/forum-categories/delete', 'AdminControl@deleteForumCategory');
+$router->post('/admin/forum-categories/activate', 'AdminControl@activateForumCategory');
+
+
+// Report API Routes (for frontend)
+$router->get('/report/categories', 'ReportControl@getCategories');
+$router->post('/report/submit', 'ReportControl@submit');
+
 // Admin POST routes for form submissions
 $router->post('/admin/manage-users/create', 'AdminControl@createUser');
 $router->post('/admin/manage-users/update', 'AdminControl@updateUser');
 $router->post('/admin/manage-users/delete', 'AdminControl@deleteUser');
+$router->post('/admin/manage-users/activate', 'AdminControl@activateUser');
+$router->post('/admin/manage-users/deactivate', 'AdminControl@deactivateUser');
+$router->post('/admin/manage-users/suspend', 'AdminControl@suspendUser');
+$router->post('/admin/manage-users/unsuspend', 'AdminControl@unsuspendUser');
+$router->post('/admin/manage-users/reset-strikes', 'AdminControl@resetUserStrikes');
 
-$router->get('/counselor', 'COControl@index');  
+$router->get('/counselor', 'COControl@index');
 $router->get('/counselor/dashboard', 'COControl@dashboard');
 $router->get('/counselor/feedback', 'COControl@feedbackList');
 $router->get('/counselor/appointmentmgt', 'COControl@appointmentmgt');
 $router->get('/counselor/calender', 'COControl@calender');
 $router->get('/counselor/sessionHistory', 'COControl@sessionHistory');
 $router->get('/counselor/counselor_profile', 'COControl@counselorProfile');
+<<<<<<< HEAD
 $router->post('/counselor/updateProfile', 'COControl@updateProfile');
 $router->post('/counselor/uploadProfilePhoto', 'COControl@uploadProfilePhoto');
 $router->post('/api/counselor/qualifications/sync', 'COControl@syncQualifications');
 $router->get('/counselor/forum', 'UGControl@forum');
 $router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
+=======
+$router->get('/counselor/forum', 'COControl@forum');
+$router->get('/counselor/resources', 'UGControl@resources');
+>>>>>>> origin/uni-representative
 
 // Counselor calendar API routes
 $router->post('/counselor/createEvent', 'COControl@createEvent');
@@ -124,6 +166,8 @@ $router->post('/Moderator/resource/create', 'ModeratorControl@createResource');
 $router->post('/Moderator/resource/delete', 'ModeratorControl@deleteResource');
 $router->get('/Moderator/resource/edit', 'ModeratorControl@editResource');
 $router->post('/Moderator/resource/update', 'ModeratorControl@updateResource');
+$router->post('/moderator/edit-reported-content', 'ModeratorControl@editReportedContent');
+
 
 $router->get('/UniversityRepresentative/dashboard', 'UniversityRepresentativeControl@index');
 // ========================================
@@ -142,12 +186,31 @@ $router->get('/university-rep/events/view/{id}', 'UniversityRepresentativeContro
 $router->get('/university-rep/events/edit/{id}', 'UniversityRepresentativeControl@editEvent');
 $router->post('/university-rep/events/update', 'UniversityRepresentativeControl@updateEvent');
 $router->post('/university-rep/events/delete', 'UniversityRepresentativeControl@deleteEvent');
+$router->post('/university-rep/events/close', 'UniversityRepresentativeControl@closeEvent');
 
 // Announcements Management
 $router->get('/university-rep/announcements', 'UniversityRepresentativeControl@announcements');
 $router->get('/university-rep/announcements/create', 'UniversityRepresentativeControl@createAnnouncement');
 $router->post('/university-rep/announcements/store', 'UniversityRepresentativeControl@storeAnnouncement');
 $router->post('/university-rep/announcements/delete', 'UniversityRepresentativeControl@deleteAnnouncement');
+
+// Keyword Management Routes
+$router->get('/admin/keywords', 'AdminKeywordControl@index');
+$router->post('/admin/keywords/add', 'AdminKeywordControl@add');
+$router->post('/admin/keywords/delete', 'AdminKeywordControl@delete');
+
+// System Flags Routes
+$router->get('/admin/system-flags', 'AdminSystemFlagControl@index');
+$router->post('/admin/system-flags/update', 'AdminSystemFlagControl@updateStatus');
+
+// Forum Routes
+$router->get('/forum', 'ForumControl@index');
+$router->get('/forum/create', 'ForumControl@create');
+$router->post('/forum/create', 'ForumControl@store');
+$router->get('/forum/thread/{id}', 'ForumControl@show');
+$router->post('/forum/reply', 'ForumControl@reply');
+$router->post('/forum/delete', 'ForumControl@delete');
+$router->post('/forum/toggleLike', 'ForumControl@toggleLike');
 
 // Resources Management
 $router->get('/university-rep/resources', 'UniversityRepresentativeControl@resources');

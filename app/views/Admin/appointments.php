@@ -1,5 +1,6 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -178,6 +179,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -185,7 +187,7 @@
             <h2>🧠 Mind Haven</h2>
             <p>Admin Panel</p>
         </div>
-        
+
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/admin" class="nav-item">
                 <span class="icon">📊</span>
@@ -208,6 +210,10 @@
             <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
                 <span class="icon">📈</span>
                 Reports
+                        </a>
+            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
+                <span class="icon">🏛️</span>
+                University Events
             </a>
             <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
                 <span class="icon"></span>
@@ -293,6 +299,7 @@
 
             <!-- Appointments Table -->
             <div class="section-card">
+<<<<<<< HEAD
                 <div class="card-header">
                     <h3>📋 All Appointments</h3>
                     <div class="card-tools">
@@ -335,6 +342,85 @@
                             </tbody>
                         </table>
                     </div>
+=======
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Counselor</th>
+                            <th>Date & Time</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1245</td>
+                            <td>John Doe</td>
+                            <td>Dr. Sarah Johnson</td>
+                            <td>Jan 20, 2025 - 10:00 AM</td>
+                            <td><span class="badge role-counselor">In-Person</span></td>
+                            <td><span class="badge status-active">Completed</span></td>
+                            <td>
+                                <button class="btn-icon" title="View Details">👁️</button>
+                                <button class="btn-icon" title="Download Report">📄</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1244</td>
+                            <td>Jane Smith</td>
+                            <td>Dr. Emily Chen</td>
+                            <td>Jan 22, 2025 - 2:00 PM</td>
+                            <td><span class="badge role-moderator">Online</span></td>
+                            <td><span class="badge status-suspended">Upcoming</span></td>
+                            <td>
+                                <button class="btn-icon" title="View Details">👁️</button>
+                                <button class="btn-icon" title="Reschedule">📅</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1243</td>
+                            <td>Mike Johnson</td>
+                            <td>Mr. David Silva</td>
+                            <td>Jan 18, 2025 - 11:30 AM</td>
+                            <td><span class="badge role-counselor">In-Person</span></td>
+                            <td><span class="badge status-inactive">Cancelled</span></td>
+                            <td>
+                                <button class="btn-icon" title="View Details">👁️</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1242</td>
+                            <td>Sarah Lee</td>
+                            <td>Dr. Sarah Johnson</td>
+                            <td>Jan 23, 2025 - 3:00 PM</td>
+                            <td><span class="badge role-moderator">Online</span></td>
+                            <td><span class="badge status-suspended">Upcoming</span></td>
+                            <td>
+                                <button class="btn-icon" title="View Details">👁️</button>
+                                <button class="btn-icon" title="Reschedule">📅</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1241</td>
+                            <td>Alex Kumar</td>
+                            <td>Dr. Emily Chen</td>
+                            <td>Jan 19, 2025 - 9:00 AM</td>
+                            <td><span class="badge role-counselor">In-Person</span></td>
+                            <td><span class="badge status-active">Completed</span></td>
+                            <td>
+                                <button class="btn-icon" title="View Details">👁️</button>
+                                <button class="btn-icon" title="Download Report">📄</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="padding: 20px; text-align: center;">
+                    <button class="btn btn-secondary">Load More Appointments</button>
+>>>>>>> origin/uni-representative
                 </div>
             </div>
         </div>
@@ -728,4 +814,6 @@ ${appointment.id},${appointment.student_name},${appointment.counselor_name},${ap
     });
     </script>
 </body>
+
 </html>
+

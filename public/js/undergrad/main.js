@@ -184,12 +184,22 @@
     button.addEventListener('click', function () {
       if (this.form && this.form.checkValidity()) {
         this.classList.add('loading');
+<<<<<<< HEAD
         this.disabled = true;
 
         // Re-enable after a delay (for demo purposes)
+=======
+        // Use setTimeout to allow form submission to trigger before disabling
+        const btn = this;
+>>>>>>> origin/uni-representative
         setTimeout(() => {
-          this.classList.remove('loading');
-          this.disabled = false;
+          btn.disabled = true;
+        }, 0);
+
+        // Re-enable after a delay (for demo purposes or if validation fails)
+        setTimeout(() => {
+          btn.classList.remove('loading');
+          btn.disabled = false;
         }, 2000);
       }
     });

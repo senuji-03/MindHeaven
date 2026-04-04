@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Session History</title>
     <link rel="stylesheet" href="\MindHeaven\public\css\counselor\sessionHistory.css">
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
@@ -30,7 +32,27 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
+<<<<<<< HEAD
         <?php include __DIR__ . '/sidebar.php'; ?>
+=======
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓️ Appointment
+                        Management</a></li>
+                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory"
+                        style="color: #2563eb;">📋 Session History</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile">👤 Profile</a>
+                </li>
+                <li class="sidebar-item"><a href="#">⚙️ Settings</a></li>
+                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout"
+                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
+            </ul>
+        </div>
+>>>>>>> origin/uni-representative
 
         <!-- Main Content -->
         <div class="main-content">
@@ -148,4 +170,5 @@
 
     <script src="\MindHeaven\public\js\counselor\sessionHistory.js"></script>
 </body>
+
 </html>

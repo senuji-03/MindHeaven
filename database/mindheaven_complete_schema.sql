@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS=0;
 -- =====================================================
 -- MindHeaven Mental Health Platform - Complete Database Schema
 -- =====================================================
@@ -13,18 +14,26 @@ CREATE TABLE IF NOT EXISTS users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'undergraduate', 'counselor', 'moderator', 'call_responder', 'donor', 'university_rep') NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'undergraduate', 'counselor', 'moderator', 'call_responder', 'university_rep', 'donor') NOT NULL,
+    status ENUM('active', 'inactive', 'suspended', 'warned', 'banned') DEFAULT 'active',
     is_active TINYINT(1) NOT NULL DEFAULT 1,
-    is_verified TINYINT(1) NOT NULL DEFAULT 0,
+    is_frozen TINYINT(1) NOT NULL DEFAULT 0,
+    email_verified TINYINT(1) NOT NULL DEFAULT 0,
     last_login DATETIME NULL,
+    strike_count INT DEFAULT 0,
+    suspended_until DATETIME NULL,
+    is_deleted TINYINT(1) DEFAULT 0,
+    last_strike_date DATETIME NULL,
+    suspension_until DATETIME NULL,
+    account_status VARCHAR(50) DEFAULT 'active',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
     -- Indexes
-    INDEX idx_users_role (role),
-    INDEX idx_users_active (is_active),
-    INDEX idx_users_verified (is_verified)
+    INDEX idx_username (username),
+    INDEX idx_role (role),
+    INDEX idx_active (is_active)
 );
 
 -- Undergraduate Students Table - Extended profile for students
@@ -135,15 +144,21 @@ CREATE TABLE IF NOT EXISTS forum_threads (
 CREATE TABLE IF NOT EXISTS forum_posts (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     thread_id INT UNSIGNED NOT NULL,
+    parent_reply_id INT UNSIGNED DEFAULT NULL,
     user_id INT UNSIGNED NOT NULL,
     content TEXT NOT NULL,
+    is_anonymous TINYINT(1) DEFAULT 0,
     is_approved TINYINT(1) NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    like_count INT DEFAULT 0,
+    is_edited TINYINT(1) DEFAULT 0,
+    edited_by_role VARCHAR(50) DEFAULT NULL,
     
     -- Foreign key constraints
     CONSTRAINT fk_post_thread FOREIGN KEY (thread_id) REFERENCES forum_threads(id) ON DELETE CASCADE,
     CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_parent_reply FOREIGN KEY (parent_reply_id) REFERENCES forum_posts(id) ON DELETE CASCADE,
     
     -- Indexes
     INDEX idx_posts_thread (thread_id),

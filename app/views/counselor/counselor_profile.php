@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Counselor Profile</title>
-     <link rel="stylesheet" href="\MindHeaven\public\css\counselor\counselor_profile.css">
+    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\counselor_profile.css">
 </head>
+
 <body>
     <?php
         $counselor = isset($counselor) && is_array($counselor) ? $counselor : array();
@@ -42,14 +44,39 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
+<<<<<<< HEAD
         <?php include __DIR__ . '/sidebar.php'; ?>
+=======
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
+                <li class="sidebar-item "><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓️ Appointment
+                        Management</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session
+                        History</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
+                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile"
+                        style="color: #2563eb;">👤 Profile</a></li>
+                <li class="sidebar-item"><a href="#">⚙️ Settings</a></li>
+                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout"
+                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
+            </ul>
+        </div>
+>>>>>>> origin/uni-representative
 
         <!-- Main Content -->
         <div class="main-content">
             <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-picture-container">
+<<<<<<< HEAD
                     <img id="profilePic" src="<?php echo htmlspecialchars($c_profile_pic); ?>" alt="Profile Picture" class="profile-picture">
+=======
+                    <img id="profilePic" src="https://via.placeholder.com/150" alt="Profile Picture"
+                        class="profile-picture">
+>>>>>>> origin/uni-representative
                     <button class="change-photo-btn" onclick="openPhotoModal()">📷</button>
                 </div>
                 <div class="profile-info">
@@ -146,6 +173,7 @@
                             <div class="qualification-item empty-state" style="text-align: center; color: #888;">
                                 No qualifications added yet. Click Add to create one.
                             </div>
+<<<<<<< HEAD
                         <?php else: ?>
                             <?php foreach ($qualifications as $qual): ?>
                             <div class="qualification-item" data-id="<?php echo $qual['id']; ?>">
@@ -155,11 +183,52 @@
                                         <div class="qualification-institution"><?php echo htmlspecialchars($qual['institution']); ?></div>
                                     </div>
                                     <span class="qualification-year"><?php echo htmlspecialchars($qual['year_range']); ?></span>
+=======
+                            <p class="qualification-description">Specialized in cognitive behavioral therapy and
+                                adolescent mental health. Research focus on anxiety disorders and stress management
+                                techniques.</p>
+                        </div>
+                        <div class="qualification-item">
+                            <div class="qualification-header">
+                                <div>
+                                    <div class="qualification-title">M.Sc. in Counseling Psychology</div>
+                                    <div class="qualification-institution">University of Kelaniya</div>
+>>>>>>> origin/uni-representative
                                 </div>
                                 <p class="qualification-description"><?php echo nl2br(htmlspecialchars($qual['description'])); ?></p>
                             </div>
+<<<<<<< HEAD
                             <?php endforeach; ?>
                         <?php endif; ?>
+=======
+                            <p class="qualification-description">Advanced training in therapeutic techniques including
+                                CBT, DBT, and mindfulness-based interventions.</p>
+                        </div>
+                        <div class="qualification-item">
+                            <div class="qualification-header">
+                                <div>
+                                    <div class="qualification-title">Senior Counselor</div>
+                                    <div class="qualification-institution">Mindheaven Mental Health Center</div>
+                                </div>
+                                <span class="qualification-year">2019 - Present</span>
+                            </div>
+                            <p class="qualification-description">Providing individual and group therapy sessions for
+                                students and young adults. Specializing in academic stress, anxiety, depression, and
+                                relationship counseling.</p>
+                        </div>
+                        <div class="qualification-item">
+                            <div class="qualification-header">
+                                <div>
+                                    <div class="qualification-title">Clinical Psychologist</div>
+                                    <div class="qualification-institution">National Hospital Colombo</div>
+                                </div>
+                                <span class="qualification-year">2014 - 2019</span>
+                            </div>
+                            <p class="qualification-description">Conducted psychological assessments and therapy for
+                                diverse patient populations. Developed treatment plans and collaborated with
+                                multidisciplinary teams.</p>
+                        </div>
+>>>>>>> origin/uni-representative
                     </div>
                 </div>
                 <div class="save-section" id="qualificationSave">
@@ -191,4 +260,5 @@
 
     <script src="\MindHeaven\public\js\counselor\counselor_profile.js"></script>
 </body>
+
 </html>

@@ -1,0 +1,745 @@
+/* Forum Index Page Premium Styling */
+
+:root {
+    /* Color Palette - Premium & Calming */
+    --primary-color: #6c5ce7;
+    --primary-light: #a29bfe;
+    --secondary-color: #00cec9;
+    --accent-color: #fd79a8;
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+    --text-dark: #2d3436;
+    --text-muted: #636e72;
+    --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    --shadow-hover: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+
+    /* Role Colors */
+    --role-student-bg: #e0f7fa;
+    --role-student-text: #006064;
+    --role-counselor-bg: #e8eaf6;
+    --role-counselor-text: #1a237e;
+    --role-moderator-bg: #fff3e0;
+    --role-moderator-text: #e65100;
+    --role-admin-bg: #fce4ec;
+    --role-admin-text: #880e4f;
+}
+
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dark);
+}
+
+/* Main Container */
+.forum-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header Section */
+.forum-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    border: var(--glass-border);
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+}
+
+.forum-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--primary-color);
+}
+
+.header-content h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.btn-create-thread {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+.btn-create-thread:hover {
+    background: #5b4cc4;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+}
+
+/* Search & Filter Section */
+.forum-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    /* Increased gap */
+    margin-bottom: 2rem;
+    align-items: center;
+}
+
+.search-wrapper {
+    flex: 1 1 400px;
+    /* Increased base width to force wrap on smaller screens */
+    min-width: 250px;
+    position: relative;
+    /* Removed margin-right as gap handles spacing now */
+}
+
+.search-icon {
+    position: absolute;
+    left: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+#threadSearch {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-soft);
+}
+
+#threadSearch:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(162, 155, 254, 0.2);
+}
+
+.filter-wrapper {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    /* Prevent buttons from being squashed */
+}
+
+.filter-btn {
+    padding: 0.7rem 1.2rem;
+    border: none;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.filter-btn:hover {
+    background: white;
+    color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.25);
+}
+
+.filter-flagged {
+    color: var(--accent-color);
+}
+
+.filter-flagged.active {
+    background: var(--accent-color);
+}
+
+/* Threads List */
+.threads-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.thread-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: var(--glass-border);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.thread-card:hover {
+    transform: translateY(-3px) scale(1.005);
+    box-shadow: var(--shadow-hover);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.thread-main {
+    flex: 1;
+    padding-right: 2rem;
+}
+
+.thread-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.thread-title a {
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: color 0.2s;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    background-size: 0% 2px;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    padding-bottom: 2px;
+}
+
+.thread-title a:hover {
+    color: var(--primary-color);
+    background-size: 100% 2px;
+    transition: background-size 0.3s ease;
+}
+
+.thread-preview {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.thread-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.author-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #dfe6e9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.counselor-avatar {
+    background: var(--primary-light);
+    color: white;
+}
+
+.role-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-student {
+    background: var(--role-student-bg);
+    color: var(--role-student-text);
+}
+
+.role-counselor {
+    background: var(--role-counselor-bg);
+    color: var(--role-counselor-text);
+}
+
+.role-moderator {
+    background: var(--role-moderator-bg);
+    color: var(--role-moderator-text);
+}
+
+.role-admin {
+    background: var(--role-admin-bg);
+    color: var(--role-admin-text);
+}
+
+.meta-dot {
+    color: #b2bec3;
+}
+
+.timestamp {
+    color: #a4b0be;
+    font-size: 0.85rem;
+}
+
+.thread-stats {
+    display: flex;
+    gap: 1.2rem;
+    flex-shrink: 0;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-muted);
+    min-width: 40px;
+}
+
+.stat-item i {
+    font-size: 1.2rem;
+    transition: color 0.2s;
+}
+
+.stat-item span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Hover effects for stats */
+.thread-card:hover .stat-item:first-child i {
+    color: var(--secondary-color);
+}
+
+.thread-card:hover .stat-item:last-child i {
+    color: var(--accent-color);
+}
+
+/* Flagged Thread Styles */
+.flagged-thread {
+    border-left: 4px solid var(--accent-color);
+    background: rgba(255, 235, 238, 0.6);
+}
+
+.flagged-notice {
+    color: var(--accent-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.thread-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.btn-approve {
+    color: #00b894;
+}
+
+.btn-approve:hover {
+    background: #00b894;
+    color: white;
+}
+
+.btn-remove {
+    color: #d63031;
+}
+
+.btn-remove:hover {
+    background: #d63031;
+    color: white;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .forum-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .btn-create-thread {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .forum-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .thread-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .thread-main {
+        padding-right: 0;
+        width: 100%;
+    }
+
+    .thread-stats {
+        width: 100%;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* Thread View & Comments Styling */
+.back-link {
+    display: inline-block;
+    margin-bottom: 2rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--primary-color);
+}
+
+.thread-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+}
+
+/* Enhanced Thread Detail Card */
+.thread-card.main-thread {
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.thread-heading {
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    font-family: 'Outfit', sans-serif;
+    line-height: 1.3;
+}
+
+.author-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.avatar-circle {
+    width: 54px;
+    height: 54px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.4rem;
+    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+}
+
+.avatar-circle.small {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--text-dark);
+    display: block;
+}
+
+.post-date {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.thread-body {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    margin-bottom: 2.5rem;
+}
+
+/* Replies Section */
+.replies-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+    font-family: 'Outfit', sans-serif;
+}
+
+.reply-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    border: var(--glass-border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.reply-body {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* Like Button */
+.like-btn {
+    background: rgba(243, 244, 246, 0.5);
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+}
+
+.like-btn:hover {
+    background-color: white;
+    color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(253, 121, 168, 0.2);
+    transform: translateY(-1px);
+}
+
+.like-btn.liked {
+    color: var(--accent-color);
+    background: rgba(253, 121, 168, 0.1);
+    border-color: rgba(253, 121, 168, 0.2);
+}
+
+.like-btn i {
+    font-size: 1.1rem;
+}
+
+/* Reply Form */
+.reply-form-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    margin-top: 2rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.2s;
+    background: #f8fafc;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(162, 155, 254, 0.15);
+}
+
+.wrapper-btn-right {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+.btn-primary:hover {
+    background: #5b4cc4;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+}
+
+/* Sidebar */
+.support-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    border: var(--glass-border);
+}
+
+.support-card h3 {
+    margin-top: 0;
+    color: var(--text-dark);
+}
+
+.btn-danger-outline {
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #ff7675;
+    color: #ff7675;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.btn-danger-outline:hover {
+    background: #ff7675;
+    color: white;
+}
+
+@media (max-width: 900px) {
+    .thread-layout {
+        grid-template-columns: 1fr;
+    }
+}
+/* Embedded View Styles */
+body.is-embedded {
+    background: #f9f9f9;
+}
+
+body.is-embedded .main-content {
+    padding: 20px !important;
+    margin: 0 !important;
+    max-width: none !important;
+}
+
+body.is-embedded .forum-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+body.is-embedded .page-header {
+    padding-top: 0 !important;
+}
+
+/* Alerts */
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* Category Tags */
+.category-badge, .category-tag {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Counselor Dashboard</title>
     <link rel="stylesheet" href="\MindHeaven\public\css\counselor\Cdashboard.css">
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
@@ -30,7 +32,28 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
+<<<<<<< HEAD
         <?php include __DIR__ . '/sidebar.php'; ?>
+=======
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/dashboard"
+                        style="color: #2563eb;">📊 Dashboard</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
+                <li class="sidebar-item "><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓 Appointment
+                        Management</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session
+                        History</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile">👤 Profile</a>
+                </li>
+                <li class="sidebar-item"><a href="#">⚙ Settings</a></li>
+                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout"
+                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
+            </ul>
+        </div>
+>>>>>>> origin/uni-representative
 
         <!-- Main Content -->
         <div class="main-content">
@@ -125,9 +148,57 @@
                         <?php echo $badgeText; ?>
                     </div>
                     <div class="action-buttons">
+<<<<<<< HEAD
                         <button class="btn btn-start" onclick="startMeeting('<?php echo addslashes($studentNameSafe); ?>')">Start Session</button>
                         <!-- <button class="btn btn-reschedule" onclick="reschedule('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Reschedule</button> -->
                         <button class="btn btn-feedback" onclick="sendFeedback('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Feedback</button>
+=======
+                        <button class="btn btn-start" onclick="startMeeting('Sarah Johnson')">Start</button>
+                        <button class="btn btn-reschedule"
+                            onclick="reschedule('Sarah Johnson', 'Anxiety and stress management')">Reschedule</button>
+                        <button class="btn btn-feedback"
+                            onclick="sendFeedback('Sarah Johnson', 'Anxiety and stress management')">Feedback</button>
+                    </div>
+                </div>
+                <div class="appointment-row">
+                    <div class="patient-info">
+                        <h4>Michael Chen</h4>
+                        <p>Reason: Academic pressure and burnout</p>
+                    </div>
+                    <div class="time-slot">
+                        <div class="date">Today</div>
+                        <div class="time">2:00 PM</div>
+                    </div>
+                    <div class="media-type audio-call">
+                        🎧 Audio Call
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-start" onclick="startMeeting('Michael Chen')">Start</button>
+                        <button class="btn btn-reschedule"
+                            onclick="reschedule('Michael Chen', 'Academic pressure and burnout')">Reschedule</button>
+                        <button class="btn btn-feedback"
+                            onclick="sendFeedback('Michael Chen', 'Academic pressure and burnout')">Feedback</button>
+                    </div>
+                </div>
+                <div class="appointment-row">
+                    <div class="patient-info">
+                        <h4>Emily Davis</h4>
+                        <p>Reason: Social anxiety and relationship issues</p>
+                    </div>
+                    <div class="time-slot">
+                        <div class="date">Tomorrow</div>
+                        <div class="time">11:00 AM</div>
+                    </div>
+                    <div class="media-type video-call">
+                        🔹 Video Call
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-start" onclick="startMeeting('Emily Davis')">Start</button>
+                        <button class="btn btn-reschedule"
+                            onclick="reschedule('Emily Davis', 'Social anxiety and relationship issues')">Reschedule</button>
+                        <button class="btn btn-feedback"
+                            onclick="sendFeedback('Emily Davis', 'Social anxiety and relationship issues')">Feedback</button>
+>>>>>>> origin/uni-representative
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -163,10 +234,44 @@
                             ?>
                         </div>
                     </div>
+<<<<<<< HEAD
                     <p class="feedback-text"><?php echo htmlspecialchars(isset($fb['content']) ? $fb['content'] : ''); ?></p>
                     <?php if (!empty($fb['created_at'])): ?>
                     <div class="feedback-meta"><?php echo date('M j, Y', strtotime($fb['created_at'])); ?></div>
                     <?php endif; ?>
+=======
+                    <p class="feedback-text">Dr. Smith was incredibly helpful and understanding. The session really
+                        helped me manage my anxiety better. I feel more confident about handling stressful situations
+                        now.</p>
+                </div>
+                <div class="feedback-item">
+                    <div class="feedback-header">
+                        <span class="student-name">Maria Rodriguez</span>
+                        <div class="rating">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">☆</span>
+                        </div>
+                    </div>
+                    <p class="feedback-text">Great counseling session. The techniques shared for managing time and
+                        reducing academic stress were very practical. Looking forward to the next session.</p>
+                </div>
+                <div class="feedback-item">
+                    <div class="feedback-header">
+                        <span class="student-name">James Wilson</span>
+                        <div class="rating">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                    <p class="feedback-text">Excellent support during a difficult time. The counselor provided valuable
+                        insights and coping strategies that have made a real difference in my daily life.</p>
+>>>>>>> origin/uni-representative
                 </div>
                 <?php endforeach; ?>
                 <?php endif; ?>
@@ -212,7 +317,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="rescheduleReason">Reason for Rescheduling</label>
-                        <textarea id="rescheduleReason" class="form-textarea" placeholder="Please provide a reason for rescheduling..." required></textarea>
+                        <textarea id="rescheduleReason" class="form-textarea"
+                            placeholder="Please provide a reason for rescheduling..." required></textarea>
                     </div>
                 </form>
             </div>
@@ -249,7 +355,9 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="feedbackMessage">Feedback Message</label>
-                        <textarea id="feedbackMessage" class="form-textarea" placeholder="Share your observations, recommendations, or encouragement for the patient..." required></textarea>
+                        <textarea id="feedbackMessage" class="form-textarea"
+                            placeholder="Share your observations, recommendations, or encouragement for the patient..."
+                            required></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -270,7 +378,9 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="actionItems">Action Items / Next Steps</label>
-                        <textarea id="actionItems" class="form-textarea" placeholder="List any homework, exercises, or tasks for the patient to complete..." style="min-height: 80px;"></textarea>
+                        <textarea id="actionItems" class="form-textarea"
+                            placeholder="List any homework, exercises, or tasks for the patient to complete..."
+                            style="min-height: 80px;"></textarea>
                     </div>
                 </form>
             </div>
@@ -283,4 +393,5 @@
 
     <script src="\MindHeaven\public\js\counselor\Cdashboard.js"></script>
 </body>
+
 </html>

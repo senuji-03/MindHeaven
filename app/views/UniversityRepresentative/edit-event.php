@@ -100,9 +100,23 @@
                     </div>
 
                     <div class="form-row">
+                        <label for="short_description">Short Description (Optional)</label>
+                        <input type="text" id="short_description" name="short_description" 
+                               value="<?= htmlspecialchars($event['short_description'] ?? '') ?>"
+                               placeholder="Brief summary for the card view" class="form-input" maxlength="255">
+                    </div>
+
+                    <div class="form-row">
                         <label for="description">Description *</label>
                         <textarea id="description" name="description" required rows="5" 
                                   placeholder="Detailed explanation of the event and its purpose..." class="form-input"><?= htmlspecialchars($event['description']) ?></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="target_amount">Target Amount (Optional)</label>
+                        <input type="number" id="target_amount" name="target_amount" step="0.01" min="0" 
+                               value="<?= htmlspecialchars($event['target_amount'] ?? '') ?>"
+                               placeholder="e.g., 1000.00" class="form-input">
                     </div>
 
                     <div class="form-row">
@@ -249,6 +263,27 @@
                         <label for="additional_info">Additional Information</label>
                         <textarea id="additional_info" name="additional_info" rows="3" 
                                   placeholder="Any additional details or special instructions..." class="form-input"><?= htmlspecialchars($event['additional_info']) ?></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Current Event Poster</label>
+                        <div style="margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; text-align: center;">
+                            <?php if (!empty($event['image_path'])): ?>
+                                <img src="<?= BASE_URL . '/' . htmlspecialchars($event['image_path']) ?>" alt="Current Poster" style="max-width: 100%; max-height: 200px; display: inline-block;">
+                            <?php else: ?>
+                                <div style="color: #9ca3af; padding: 2rem;">
+                                    <span style="font-size: 2rem;">📸</span>
+                                    <p>No image currently uploaded</p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="event_poster">Event Image / Poster Upload (Leave empty to keep current image)</label>
+                        <input type="file" id="event_poster" name="event_poster" 
+                               accept="image/jpeg,image/png,image/jpg" class="form-input">
+                        <small>Upload promotional image or poster (JPG/PNG, Max 5MB)</small>
                     </div>
                 </div>
 

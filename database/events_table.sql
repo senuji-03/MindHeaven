@@ -1,9 +1,14 @@
 -- Events table for counselor calendar system
 -- This table stores all calendar events for counselors
+SET FOREIGN_KEY_CHECKS = 0;
 
-CREATE TABLE IF NOT EXISTS `events` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `counselor_id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `event_proof_uploads`;
+DROP TABLE IF EXISTS `event_participants`;
+DROP TABLE IF EXISTS `events`;
+
+CREATE TABLE `events` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `counselor_id` INT UNSIGNED NOT NULL,
   `title` varchar(255) NOT NULL,
   `event_date` date NOT NULL,
   `event_time` time NOT NULL,
