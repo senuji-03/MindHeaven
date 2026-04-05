@@ -104,7 +104,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
       <!-- All Resources Grid -->
       <div class="resources-grid" id="all-resources">
         <?php foreach ($resources as $resource): ?>
-          <div class="resource-card" onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
+          <div class="resource-card" data-resource="<?= htmlspecialchars(json_encode($resource), ENT_QUOTES, 'UTF-8') ?>">
             <div class="resource-header">
               <div class="resource-type-icon">
                 <?php if ($resource['content_type'] === 'video'): ?>
@@ -127,18 +127,27 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
               <?php if (!empty($resource['tags'])): ?>
                 <div class="resource-tags">
+<<<<<<< HEAD
                   <?php
                   $tags = explode(',', $resource['tags']);
                   foreach (array_slice($tags, 0, 3) as $tag):
                     ?>
                     <span class="tag"><?= htmlspecialchars(trim($tag)) ?></span>
+=======
+                  <?php 
+                  $tags = array_map('trim', explode(',', $resource['tags']));
+                  foreach (array_slice($tags, 0, 3) as $tag): 
+                  ?>
+                    <span class="tag"><?= htmlspecialchars($tag) ?></span>
+>>>>>>> origin/moderator_branch
                   <?php endforeach; ?>
                   <?php if (count($tags) > 3): ?>
-                    <span class="tag-more">+<?= count($tags) - 3 ?> more</span>
+                    <span class="tag-more">+<?= count($tags) - 3 ?></span>
                   <?php endif; ?>
                 </div>
               <?php endif; ?>
             </div>
+<<<<<<< HEAD
 
             <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
               <div class="resource-file">
@@ -151,17 +160,35 @@ require BASE_PATH . '/app/views/layouts/header.php';
                 <?php if ($resource['content_type'] === 'article' && $isImage && $fileExists): ?>
                   <img src="<?= BASE_URL . $resource['file_path'] ?>" alt="<?= htmlspecialchars($resource['title']) ?>"
                     class="resource-thumbnail">
+=======
+            
+            <?php if ($resource['file_path']): ?>
+              <div class="resource-file">
+                <?php
+                $isImage = false;
+                if ($resource['file_name']) {
+                  $ext = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
+                  $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                }
+                ?>
+                
+                <?php if ($resource['content_type'] === 'article' && $isImage): ?>
+                  <img src="<?= BASE_URL ?>/<?= ltrim($resource['file_path'], '/') ?>" alt="<?= htmlspecialchars($resource['title']) ?>" class="resource-thumbnail">
+                  <div class="resource-file-info">
+                    <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                    <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
+                  </div>
+>>>>>>> origin/moderator_branch
                 <?php else: ?>
                   <div class="resource-file-icon">
-                    <?php if ($resource['content_type'] === 'video'): ?>
-                      🎥
-                    <?php elseif ($resource['content_type'] === 'audio'): ?>
-                      🎵
-                    <?php else: ?>
-                      📄
-                    <?php endif; ?>
+                    <?php if ($resource['content_type'] === 'video'): ?>🎬<?php elseif ($resource['content_type'] === 'audio'): ?>🎧<?php else: ?>📎<?php endif; ?>
+                  </div>
+                  <div class="resource-file-info">
+                    <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                    <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
                   </div>
                 <?php endif; ?>
+<<<<<<< HEAD
 
                 <div class="resource-file-info">
                   <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
@@ -175,6 +202,14 @@ require BASE_PATH . '/app/views/layouts/header.php';
             <div class="resource-footer">
               <button class="btn btn-primary btn-small">View Details</button>
             </div>
+=======
+                
+                <div class="resource-footer">
+                  <button class="btn btn-primary btn-small">View Details</button>
+                </div>
+              </div>
+            <?php endif; ?>
+>>>>>>> origin/moderator_branch
           </div>
         <?php endforeach; ?>
       </div>
@@ -184,7 +219,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
         <?php if (!empty($resourcesByType[$type])): ?>
           <div class="resources-grid content-type-section" id="<?= $type ?>-resources" style="display: none;">
             <?php foreach ($resourcesByType[$type] as $resource): ?>
-              <div class="resource-card" onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
+              <div class="resource-card" data-resource="<?= htmlspecialchars(json_encode($resource), ENT_QUOTES, 'UTF-8') ?>">
                 <div class="resource-header">
                   <div class="resource-type-icon">
                     <?php if ($resource['content_type'] === 'video'): ?>
@@ -207,18 +242,27 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
                   <?php if (!empty($resource['tags'])): ?>
                     <div class="resource-tags">
+<<<<<<< HEAD
                       <?php
                       $tags = explode(',', $resource['tags']);
                       foreach (array_slice($tags, 0, 3) as $tag):
                         ?>
                         <span class="tag"><?= htmlspecialchars(trim($tag)) ?></span>
+=======
+                      <?php 
+                      $tags = array_map('trim', explode(',', $resource['tags']));
+                      foreach (array_slice($tags, 0, 3) as $tag): 
+                      ?>
+                        <span class="tag"><?= htmlspecialchars($tag) ?></span>
+>>>>>>> origin/moderator_branch
                       <?php endforeach; ?>
                       <?php if (count($tags) > 3): ?>
-                        <span class="tag-more">+<?= count($tags) - 3 ?> more</span>
+                        <span class="tag-more">+<?= count($tags) - 3 ?></span>
                       <?php endif; ?>
                     </div>
                   <?php endif; ?>
                 </div>
+<<<<<<< HEAD
 
                 <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
                   <div class="resource-file">
@@ -231,17 +275,35 @@ require BASE_PATH . '/app/views/layouts/header.php';
                     <?php if ($resource['content_type'] === 'article' && $isImage && $fileExists): ?>
                       <img src="<?= BASE_URL . $resource['file_path'] ?>" alt="<?= htmlspecialchars($resource['title']) ?>"
                         class="resource-thumbnail">
+=======
+                
+                <?php if ($resource['file_path']): ?>
+                  <div class="resource-file">
+                    <?php
+                    $isImage = false;
+                    if ($resource['file_name']) {
+                      $ext = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
+                      $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                    }
+                    ?>
+                    
+                    <?php if ($resource['content_type'] === 'article' && $isImage): ?>
+                      <img src="<?= BASE_URL ?>/<?= ltrim($resource['file_path'], '/') ?>" alt="<?= htmlspecialchars($resource['title']) ?>" class="resource-thumbnail">
+                      <div class="resource-file-info">
+                        <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                        <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
+                      </div>
+>>>>>>> origin/moderator_branch
                     <?php else: ?>
                       <div class="resource-file-icon">
-                        <?php if ($resource['content_type'] === 'video'): ?>
-                          🎥
-                        <?php elseif ($resource['content_type'] === 'audio'): ?>
-                          🎵
-                        <?php else: ?>
-                          📄
-                        <?php endif; ?>
+                        <?php if ($resource['content_type'] === 'video'): ?>🎬<?php elseif ($resource['content_type'] === 'audio'): ?>🎧<?php else: ?>📎<?php endif; ?>
+                      </div>
+                      <div class="resource-file-info">
+                        <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
+                        <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
                       </div>
                     <?php endif; ?>
+<<<<<<< HEAD
 
                     <div class="resource-file-info">
                       <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
@@ -255,6 +317,14 @@ require BASE_PATH . '/app/views/layouts/header.php';
                 <div class="resource-footer">
                   <button class="btn btn-primary btn-small">View Details</button>
                 </div>
+=======
+                    
+                    <div class="resource-footer">
+                      <button class="btn btn-primary btn-small">View Details</button>
+                    </div>
+                  </div>
+                <?php endif; ?>
+>>>>>>> origin/moderator_branch
               </div>
             <?php endforeach; ?>
           </div>
@@ -287,10 +357,626 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </div>
 
 <style>
+<<<<<<< HEAD
   /* Category Resources Specific Styles */
   .category-navigation {
     padding: 2rem 0;
     background: #f8fafc;
+=======
+/* Category Resources Specific Styles */
+.category-navigation {
+  padding: 2rem 0;
+  background: #f8fafc;
+}
+
+/* Content Type Tabs */
+.content-type-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab-btn:hover {
+  background: #f0f9ff;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.tab-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.content-type-section {
+  display: none;
+}
+
+.content-type-section.active {
+  display: grid;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.category-nav-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.category-nav-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.category-nav-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f9ff;
+  border-radius: 12px;
+}
+
+.category-nav-content {
+  flex: 1;
+}
+
+.category-nav-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.category-nav-count {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.resources-list {
+  padding: 2rem 0;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.resource-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.resource-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.resource-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.resource-type-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f9ff;
+  border-radius: 8px;
+}
+
+.resource-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.resource-type {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #3b82f6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resource-date {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.resource-content {
+  margin-bottom: 1rem;
+}
+
+.resource-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+}
+
+.resource-summary {
+  margin: 0 0 1rem 0;
+  color: #64748b;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.resource-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.tag-more {
+  background: #e2e8f0;
+  color: #64748b;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.resource-file {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.resource-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.resource-file-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0f2fe;
+  border-radius: 8px;
+  font-size: 1.5rem;
+}
+
+.resource-file-info {
+  flex: 1;
+}
+
+.resource-file-name {
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.875rem;
+}
+
+.resource-file-size {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.resource-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+}
+
+.empty-state p {
+  margin: 0 0 2rem 0;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 5% auto;
+  padding: 0;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.resource-details {
+  line-height: 1.6;
+}
+
+.resource-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.resource-category {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.resource-type {
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.resource-summary h4,
+.resource-content h4,
+.resource-tags h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.resource-summary p,
+.resource-content div {
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.resource-file {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.resource-file h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.resource-file img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.resource-file div {
+  text-align: center;
+  padding: 1rem;
+  background: #f0f9ff;
+  border-radius: 8px;
+}
+
+.resource-file p {
+  margin: 0.25rem 0;
+  color: #374151;
+}
+
+.resource-file strong {
+  color: #1e293b;
+}
+
+.resource-tags p {
+  margin: 0;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Enhanced Modal Styles */
+.resource-details {
+  line-height: 1.6;
+}
+
+.resource-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.resource-category {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.resource-type {
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.resource-date {
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.resource-summary h4,
+.resource-content h4,
+.resource-tags h4,
+.resource-file h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.resource-summary p,
+.resource-content div {
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.resource-file {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.resource-file h4 {
+  margin: 0 0 1rem 0;
+  color: #1e293b;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.resource-file img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.video-container,
+.audio-container {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.video-container video,
+.audio-container audio {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.file-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.file-info p {
+  margin: 0.25rem 0;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.article-content {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+  margin: 0.5rem 0;
+  line-height: 1.8;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.article-content p { margin: 0 0 1rem 0; }
+.article-content h1, .article-content h2, .article-content h3 {
+  color: #1e293b; margin: 1.25rem 0 0.5rem 0;
+}
+.article-content ul, .article-content ol {
+  padding-left: 1.5rem; margin: 0.75rem 0;
+}
+.article-content img { max-width: 100%; border-radius: 6px; margin: 0.5rem 0; }
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tags-container .tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.resource-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.resource-actions .btn {
+  flex: 1;
+  text-align: center;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+@media (max-width: 768px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+>>>>>>> origin/moderator_branch
   }
 
   /* Content Type Tabs */
@@ -928,6 +1614,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </style>
 
 <script>
+<<<<<<< HEAD
   // Resource modal functionality
   function openResourceModal(resource) {
     const modal = document.getElementById('resourceModal');
@@ -937,6 +1624,24 @@ require BASE_PATH . '/app/views/layouts/header.php';
     title.textContent = resource.title;
 
     let contentHtml = `
+=======
+// Resource modal functionality
+function openResourceModal(resource) {
+  console.log("openResourceModal called! Resource:", resource);
+  try {
+    const modal = document.getElementById('resourceModal');
+    const title = document.getElementById('resourceModalTitle');
+    const content = document.getElementById('resourceModalContent');
+    
+    if (!modal || !title || !content) {
+      console.error("Missing modal DOM elements:", {modal, title, content});
+      return;
+    }
+    
+    title.textContent = resource.title;
+  
+  let contentHtml = `
+>>>>>>> origin/moderator_branch
     <div class="resource-details">
       <div class="resource-meta">
         <span class="resource-category">${resource.category}</span>
@@ -948,6 +1653,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
         <p>${resource.summary}</p>
       </div>
   `;
+<<<<<<< HEAD
 
     // Handle different content types with proper file paths
     if (resource.file_path && resource.file_name) {
@@ -957,6 +1663,32 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
       if (resource.content_type === 'article' && isImage) {
         contentHtml += `
+=======
+  
+  // Handle different content types with proper file paths
+  // Build a clean absolute URL for the file, handling both:
+  //  - old format: /uploads/videos/file.mp4  (leading slash)
+  //  - new format: uploads/resources/file.jpg (no leading slash)
+  function buildFileUrl(filePath) {
+    if (!filePath) return '';
+    if (filePath.startsWith('http')) return filePath;
+    const clean = filePath.replace(/^\/+/, '');
+    return encodeURI('/MindHeaven/public/' + clean);
+  }
+
+  let fullFilePath = '';
+  if (resource.file_path) {
+    fullFilePath = buildFileUrl(resource.file_path);
+  }
+
+  if (resource.file_path && resource.file_name) {
+    const fileExtension = resource.file_name.split('.').pop().toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+
+    
+    if (resource.content_type === 'article' && isImage) {
+      contentHtml += `
+>>>>>>> origin/moderator_branch
         <div class="resource-file">
           <h4>Featured Image</h4>
           <img src="${fullFilePath}" alt="${resource.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;">
@@ -1027,7 +1759,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
       contentHtml += `
       <div class="resource-content">
         <h4>Article Content</h4>
-        <div class="article-content" style="white-space: pre-wrap; line-height: 1.6; background: #f8fafc; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">${resource.content}</div>
+        <div class="article-content" style="line-height:1.8;color:#374151;font-size:1rem;">${resource.content}</div>
       </div>
     `;
     } else if (resource.content && (resource.content_type === 'video' || resource.content_type === 'audio')) {
@@ -1050,6 +1782,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
         </div>
       </div>
     `;
+<<<<<<< HEAD
     }
 
     // Add action buttons
@@ -1069,8 +1802,48 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
     content.innerHTML = contentHtml;
     modal.style.display = 'block';
+=======
+  }
+  
+  // Add action buttons (only for video/audio which have standalone playable files)
+  if (resource.content_type === 'video' || resource.content_type === 'audio') {
+    contentHtml += `
+      <div class="resource-actions">
+        <a href="${fullFilePath}" target="_blank" class="btn btn-primary">
+          ${resource.content_type === 'video' ? '🎥 Open Video' : '🎵 Open Audio'}
+        </a>
+      </div>
+    `;
   }
 
+  
+  contentHtml += `</div>`;
+  
+  content.innerHTML = contentHtml;
+  modal.style.display = 'flex'; // The CSS expects flex for centering
+  modal.classList.add('open');
+  } catch (error) {
+    console.error("Error in openResourceModal:", error);
+    alert("An error occurred opening this resource. See console for details.");
+  }
+}
+
+// Close modal functionality
+document.getElementById('closeResourceModal').onclick = function() {
+  const modal = document.getElementById('resourceModal');
+  modal.classList.remove('open');
+  setTimeout(() => modal.style.display = 'none', 300); // Wait for fade transition
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById('resourceModal');
+  if (event.target === modal) {
+    modal.classList.remove('open');
+    setTimeout(() => modal.style.display = 'none', 300);
+>>>>>>> origin/moderator_branch
+  }
+
+<<<<<<< HEAD
   // Close modal functionality
   document.getElementById('closeResourceModal').onclick = function () {
     document.getElementById('resourceModal').style.display = 'none';
@@ -1080,9 +1853,20 @@ require BASE_PATH . '/app/views/layouts/header.php';
     const modal = document.getElementById('resourceModal');
     if (event.target === modal) {
       modal.style.display = 'none';
+=======
+// Emergency button functionality
+const emergencyBtn = document.getElementById('emergencyBtn');
+if (emergencyBtn) {
+  emergencyBtn.onclick = function() {
+    if (confirm('Are you in immediate danger? If yes, call 911 or your local emergency number.')) {
+      window.location.href = 'tel:911';
+    } else {
+      window.location.href = '<?= BASE_URL ?>/ug/crisis';
+>>>>>>> origin/moderator_branch
     }
   }
 
+<<<<<<< HEAD
   // Emergency button functionality
   document.getElementById('emergencyBtn').onclick = function () {
     if (confirm('Are you in immediate danger? If yes, call 911 or your local emergency number.')) {
@@ -1114,6 +1898,42 @@ require BASE_PATH . '/app/views/layouts/header.php';
         document.execCommand('copy');
         document.body.removeChild(textArea);
         alert('Resource link copied to clipboard!');
+=======
+// Content type tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const allResourcesSection = document.getElementById('all-resources');
+  const contentTypeSections = document.querySelectorAll('.content-type-section');
+  
+  // Attach safe click listeners to all resource cards using data attributes
+  document.querySelectorAll('.resource-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const resourceData = this.getAttribute('data-resource');
+      if (resourceData) {
+        try {
+          const resource = JSON.parse(resourceData);
+          openResourceModal(resource);
+        } catch (e) {
+          console.error("Failed to parse resource data:", e);
+        }
+      }
+    });
+  });
+  
+  tabButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const type = this.getAttribute('data-type');
+      
+      // Remove active class from all buttons
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      // Add active class to clicked button
+      this.classList.add('active');
+      
+      // Hide all sections
+      allResourcesSection.style.display = 'none';
+      contentTypeSections.forEach(section => {
+        section.style.display = 'none';
+>>>>>>> origin/moderator_branch
       });
     }
   }

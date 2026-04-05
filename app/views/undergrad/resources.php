@@ -124,8 +124,12 @@ require BASE_PATH . '/app/views/layouts/header.php';
             <ul class="resource-list">
               <?php foreach (array_slice($categoryResources, 0, 4) as $resource): ?>
                 <li>
+<<<<<<< HEAD
                   <a href="#" class="resource-link"
                     onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
+=======
+                  <a href="#" class="resource-link resource-modal-trigger" data-resource="<?= htmlspecialchars(json_encode($resource), ENT_QUOTES, 'UTF-8') ?>">
+>>>>>>> origin/moderator_branch
                     <?= htmlspecialchars($resource['title']) ?>
                     <?php if ($resource['content_type'] === 'video'): ?>
                       <span style="color: #3b82f6;">🎥</span>
@@ -507,6 +511,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </div>
 
 <script>
+<<<<<<< HEAD
   // Resource modal functionality
   function openResourceModal(resource) {
     const modal = document.getElementById('resourceModal');
@@ -516,16 +521,30 @@ require BASE_PATH . '/app/views/layouts/header.php';
     title.textContent = resource.title;
 
     let contentHtml = `
+=======
+// Resource modal functionality
+function openResourceModal(resource) {
+  try {
+    const modal = document.getElementById('resourceModal');
+    const title = document.getElementById('resourceModalTitle');
+    const content = document.getElementById('resourceModalContent');
+    
+    title.textContent = resource.title;
+  
+  let contentHtml = `
+>>>>>>> origin/moderator_branch
     <div class="resource-details">
       <div class="resource-meta">
         <span class="resource-category">${resource.category}</span>
         <span class="resource-type">${resource.content_type.toUpperCase()}</span>
+        <span class="resource-date">${new Date(resource.created_at).toLocaleDateString()}</span>
       </div>
       <div class="resource-summary">
         <h4>Summary</h4>
         <p>${resource.summary}</p>
       </div>
   `;
+<<<<<<< HEAD
 
     // Add file display if exists
     if (resource.file_path && resource.file_name) {
@@ -534,13 +553,83 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
       if (isImage) {
         contentHtml += `
+=======
+  
+  // Handle different content types with proper file paths
+  function buildFileUrl(filePath) {
+    if (!filePath) return '';
+    if (filePath.startsWith('http')) return filePath;
+    const clean = filePath.replace(/^\/+/, '');
+    return encodeURI('/MindHeaven/public/' + clean);
+  }
+
+  let fullFilePath = '';
+  if (resource.file_path) {
+    fullFilePath = buildFileUrl(resource.file_path);
+  }
+
+  if (resource.file_path && resource.file_name) {
+    const fileExtension = resource.file_name.split('.').pop().toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    
+    if (resource.content_type === 'article' && isImage) {
+      contentHtml += `
+>>>>>>> origin/moderator_branch
         <div class="resource-file">
           <h4>Featured Image</h4>
-          <img src="${resource.file_path}" alt="${resource.title}" style="max-width: 100%; height: auto; border-radius: 8px;">
+          <img src="${fullFilePath}" alt="${resource.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;">
+          <div class="file-info">
+            <p><strong>File:</strong> ${resource.file_name}</p>
+            <p><strong>Size:</strong> ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
+          </div>
         </div>
       `;
+    } else if (resource.content_type === 'video') {
+      contentHtml += `
+        <div class="resource-file">
+          <h4>Video Content</h4>
+          <div class="video-container">
+            <video controls style="width: 100%; max-width: 600px; border-radius: 8px;">
+              <source src="${fullFilePath}" type="video/mp4">
+              <source src="${fullFilePath}" type="video/webm">
+              <source src="${fullFilePath}" type="video/ogg">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="file-info">
+            <p><strong>File:</strong> ${resource.file_name}</p>
+            <p><strong>Size:</strong> ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
+            <a href="${fullFilePath}" target="_blank" class="btn btn-secondary btn-small">Download Video</a>
+          </div>
+        </div>
+      `;
+    } else if (resource.content_type === 'audio') {
+      contentHtml += `
+        <div class="resource-file">
+          <h4>Audio Content</h4>
+          <div class="audio-container">
+            <audio controls style="width: 100%; max-width: 500px;">
+              <source src="${fullFilePath}" type="audio/mpeg">
+              <source src="${fullFilePath}" type="audio/wav">
+              <source src="${fullFilePath}" type="audio/ogg">
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+          <div class="file-info">
+            <p><strong>File:</strong> ${resource.file_name}</p>
+            <p><strong>Size:</strong> ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
+            <a href="${fullFilePath}" target="_blank" class="btn btn-secondary btn-small">Download Audio</a>
+          </div>
+        </div>
+      `;
+<<<<<<< HEAD
       } else {
         contentHtml += `
+=======
+    } else {
+      // Generic file display
+      contentHtml += `
+>>>>>>> origin/moderator_branch
         <div class="resource-file">
           <h4>Media File</h4>
           <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; text-align: center;">
@@ -549,29 +638,66 @@ require BASE_PATH . '/app/views/layouts/header.php';
             </div>
             <p><strong>${resource.file_name}</strong></p>
             <p>Size: ${(resource.file_size / 1024 / 1024).toFixed(2)} MB</p>
-            <a href="${resource.file_path}" target="_blank" class="btn btn-primary">View/Download File</a>
+            <a href="${fullFilePath}" target="_blank" class="btn btn-primary">View/Download File</a>
           </div>
         </div>
       `;
       }
     }
+<<<<<<< HEAD
 
     // Add content
     if (resource.content) {
       contentHtml += `
+=======
+  }
+  
+  // Add content
+  if (resource.content && resource.content_type === 'article') {
+    contentHtml += `
+>>>>>>> origin/moderator_branch
       <div class="resource-content">
-        <h4>Content</h4>
-        <div style="white-space: pre-wrap; line-height: 1.6;">${resource.content}</div>
+        <h4>Article Content</h4>
+        <div class="article-content" style="line-height:1.8;color:#374151;font-size:1rem;">${resource.content}</div>
       </div>
     `;
+  } else if (resource.content && (resource.content_type === 'video' || resource.content_type === 'audio')) {
+    contentHtml += `
+      <div class="resource-content">
+        <h4>Description</h4>
+        <div style="white-space: pre-wrap; line-height: 1.6; background: #f8fafc; padding: 1rem; border-radius: 8px;">${resource.content}</div>
+      </div>
+    `;
+<<<<<<< HEAD
     }
 
     // Add tags if exist
     if (resource.tags) {
       contentHtml += `
+=======
+  }
+  
+  // Add tags
+  if (resource.tags) {
+    const tagsArray = resource.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+    contentHtml += `
+>>>>>>> origin/moderator_branch
       <div class="resource-tags">
         <h4>Tags</h4>
-        <p>${resource.tags}</p>
+        <div class="tags-container" style="display:flex;gap:0.5rem;">
+          ${tagsArray.map(tag => `<span class="tag" style="background:#f1f5f9;padding:0.25rem 0.5rem;border-radius:4px;font-size:0.75rem;">${tag}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+  
+  // Add action buttons
+  if (resource.content_type === 'video' || resource.content_type === 'audio') {
+    contentHtml += `
+      <div class="resource-actions" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid #e5e7eb;">
+        <a href="${fullFilePath}" target="_blank" class="btn btn-primary" style="margin-right:1rem;">
+          ${resource.content_type === 'video' ? '🎥 Open Video' : '🎵 Open Audio'}
+        </a>
       </div>
     `;
     }
@@ -581,6 +707,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
     content.innerHTML = contentHtml;
     modal.style.display = 'block';
   }
+<<<<<<< HEAD
 
   function showCategoryResources(category) {
     // Redirect to category-specific page
@@ -597,8 +724,70 @@ require BASE_PATH . '/app/views/layouts/header.php';
     if (event.target === modal) {
       modal.style.display = 'none';
     }
+=======
+  
+  contentHtml += `</div>`;
+  
+  content.innerHTML = contentHtml;
+  modal.style.display = 'flex';
+  modal.classList.add('open');
+  } catch (err) {
+    console.error(err);
+    alert('Debugging error: ' + err.message);
+  }
+}
+
+// Category toggle functionality
+function showCategoryResources(category) {
+  var base = '<?= isset($categoryBaseUrl) ? $categoryBaseUrl : BASE_URL . "/ug/category-resources" ?>';
+  window.location.href = base + '?category=' + encodeURIComponent(category);
+}
+
+// Attach safe click listeners to all resource triggers using data attributes
+document.addEventListener('DOMContentLoaded', function() {
+  const triggers = document.querySelectorAll('.resource-modal-trigger, .resource-card');
+  triggers.forEach(trigger => {
+    trigger.addEventListener('click', function(e) {
+      // Prevent default anchor behavior
+      if (this.tagName === 'A') {
+        e.preventDefault();
+      }
+      const resourceData = this.getAttribute('data-resource');
+      if (resourceData) {
+        try {
+          const resource = JSON.parse(resourceData);
+          openResourceModal(resource);
+        } catch (error) {
+          console.error("Failed to parse resource data:", error);
+        }
+      }
+    });
+  });
+});
+
+// Close modal functionality
+document.getElementById('closeResourceModal').onclick = function() {
+  const modal = document.getElementById('resourceModal');
+  modal.classList.remove('open');
+  setTimeout(() => modal.style.display = 'none', 300);
+}
+
+window.onclick = function(event) {
+  const resourceModal = document.getElementById('resourceModal');
+  if (event.target === resourceModal) {
+    resourceModal.classList.remove('open');
+    setTimeout(() => resourceModal.style.display = 'none', 300);
+  }
+  // Keep the other modal closures generic if they exist
+  if (event.target.classList.contains('modal') && event.target.id !== 'resourceModal') {
+    event.target.style.display = 'none';
+>>>>>>> origin/moderator_branch
   }
 </script>
 
+<<<<<<< HEAD
 <?
 require BASE_PATH . '/app/views/layouts/footer.php'; ?>
+=======
+<?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>
+>>>>>>> origin/moderator_branch

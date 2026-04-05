@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 session_start();
 
@@ -13,13 +13,21 @@ $router->get('/', 'LandingControl@index');
 $router->get('/landing', 'LandingControl@index');
 
 $router->get('/login', 'LoginControl@index');
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/moderator_branch
 $router->post('/login/authenticate', 'LoginControl@authenticate');
 $router->get('/login/forgot-password', 'LoginControl@forgotPassword');
 $router->post('/login/forgot-password', 'LoginControl@processForgotPassword');
 $router->get('/login/reset-password', 'LoginControl@resetPassword');
 $router->post('/login/reset-password', 'LoginControl@resetPassword');
+<<<<<<< HEAD
 $router->get('/login/forcePasswordChange', 'LoginControl@forcePasswordChange');
 $router->post('/login/forcePasswordChange', 'LoginControl@processForcePasswordChange');
+=======
+
+>>>>>>> origin/moderator_branch
 $router->get('/logout', 'LoginControl@logout');
 
 // Signup routes
@@ -102,7 +110,16 @@ $router->post('/admin/manage-users/suspend', 'AdminControl@suspendUser');
 $router->post('/admin/manage-users/unsuspend', 'AdminControl@unsuspendUser');
 $router->post('/admin/manage-users/reset-strikes', 'AdminControl@resetUserStrikes');
 
+<<<<<<< HEAD
 $router->get('/counselor', 'COControl@index');
+=======
+// Admin counselor approval routes
+$router->post('/admin/approveCounselor', 'AdminControl@approveCounselor');
+$router->post('/admin/rejectCounselor', 'AdminControl@rejectCounselor');
+
+$router->get('/counselor', 'COControl@index');
+
+>>>>>>> origin/moderator_branch
 $router->get('/counselor/dashboard', 'COControl@dashboard');
 $router->get('/counselor/feedback', 'COControl@feedbackList');
 $router->get('/counselor/appointmentmgt', 'COControl@appointmentmgt');
@@ -148,6 +165,7 @@ $router->get('/api/habits/stats', 'HabitApiControl@stats');
 $router->get('/api/habits/test', 'HabitApiControl@test');
 
 $router->get('/CallResponder', 'CallResponderControl@index');
+$router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');
 $router->get('/CallSuccess', 'CallResponderControl@success');
 
 $router->get('/donation', 'DonationControl@index');
@@ -162,6 +180,8 @@ $router->get('/ModeratorDashboard', 'ModeratorControl@ModeratorDashboard');
 $router->get('/WarnForm', 'ModeratorControl@warn');
 
 // Moderator resource management routes
+$router->get('/Moderator/resource-hub', 'ModeratorControl@resourceHub');
+$router->get('/Moderator/category-resources', 'ModeratorControl@categoryResources');
 $router->post('/Moderator/resource/create', 'ModeratorControl@createResource');
 $router->post('/Moderator/resource/delete', 'ModeratorControl@deleteResource');
 $router->get('/Moderator/resource/edit', 'ModeratorControl@editResource');

@@ -319,6 +319,7 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
 
             <main id="main" class="resources-main">
 
+<<<<<<< HEAD
                 <!-- Hero Section -->
                 <section class="resources-hero">
                     <a href="<?= BASE_URL ?>/admin/resource-hub" class="btn btn-success hero-cta">Resource Hub</a>
@@ -328,6 +329,19 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
                             <p class="hero-subtitle">Manage content, moderate discussions, and ensure community safety
                             </p>
                         </div>
+=======
+  <!-- Hero Section -->
+  <section class="resources-hero">
+    <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="btn btn-success hero-cta">Resource Hub</a>
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">Moderator Dashboard 🛡</h1>
+        <p class="hero-subtitle">Manage content, moderate discussions, and ensure community safety</p>
+       </div>
+      
+    </div>
+  </section>
+>>>>>>> origin/moderator_branch
 
                     </div>
                 </section>

@@ -518,11 +518,11 @@
                                             <?php 
                                             $fileExtension = strtolower(pathinfo($r['file_name'], PATHINFO_EXTENSION));
                                             $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                                            $fileExists = file_exists(BASE_PATH . '/public' . $r['file_path']);
+                                            $fileExists = file_exists(BASE_PATH . '/public/' . $r['file_path']);
                                             ?>
                                             
                                             <?php if ($r['content_type'] === 'article' && $isImage && $fileExists): ?>
-                                                <img src="<?= BASE_URL . $r['file_path']; ?>" alt="Resource image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
+                                                <img src="<?= BASE_URL . '/' . $r['file_path']; ?>" alt="Resource image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
                                             <?php else: ?>
                                                 <div style="width: 80px; height: 80px; background: #e5e7eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
                                                     <?php if ($r['content_type'] === 'video'): ?>
@@ -551,7 +551,7 @@
                                             </div>
                                             
                                             <?php if ($fileExists): ?>
-                                                <a href="<?= BASE_URL . $r['file_path']; ?>" target="_blank" class="btn btn-primary btn-small" style="padding: 0.5rem 1rem; font-size: 0.9rem; min-width: auto;">
+                                                <a href="<?= BASE_URL . '/' . $r['file_path']; ?>" target="_blank" class="btn btn-primary btn-small" style="padding: 0.5rem 1rem; font-size: 0.9rem; min-width: auto;">
                                                     👁️ View
                                                 </a>
                                             <?php else: ?>
@@ -679,10 +679,10 @@
             if (fileInput.files.length > 0) {
                 var fileName = fileInput.files[0].name;
                 var fileSize = (fileInput.files[0].size / 1024 / 1024).toFixed(2);
-                uploadArea.innerHTML = `
-                    <p>✅ <strong>${fileName}</strong> (${fileSize} MB)</p>
-                    <small>Click to change file</small>
-                `;
+                // Remove input first so it survives the innerHTML reset
+                uploadArea.removeChild(fileInput);
+                uploadArea.innerHTML = `<p>✅ <strong>${fileName}</strong> (${fileSize} MB)</p><small>Click to change file</small>`;
+                uploadArea.appendChild(fileInput);
             }
         }
         
@@ -691,7 +691,7 @@
         setupFileUpload('videoFileUpload', 'videoFile');
         setupFileUpload('audioFileUpload', 'audioFile');
         
-        // Form validation
+        // Form validation + loading state (single submit listener)
         form.addEventListener('submit', function(e) {
             var contentType = select.value;
             var isValid = true;
@@ -727,6 +727,14 @@
             if (!isValid) {
                 e.preventDefault();
                 alert('❌ ' + errorMessage);
+                return;
+            }
+
+            // Valid — show loading state
+            var submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '⏳ Creating Resource...';
+                submitBtn.disabled = true;
             }
         });
         
@@ -737,15 +745,6 @@
                 this.style.height = 'auto';
                 this.style.height = this.scrollHeight + 'px';
             });
-        });
-        
-        // Add loading state to submit button
-        form.addEventListener('submit', function() {
-            var submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.innerHTML = '⏳ Creating Resource...';
-                submitBtn.disabled = true;
-            }
         });
         
     })();
