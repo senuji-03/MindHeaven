@@ -23,26 +23,20 @@
             <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
                 <span class="icon">📅</span> Manage Events
             </a>
-<<<<<<< HEAD
-           
-=======
             <a href="<?= BASE_URL ?>/university-rep/announcements" class="nav-item">
                 <span class="icon">📰</span> Announcements
             </a>
             <a href="<?= BASE_URL ?>/university-rep/resources" class="nav-item">
                 <span class="icon">📚</span> Resources
             </a>
->>>>>>> origin/uni-representative
+
             <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
                 <span class="icon">🏫</span> University Profile
             </a>
-<<<<<<< HEAD
-          
-=======
             <a href="<?= BASE_URL ?>/university-rep/analytics" class="nav-item">
                 <span class="icon">📈</span> Analytics
             </a>
->>>>>>> origin/uni-representative
+
             <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
                 <span class="icon">👤</span> My Profile
             </a>

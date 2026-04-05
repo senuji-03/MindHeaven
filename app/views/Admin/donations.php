@@ -49,7 +49,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
     <!-- Main Content -->
     <div class="main-content">
         <!-- Header -->
@@ -885,7 +884,4 @@
     </style>
 </body>
 </html>
-=======
 
-
->>>>>>> origin/uni-representative

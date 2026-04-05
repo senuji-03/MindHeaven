@@ -39,11 +39,6 @@
                 <span class="icon">📈</span>
                 Reports
             </a>
-<<<<<<< HEAD
-            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
-                <span class="icon"></span>
-                Donation logs
-=======
             <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
                 <span class="icon">🏛️</span>
                 University Events
@@ -51,7 +46,7 @@
             <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
                 <span class="icon">⚙️</span>
                 Settings
->>>>>>> origin/uni-representative
+
             </a>
         </nav>
 
@@ -81,16 +76,6 @@
             <!-- Dashboard Cards -->
             <section class="stats-grid">
                 <div class="stat-card">
-<<<<<<< HEAD
-                    <div class="stat-icon blue">👥</div>
-                    <div class="stat-details">
-                        <h3>Total Users</h3>
-                        <div class="stat-number">150</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon green">🟢</div>
-=======
                     <div class="stat-icon blue">👤</div>
                     <div class="stat-details">
                         <h3>Total Users</h3>
@@ -99,22 +84,17 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon orange">🌐</div>
->>>>>>> origin/uni-representative
+
                     <div class="stat-details">
                         <h3>Active Sessions</h3>
                         <div class="stat-number">12</div>
                     </div>
                 </div>
                 <div class="stat-card">
-<<<<<<< HEAD
-                    <div class="stat-icon orange">💰</div>
-                    <div class="stat-details">
-                        <h3>Donations This Month</h3>
-=======
                     <div class="stat-icon green">💰</div>
                     <div class="stat-details">
                         <h3>Donations (Month)</h3>
->>>>>>> origin/uni-representative
+
                         <div class="stat-number">$1,200</div>
                     </div>
                 </div>
@@ -149,19 +129,12 @@
                 <div class="section-header">
                     <h2>⚠️ System Alerts</h2>
                 </div>
-<<<<<<< HEAD
-                <div class="alert-item warning">
-                    <span class="alert-icon">🚨</span>
-                    <span>Scheduled Maintenance on 2025-08-25</span>
-                </div>
-                <div class="alert-item danger">
-=======
                 <div class="alert-item danger">
                     <span class="alert-icon">🚨</span>
                     <span>Scheduled Maintenance on 2025-08-25</span>
                 </div>
                 <div class="alert-item warning">
->>>>>>> origin/uni-representative
+
                     <span class="alert-icon">⚡</span>
                     <span>High server load detected</span>
                 </div>
@@ -173,17 +146,13 @@
                     <h2>💬 Moderator Chat (Complaint Resolution)</h2>
                 </div>
                 <div class="chat-container">
-<<<<<<< HEAD
-                    <div class="chat-message moderator">Moderator: Complaint #12 needs urgent review.</div>
-                    <div class="chat-message admin">Admin: Got it, I'll check the system logs.</div>
-=======
                     <div class="chat-message moderator">
                         <strong>Moderator:</strong> Complaint #12 needs urgent review.
                     </div>
                     <div class="chat-message admin">
                         <strong>Admin:</strong> Got it, I'll check the system logs.
                     </div>
->>>>>>> origin/uni-representative
+
                     <div class="chat-input-area">
                         <input type="text" class="chat-input" placeholder="Type your response...">
                         <button class="send-btn">Send</button>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,62 +7,13 @@
     <title>Manage Users - Admin | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
-<<<<<<< HEAD
-        /* Remove scrollbar and add smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body {
-            overflow-x: hidden;
-        }
-        
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: transparent;
-        }
-        
-        /* For Firefox */
-        html {
-            scrollbar-width: none;
-        }
-        
-        /* Hero section styling */
-        .hero-title {
-            text-align: right;
-            margin-right: 20px;
-        }
-        
-        .hero-subtitle {
-            text-align: right;
-            margin-right: 20px;
-        }
-        
-        .hero-buttons {
-            text-align: right;
-            margin-right: 20px;
-        }
-        
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-=======
         .badge-active {
             background-color: #e6f4ea;
             color: #1e8e3e;
             padding: 4px 8px;
             border-radius: 999px;
             font-size: 0.85em;
->>>>>>> origin/uni-representative
+
             font-weight: 500;
         }
 
@@ -87,7 +38,6 @@
         .btn-action {
             padding: 4px 8px;
             border-radius: 4px;
-<<<<<<< HEAD
             font-size: 12px;
             font-weight: 500;
         }
@@ -103,8 +53,7 @@
         .btn-icon {
             padding: 6px 10px;
             margin: 2px;
-=======
->>>>>>> origin/uni-representative
+
             border: none;
             cursor: pointer;
             font-size: 0.8em;
@@ -438,20 +387,13 @@
             </div>
 
             <!-- All Users Tab -->
-<<<<<<< HEAD
-            <div id="all-users-tab" class="tab-content active">
-            <!-- Filter Section -->
-            <div class="filter-section">
-                <div class="filter-group">
-                        <input type="text" placeholder="Search by name, email, or username..." class="search-input" id="searchInput" onkeyup="filterUsers()">
-=======
             <div id="all-users-tab" class="tab-content">
                 <!-- Filter Section -->
                 <div class="filter-section">
                     <div class="filter-group">
                         <input type="text" placeholder="Search by name, email, or username..." class="search-input"
                             id="searchInput" onkeyup="filterUsers()">
->>>>>>> origin/uni-representative
+
                         <select class="form-input" id="roleFilter" onchange="filterUsers()">
                             <option value="">All Roles</option>
                             <option value="admin">Admin</option>
@@ -814,7 +756,7 @@
                                         </div>
                                         <div class="detail-item">
                                             <span class="detail-label">Experience</span>
-                                            <span class="detail-value"><?= htmlspecialchars($counselor['experience_years'] ?? 'N/A') ?> years</span>
+                                            <span class="detail-value"><?= htmlspecialchars($counselor['years_experience'] ?? 'N/A') ?> years</span>
                                         </div>
                                         <div class="detail-item">
                                             <span class="detail-label">Applied Date</span>
@@ -1414,7 +1356,7 @@
             document.getElementById('edit_counselor_phone_number').value = counselor.phone_number;
             document.getElementById('edit_counselor_license_number').value = counselor.license_number || '';
             document.getElementById('edit_counselor_specialization').value = counselor.specialization || '';
-            document.getElementById('edit_counselor_years_experience').value = counselor.experience_years || '';
+            document.getElementById('edit_counselor_years_experience').value = counselor.years_experience || '';
             document.getElementById('edit_counselor_bio').value = counselor.bio || '';
             document.getElementById('editCounselorModal').classList.add('active');
         }

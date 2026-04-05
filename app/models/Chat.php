@@ -5,14 +5,16 @@
  * Handles all database interactions for chat sessions and messages.
  * Enforces access control so only the two parties in a session can read/write.
  */
-class Chat {
+class Chat
+{
 
     private $pdo;
 
     // Max minutes a sender can edit their own message
     const EDIT_WINDOW_MINUTES = 15;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->pdo = Database::getConnection();
     }
 
@@ -28,7 +30,8 @@ class Chat {
      * @param int $undergradUserId
      * @return int  session id
      */
-    public function findOrCreateSession(int $counselorUserId, int $undergradUserId): int {
+    public function findOrCreateSession(int $counselorUserId, int $undergradUserId): int
+    {
         // Try to find an existing active session
         $stmt = $this->pdo->prepare("
             SELECT id FROM chat_sessions
@@ -57,7 +60,8 @@ class Chat {
      * @param int $sessionId
      * @return array|false
      */
-    public function getSessionById(int $sessionId) {
+    public function getSessionById(int $sessionId)
+    {
         $stmt = $this->pdo->prepare("SELECT * FROM chat_sessions WHERE id = ?");
         $stmt->execute([$sessionId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -71,7 +75,8 @@ class Chat {
      * @param int $userId
      * @return bool
      */
-    public function userBelongsToSession(int $sessionId, int $userId): bool {
+    public function userBelongsToSession(int $sessionId, int $userId): bool
+    {
         $stmt = $this->pdo->prepare("
             SELECT id FROM chat_sessions
              WHERE id = ? AND (counselor_user_id = ? OR undergrad_user_id = ?)
@@ -88,7 +93,8 @@ class Chat {
      * @param int $counselorUserId
      * @return array
      */
-    public function getSessionsForCounselor(int $counselorUserId): array {
+    public function getSessionsForCounselor(int $counselorUserId): array
+    {
         $stmt = $this->pdo->prepare("
             SELECT
                 cs.id,
@@ -129,7 +135,8 @@ class Chat {
      * @param int $undergradUserId
      * @return array
      */
-    public function getSessionsForUndergrad(int $undergradUserId): array {
+    public function getSessionsForUndergrad(int $undergradUserId): array
+    {
         $stmt = $this->pdo->prepare("
             SELECT
                 cs.id,
@@ -170,7 +177,8 @@ class Chat {
      * @param int $counselorUserId
      * @return array
      */
-    public function getUndergradsByAppointments(int $counselorUserId): array {
+    public function getUndergradsByAppointments(int $counselorUserId): array
+    {
         $stmt = $this->pdo->prepare("
             SELECT DISTINCT
                 u.id        AS user_id,
@@ -198,7 +206,8 @@ class Chat {
      * @param string $message
      * @return int  New message id
      */
-    public function sendMessage(int $sessionId, int $senderUserId, string $message): int {
+    public function sendMessage(int $sessionId, int $senderUserId, string $message): int
+    {
         $stmt = $this->pdo->prepare("
             INSERT INTO chat_messages (session_id, sender_user_id, message)
             VALUES (?, ?, ?)
@@ -221,7 +230,8 @@ class Chat {
      * @param int $currentUserId  Needed to mark messages as own/other
      * @return array
      */
-    public function getMessages(int $sessionId, int $currentUserId): array {
+    public function getMessages(int $sessionId, int $currentUserId): array
+    {
         $stmt = $this->pdo->prepare("
             SELECT
                 cm.id,
@@ -255,7 +265,8 @@ class Chat {
      * @param string $newMessage
      * @return bool|string  true on success, error string on failure
      */
-    public function editMessage(int $messageId, int $senderUserId, string $newMessage) {
+    public function editMessage(int $messageId, int $senderUserId, string $newMessage)
+    {
         // Fetch the message
         $stmt = $this->pdo->prepare("SELECT * FROM chat_messages WHERE id = ? AND is_deleted = 0");
         $stmt->execute([$messageId]);
@@ -264,10 +275,10 @@ class Chat {
         if (!$msg) {
             return 'Message not found.';
         }
-        if ((int)$msg['sender_user_id'] !== $senderUserId) {
+        if ((int) $msg['sender_user_id'] !== $senderUserId) {
             return 'You can only edit your own messages.';
         }
-        $minutesAgo = (int)$this->pdo->query(
+        $minutesAgo = (int) $this->pdo->query(
             "SELECT TIMESTAMPDIFF(MINUTE, '{$msg['created_at']}', NOW())"
         )->fetchColumn();
         if ($minutesAgo > self::EDIT_WINDOW_MINUTES) {
@@ -291,7 +302,8 @@ class Chat {
      * @param int $senderUserId  Must match the message's sender
      * @return bool|string  true on success, error string on failure
      */
-    public function deleteMessage(int $messageId, int $senderUserId) {
+    public function deleteMessage(int $messageId, int $senderUserId)
+    {
         // Verify ownership
         $stmt = $this->pdo->prepare("
             SELECT id FROM chat_messages WHERE id = ? AND sender_user_id = ? AND is_deleted = 0

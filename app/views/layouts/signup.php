@@ -40,19 +40,6 @@
         *::before,
         *::after {
             margin: 0;
-<<<<<<< HEAD
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'DM Sans', 'Inter', system-ui, -apple-system, sans-serif;
-            line-height: 1.7;
-            color: var(--text-primary);
-            background: var(--bg-mid);
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-=======
         }
 
         .signup-container {
@@ -99,7 +86,7 @@
             outline: none;
             border-color: #4f46e5;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
->>>>>>> origin/uni-representative
+
         }
 
         a {
@@ -637,24 +624,6 @@
             background: var(--border);
         }
 
-<<<<<<< HEAD
-        /* ── Footer ── */
-        .auth-footer {
-            text-align: center;
-            margin-top: 24px;
-            font-size: 0.88rem;
-            color: var(--text-secondary);
-        }
-
-        .auth-footer a {
-            color: var(--primary);
-            font-weight: 600;
-            transition: color 0.2s ease;
-        }
-
-        .auth-footer a:hover {
-            color: var(--primary-dark);
-=======
         .undergrad-fields,
         .counselor-fields {
             background-color: #f9fafb;
@@ -676,7 +645,7 @@
         .counselor-fields h3 {
             border-top: 2px solid #e5e7eb;
             padding-top: 15px;
->>>>>>> origin/uni-representative
+
         }
 
         .auth-trust {
@@ -715,21 +684,6 @@
             }
         }
 
-<<<<<<< HEAD
-        @media (max-width: 540px) {
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-
-            .step-indicator .step span {
-                display: none;
-            }
-
-            .auth-form-header h1 {
-                font-size: 1.45rem;
-            }
-=======
         input[type="email"],
         input[type="tel"],
         input[type="date"],
@@ -750,40 +704,12 @@
             outline: none;
             border-color: #4f46e5;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
->>>>>>> origin/uni-representative
+
         }
     </style>
 </head>
 
 <body>
-<<<<<<< HEAD
-    <div class="auth-wrapper">
-        <!-- Left Decorative Panel -->
-        <div class="auth-panel">
-            <div class="panel-circle-accent"></div>
-            <div class="panel-circle-calm"></div>
-            <div class="panel-content">
-                <a href="<?= BASE_URL ?>/" class="panel-logo">
-                    <span class="logo-icon"><i class="fas fa-leaf"></i></span>
-                    MindHeaven
-                </a>
-                <h2 class="panel-heading">Start your<br>wellness journey</h2>
-                <p class="panel-text">Join thousands of students who've chosen to prioritize their mental health.</p>
-                <ol class="panel-steps">
-                    <li>
-                        <span class="step-dot">1</span>
-                        Create your free account in under two minutes
-                    </li>
-                    <li>
-                        <span class="step-dot">2</span>
-                        Complete a quick wellness check-in
-                    </li>
-                    <li>
-                        <span class="step-dot">3</span>
-                        Access counseling, resources, and community support
-                    </li>
-                </ol>
-=======
     <div class="signup-container">
         <h2>Create Account - MindHeaven</h2>
 
@@ -794,63 +720,10 @@
                         <li><?= htmlspecialchars($error) ?></li>
                     <?php endforeach; ?>
                 </ul>
->>>>>>> origin/uni-representative
+
             </div>
         </div>
 
-<<<<<<< HEAD
-        <!-- Right Form Panel -->
-        <div class="auth-form-panel">
-            <div class="auth-form-container">
-                <!-- Mobile-only brand -->
-                <a href="<?= BASE_URL ?>/" class="mobile-brand">
-                    <span class="logo-icon"><i class="fas fa-leaf"></i></span>
-                    MindHeaven
-                </a>
-
-                <!-- Back link -->
-                <a href="<?= BASE_URL ?>/" class="auth-back">
-                    <i class="fas fa-arrow-left"></i> Back to home
-                </a>
-
-                <!-- Header -->
-                <div class="auth-form-header">
-                    <h1>Create your account</h1>
-                    <p>Join MindHeaven — it's free, private, and takes less than 2 minutes.</p>
-                </div>
-
-                <!-- Step Indicator -->
-                <div class="step-indicator">
-                    <div class="step active" id="step1Indicator">
-                        <span class="step-num">1</span>
-                        <span>Account</span>
-                    </div>
-                    <div class="step-connector" id="connector1"></div>
-                    <div class="step" id="step2Indicator">
-                        <span class="step-num">2</span>
-                        <span>Role</span>
-                    </div>
-                    <div class="step-connector" id="connector2"></div>
-                    <div class="step" id="step3Indicator">
-                        <span class="step-num">3</span>
-                        <span>Details</span>
-                    </div>
-                </div>
-
-                <!-- Error Alert -->
-                <?php if (isset($errors) && !empty($errors)): ?>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <div>
-                            <ul>
-                                <?php foreach ($errors as $error): ?>
-                                    <li><?= htmlspecialchars($error) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    </div>
-                <?php endif; ?>
-=======
         <form method="POST" action="<?= BASE_URL ?>/signup/register" id="signupForm">
             <div class="form-group">
                 <label for="username">Username</label>
@@ -910,26 +783,17 @@
                     <input type="tel" id="phone_number" name="phone_number"
                         value="<?= htmlspecialchars($form_data['phone_number'] ?? '') ?>" placeholder="0718580160">
                 </div>
->>>>>>> origin/uni-representative
+
 
                 <!-- Sign Up Form -->
                 <form method="POST" action="<?= BASE_URL ?>/signup/register" id="signupForm">
 
                     <!-- Account Fields -->
                     <div class="form-group">
-<<<<<<< HEAD
-                        <label class="form-label" for="username">Username <span class="required">*</span></label>
-                        <div class="form-input-icon">
-                            <i class="fas fa-user"></i>
-                            <input class="form-input" type="text" id="username" name="username"
-                                value="<?= htmlspecialchars($form_data['username'] ?? '') ?>"
-                                placeholder="Choose a username" required autocomplete="username">
-                        </div>
-=======
                         <label for="date_of_birth">Date of Birth</label>
                         <input type="date" id="date_of_birth" name="date_of_birth"
                             value="<?= htmlspecialchars($form_data['date_of_birth'] ?? '') ?>">
->>>>>>> origin/uni-representative
+
                     </div>
 
                     <div class="form-row">
@@ -955,17 +819,6 @@
 
                     <!-- Role Selection -->
                     <div class="form-group">
-<<<<<<< HEAD
-                        <label class="form-label" for="role">I am a... <span class="required">*</span></label>
-                        <select class="form-select" id="role" name="role" required>
-                            <option value="">Choose your role</option>
-                            <option value="undergrad" <?= ($form_data['role'] ?? '') === 'undergrad' ? 'selected' : '' ?>>
-                                Undergraduate Student
-                            </option>
-                            <option value="counselor" <?= ($form_data['role'] ?? '') === 'counselor' ? 'selected' : '' ?>>
-                                Counselor / Therapist
-                            </option>
-=======
                         <label for="gender">Gender</label>
                         <select id="gender" name="gender">
                             <option value="">Select gender...</option>
@@ -976,7 +829,7 @@
                             <option value="other" <?= ($form_data['gender'] ?? '') === 'other' ? 'selected' : '' ?>>Other
                             </option>
                             <option value="prefer_not_to_say" <?= ($form_data['gender'] ?? '') === 'prefer_not_to_say' ? 'selected' : '' ?>>Prefer not to say</option>
->>>>>>> origin/uni-representative
+
                         </select>
                         <div class="form-hint" id="roleDescription">
                             Select the role that best describes you on the MindHeaven platform.
@@ -1162,8 +1015,6 @@
                     <span><i class="fas fa-heart"></i> Free</span>
                 </div>
             </div>
-<<<<<<< HEAD
-=======
 
             <!-- Additional fields for Counselors -->
             <div id="counselorFields" class="counselor-fields" style="display: none;">
@@ -1234,24 +1085,18 @@
 
         <div class="login-link">
             Already have an account? <a href="<?= BASE_URL ?>/login">Sign In</a>
->>>>>>> origin/uni-representative
+
         </div>
     </div>
 
     <script>
-<<<<<<< HEAD
-        // ── Password Confirmation ──
-        document.getElementById('confirm_password').addEventListener('input', function () {
-            const password = document.getElementById('password').value;
-            if (password !== this.value) {
-=======
         // Password confirmation validation
         document.getElementById('confirm_password').addEventListener('input', function () {
             const password = document.getElementById('password').value;
             const confirmPassword = this.value;
 
             if (password !== confirmPassword) {
->>>>>>> origin/uni-representative
+
                 this.setCustomValidity('Passwords do not match');
                 this.closest('.form-input-icon').querySelector('.form-input').classList.add('error-field');
             } else {
@@ -1276,31 +1121,6 @@
             'counselor': 'For licensed mental health professionals providing counseling services'
         };
 
-<<<<<<< HEAD
-        const roleSelect = document.getElementById('role');
-        const undergradFields = document.getElementById('undergradFields');
-        const counselorFields = document.getElementById('counselorFields');
-        const step2 = document.getElementById('step2Indicator');
-        const step3 = document.getElementById('step3Indicator');
-        const connector1 = document.getElementById('connector1');
-        const connector2 = document.getElementById('connector2');
-
-        roleSelect.addEventListener('change', function () {
-            const description = document.getElementById('roleDescription');
-            const selectedRole = this.value;
-
-            description.textContent = roleDescriptions[selectedRole] ||
-                'Select the role that best describes you on the MindHeaven platform.';
-
-            // Update step indicator
-            if (selectedRole) {
-                step2.classList.add('active');
-                connector1.classList.add('active');
-            }
-
-            // Show/hide role-specific fields
-            if (selectedRole === 'undergrad') {
-=======
         document.getElementById('role').addEventListener('change', function () {
             const description = document.querySelector('.role-description');
             const undergradFields = document.getElementById('undergradFields');
@@ -1315,7 +1135,7 @@
 
             // Show/hide undergraduate fields
             if (selectedRole === 'undergraduate') {
->>>>>>> origin/uni-representative
+
                 undergradFields.style.display = 'block';
                 counselorFields.style.display = 'none';
                 step3.classList.add('active');
@@ -1339,24 +1159,6 @@
             }
         });
 
-<<<<<<< HEAD
-        function setRequired(ids, required) {
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.required = required;
-            });
-        }
-
-        // ── Form Validation ──
-        document.getElementById('signupForm').addEventListener('submit', function (e) {
-            const role = roleSelect.value;
-            let hasErrors = false;
-            let errorMessages = [];
-
-            if (role === 'undergrad' && undergradFields.style.display !== 'none') {
-                ['full_name', 'email', 'phone_number'].forEach(id => {
-                    const field = document.getElementById(id);
-=======
         // Form validation for undergraduate students and counselors
         document.getElementById('signupForm').addEventListener('submit', function (e) {
             const role = document.getElementById('role').value;
@@ -1371,7 +1173,7 @@
                 // Check required fields
                 requiredFields.forEach(fieldId => {
                     const field = document.getElementById(fieldId);
->>>>>>> origin/uni-representative
+
                     if (!field.value.trim()) {
                         field.classList.add('error-field');
                         hasErrors = true;
@@ -1382,10 +1184,8 @@
                     }
                 });
 
-<<<<<<< HEAD
-=======
                 // Email validation
->>>>>>> origin/uni-representative
+
                 const email = document.getElementById('email').value;
                 if (email && !isValidUniversityEmail(email)) {
                     document.getElementById('email').classList.add('error-field');
@@ -1393,10 +1193,8 @@
                     errorMessages.push('Email must be a university address (e.g., 2023is030@stu.ucsc.cmb.ac.lk)');
                 }
 
-<<<<<<< HEAD
-=======
                 // Phone validation
->>>>>>> origin/uni-representative
+
                 const phone = document.getElementById('phone_number').value;
                 if (phone && !isValidPhone(phone)) {
                     document.getElementById('phone_number').classList.add('error-field');
@@ -1409,15 +1207,11 @@
                     alert('Please fix the following errors:\n\n' + errorMessages.join('\n'));
                 }
             } else if (role === 'counselor' && counselorFields.style.display !== 'none') {
-<<<<<<< HEAD
-                ['counselor_full_name', 'counselor_email', 'counselor_phone', 'license_number', 'specialization'].forEach(id => {
-                    const field = document.getElementById(id);
-=======
                 const requiredFields = ['counselor_full_name', 'counselor_email', 'counselor_phone', 'license_number', 'specialization'];
 
                 requiredFields.forEach(fieldId => {
                     const field = document.getElementById(fieldId);
->>>>>>> origin/uni-representative
+
                     if (!field.value.trim()) {
                         field.classList.add('error-field');
                         hasErrors = true;
@@ -1426,20 +1220,16 @@
                     }
                 });
 
-<<<<<<< HEAD
-=======
                 // Email validation
->>>>>>> origin/uni-representative
+
                 const email = document.getElementById('counselor_email').value;
                 if (email && !isValidCounselorEmail(email)) {
                     document.getElementById('counselor_email').classList.add('error-field');
                     hasErrors = true;
                 }
 
-<<<<<<< HEAD
-=======
                 // Phone validation
->>>>>>> origin/uni-representative
+
                 const phone = document.getElementById('counselor_phone').value;
                 if (phone && !isValidPhone(phone)) {
                     document.getElementById('counselor_phone').classList.add('error-field');
@@ -1457,13 +1247,11 @@
             return /^.+@stu\.ucsc\.cmb\.ac\.lk$/.test(email);
         }
 
-<<<<<<< HEAD
         function isValidCounselorEmail(email) {
             return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
         }
 
-=======
->>>>>>> origin/uni-representative
+
         function isValidPhone(phone) {
             return /^0[0-9]{9}$/.test(phone);
         }

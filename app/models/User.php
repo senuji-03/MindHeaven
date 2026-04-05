@@ -20,19 +20,19 @@ class User
 
     public function activate($id)
     {
-        $stmt = $this->pdo->prepare("UPDATE users SET status = 'active', suspended_until = NULL WHERE id = ?");
+        $stmt = $this->pdo->prepare("UPDATE users SET status = 'active', account_status = 'active', suspended_until = NULL WHERE id = ?");
         return $stmt->execute([$id]);
     }
 
     public function deactivate($id)
     {
-        $stmt = $this->pdo->prepare("UPDATE users SET status = 'inactive' WHERE id = ?");
+        $stmt = $this->pdo->prepare("UPDATE users SET status = 'inactive', account_status = 'inactive' WHERE id = ?");
         return $stmt->execute([$id]);
     }
 
     public function softDelete($id)
     {
-        $stmt = $this->pdo->prepare("UPDATE users SET is_deleted = 1, status = 'inactive' WHERE id = ?");
+        $stmt = $this->pdo->prepare("UPDATE users SET is_deleted = 1, status = 'inactive', account_status = 'inactive' WHERE id = ?");
         return $stmt->execute([$id]);
     }
 
@@ -50,7 +50,7 @@ class User
             SET strike_count = strike_count + 1, 
                 last_strike_date = NOW(),
                 status = CASE 
-                    WHEN strike_count >= 3 THEN 'suspended' -- Example logic, can be adjusted
+                    WHEN strike_count >= 3 THEN 'suspended'
                     ELSE status 
                 END,
                 account_status = CASE 
@@ -85,12 +85,11 @@ class User
         $stmt = $this->pdo->prepare("
             UPDATE users 
             SET status = 'suspended',
-                suspended_until = ?,
-                account_status = 'suspended', 
-                suspension_until = ? 
+                account_status = 'suspended',
+                suspended_until = ?
             WHERE id = ?
         ");
-        return $stmt->execute([$until, $until, $id]);
+        return $stmt->execute([$until, $id]);
     }
 
     public function unsuspendUser($id)
@@ -98,9 +97,8 @@ class User
         $stmt = $this->pdo->prepare("
             UPDATE users 
             SET status = 'active',
-                suspended_until = NULL,
-                account_status = 'active', 
-                suspension_until = NULL 
+                account_status = 'active',
+                suspended_until = NULL
             WHERE id = ?
         ");
         return $stmt->execute([$id]);
@@ -112,11 +110,12 @@ class User
         if (!$user)
             return false;
 
-        if ($user['status'] === 'inactive' || $user['account_status'] === 'banned')
+        // Standardized check on account_status
+        if ($user['account_status'] === 'inactive' || $user['account_status'] === 'banned')
             return true;
 
-        if ($user['status'] === 'suspended' || $user['account_status'] === 'suspended') {
-            $suspensionTime = $user['suspended_until'] ?? $user['suspension_until'];
+        if ($user['account_status'] === 'suspended') {
+            $suspensionTime = $user['suspended_until'];
             if ($suspensionTime) {
                 // Check if suspension time has passed
                 if (new DateTime() > new DateTime($suspensionTime)) {

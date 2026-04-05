@@ -129,7 +129,6 @@ class UGControl
             ];
 
             $currentCategoryInfo = $categoryInfo[$category] ?? ['icon' => '📚', 'description' => 'Resources for ' . $category];
-<<<<<<< HEAD
             
             // Group resources by content type for better organization
             $resourcesByType = [
@@ -145,9 +144,7 @@ class UGControl
                 }
             }
             
-=======
 
->>>>>>> origin/uni-representative
             view('undergrad/category-resources', [
                 'category' => $category,
                 'categoryInfo' => $currentCategoryInfo,

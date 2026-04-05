@@ -127,19 +127,12 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
               <?php if (!empty($resource['tags'])): ?>
                 <div class="resource-tags">
-<<<<<<< HEAD
-                  <?php
-                  $tags = explode(',', $resource['tags']);
-                  foreach (array_slice($tags, 0, 3) as $tag):
-                    ?>
-                    <span class="tag"><?= htmlspecialchars(trim($tag)) ?></span>
-=======
                   <?php 
                   $tags = array_map('trim', explode(',', $resource['tags']));
                   foreach (array_slice($tags, 0, 3) as $tag): 
                   ?>
                     <span class="tag"><?= htmlspecialchars($tag) ?></span>
->>>>>>> origin/moderator_branch
+
                   <?php endforeach; ?>
                   <?php if (count($tags) > 3): ?>
                     <span class="tag-more">+<?= count($tags) - 3 ?></span>
@@ -147,20 +140,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
                 </div>
               <?php endif; ?>
             </div>
-<<<<<<< HEAD
-
-            <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
-              <div class="resource-file">
-                <?php
-                $fileExtension = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
-                $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                $fileExists = file_exists(BASE_PATH . '/public' . $resource['file_path']);
-                ?>
-
-                <?php if ($resource['content_type'] === 'article' && $isImage && $fileExists): ?>
-                  <img src="<?= BASE_URL . $resource['file_path'] ?>" alt="<?= htmlspecialchars($resource['title']) ?>"
-                    class="resource-thumbnail">
-=======
             
             <?php if ($resource['file_path']): ?>
               <div class="resource-file">
@@ -178,7 +157,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                     <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
                     <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
                   </div>
->>>>>>> origin/moderator_branch
+
                 <?php else: ?>
                   <div class="resource-file-icon">
                     <?php if ($resource['content_type'] === 'video'): ?>🎬<?php elseif ($resource['content_type'] === 'audio'): ?>🎧<?php else: ?>📎<?php endif; ?>
@@ -188,7 +167,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
                     <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
                   </div>
                 <?php endif; ?>
-<<<<<<< HEAD
 
                 <div class="resource-file-info">
                   <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
@@ -202,14 +180,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
             <div class="resource-footer">
               <button class="btn btn-primary btn-small">View Details</button>
             </div>
-=======
-                
-                <div class="resource-footer">
-                  <button class="btn btn-primary btn-small">View Details</button>
-                </div>
-              </div>
-            <?php endif; ?>
->>>>>>> origin/moderator_branch
+
           </div>
         <?php endforeach; ?>
       </div>
@@ -242,19 +213,12 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
                   <?php if (!empty($resource['tags'])): ?>
                     <div class="resource-tags">
-<<<<<<< HEAD
-                      <?php
-                      $tags = explode(',', $resource['tags']);
-                      foreach (array_slice($tags, 0, 3) as $tag):
-                        ?>
-                        <span class="tag"><?= htmlspecialchars(trim($tag)) ?></span>
-=======
                       <?php 
                       $tags = array_map('trim', explode(',', $resource['tags']));
                       foreach (array_slice($tags, 0, 3) as $tag): 
                       ?>
                         <span class="tag"><?= htmlspecialchars($tag) ?></span>
->>>>>>> origin/moderator_branch
+
                       <?php endforeach; ?>
                       <?php if (count($tags) > 3): ?>
                         <span class="tag-more">+<?= count($tags) - 3 ?></span>
@@ -262,20 +226,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
                     </div>
                   <?php endif; ?>
                 </div>
-<<<<<<< HEAD
-
-                <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
-                  <div class="resource-file">
-                    <?php
-                    $fileExtension = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
-                    $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                    $fileExists = file_exists(BASE_PATH . '/public' . $resource['file_path']);
-                    ?>
-
-                    <?php if ($resource['content_type'] === 'article' && $isImage && $fileExists): ?>
-                      <img src="<?= BASE_URL . $resource['file_path'] ?>" alt="<?= htmlspecialchars($resource['title']) ?>"
-                        class="resource-thumbnail">
-=======
                 
                 <?php if ($resource['file_path']): ?>
                   <div class="resource-file">
@@ -293,7 +243,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                         <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
                         <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
                       </div>
->>>>>>> origin/moderator_branch
+
                     <?php else: ?>
                       <div class="resource-file-icon">
                         <?php if ($resource['content_type'] === 'video'): ?>🎬<?php elseif ($resource['content_type'] === 'audio'): ?>🎧<?php else: ?>📎<?php endif; ?>
@@ -303,7 +253,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
                         <p class="resource-file-size"><?= number_format($resource['file_size'] / 1024 / 1024, 2) ?> MB</p>
                       </div>
                     <?php endif; ?>
-<<<<<<< HEAD
 
                     <div class="resource-file-info">
                       <p class="resource-file-name"><?= htmlspecialchars($resource['file_name']) ?></p>
@@ -317,14 +266,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                 <div class="resource-footer">
                   <button class="btn btn-primary btn-small">View Details</button>
                 </div>
-=======
-                    
-                    <div class="resource-footer">
-                      <button class="btn btn-primary btn-small">View Details</button>
-                    </div>
-                  </div>
-                <?php endif; ?>
->>>>>>> origin/moderator_branch
+
               </div>
             <?php endforeach; ?>
           </div>
@@ -357,12 +299,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </div>
 
 <style>
-<<<<<<< HEAD
-  /* Category Resources Specific Styles */
-  .category-navigation {
-    padding: 2rem 0;
-    background: #f8fafc;
-=======
 /* Category Resources Specific Styles */
 .category-navigation {
   padding: 2rem 0;
@@ -976,7 +912,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 @media (max-width: 768px) {
   .categories-grid {
     grid-template-columns: 1fr;
->>>>>>> origin/moderator_branch
+
   }
 
   /* Content Type Tabs */
@@ -1614,17 +1550,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </style>
 
 <script>
-<<<<<<< HEAD
-  // Resource modal functionality
-  function openResourceModal(resource) {
-    const modal = document.getElementById('resourceModal');
-    const title = document.getElementById('resourceModalTitle');
-    const content = document.getElementById('resourceModalContent');
-
-    title.textContent = resource.title;
-
-    let contentHtml = `
-=======
 // Resource modal functionality
 function openResourceModal(resource) {
   console.log("openResourceModal called! Resource:", resource);
@@ -1641,7 +1566,7 @@ function openResourceModal(resource) {
     title.textContent = resource.title;
   
   let contentHtml = `
->>>>>>> origin/moderator_branch
+
     <div class="resource-details">
       <div class="resource-meta">
         <span class="resource-category">${resource.category}</span>
@@ -1653,17 +1578,6 @@ function openResourceModal(resource) {
         <p>${resource.summary}</p>
       </div>
   `;
-<<<<<<< HEAD
-
-    // Handle different content types with proper file paths
-    if (resource.file_path && resource.file_name) {
-      const fileExtension = resource.file_name.split('.').pop().toLowerCase();
-      const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
-      const fullFilePath = '<?= BASE_URL ?>' + resource.file_path;
-
-      if (resource.content_type === 'article' && isImage) {
-        contentHtml += `
-=======
   
   // Handle different content types with proper file paths
   // Build a clean absolute URL for the file, handling both:
@@ -1688,7 +1602,7 @@ function openResourceModal(resource) {
     
     if (resource.content_type === 'article' && isImage) {
       contentHtml += `
->>>>>>> origin/moderator_branch
+
         <div class="resource-file">
           <h4>Featured Image</h4>
           <img src="${fullFilePath}" alt="${resource.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;">
@@ -1782,27 +1696,6 @@ function openResourceModal(resource) {
         </div>
       </div>
     `;
-<<<<<<< HEAD
-    }
-
-    // Add action buttons
-    contentHtml += `
-    <div class="resource-actions">
-      <button class="btn btn-primary" onclick="window.open('${fullFilePath}', '_blank')">
-        ${resource.content_type === 'article' ? '📖 Read Full Article' :
-        resource.content_type === 'video' ? '🎥 Watch Video' : '🎵 Listen to Audio'}
-      </button>
-      <button class="btn btn-secondary" onclick="shareResource('${resource.title}', '${fullFilePath}')">
-        📤 Share Resource
-      </button>
-    </div>
-  `;
-
-    contentHtml += `</div>`;
-
-    content.innerHTML = contentHtml;
-    modal.style.display = 'block';
-=======
   }
   
   // Add action buttons (only for video/audio which have standalone playable files)
@@ -1840,20 +1733,9 @@ window.onclick = function(event) {
   if (event.target === modal) {
     modal.classList.remove('open');
     setTimeout(() => modal.style.display = 'none', 300);
->>>>>>> origin/moderator_branch
+
   }
 
-<<<<<<< HEAD
-  // Close modal functionality
-  document.getElementById('closeResourceModal').onclick = function () {
-    document.getElementById('resourceModal').style.display = 'none';
-  }
-
-  window.onclick = function (event) {
-    const modal = document.getElementById('resourceModal');
-    if (event.target === modal) {
-      modal.style.display = 'none';
-=======
 // Emergency button functionality
 const emergencyBtn = document.getElementById('emergencyBtn');
 if (emergencyBtn) {
@@ -1862,43 +1744,10 @@ if (emergencyBtn) {
       window.location.href = 'tel:911';
     } else {
       window.location.href = '<?= BASE_URL ?>/ug/crisis';
->>>>>>> origin/moderator_branch
+
     }
   }
 
-<<<<<<< HEAD
-  // Emergency button functionality
-  document.getElementById('emergencyBtn').onclick = function () {
-    if (confirm('Are you in immediate danger? If yes, call 911 or your local emergency number.')) {
-      window.location.href = 'tel:911';
-    } else {
-      window.location.href = '<?= BASE_URL ?>/ug/crisis';
-    }
-  }
-
-  // Share resource functionality
-  function shareResource(title, filePath) {
-    if (navigator.share) {
-      navigator.share({
-        title: title,
-        text: 'Check out this resource from MindHeaven',
-        url: filePath
-      }).catch(err => console.log('Error sharing:', err));
-    } else {
-      // Fallback: copy to clipboard
-      const shareText = `${title}\n\nCheck out this resource: ${filePath}`;
-      navigator.clipboard.writeText(shareText).then(() => {
-        alert('Resource link copied to clipboard!');
-      }).catch(() => {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = shareText;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('Resource link copied to clipboard!');
-=======
 // Content type tab functionality
 document.addEventListener('DOMContentLoaded', function() {
   const tabButtons = document.querySelectorAll('.tab-btn');
@@ -1933,7 +1782,7 @@ document.addEventListener('DOMContentLoaded', function() {
       allResourcesSection.style.display = 'none';
       contentTypeSections.forEach(section => {
         section.style.display = 'none';
->>>>>>> origin/moderator_branch
+
       });
     }
   }

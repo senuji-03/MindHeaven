@@ -20,7 +20,6 @@ class COControl
         header('Location: ' . BASE_URL . '/counselor/dashboard');
         exit;
     }
-<<<<<<< HEAD
     
     public function dashboard() {
         $counselorFeedback = array();
@@ -82,12 +81,6 @@ class COControl
         $feedbackModel = new Feedback();
         $counselorFeedback = $feedbackModel->getCounselorFeedback((int) $counselor['id'], 100);
         view('/counselor/feedback_list', array('counselorFeedback' => $counselorFeedback));
-=======
-
-    public function dashboard()
-    {
-        view('/counselor/Cdashboard');
->>>>>>> origin/uni-representative
     }
 
     public function appointmentmgt()
@@ -158,7 +151,6 @@ class COControl
     {
         view('/counselor/sessionHistory');
     }
-<<<<<<< HEAD
     
     public function counselorProfile() {
         if (session_status() === PHP_SESSION_NONE) {
@@ -310,12 +302,6 @@ class COControl
         } else {
              echo json_encode(array('success' => false, 'message' => 'Failed to move uploaded file.'));
         }
-=======
-
-    public function counselorProfile()
-    {
-        view('/counselor/counselor_profile');
->>>>>>> origin/uni-representative
     }
 
     /**
@@ -336,7 +322,7 @@ class COControl
         error_log("POST data: " . print_r($_POST, true));
 
         $data = array(
-            'counselor_id' => $counselorId,
+            'counselor_user_id' => $counselorId,
             'title' => isset($_POST['title']) ? $_POST['title'] : '',
             'event_date' => isset($_POST['event_date']) ? $_POST['event_date'] : '',
             'event_time' => isset($_POST['event_time']) ? $_POST['event_time'] : '',

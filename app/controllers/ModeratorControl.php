@@ -9,10 +9,9 @@ class ModeratorControl
         try {
             $resourceHub = new ResourceHub();
             $resources = $resourceHub->getAll();
-            view('Moderator/editPosts', array('resources' => $resources));
-        }
-        catch (Exception $e) {
-            view('Moderator/editPosts', array('resources' => array(), 'error' => 'Failed to load resources: ' . $e->getMessage()));
+            view('Moderator/editPosts', ['resources' => $resources]);
+        } catch (Exception $e) {
+            view('Moderator/editPosts', ['resources' => [], 'error' => 'Failed to load resources: ' . $e->getMessage()]);
         }
     }
 
@@ -23,63 +22,20 @@ class ModeratorControl
 
     public function ModeratorDashboard()
     {
-<<<<<<< HEAD
-        require_once BASE_PATH . '/app/models/Report.php';
-        require_once BASE_PATH . '/app/models/Thread.php';
-
-        $reportModel = new Report();
-        $threadModel = new Thread();
-
-        // Fetch pending reports
-        // Note: Admin uses getAll('pending'). We can assume Moderators see the same.
-        $reports = $reportModel->getAll('pending');
-
-        $flaggedPosts = [];
-
-        foreach ($reports as $report) {
-            // We only care about threads/posts/replies for the dashboard "Flagged Posts" section
-            if (in_array($report['content_type'], ['thread', 'post', 'reply'])) {
-                $content = null;
-                if ($report['content_type'] === 'thread') {
-                    $content = $threadModel->getById($report['content_id']);
-                    $report['content'] = $content['description'] ?? '';
-                    $report['title'] = $content['title'] ?? 'Thread';
-                } else {
-                    $content = $threadModel->getPostById($report['content_id']);
-                    $report['content'] = $content['content'] ?? '';
-                    $report['title'] = 'Post';
-                }
-
-                if ($content) {
-                    $report['full_content'] = $report['content'];
-                    $flaggedPosts[] = $report;
-                }
-            }
-        }
-
-        // Pass data to view
-        $data = [
-            'flaggedPosts' => $flaggedPosts,
-            'pendingPosts' => [], // Placeholder
-            'flaggedUsers' => [] // Placeholder
-        ];
-
-        view('Moderator/ModeratorDashboard', ['data' => $data]);
-    }
-<<<<<<< HEAD
-    
-    public function warn() {
-=======
         view('Moderator/ModeratorDashboard');
     }
-    public function resourceHub() {
+
+    public function resourceHub()
+    {
         try {
             $resourceHub = new ResourceHub();
             $allResources = $resourceHub->getAll('published');
             $resourcesByCategory = [];
             foreach ($allResources as $resource) {
                 $cat = $resource['category'];
-                if (!isset($resourcesByCategory[$cat])) $resourcesByCategory[$cat] = [];
+                if (!isset($resourcesByCategory[$cat])) {
+                    $resourcesByCategory[$cat] = [];
+                }
                 $resourcesByCategory[$cat][] = $resource;
             }
             $stats = $resourceHub->getStats();
@@ -101,8 +57,6 @@ class ModeratorControl
         }
     }
 
-
-
     public function categoryResources()
     {
         try {
@@ -118,7 +72,7 @@ class ModeratorControl
             foreach ($allResources as $resource) {
                 $cat = $resource['category'];
                 if (!isset($allCategories[$cat])) {
-                    $allCategories[$cat] = count(array_filter($allResources, function($r) use ($cat) {
+                    $allCategories[$cat] = count(array_filter($allResources, function ($r) use ($cat) {
                         return $r['category'] === $cat;
                     }));
                 }
@@ -138,7 +92,9 @@ class ModeratorControl
             $resourcesByType = ['article' => [], 'video' => [], 'audio' => []];
             foreach ($categoryResources as $resource) {
                 $ct = $resource['content_type'];
-                if (isset($resourcesByType[$ct])) $resourcesByType[$ct][] = $resource;
+                if (isset($resourcesByType[$ct])) {
+                    $resourcesByType[$ct][] = $resource;
+                }
             }
             view('undergrad/category-resources', [
                 'category'         => $category,
@@ -155,21 +111,21 @@ class ModeratorControl
             exit;
         }
     }
+
     public function warn()
     {
->>>>>>> origin/moderator_branch
         // Get user data from URL parameters
-        $data = array(
-            'userId' => isset($_GET['userId']) ? $_GET['userId'] : null,
-            'username' => isset($_GET['username']) ? $_GET['username'] : null,
-            'email' => isset($_GET['email']) ? $_GET['email'] : null,
-            'strikes' => isset($_GET['strikes']) ? $_GET['strikes'] : 0,
-            'joinDate' => isset($_GET['joinDate']) ? $_GET['joinDate'] : null,
-            'lastActivity' => isset($_GET['lastActivity']) ? $_GET['lastActivity'] : null
-        );
+        $data = [
+            'userId' => $_GET['userId'] ?? null,
+            'username' => $_GET['username'] ?? null,
+            'email' => $_GET['email'] ?? null,
+            'strikes' => $_GET['strikes'] ?? 0,
+            'joinDate' => $_GET['joinDate'] ?? null,
+            'lastActivity' => $_GET['lastActivity'] ?? null
+        ];
 
         view('Moderator/WarnForm', $data);
-=======
+    }
 
     public function editReportedContent()
     {
@@ -188,7 +144,7 @@ class ModeratorControl
 
             // Update the post content marked as edited by Moderator
             if ($threadModel->updatePost($postId, $content, 'Moderator')) {
-                // Update report status if needed, similar to Admin
+                // Update report status if needed
                 if ($reportId) {
                     require_once BASE_PATH . '/app/models/Report.php';
                     $reportModel = new Report();
@@ -201,16 +157,6 @@ class ModeratorControl
         exit;
     }
 
-<<<<<<< HEAD
-    public function warn()
-    {
-        view('Moderator/warnForm');
->>>>>>> origin/uni-representative
-    }
-
-=======
->>>>>>> origin/moderator_branch
-
     public function createResource()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -221,19 +167,8 @@ class ModeratorControl
         try {
             $resourceHub = new ResourceHub();
 
-            // Get current user ID (assuming session is set)
-<<<<<<< HEAD
-            $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1; // Fallback to 1 for testing
-
-            // Validate required fields
-            $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
-            $category = trim(isset($_POST['category']) ? $_POST['category'] : '');
-            $contentType = trim(isset($_POST['content_type']) ? $_POST['content_type'] : '');
-            $summary = trim(isset($_POST['summary']) ? $_POST['summary'] : '');
-<<<<<<< HEAD
-            
-=======
-            $userId = $_SESSION['user_id'] ?? 1; // Fallback to 1 for testing
+            // Get current user ID
+            $userId = $_SESSION['user_id'] ?? 1;
 
             // Validate required fields
             $title = trim($_POST['title'] ?? '');
@@ -241,52 +176,24 @@ class ModeratorControl
             $contentType = trim($_POST['content_type'] ?? '');
             $summary = trim($_POST['summary'] ?? '');
 
->>>>>>> origin/uni-representative
-=======
-
->>>>>>> origin/moderator_branch
             if (empty($title) || empty($category) || empty($contentType) || empty($summary)) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=missing_fields');
                 exit;
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
-            
-=======
-
->>>>>>> origin/moderator_branch
-            $data = array(
-=======
 
             $data = [
->>>>>>> origin/uni-representative
                 'title' => $title,
                 'category' => $category,
                 'content_type' => $contentType,
                 'summary' => $summary,
-                'tags' => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
-                'status' => isset($_POST['status']) ? $_POST['status'] : 'draft',
-                'created_by' => $userId
-<<<<<<< HEAD
-            );
-
-            // Handle content based on type
-            if ($contentType === 'article') {
-                $data['content'] = trim(isset($_POST['content']) ? $_POST['content'] : '');
-<<<<<<< HEAD
-                
-=======
+                'tags' => trim($_POST['tags'] ?? ''),
+                'status' => $_POST['status'] ?? 'draft',
+                'created_by' => $userId,
+                'content' => trim($_POST['content'] ?? '')
             ];
 
-            // Handle content based on type
+            // Handle file upload based on content type
             if ($contentType === 'article') {
-                $data['content'] = trim($_POST['content'] ?? '');
-
->>>>>>> origin/uni-representative
-=======
-
->>>>>>> origin/moderator_branch
-                // Handle article image upload
                 if (isset($_FILES['article_image']) && $_FILES['article_image']['error'] === 0) {
                     $uploadResult = $this->handleFileUpload($_FILES['article_image'], 'images');
                     if ($uploadResult['success']) {
@@ -296,22 +203,7 @@ class ModeratorControl
                         $data['file_type'] = $uploadResult['type'];
                     }
                 }
-<<<<<<< HEAD
             } else {
-<<<<<<< HEAD
-                $data['content'] = trim(isset($_POST['content']) ? $_POST['content'] : '');
-                
-=======
-                $data['content'] = trim($_POST['content'] ?? '');
-
->>>>>>> origin/uni-representative
-=======
-            }
-            else {
-                $data['content'] = trim(isset($_POST['content']) ? $_POST['content'] : '');
-
->>>>>>> origin/moderator_branch
-                // Handle file upload for video/audio
                 $fileField = $contentType === 'video' ? 'video_file' : 'audio_file';
                 $uploadDir = $contentType === 'video' ? 'videos' : 'audio';
 
@@ -330,12 +222,7 @@ class ModeratorControl
             header('Location: ' . BASE_URL . '/EditPosts?created=1');
             exit;
 
-<<<<<<< HEAD
         } catch (Exception $e) {
-=======
-        }
-        catch (Exception $e) {
->>>>>>> origin/moderator_branch
             header('Location: ' . BASE_URL . '/EditPosts?error=creation_failed');
             exit;
         }
@@ -349,11 +236,7 @@ class ModeratorControl
         }
 
         try {
-<<<<<<< HEAD
-            $resourceId = (int)(isset($_POST['id']) ? $_POST['id'] : 0);
-=======
             $resourceId = (int) ($_POST['id'] ?? 0);
->>>>>>> origin/uni-representative
             if ($resourceId <= 0) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
                 exit;
@@ -364,32 +247,15 @@ class ModeratorControl
             header('Location: ' . BASE_URL . '/EditPosts?deleted=1');
             exit;
 
-<<<<<<< HEAD
         } catch (Exception $e) {
-=======
-        }
-        catch (Exception $e) {
->>>>>>> origin/moderator_branch
             header('Location: ' . BASE_URL . '/EditPosts?error=deletion_failed');
             exit;
         }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-    public function editResource() {
-=======
-
-    public function editResource()
-    {
->>>>>>> origin/moderator_branch
-        $resourceId = (int)(isset($_GET['id']) ? $_GET['id'] : 0);
-=======
 
     public function editResource()
     {
         $resourceId = (int) ($_GET['id'] ?? 0);
->>>>>>> origin/uni-representative
         if ($resourceId <= 0) {
             header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
             exit;
@@ -403,24 +269,10 @@ class ModeratorControl
                 header('Location: ' . BASE_URL . '/EditPosts?error=resource_not_found');
                 exit;
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
-            
-            view('Moderator/editResource', array('resource' => $resource));
-            
-=======
 
             view('Moderator/editResource', ['resource' => $resource]);
 
->>>>>>> origin/uni-representative
         } catch (Exception $e) {
-=======
-
-            view('Moderator/editResource', array('resource' => $resource));
-
-        }
-        catch (Exception $e) {
->>>>>>> origin/moderator_branch
             header('Location: ' . BASE_URL . '/EditPosts?error=load_failed');
             exit;
         }
@@ -434,11 +286,7 @@ class ModeratorControl
         }
 
         try {
-<<<<<<< HEAD
-            $resourceId = (int)(isset($_POST['id']) ? $_POST['id'] : 0);
-=======
             $resourceId = (int) ($_POST['id'] ?? 0);
->>>>>>> origin/uni-representative
             if ($resourceId <= 0) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
                 exit;
@@ -446,8 +294,6 @@ class ModeratorControl
 
             $resourceHub = new ResourceHub();
 
-<<<<<<< HEAD
-=======
             // Load existing record so we can preserve file info if no new file is uploaded
             $existing = $resourceHub->getById($resourceId);
             if (!$existing) {
@@ -455,72 +301,33 @@ class ModeratorControl
                 exit;
             }
 
->>>>>>> origin/moderator_branch
             // Validate required fields
-<<<<<<< HEAD
-            $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
-            $category = trim(isset($_POST['category']) ? $_POST['category'] : '');
-            $contentType = trim(isset($_POST['content_type']) ? $_POST['content_type'] : '');
-            $summary = trim(isset($_POST['summary']) ? $_POST['summary'] : '');
-<<<<<<< HEAD
-            
-=======
             $title = trim($_POST['title'] ?? '');
             $category = trim($_POST['category'] ?? '');
             $contentType = trim($_POST['content_type'] ?? '');
             $summary = trim($_POST['summary'] ?? '');
 
->>>>>>> origin/uni-representative
-=======
-
->>>>>>> origin/moderator_branch
             if (empty($title) || empty($category) || empty($contentType) || empty($summary)) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=missing_fields');
                 exit;
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
-            
-            $data = array(
-=======
 
             $data = [
->>>>>>> origin/uni-representative
-                'title' => $title,
-                'category' => $category,
-                'content_type' => $contentType,
-                'summary' => $summary,
-<<<<<<< HEAD
-                'tags' => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
-                'status' => isset($_POST['status']) ? $_POST['status'] : 'draft',
-                'content' => trim(isset($_POST['content']) ? $_POST['content'] : '')
-            );
-            
-=======
-                'tags' => trim($_POST['tags'] ?? ''),
-                'status' => $_POST['status'] ?? 'draft',
-                'content' => trim($_POST['content'] ?? '')
-            ];
-
->>>>>>> origin/uni-representative
-=======
-
-            $data = array(
                 'title'        => $title,
                 'category'     => $category,
                 'content_type' => $contentType,
                 'summary'      => $summary,
-                'tags'         => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
-                'status'       => isset($_POST['status']) ? $_POST['status'] : 'draft',
-                'content'      => trim(isset($_POST['content']) ? $_POST['content'] : ''),
+                'tags'         => trim($_POST['tags'] ?? ''),
+                'status'       => $_POST['status'] ?? 'draft',
+                'content'      => trim($_POST['content'] ?? ''),
                 // Preserve existing file info by default
                 'file_path'    => $existing['file_path'],
                 'file_name'    => $existing['file_name'],
                 'file_size'    => $existing['file_size'],
                 'file_type'    => $existing['file_type'],
-            );
+            ];
 
-            // Handle file upload based on content type (mirrors createResource logic)
+            // Handle file upload based on content type
             if ($contentType === 'article') {
                 if (isset($_FILES['article_image']) && $_FILES['article_image']['error'] === 0) {
                     $uploadResult = $this->handleFileUpload($_FILES['article_image'], 'images');
@@ -546,17 +353,11 @@ class ModeratorControl
                 }
             }
 
->>>>>>> origin/moderator_branch
             $resourceHub->update($resourceId, $data);
             header('Location: ' . BASE_URL . '/EditPosts?updated=1');
             exit;
 
-<<<<<<< HEAD
         } catch (Exception $e) {
-=======
-        }
-        catch (Exception $e) {
->>>>>>> origin/moderator_branch
             header('Location: ' . BASE_URL . '/EditPosts?error=update_failed');
             exit;
         }
@@ -564,19 +365,14 @@ class ModeratorControl
 
     private function handleFileUpload($file, $uploadDir)
     {
-<<<<<<< HEAD
-        $uploadPath = BASE_PATH . '/public/uploads/' . $uploadDir . '/';
-
-        // Create directory if it doesn't exist
-=======
         // Allowed types per category
         $allowedTypes = [
-            'images'    => ['image/jpeg','image/png','image/gif','image/webp'],
-            'videos'    => ['video/mp4','video/avi','video/quicktime','video/x-msvideo'],
-            'audio'     => ['audio/mpeg','audio/mp3','audio/wav','audio/x-wav','audio/mp4','audio/m4a','audio/x-m4a'],
-            'resources' => ['image/jpeg','image/png','image/gif','image/webp',
-                            'video/mp4','video/avi','video/quicktime',
-                            'audio/mpeg','audio/mp3','audio/wav','audio/mp4'],
+            'images'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+            'videos'    => ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-msvideo'],
+            'audio'     => ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/m4a', 'audio/x-m4a'],
+            'resources' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                            'video/mp4', 'video/avi', 'video/quicktime',
+                            'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/mp4'],
         ];
 
         $mimeType = mime_content_type($file['tmp_name']);
@@ -591,40 +387,25 @@ class ModeratorControl
         $storeDir  = 'resources';
         $uploadPath = BASE_PATH . '/public/uploads/' . $storeDir . '/';
 
->>>>>>> origin/moderator_branch
         if (!is_dir($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
 
-<<<<<<< HEAD
-        $fileName = uniqid() . '_' . basename($file['name']);
-=======
         $safeBase   = preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($file['name']));
         $fileName   = time() . '_' . $safeBase;
->>>>>>> origin/moderator_branch
         $targetPath = $uploadPath . $fileName;
 
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
             return [
                 'success' => true,
-                'path'    => 'uploads/resources/' . $fileName,   // relative, NO leading slash
+                'path'    => 'uploads/resources/' . $fileName,
                 'name'    => $file['name'],
                 'size'    => $file['size'],
                 'type'    => $mimeType,
             ];
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-        return array('success' => false);
-=======
-
-        return ['success' => false];
->>>>>>> origin/uni-representative
-=======
 
         error_log("move_uploaded_file failed: tmp={$file['tmp_name']} target={$targetPath}");
         return ['success' => false, 'error' => 'Could not move uploaded file.'];
->>>>>>> origin/moderator_branch
     }
 }

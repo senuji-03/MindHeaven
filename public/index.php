@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 session_start();
 
@@ -13,21 +13,14 @@ $router->get('/', 'LandingControl@index');
 $router->get('/landing', 'LandingControl@index');
 
 $router->get('/login', 'LoginControl@index');
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/moderator_branch
 $router->post('/login/authenticate', 'LoginControl@authenticate');
 $router->get('/login/forgot-password', 'LoginControl@forgotPassword');
 $router->post('/login/forgot-password', 'LoginControl@processForgotPassword');
 $router->get('/login/reset-password', 'LoginControl@resetPassword');
 $router->post('/login/reset-password', 'LoginControl@resetPassword');
-<<<<<<< HEAD
 $router->get('/login/forcePasswordChange', 'LoginControl@forcePasswordChange');
 $router->post('/login/forcePasswordChange', 'LoginControl@processForcePasswordChange');
-=======
-
->>>>>>> origin/moderator_branch
 $router->get('/logout', 'LoginControl@logout');
 
 // Signup routes
@@ -110,32 +103,23 @@ $router->post('/admin/manage-users/suspend', 'AdminControl@suspendUser');
 $router->post('/admin/manage-users/unsuspend', 'AdminControl@unsuspendUser');
 $router->post('/admin/manage-users/reset-strikes', 'AdminControl@resetUserStrikes');
 
-<<<<<<< HEAD
-$router->get('/counselor', 'COControl@index');
-=======
 // Admin counselor approval routes
 $router->post('/admin/approveCounselor', 'AdminControl@approveCounselor');
 $router->post('/admin/rejectCounselor', 'AdminControl@rejectCounselor');
 
 $router->get('/counselor', 'COControl@index');
-
->>>>>>> origin/moderator_branch
 $router->get('/counselor/dashboard', 'COControl@dashboard');
 $router->get('/counselor/feedback', 'COControl@feedbackList');
 $router->get('/counselor/appointmentmgt', 'COControl@appointmentmgt');
 $router->get('/counselor/calender', 'COControl@calender');
 $router->get('/counselor/sessionHistory', 'COControl@sessionHistory');
 $router->get('/counselor/counselor_profile', 'COControl@counselorProfile');
-<<<<<<< HEAD
 $router->post('/counselor/updateProfile', 'COControl@updateProfile');
 $router->post('/counselor/uploadProfilePhoto', 'COControl@uploadProfilePhoto');
 $router->post('/api/counselor/qualifications/sync', 'COControl@syncQualifications');
-$router->get('/counselor/forum', 'UGControl@forum');
-$router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
-=======
 $router->get('/counselor/forum', 'COControl@forum');
+$router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
 $router->get('/counselor/resources', 'UGControl@resources');
->>>>>>> origin/uni-representative
 
 // Counselor calendar API routes
 $router->post('/counselor/createEvent', 'COControl@createEvent');

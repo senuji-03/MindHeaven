@@ -45,12 +45,11 @@ class LoginControl
 
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare("SELECT id, username, password, role, status, is_deleted, suspended_until, password_reset_required FROM users WHERE username = ?");
+            $stmt = $pdo->prepare("SELECT id, username, password, role, status, account_status, is_deleted, suspended_until, password_reset_required FROM users WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user && password_verify($password, $user['password'])) {
-<<<<<<< HEAD
                 // Check if counselor is approved
                 if ($user['role'] === 'counselor') {
                     $stmt = $pdo->prepare("SELECT is_approved FROM counselors WHERE user_id = ?");
@@ -63,8 +62,6 @@ class LoginControl
                     }
                 }
                 
-=======
-
                 // 1. Check if deleted
                 if ($user['is_deleted']) {
                     $this->view('layouts/login', ['error' => 'Your account does not exist or has been deleted.']);
@@ -77,14 +74,14 @@ class LoginControl
                 if ($userModel->isSuspended($user['id'])) {
                     // Fetch updated user data in case auto-unsuspend kicked in
                     $user = $userModel->getById($user['id']);
-                    if ($user['status'] === 'suspended' || $user['account_status'] === 'suspended') {
+                    if ($user['account_status'] === 'suspended') {
                         $this->view('layouts/login', ['error' => 'Your account is suspended. Check back later.']);
                         return;
                     }
                 }
 
-                // 3. Check active state
-                if ($user['status'] === 'inactive' || $user['account_status'] === 'banned') {
+                // 3. Check active state (Banned users are also blocked here)
+                if ($user['account_status'] === 'inactive' || $user['account_status'] === 'banned') {
                     $this->view('layouts/login', ['error' => 'Your account is currently inactive.']);
                     return;
                 }
@@ -96,7 +93,6 @@ class LoginControl
                     exit;
                 }
 
->>>>>>> origin/uni-representative
                 // Login successful
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
@@ -333,14 +329,12 @@ class LoginControl
         // Clear all session data
         session_unset();
         session_destroy();
-<<<<<<< HEAD
         
         // Add security headers to prevent caching and back-button access
-        Auth::setSecurityHeaders();
-        
-=======
+        if (class_exists('Auth')) {
+            Auth::setSecurityHeaders();
+        }
 
->>>>>>> origin/uni-representative
         // Redirect to login page
         header('Location: ' . BASE_URL . '/login');
         exit;

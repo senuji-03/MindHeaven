@@ -16,7 +16,7 @@
         $c_phone = isset($counselor['phone_number']) ? $counselor['phone_number'] : '';
         $c_license = isset($counselor['license_number']) ? $counselor['license_number'] : '';
         $c_spec = isset($counselor['specialization']) ? $counselor['specialization'] : '';
-        $c_exp = isset($counselor['experience_years']) ? $counselor['experience_years'] : '';
+        $c_exp = isset($counselor['years_experience']) ? $counselor['years_experience'] : '';
         $c_bio = isset($counselor['bio']) ? $counselor['bio'] : '';
         $c_profile_pic = isset($counselor['profile_picture']) && !empty($counselor['profile_picture']) ? $counselor['profile_picture'] : 'https://via.placeholder.com/150';
         $qualifications = isset($qualifications) && is_array($qualifications) ? $qualifications : [];
@@ -44,9 +44,6 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-<<<<<<< HEAD
-        <?php include __DIR__ . '/sidebar.php'; ?>
-=======
         <div class="sidebar">
             <ul class="sidebar-menu">
                 <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
@@ -64,19 +61,16 @@
                         onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
->>>>>>> origin/uni-representative
+
 
         <!-- Main Content -->
         <div class="main-content">
             <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-picture-container">
-<<<<<<< HEAD
-                    <img id="profilePic" src="<?php echo htmlspecialchars($c_profile_pic); ?>" alt="Profile Picture" class="profile-picture">
-=======
                     <img id="profilePic" src="https://via.placeholder.com/150" alt="Profile Picture"
                         class="profile-picture">
->>>>>>> origin/uni-representative
+
                     <button class="change-photo-btn" onclick="openPhotoModal()">📷</button>
                 </div>
                 <div class="profile-info">
@@ -173,17 +167,6 @@
                             <div class="qualification-item empty-state" style="text-align: center; color: #888;">
                                 No qualifications added yet. Click Add to create one.
                             </div>
-<<<<<<< HEAD
-                        <?php else: ?>
-                            <?php foreach ($qualifications as $qual): ?>
-                            <div class="qualification-item" data-id="<?php echo $qual['id']; ?>">
-                                <div class="qualification-header">
-                                    <div>
-                                        <div class="qualification-title"><?php echo htmlspecialchars($qual['title']); ?></div>
-                                        <div class="qualification-institution"><?php echo htmlspecialchars($qual['institution']); ?></div>
-                                    </div>
-                                    <span class="qualification-year"><?php echo htmlspecialchars($qual['year_range']); ?></span>
-=======
                             <p class="qualification-description">Specialized in cognitive behavioral therapy and
                                 adolescent mental health. Research focus on anxiety disorders and stress management
                                 techniques.</p>
@@ -193,14 +176,10 @@
                                 <div>
                                     <div class="qualification-title">M.Sc. in Counseling Psychology</div>
                                     <div class="qualification-institution">University of Kelaniya</div>
->>>>>>> origin/uni-representative
+
                                 </div>
                                 <p class="qualification-description"><?php echo nl2br(htmlspecialchars($qual['description'])); ?></p>
                             </div>
-<<<<<<< HEAD
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-=======
                             <p class="qualification-description">Advanced training in therapeutic techniques including
                                 CBT, DBT, and mindfulness-based interventions.</p>
                         </div>
@@ -228,7 +207,7 @@
                                 diverse patient populations. Developed treatment plans and collaborated with
                                 multidisciplinary teams.</p>
                         </div>
->>>>>>> origin/uni-representative
+
                     </div>
                 </div>
                 <div class="save-section" id="qualificationSave">

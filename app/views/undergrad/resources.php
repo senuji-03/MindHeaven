@@ -124,12 +124,8 @@ require BASE_PATH . '/app/views/layouts/header.php';
             <ul class="resource-list">
               <?php foreach (array_slice($categoryResources, 0, 4) as $resource): ?>
                 <li>
-<<<<<<< HEAD
-                  <a href="#" class="resource-link"
-                    onclick="openResourceModal(<?= htmlspecialchars(json_encode($resource)) ?>)">
-=======
                   <a href="#" class="resource-link resource-modal-trigger" data-resource="<?= htmlspecialchars(json_encode($resource), ENT_QUOTES, 'UTF-8') ?>">
->>>>>>> origin/moderator_branch
+
                     <?= htmlspecialchars($resource['title']) ?>
                     <?php if ($resource['content_type'] === 'video'): ?>
                       <span style="color: #3b82f6;">🎥</span>
@@ -511,17 +507,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </div>
 
 <script>
-<<<<<<< HEAD
-  // Resource modal functionality
-  function openResourceModal(resource) {
-    const modal = document.getElementById('resourceModal');
-    const title = document.getElementById('resourceModalTitle');
-    const content = document.getElementById('resourceModalContent');
-
-    title.textContent = resource.title;
-
-    let contentHtml = `
-=======
 // Resource modal functionality
 function openResourceModal(resource) {
   try {
@@ -532,7 +517,7 @@ function openResourceModal(resource) {
     title.textContent = resource.title;
   
   let contentHtml = `
->>>>>>> origin/moderator_branch
+
     <div class="resource-details">
       <div class="resource-meta">
         <span class="resource-category">${resource.category}</span>
@@ -544,16 +529,6 @@ function openResourceModal(resource) {
         <p>${resource.summary}</p>
       </div>
   `;
-<<<<<<< HEAD
-
-    // Add file display if exists
-    if (resource.file_path && resource.file_name) {
-      const fileExtension = resource.file_name.split('.').pop().toLowerCase();
-      const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
-
-      if (isImage) {
-        contentHtml += `
-=======
   
   // Handle different content types with proper file paths
   function buildFileUrl(filePath) {
@@ -574,7 +549,7 @@ function openResourceModal(resource) {
     
     if (resource.content_type === 'article' && isImage) {
       contentHtml += `
->>>>>>> origin/moderator_branch
+
         <div class="resource-file">
           <h4>Featured Image</h4>
           <img src="${fullFilePath}" alt="${resource.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;">
@@ -622,14 +597,10 @@ function openResourceModal(resource) {
           </div>
         </div>
       `;
-<<<<<<< HEAD
-      } else {
-        contentHtml += `
-=======
     } else {
       // Generic file display
       contentHtml += `
->>>>>>> origin/moderator_branch
+
         <div class="resource-file">
           <h4>Media File</h4>
           <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; text-align: center;">
@@ -644,18 +615,12 @@ function openResourceModal(resource) {
       `;
       }
     }
-<<<<<<< HEAD
-
-    // Add content
-    if (resource.content) {
-      contentHtml += `
-=======
   }
   
   // Add content
   if (resource.content && resource.content_type === 'article') {
     contentHtml += `
->>>>>>> origin/moderator_branch
+
       <div class="resource-content">
         <h4>Article Content</h4>
         <div class="article-content" style="line-height:1.8;color:#374151;font-size:1rem;">${resource.content}</div>
@@ -668,20 +633,13 @@ function openResourceModal(resource) {
         <div style="white-space: pre-wrap; line-height: 1.6; background: #f8fafc; padding: 1rem; border-radius: 8px;">${resource.content}</div>
       </div>
     `;
-<<<<<<< HEAD
-    }
-
-    // Add tags if exist
-    if (resource.tags) {
-      contentHtml += `
-=======
   }
   
   // Add tags
   if (resource.tags) {
     const tagsArray = resource.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
     contentHtml += `
->>>>>>> origin/moderator_branch
+
       <div class="resource-tags">
         <h4>Tags</h4>
         <div class="tags-container" style="display:flex;gap:0.5rem;">
@@ -707,24 +665,6 @@ function openResourceModal(resource) {
     content.innerHTML = contentHtml;
     modal.style.display = 'block';
   }
-<<<<<<< HEAD
-
-  function showCategoryResources(category) {
-    // Redirect to category-specific page
-    window.location.href = `<?= BASE_URL ?>/ug/category-resources?category=${encodeURIComponent(category)}`;
-  }
-
-  // Close modal functionality
-  document.getElementById('closeResourceModal').onclick = function () {
-    document.getElementById('resourceModal').style.display = 'none';
-  }
-
-  window.onclick = function (event) {
-    const modal = document.getElementById('resourceModal');
-    if (event.target === modal) {
-      modal.style.display = 'none';
-    }
-=======
   
   contentHtml += `</div>`;
   
@@ -781,13 +721,9 @@ window.onclick = function(event) {
   // Keep the other modal closures generic if they exist
   if (event.target.classList.contains('modal') && event.target.id !== 'resourceModal') {
     event.target.style.display = 'none';
->>>>>>> origin/moderator_branch
+
   }
 </script>
 
-<<<<<<< HEAD
-<?
-require BASE_PATH . '/app/views/layouts/footer.php'; ?>
-=======
 <?php require BASE_PATH.'/app/views/layouts/footer.php'; ?>
->>>>>>> origin/moderator_branch
+

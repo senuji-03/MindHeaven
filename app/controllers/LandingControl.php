@@ -1,20 +1,8 @@
 <?php
 
-<<<<<<< HEAD
-require_once BASE_PATH . '/app/models/Counselor.php';
-
-class LandingControl {
-    
-    public function index() {
         $counselorModel = new Counselor();
         $counselors = $counselorModel->getApproved(8); // Show up to 8 approved counselors
-        view('landing/index', ['counselors' => $counselors]);
-=======
-class LandingControl
-{
 
-    public function index()
-    {
         $eventsByUniversity = [];
         try {
             $pdo = Database::getConnection();
@@ -40,7 +28,6 @@ class LandingControl
             error_log("Landing Page Events Error: " . $e->getMessage());
         }
 
-        view('landing/index', ['eventsByUniversity' => $eventsByUniversity]);
->>>>>>> origin/uni-representative
+        view('landing/index', ['counselors' => $counselors, 'eventsByUniversity' => $eventsByUniversity]);
     }
 }

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<<<<<<< HEAD
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -527,8 +526,7 @@
             </a>
             
         </nav>
-=======
->>>>>>> origin/uni-representative
+
 
 <head>
   <meta charset="UTF-8">
@@ -622,170 +620,6 @@
 
       <div class="toolbar">
         <div class="tabs">
-<<<<<<< HEAD
-                    <button class="tab active" data-tab="preview">
-                        👁️ Preview
-                    </button>
-                    <button class="tab" data-tab="queue">
-                        🚩 Flagged Queue
-                    </button>
-        </div>
-                <div class="toolbar-actions">
-                    <button class="btn secondary" onclick="bulkFlag()">
-                        🚩 Flag Selected
-                    </button>
-                    <button class="btn" onclick="bulkDelete()">
-                        🗑️ Delete Selected
-                    </button>
-        </div>
-      </div>
-
-            <!-- Forum Threads Management -->
-            <section id="forumPreview" class="list">
-                <div class="list-header">
-                    <h2>
-                        💬 Forum Threads Management
-                    </h2>
-                    <div class="list-stats">
-                        <span class="stat-item">
-                            📝 <span id="totalThreads">8</span> Total Threads
-                        </span>
-                        <span class="stat-item">
-                            🔥 <span id="activeThreads">5</span> Active
-                        </span>
-                    </div>
-                </div>
-                <div id="forumThreads">
-                    <div class="row">
-                        <input type="checkbox" />
-                        <div class="content-info">
-                            <span class="title">"Struggling with exam anxiety - need advice"</span>
-                            <span class="meta">Posted by: Sarah M. • 2 hours ago • 12 replies</span>
-                        </div>
-                        <span class="chip">Active</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="viewThread(this)">
-                                👁️ View
-                            </button>
-                            <button class="btn" onclick="deleteThread(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <input type="checkbox" />
-                        <div class="content-info">
-                            <span class="title">"Best study techniques for finals"</span>
-                            <span class="meta">Posted by: Alex K. • 4 hours ago • 8 replies</span>
-                        </div>
-                        <span class="chip">Active</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="viewThread(this)">
-                                👁️ View
-                            </button>
-                            <button class="btn" onclick="deleteThread(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <input type="checkbox" />
-                        <div class="content-info">
-                            <span class="title">"Feeling overwhelmed with coursework"</span>
-                            <span class="meta">Posted by: Maria R. • 6 hours ago • 5 replies</span>
-                        </div>
-                        <span class="chip">Active</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="viewThread(this)">
-                                👁️ View
-                            </button>
-                            <button class="btn" onclick="deleteThread(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <input type="checkbox" />
-                        <div class="content-info">
-                            <span class="title">"How to manage stress during midterms"</span>
-                            <span class="meta">Posted by: David L. • 1 day ago • 15 replies</span>
-                        </div>
-                        <span class="chip">Popular</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="viewThread(this)">
-                                👁️ View
-                            </button>
-                            <button class="btn" onclick="deleteThread(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <input type="checkbox" />
-                        <div class="content-info">
-                            <span class="title">"Looking for study group partners"</span>
-                            <span class="meta">Posted by: Emma W. • 2 days ago • 3 replies</span>
-                        </div>
-                        <span class="chip">Active</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="viewThread(this)">
-                                👁️ View
-                            </button>
-                            <button class="btn" onclick="deleteThread(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <input type="checkbox" />
-                        <div class="content-info">
-                            <span class="title">"Mental health resources on campus"</span>
-                            <span class="meta">Posted by: James T. • 3 days ago • 7 replies</span>
-                        </div>
-                        <span class="chip">Active</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="viewThread(this)">
-                                👁️ View
-                            </button>
-                            <button class="btn" onclick="deleteThread(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <input type="checkbox" />
-                        <div class="content-info">
-                            <span class="title">"Time management tips for busy students"</span>
-                            <span class="meta">Posted by: Lisa P. • 4 days ago • 9 replies</span>
-                        </div>
-                        <span class="chip">Active</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="viewThread(this)">
-                                👁️ View
-                            </button>
-                            <button class="btn" onclick="deleteThread(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <input type="checkbox" />
-                        <div class="content-info">
-                            <span class="title">"Dealing with imposter syndrome"</span>
-                            <span class="meta">Posted by: Michael C. • 5 days ago • 11 replies</span>
-                        </div>
-                        <span class="chip">Active</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="viewThread(this)">
-                                👁️ View
-                            </button>
-                            <button class="btn" onclick="deleteThread(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-        </div>
-=======
           <button class="tab active" data-tab="preview">Preview</button>
           <button class="tab" data-tab="queue">Flagged Queue</button>
           <button class="tab" data-tab="auto-flags">Automated Flags</button>
@@ -812,7 +646,7 @@
         </div>
         <iframe src="<?= BASE_URL ?>/forum?embed=true"
           style="width:100%; height:calc(100vh - 220px); min-height:600px; border:0; background:#fff; border-radius: 8px;"></iframe>
->>>>>>> origin/uni-representative
+
       </section>
 
       <!-- Flag/Delete queue (frontend only) -->
@@ -831,40 +665,6 @@
                     </div>
                 </div>
         <div id="queue">
-<<<<<<< HEAD
-          <div class="row">
-            <input type="checkbox" />
-                        <div class="content-info">
-            <span class="title">Thread: "Struggling with exam anxiety"</span>
-                            <span class="meta">Posted by: John Doe • 2 hours ago</span>
-                        </div>
-            <span class="chip">Reported</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="approveItem(this)">
-                                ✅ Approve
-                            </button>
-                            <button class="btn" onclick="deleteItem(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-          </div>
-          <div class="row">
-            <input type="checkbox" />
-                        <div class="content-info">
-            <span class="title">Reply: "Just skip exams"</span>
-                            <span class="meta">Posted by: Anonymous • 1 hour ago</span>
-                        </div>
-            <span class="chip">Flagged</span>
-                        <div class="actions">
-                            <button class="btn secondary" onclick="approveItem(this)">
-                                ✅ Approve
-                            </button>
-                            <button class="btn" onclick="deleteItem(this)">
-                                🗑️ Delete
-                            </button>
-                        </div>
-          </div>
-=======
           <?php if (empty($reports)): ?>
             <p>No pending reports.</p>
           <?php else: ?>
@@ -922,7 +722,7 @@
               </div>
             <?php endforeach; ?>
           <?php endif; ?>
->>>>>>> origin/uni-representative
+
         </div>
       </section>
 
@@ -1053,224 +853,6 @@
         this.classList.add('active');
 
         const tab = this.dataset.tab;
-<<<<<<< HEAD
-                
-                // Smooth transition between tabs
-                const preview = document.getElementById('forumPreview');
-                const queue = document.getElementById('queueList');
-                
-                if (tab === 'preview') {
-                    preview.style.display = 'block';
-                    queue.style.display = 'none';
-                    preview.style.opacity = '0';
-                    setTimeout(() => {
-                        preview.style.opacity = '1';
-                    }, 100);
-                } else {
-                    preview.style.display = 'none';
-                    queue.style.display = 'block';
-                    queue.style.opacity = '0';
-                    setTimeout(() => {
-                        queue.style.opacity = '1';
-                    }, 100);
-                }
-      });
-    });
-
-        // Approve item function
-    function approveItem(btn){
-      const row = btn.closest('.row');
-            const chip = row.querySelector('.chip');
-            const actions = row.querySelector('.actions');
-            
-            // Update chip
-            chip.textContent = 'Approved';
-            chip.className = 'chip approved';
-            
-            // Update stats
-            updateStats();
-            
-            // Add success animation
-            row.style.background = '#d1fae5';
-            setTimeout(() => {
-                row.style.background = '';
-            }, 2000);
-            
-            // Show success message
-            showNotification('Item approved successfully!', 'success');
-        }
-
-        // Delete item function
-    function deleteItem(btn){
-      const row = btn.closest('.row');
-            
-            // Add confirmation
-            if (confirm('Are you sure you want to delete this item?')) {
-                // Add fade out animation
-                row.style.transition = 'all 0.3s ease';
-                row.style.opacity = '0';
-                row.style.transform = 'translateX(-100%)';
-                
-                setTimeout(() => {
-      row.remove();
-                    updateStats();
-                    showNotification('Item deleted successfully!', 'success');
-                }, 300);
-            }
-    }
-
-        // Bulk flag function
-    function bulkFlag(){
-            const checkedItems = document.querySelectorAll('#queue .row input[type="checkbox"]:checked');
-            
-            if (checkedItems.length === 0) {
-                showNotification('Please select items to flag', 'warning');
-                return;
-            }
-            
-            checkedItems.forEach(cb => {
-        const row = cb.closest('.row');
-                const chip = row.querySelector('.chip');
-                chip.textContent = 'Flagged';
-                chip.className = 'chip';
-                chip.style.background = 'linear-gradient(135deg, #fef2f2, #fee2e2)';
-                chip.style.color = '#991b1b';
-            });
-            
-            updateStats();
-            showNotification(`${checkedItems.length} items flagged successfully!`, 'success');
-        }
-
-        // Bulk delete function
-    function bulkDelete(){
-            const checkedItems = document.querySelectorAll('#queue .row input[type="checkbox"]:checked');
-            
-            if (checkedItems.length === 0) {
-                showNotification('Please select items to delete', 'warning');
-                return;
-            }
-            
-            if (confirm(`Are you sure you want to delete ${checkedItems.length} selected items?`)) {
-                checkedItems.forEach(cb => {
-                    const row = cb.closest('.row');
-                    row.style.transition = 'all 0.3s ease';
-                    row.style.opacity = '0';
-                    row.style.transform = 'translateX(-100%)';
-                    
-                    setTimeout(() => {
-                        row.remove();
-                    }, 300);
-                });
-                
-                setTimeout(() => {
-                    updateStats();
-                    showNotification(`${checkedItems.length} items deleted successfully!`, 'success');
-                }, 400);
-            }
-        }
-
-        // Update statistics
-        function updateStats() {
-            const flaggedCount = document.querySelectorAll('#queue .row .chip:not(.approved)').length;
-            const approvedCount = document.querySelectorAll('#queue .row .chip.approved').length;
-            
-            document.getElementById('flaggedCount').textContent = flaggedCount;
-            document.getElementById('approvedCount').textContent = approvedCount;
-        }
-
-        // View thread function
-        function viewThread(btn) {
-            const row = btn.closest('.row');
-            const title = row.querySelector('.title').textContent;
-            showNotification(`Opening thread: ${title}`, 'info');
-        }
-
-        // Delete thread function
-        function deleteThread(btn) {
-            const row = btn.closest('.row');
-            const title = row.querySelector('.title').textContent;
-            
-            if (confirm(`Are you sure you want to delete the thread: "${title}"?`)) {
-                row.style.transition = 'all 0.3s ease';
-                row.style.opacity = '0';
-                row.style.transform = 'translateX(-100%)';
-                
-                setTimeout(() => {
-                    row.remove();
-                    updateThreadStats();
-                    showNotification('Thread deleted successfully!', 'success');
-                }, 300);
-            }
-        }
-
-        // Update thread statistics
-        function updateThreadStats() {
-            const totalThreads = document.querySelectorAll('#forumThreads .row').length;
-            const activeThreads = document.querySelectorAll('#forumThreads .row .chip').length;
-            
-            document.getElementById('totalThreads').textContent = totalThreads;
-            document.getElementById('activeThreads').textContent = activeThreads;
-        }
-
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
-                <span>${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
-                <span>${message}</span>
-            `;
-            
-            // Add notification styles
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#d1fae5' : type === 'warning' ? '#fef3c7' : '#dbeafe'};
-                color: ${type === 'success' ? '#065f46' : type === 'warning' ? '#92400e' : '#1e40af'};
-                padding: 1rem 1.5rem;
-                border-radius: 8px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                z-index: 10000;
-                animation: slideInRight 0.3s ease;
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            }, 3000);
-        }
-
-        // Add CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOutRight {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-            .embed, .list {
-                transition: opacity 0.3s ease;
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Initialize stats on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateStats();
-            updateThreadStats();
-        });
-=======
         if (tab) {
           document.getElementById('forumPreview').style.display = tab === 'preview' ? 'block' : 'none';
           document.getElementById('queueList').style.display = tab === 'queue' ? 'block' : 'none';
@@ -1337,7 +919,7 @@
         closeSuspendModal();
       }
     }
->>>>>>> origin/uni-representative
+
   </script>
 </body>
 

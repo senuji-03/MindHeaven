@@ -7,7 +7,6 @@
     <title>View Event - University Representative | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/university-rep/style.css">
 </head>
-<<<<<<< HEAD
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -36,8 +35,7 @@
                 My Profile
             </a>
         </nav>
-=======
->>>>>>> origin/uni-representative
+
 
 <body>
     <?php $isRep = isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'university_representative'; ?>

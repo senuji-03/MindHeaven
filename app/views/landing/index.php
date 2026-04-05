@@ -5,44 +5,6 @@ ob_start();
 
 <!-- ======== HERO ======== -->
 <section class="hero-section">
-<<<<<<< HEAD
-    <div class="container">
-        <div class="hero-inner">
-            <div class="hero-text">
-                <div class="hero-badge">
-                    <i class="fas fa-shield-alt"></i>
-                    Free &amp; confidential for all students
-                </div>
-                <h1 class="hero-title">You don't have to<br>carry this alone.</h1>
-                <p class="hero-subtitle">
-                    MindHeaven is a safe, confidential space built for undergraduate students —
-                    offering professional counseling, self-care tools, and a community that truly understands.
-                </p>
-                <div class="hero-buttons">
-                    <a href="<?php echo BASE_URL; ?>/signup" class="btn btn-primary btn-lg">
-                        <i class="fas fa-arrow-right"></i> Get started — it's free
-                    </a>
-                    <a href="<?php echo BASE_URL; ?>/public/resources" class="btn btn-outline btn-lg">
-                        Explore resources
-                    </a>
-                </div>
-                <div class="hero-social-proof">
-                    <div class="avatars">
-                        <span class="avatar">A</span>
-                        <span class="avatar" style="background:var(--accent-warm);">K</span>
-                        <span class="avatar" style="background:var(--accent-calm);color:var(--text-primary);">M</span>
-                        <span class="avatar" style="background:var(--primary-dark);">S</span>
-                    </div>
-                    <span>Trusted by <strong>5,000+</strong> students</span>
-                </div>
-            </div>
-
-            <div class="hero-visual" aria-hidden="true">
-                <div class="hero-circle hero-circle--sage"></div>
-                <div class="hero-circle hero-circle--apricot"></div>
-                <div class="hero-circle hero-circle--sky"></div>
-                <div class="hero-circle hero-circle--small"></div>
-=======
     <div class="container">
         <div class="hero-content">
             <h1 class="hero-title">Your Mental Health Matters</h1>
@@ -150,7 +112,6 @@ ob_start();
                         and progress visualization tools to celebrate your growth.
                     </p>
                 </div>
->>>>>>> origin/uni-representative
             </div>
         </div>
     </div>
@@ -170,7 +131,7 @@ ob_start();
     </div>
 </section>
 
-<!-- ======== FEATURES ======== -->
+<!-- ======== FEATURES DETAIL ======== -->
 <section class="section">
     <div class="container">
         <div class="section-header">
@@ -237,7 +198,7 @@ ob_start();
     </div>
 </section>
 
-<!-- ======== HOW IT WORKS (3 Steps) ======== -->
+<!-- ======== HOW IT WORKS ======== -->
 <section class="section section--alt">
     <div class="container">
         <div class="section-header">
@@ -293,19 +254,7 @@ ob_start();
     </div>
 </section>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<!-- ======== TESTIMONIALS ======== -->
-<section class="section">
-=======
-<!-- Meet Our Counselors Section -->
-<?php
-$counselors = isset($counselors) && is_array($counselors) ? $counselors : [];
-if (!empty($counselors)):
-?>
-<section class="counselors-section">
-=======
-<!-- University Donation Events Section -->
+<!-- ======== UNIVERSITY EVENTS ======== -->
 <?php if (!empty($eventsByUniversity)): ?>
     <section class="features-section" style="background-color: #f8fafc; padding-bottom: 2rem;">
         <div class="container">
@@ -316,47 +265,38 @@ if (!empty($counselors)):
 
             <?php foreach ($eventsByUniversity as $uniName => $events): ?>
                 <div style="margin-bottom: 3rem;">
-                    <h3
-                        style="margin-bottom: 1.5rem; color: var(--primary-dark); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary-dark); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
                         <i class="fas fa-university"></i> <?= htmlspecialchars($uniName) ?>
                     </h3>
                     <div class="features-grid">
                         <?php foreach ($events as $event): ?>
                             <div class="feature-item">
-                                <div class="feature-card"
-                                    style="padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100%;">
+                                <div class="feature-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100%;">
                                     <?php if (!empty($event['image_path'])): ?>
-                                        <div
-                                            style="width: 100%; text-align: center; background-color: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+                                        <div style="width: 100%; text-align: center; background-color: #f8fafc; border-bottom: 1px solid #e5e7eb;">
                                             <img src="<?= BASE_URL . '/' . htmlspecialchars($event['image_path']) ?>" alt="Event Image"
                                                 style="max-width: 100%; height: auto; max-height: 250px; display: block; margin: 0 auto;">
                                         </div>
                                     <?php else: ?>
-                                        <div
-                                            style="width: 100%; height: 200px; background: var(--border-color); display: flex; align-items: center; justify-content: center;">
+                                        <div style="width: 100%; height: 200px; background: var(--border-color); display: flex; align-items: center; justify-content: center;">
                                             <i class="fas fa-image" style="font-size: 3rem; color: #9ca3af;"></i>
                                         </div>
                                     <?php endif; ?>
 
                                     <div style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
-                                        <h4
-                                            style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">
+                                        <h4 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">
                                             <?= htmlspecialchars($event['event_title']) ?>
                                         </h4>
-                                        <p
-                                            style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; flex-grow: 1;">
+                                        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; flex-grow: 1;">
                                             <?= htmlspecialchars($event['short_description'] ?? 'Support this mental health initiative.') ?>
                                         </p>
-                                        <div
-                                            style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600; margin-bottom: 1rem;">
+                                        <div style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600; margin-bottom: 1rem;">
                                             <i class="far fa-calendar-alt"></i> Deadline:
                                             <?= (!empty($event['event_date']) && strpos($event['event_date'], '0000') === false) ? htmlspecialchars(date('M d, Y', strtotime($event['event_date']))) : 'To be announced' ?>
                                         </div>
                                         <div style="display: flex; gap: 0.5rem; margin-top: auto;">
-                                            <a href="<?= BASE_URL ?>/university-rep/events/view/<?= $event['id'] ?>"
-                                                class="btn btn-outline"
-                                                style="flex: 1; text-align: center; justify-content: center; padding: 0.5rem;">View
-                                                Details</a>
+                                            <a href="<?= BASE_URL ?>/university-rep/events/view/<?= $event['id'] ?>" class="btn btn-outline"
+                                                style="flex: 1; text-align: center; justify-content: center; padding: 0.5rem;">View Details</a>
                                             <a href="<?= BASE_URL ?>/donation?event_id=<?= $event['id'] ?>" class="btn btn-success"
                                                 style="flex: 1; text-align: center; justify-content: center; padding: 0.5rem;">Donate</a>
                                         </div>
@@ -371,24 +311,26 @@ if (!empty($counselors)):
     </section>
 <?php endif; ?>
 
-<!-- Call to Action Section -->
+<!-- ======== MEET OUR COUNSELORS ======== -->
+<?php
+$counselors = isset($counselors) && is_array($counselors) ? $counselors : [];
+if (!empty($counselors)):
+?>
 <section class="features-section">
->>>>>>> origin/uni-representative
     <div class="container">
         <div class="section-title">
             <h2>Meet Our Counselors</h2>
             <p>Our licensed mental health professionals are here to support your journey toward wellness</p>
         </div>
-<<<<<<< HEAD
         <div class="counselors-grid">
             <?php foreach ($counselors as $counselor): 
                 $pic = !empty($counselor['profile_picture']) ? htmlspecialchars($counselor['profile_picture']) : '';
                 $name = htmlspecialchars($counselor['full_name'] ?? 'Counselor');
                 $spec = htmlspecialchars($counselor['specialization'] ?? 'Mental Health');
-                $exp  = !empty($counselor['experience_years']) ? (int)$counselor['experience_years'] : null;
+                $exp  = !empty($counselor['years_experience']) ? (int)$counselor['years_experience'] : null;
                 $bio  = !empty($counselor['bio']) ? htmlspecialchars($counselor['bio']) : 'Dedicated to helping students thrive emotionally and mentally.';
                 $bioShort = mb_strlen($bio) > 120 ? mb_substr($bio, 0, 120) . '…' : $bio;
-                // Generate initials avatar color from name
+                
                 $colors = ['#4f46e5','#06b6d4','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
                 $colorIndex = array_sum(array_map('ord', str_split(substr($name, 0, 3)))) % count($colors);
                 $avatarColor = $colors[$colorIndex];
@@ -429,10 +371,8 @@ if (!empty($counselors)):
 </section>
 <?php endif; ?>
 
-<!-- Call to Action Section -->
-
+<!-- ======== TESTIMONIALS ======== -->
 <section class="features-section">
->>>>>>> origin/counselor
     <div class="container">
         <div class="section-header">
             <span class="section-label">Student voices</span>
@@ -461,8 +401,14 @@ if (!empty($counselors)):
                 <p>Tracking my mood every day seemed small, but after a month I could actually see patterns. It helped
                     my counselor and me figure out what was triggering my anxiety. I'm doing so much better now.</p>
                 <span class="testimonial-author">— 1st Year, Business</span>
-=======
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- ======== CTA GRID ======== -->
+<section class="features-section">
+    <div class="container">
         <div class="cta-grid">
             <div class="cta-item">
                 <div class="feature-card cta-card">
@@ -475,8 +421,7 @@ if (!empty($counselors)):
                         to get personalized recommendations.
                     </p>
                     <a href="<?php echo BASE_URL; ?>/signup" class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i>
-                        Sign Up Now
+                        <i class="fas fa-user-plus"></i> Sign Up Now
                     </a>
                 </div>
             </div>
@@ -492,8 +437,7 @@ if (!empty($counselors)):
                         to students by making a donation.
                     </p>
                     <a href="<?php echo BASE_URL; ?>/donation" class="btn btn-success">
-                        <i class="fas fa-donate"></i>
-                        Donate Now
+                        <i class="fas fa-donate"></i> Donate Now
                     </a>
                 </div>
             </div>
@@ -509,11 +453,9 @@ if (!empty($counselors)):
                         your experiences with others who understand.
                     </p>
                     <a href="<?php echo BASE_URL; ?>/forum" class="btn btn-outline">
-                        <i class="fas fa-users"></i>
-                        Join Forum
+                        <i class="fas fa-users"></i> Join Forum
                     </a>
                 </div>
->>>>>>> origin/uni-representative
             </div>
         </div>
     </div>
@@ -525,8 +467,7 @@ if (!empty($counselors)):
         <div class="crisis-inner">
             <div class="crisis-text">
                 <h2>If you need help right now, we're here.</h2>
-                <p>You don't need an account. You don't need to explain everything. Just reach out — 24/7, always free.
-                </p>
+                <p>You don't need an account. You don't need to explain everything. Just reach out — 24/7, always free.</p>
             </div>
             <div class="crisis-actions">
                 <a href="<?php echo BASE_URL; ?>/public/crisis" class="btn btn-white btn-lg">

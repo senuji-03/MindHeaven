@@ -191,14 +191,9 @@
     button.addEventListener('click', function () {
       if (this.form && this.form.checkValidity()) {
         this.classList.add('loading');
-<<<<<<< HEAD
-        this.disabled = true;
-
-        // Re-enable after a delay (for demo purposes)
-=======
         // Use setTimeout to allow form submission to trigger before disabling
         const btn = this;
->>>>>>> origin/uni-representative
+
         setTimeout(() => {
           btn.disabled = true;
         }, 0);

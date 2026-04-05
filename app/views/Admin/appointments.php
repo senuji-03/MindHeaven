@@ -299,50 +299,6 @@
 
             <!-- Appointments Table -->
             <div class="section-card">
-<<<<<<< HEAD
-                <div class="card-header">
-                    <h3>📋 All Appointments</h3>
-                    <div class="card-tools">
-                        <button id="refreshAppointments" class="btn btn-primary">
-                            <span class="btn-icon">🔄</span>
-                            <span class="btn-text">Refresh</span>
-                        </button>
-                        <button id="exportAppointmentsCsv" class="btn btn-secondary">
-                            <span class="btn-icon">📤</span>
-                            <span class="btn-text">Export CSV</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div id="appointmentsEmptyState" class="empty-state" style="display:none;">
-                        <div class="empty-state-content">
-                            <div class="empty-state-icon">📅</div>
-                            <h3>No appointments found</h3>
-                            <p>No appointments have been scheduled yet. The appointments table may not exist or may be empty.</p>
-                            <p><strong>Note:</strong> If you're seeing this message, it means the database connection is working, but there are no appointments to display.</p>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="appointments-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Student</th>
-                                    <th>Counselor</th>
-                                    <th>Title</th>
-                                    <th>Type</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="appointmentsTableBody">
-                                <!-- Dynamic content will be loaded here -->
-                            </tbody>
-                        </table>
-                    </div>
-=======
                 <table class="users-table">
                     <thead>
                         <tr>
@@ -420,7 +376,7 @@
 
                 <div style="padding: 20px; text-align: center;">
                     <button class="btn btn-secondary">Load More Appointments</button>
->>>>>>> origin/uni-representative
+
                 </div>
             </div>
         </div>

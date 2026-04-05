@@ -135,7 +135,7 @@ class Feedback
      */
     public function getCounselors()
     {
-        $sql = "SELECT id, full_name, specializations as specialization, years_experience as experience_years 
+        $sql = "SELECT id, full_name, specialization, years_experience 
                 FROM counselors 
                 WHERE is_active = 1 
                 ORDER BY full_name";

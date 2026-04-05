@@ -32,9 +32,6 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-<<<<<<< HEAD
-        <?php include __DIR__ . '/sidebar.php'; ?>
-=======
         <div class="sidebar">
             <ul class="sidebar-menu">
                 <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
@@ -52,7 +49,7 @@
                         onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
->>>>>>> origin/uni-representative
+
 
         <!-- Main Content -->
         <div class="main-content">

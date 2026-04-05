@@ -32,9 +32,6 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-<<<<<<< HEAD
-        <?php include __DIR__ . '/sidebar.php'; ?>
-=======
         <div class="sidebar">
             <ul class="sidebar-menu">
                 <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/dashboard"
@@ -53,7 +50,7 @@
                         onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
->>>>>>> origin/uni-representative
+
 
         <!-- Main Content -->
         <div class="main-content">
@@ -148,11 +145,6 @@
                         <?php echo $badgeText; ?>
                     </div>
                     <div class="action-buttons">
-<<<<<<< HEAD
-                        <button class="btn btn-start" onclick="startMeeting('<?php echo addslashes($studentNameSafe); ?>')">Start Session</button>
-                        <!-- <button class="btn btn-reschedule" onclick="reschedule('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Reschedule</button> -->
-                        <button class="btn btn-feedback" onclick="sendFeedback('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Feedback</button>
-=======
                         <button class="btn btn-start" onclick="startMeeting('Sarah Johnson')">Start</button>
                         <button class="btn btn-reschedule"
                             onclick="reschedule('Sarah Johnson', 'Anxiety and stress management')">Reschedule</button>
@@ -198,7 +190,7 @@
                             onclick="reschedule('Emily Davis', 'Social anxiety and relationship issues')">Reschedule</button>
                         <button class="btn btn-feedback"
                             onclick="sendFeedback('Emily Davis', 'Social anxiety and relationship issues')">Feedback</button>
->>>>>>> origin/uni-representative
+
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -234,12 +226,6 @@
                             ?>
                         </div>
                     </div>
-<<<<<<< HEAD
-                    <p class="feedback-text"><?php echo htmlspecialchars(isset($fb['content']) ? $fb['content'] : ''); ?></p>
-                    <?php if (!empty($fb['created_at'])): ?>
-                    <div class="feedback-meta"><?php echo date('M j, Y', strtotime($fb['created_at'])); ?></div>
-                    <?php endif; ?>
-=======
                     <p class="feedback-text">Dr. Smith was incredibly helpful and understanding. The session really
                         helped me manage my anxiety better. I feel more confident about handling stressful situations
                         now.</p>
@@ -271,7 +257,7 @@
                     </div>
                     <p class="feedback-text">Excellent support during a difficult time. The counselor provided valuable
                         insights and coping strategies that have made a real difference in my daily life.</p>
->>>>>>> origin/uni-representative
+
                 </div>
                 <?php endforeach; ?>
                 <?php endif; ?>

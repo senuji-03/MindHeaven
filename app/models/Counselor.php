@@ -16,21 +16,15 @@ class Counselor
     {
         $stmt = $this->pdo->prepare("
             INSERT INTO counselors (
-<<<<<<< HEAD
                 user_id, full_name, email, phone_number, license_number,
-                specialization, experience_years, bio, is_approved
+                specialization, years_experience, bio, is_approved
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
-=======
-                user_id, full_name, phone_number, license_number,
-                specialization, years_experience, bio,
-                approved_by, approved_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)
->>>>>>> origin/uni-representative
         ");
 
         $stmt->execute([
             $userId,
             $data['full_name'],
+            $data['email'] ?? null,
             $data['phone_number'],
             $data['license_number'],
             $data['specialization'] ?? null,
@@ -65,18 +59,8 @@ class Counselor
         $values = [];
 
         $allowedFields = [
-<<<<<<< HEAD
             'full_name', 'email', 'phone_number', 'license_number', 
             'specialization', 'years_experience', 'bio', 'hourly_rate', 'profile_picture'
-=======
-            'full_name',
-            'phone_number',
-            'license_number',
-            'specialization',
-            'years_experience',
-            'bio',
-            'hourly_rate'
->>>>>>> origin/uni-representative
         ];
 
         foreach ($allowedFields as $field) {
@@ -242,7 +226,7 @@ class Counselor
             FROM counselors c 
             JOIN users u ON c.user_id = u.id 
             WHERE c.is_active = 1 AND c.status = 'approved'
-            AND c.specializations LIKE ?
+            AND c.specialization LIKE ?
             ORDER BY c.created_at DESC
         ");
         $stmt->execute(["%$specialization%"]);

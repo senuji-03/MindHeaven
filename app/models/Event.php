@@ -15,13 +15,13 @@ class Event {
     /**
      * Get all events for a specific counselor
      */
-    public function getEventsByCounselor($counselorId) {
+    public function getEventsByCounselor($counselorUserId) {
         if (!$this->db) {
             return [];
         }
-        $sql = "SELECT * FROM events WHERE counselor_id = :counselor_id ORDER BY event_date, event_time";
+        $sql = "SELECT * FROM events WHERE counselor_user_id = :counselor_user_id ORDER BY event_date, event_time";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':counselor_id', $counselorId, PDO::PARAM_INT);
+        $stmt->bindParam(':counselor_user_id', $counselorUserId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
@@ -29,13 +29,13 @@ class Event {
     /**
      * Get events for a specific date
      */
-    public function getEventsByDate($counselorId, $date) {
+    public function getEventsByDate($counselorUserId, $date) {
         if (!$this->db) {
             return [];
         }
-        $sql = "SELECT * FROM events WHERE counselor_id = :counselor_id AND event_date = :event_date ORDER BY event_time";
+        $sql = "SELECT * FROM events WHERE counselor_user_id = :counselor_user_id AND event_date = :event_date ORDER BY event_time";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':counselor_id', $counselorId, PDO::PARAM_INT);
+        $stmt->bindParam(':counselor_user_id', $counselorUserId, PDO::PARAM_INT);
         $stmt->bindParam(':event_date', $date, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -61,11 +61,11 @@ class Event {
             return false;
         }
         
-        $sql = "INSERT INTO events (counselor_id, title, event_date, event_time, priority, description, appointment_id, created_at) 
-                VALUES (:counselor_id, :title, :event_date, :event_time, :priority, :description, :appointment_id, NOW())";
+        $sql = "INSERT INTO events (counselor_user_id, title, event_date, event_time, priority, description, appointment_id, created_at) 
+                VALUES (:counselor_user_id, :title, :event_date, :event_time, :priority, :description, :appointment_id, NOW())";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':counselor_id', $data['counselor_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':counselor_user_id', $data['counselor_user_id'], PDO::PARAM_INT);
         $stmt->bindParam(':title', $data['title'], PDO::PARAM_STR);
         $stmt->bindParam(':event_date', $data['event_date'], PDO::PARAM_STR);
         $stmt->bindParam(':event_time', $data['event_time'], PDO::PARAM_STR);
@@ -144,30 +144,30 @@ class Event {
     /**
      * Get today's events for a counselor
      */
-    public function getTodaysEvents($counselorId) {
+    public function getTodaysEvents($counselorUserId) {
         $today = date('Y-m-d');
-        return $this->getEventsByDate($counselorId, $today);
+        return $this->getEventsByDate($counselorUserId, $today);
     }
     
     /**
      * Get events for a specific month
      */
-    public function getEventsByMonth($counselorId, $year, $month) {
+    public function getEventsByMonth($counselorUserId, $year, $month) {
         if (!$this->db) {
             error_log("Event model: Database connection is null");
             return [];
         }
         
         $sql = "SELECT * FROM events 
-                WHERE counselor_id = :counselor_id 
+                WHERE counselor_user_id = :counselor_user_id 
                 AND YEAR(event_date) = :year 
                 AND MONTH(event_date) = :month 
                 ORDER BY event_date, event_time";
         
-        error_log("Event model: Executing query - Counselor ID: $counselorId, Year: $year, Month: $month");
+        error_log("Event model: Executing query - Counselor ID: $counselorUserId, Year: $year, Month: $month");
         
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':counselor_id', $counselorId, PDO::PARAM_INT);
+        $stmt->bindParam(':counselor_user_id', $counselorUserId, PDO::PARAM_INT);
         $stmt->bindParam(':year', $year, PDO::PARAM_INT);
         $stmt->bindParam(':month', $month, PDO::PARAM_INT);
         $stmt->execute();
@@ -200,14 +200,14 @@ class Event {
     /**
      * Check if event time conflicts with existing events
      */
-    public function checkTimeConflict($counselorId, $eventDate, $eventTime, $excludeEventId = null) {
+    public function checkTimeConflict($counselorUserId, $eventDate, $eventTime, $excludeEventId = null) {
         if (!$this->db) {
             error_log("Event model: Database connection is null in checkTimeConflict");
             return false;
         }
         
         $sql = "SELECT COUNT(*) as conflict_count FROM events 
-                WHERE counselor_id = :counselor_id 
+                WHERE counselor_user_id = :counselor_user_id 
                 AND event_date = :event_date 
                 AND event_time = :event_time";
         
@@ -215,10 +215,10 @@ class Event {
             $sql .= " AND id != :exclude_id";
         }
         
-        error_log("Event model: Checking time conflict for counselor_id: $counselorId, date: $eventDate, time: $eventTime, exclude: $excludeEventId");
+        error_log("Event model: Checking time conflict for counselor_user_id: $counselorUserId, date: $eventDate, time: $eventTime, exclude: $excludeEventId");
         
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':counselor_id', $counselorId, PDO::PARAM_INT);
+        $stmt->bindParam(':counselor_user_id', $counselorUserId, PDO::PARAM_INT);
         $stmt->bindParam(':event_date', $eventDate, PDO::PARAM_STR);
         $stmt->bindParam(':event_time', $eventTime, PDO::PARAM_STR);
         

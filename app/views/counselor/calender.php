@@ -32,9 +32,6 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-<<<<<<< HEAD
-        <?php include __DIR__ . '/sidebar.php'; ?>
-=======
         <div class="sidebar">
             <ul class="sidebar-menu">
                 <!-- <li class="sidebar-item">📊 Dashboard</li>
@@ -55,7 +52,7 @@
                         onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
             </ul>
         </div>
->>>>>>> origin/uni-representative
+
 
         <!-- Main Content -->
         <div class="main-content">
@@ -193,22 +190,6 @@
 
         console.log('BASE URL:', BASE);
         console.log('Counselor ID:', counselorId);
-<<<<<<< HEAD
-        
-        
-        // Initialize calendar on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Calendar page loaded');
-            console.log('BASE URL:', BASE);
-            console.log('Counselor ID:', counselorId);
-            
-            // Initialize calendar
-            if (typeof loadMonthEvents === 'function') {
-                loadMonthEvents();
-            }
-            if (typeof updateTodaysEvents === 'function') {
-                updateTodaysEvents();
-=======
 
 
         // Add event listener as backup
@@ -227,7 +208,7 @@
                 });
             } else {
                 console.error('Save button not found!');
->>>>>>> origin/uni-representative
+
             }
         });
     </script>
