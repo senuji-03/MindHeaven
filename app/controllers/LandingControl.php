@@ -1,9 +1,14 @@
 <?php
 
+class LandingControl
+{
+    public function index()
+    {
         $counselorModel = new Counselor();
-        $counselors = $counselorModel->getApproved(8); // Show up to 8 approved counselors
+        $counselors = $counselorModel->getApproved(8);
 
         $eventsByUniversity = [];
+
         try {
             $pdo = Database::getConnection();
             $sql = "SELECT e.*, u.name as university_name 
@@ -12,11 +17,11 @@
                     JOIN universities u ON ur.university_id = u.id 
                     WHERE e.status = 'approved' 
                     ORDER BY u.name ASC, e.event_date DESC";
+
             $stmt = $pdo->prepare($sql);
             $stmt->execute();
             $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Group by university
             foreach ($events as $event) {
                 $uniName = $event['university_name'];
                 if (!isset($eventsByUniversity[$uniName])) {
@@ -28,6 +33,9 @@
             error_log("Landing Page Events Error: " . $e->getMessage());
         }
 
-        view('landing/index', ['counselors' => $counselors, 'eventsByUniversity' => $eventsByUniversity]);
+        view('landing/index', [
+            'counselors' => $counselors,
+            'eventsByUniversity' => $eventsByUniversity
+        ]);
     }
 }

@@ -151,7 +151,7 @@ class Counselor
             SELECT c.*, u.username, u.role 
             FROM counselors c 
             JOIN users u ON c.user_id = u.id 
-            WHERE c.is_active = 1 AND c.status = 'approved'
+            WHERE c.is_active = 1 AND c.is_approved = 1
             ORDER BY c.created_at DESC
         ";
 

@@ -2,16 +2,13 @@
 
 class SignupControl
 {
-
     public function index()
     {
-        // If user is already logged in, redirect to their dashboard
         if (isset($_SESSION['user_id'])) {
             $this->redirectToDashboard($_SESSION['role']);
             return;
         }
 
-        // Show signup form
         $this->view('layouts/signup');
     }
 
@@ -29,7 +26,6 @@ class SignupControl
 
         $errors = [];
 
-        // Basic validation
         if (empty($username)) {
             $errors[] = 'Username is required';
         } elseif (strlen($username) < 3) {
@@ -54,12 +50,10 @@ class SignupControl
             $errors[] = 'Invalid role selected';
         }
 
-        // Map legacy 'undergrad' role to 'undergraduate' to match database schema
         if ($role === 'undergrad') {
             $role = 'undergraduate';
         }
 
-        // Additional validation for undergraduate students
         if ($role === 'undergraduate') {
             $fullName = trim($_POST['full_name'] ?? '');
             $email = trim($_POST['email'] ?? '');
@@ -84,7 +78,6 @@ class SignupControl
             }
         }
 
-        // Additional validation for counselors
         if ($role === 'counselor') {
             $fullName = trim($_POST['counselor_full_name'] ?? '');
             $email = trim($_POST['counselor_email'] ?? '');
@@ -119,7 +112,6 @@ class SignupControl
             }
         }
 
-        // Check if username already exists
         if (empty($errors)) {
             try {
                 $pdo = Database::getConnection();
@@ -133,7 +125,6 @@ class SignupControl
             }
         }
 
-        // Check if email already exists (for undergrad students)
         if (empty($errors) && $role === 'undergraduate') {
             try {
                 $pdo = Database::getConnection();
@@ -147,19 +138,16 @@ class SignupControl
             }
         }
 
-        // Check if email and license number already exist (for counselors)
         if (empty($errors) && $role === 'counselor') {
             try {
                 $pdo = Database::getConnection();
 
-                // Check email in counselors table
                 $stmt = $pdo->prepare("SELECT id FROM counselors WHERE email = ?");
                 $stmt->execute([$email]);
                 if ($stmt->fetch()) {
                     $errors[] = 'Email address already exists. Please use a different email.';
                 }
 
-                // Check license number
                 $stmt = $pdo->prepare("SELECT id FROM counselors WHERE license_number = ?");
                 $stmt->execute([$licenseNumber]);
                 if ($stmt->fetch()) {
@@ -170,26 +158,21 @@ class SignupControl
             }
         }
 
-        // If there are errors, show the form again
         if (!empty($errors)) {
             $this->view('layouts/signup', ['errors' => $errors, 'form_data' => $_POST]);
             return;
         }
 
-        // Create the user account
         try {
             $pdo = Database::getConnection();
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // Start transaction
             $pdo->beginTransaction();
 
-            // Insert into users table
             $stmt = $pdo->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
             $stmt->execute([$username, $hashedPassword, $role]);
             $userId = $pdo->lastInsertId();
 
-            // If undergraduate student, insert additional data
             if ($role === 'undergraduate') {
                 $undergraduateModel = new Undergraduate();
                 $undergradData = [
@@ -198,13 +181,13 @@ class SignupControl
                     'phone_number' => trim($_POST['phone_number']),
                     'date_of_birth' => $_POST['date_of_birth'] ?? null,
                     'gender' => $_POST['gender'] ?? null,
-                    'preferred_language' => trim($_POST['preferred_language'] ?? 'en')
+                    'preferred_language' => trim($_POST['preferred_language'] ?? 'en'),
+                    'university_id' => 1
                 ];
 
                 $undergraduateModel->create($userId, $undergradData);
             }
 
-            // If counselor, insert additional data
             if ($role === 'counselor') {
                 $counselorModel = new Counselor();
                 $counselorData = [
@@ -220,19 +203,15 @@ class SignupControl
                 $counselorModel->create($userId, $counselorData);
             }
 
-            // Commit transaction
             $pdo->commit();
 
-            // Registration successful - redirect to login with success message
             if ($role === 'counselor') {
                 header('Location: ' . BASE_URL . '/login?registered=1&username=' . urlencode($username) . '&pending_approval=1');
             } else {
                 header('Location: ' . BASE_URL . '/login?registered=1&username=' . urlencode($username));
             }
             exit;
-
         } catch (Exception $e) {
-            // Rollback transaction on error
             if (isset($pdo)) {
                 $pdo->rollback();
             }
@@ -248,7 +227,8 @@ class SignupControl
             'counselor' => BASE_URL . '/counselor',
             'donor' => BASE_URL . '/DonationForm',
             'moderator' => BASE_URL . '/ModeratorDashboard',
-            'undergrad' => BASE_URL . '/ug'
+            'undergrad' => BASE_URL . '/ug',
+            'undergraduate' => BASE_URL . '/ug'
         ];
 
         $url = $dashboardUrls[$role] ?? BASE_URL . '/ug';
@@ -258,10 +238,8 @@ class SignupControl
 
     private function view($view, $data = [])
     {
-        // Extract data array to variables
         extract($data);
 
-        // Include the view file
         $viewFile = BASE_PATH . '/app/views/' . $view . '.php';
         if (file_exists($viewFile)) {
             include $viewFile;

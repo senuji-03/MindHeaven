@@ -10,18 +10,20 @@
 
 <body>
     <?php
-        $counselor = isset($counselor) && is_array($counselor) ? $counselor : array();
-        $c_full_name = isset($counselor['full_name']) ? $counselor['full_name'] : 'Counselor';
-        $c_email = isset($counselor['email']) ? $counselor['email'] : '';
-        $c_phone = isset($counselor['phone_number']) ? $counselor['phone_number'] : '';
-        $c_license = isset($counselor['license_number']) ? $counselor['license_number'] : '';
-        $c_spec = isset($counselor['specialization']) ? $counselor['specialization'] : '';
-        $c_exp = isset($counselor['years_experience']) ? $counselor['years_experience'] : '';
-        $c_bio = isset($counselor['bio']) ? $counselor['bio'] : '';
-        $c_profile_pic = isset($counselor['profile_picture']) && !empty($counselor['profile_picture']) ? $counselor['profile_picture'] : 'https://via.placeholder.com/150';
-        $qualifications = isset($qualifications) && is_array($qualifications) ? $qualifications : [];
+    $counselor = isset($counselor) && is_array($counselor) ? $counselor : array();
+    $c_full_name = isset($counselor['full_name']) ? $counselor['full_name'] : 'Counselor';
+    $c_email = isset($counselor['email']) ? $counselor['email'] : '';
+    $c_phone = isset($counselor['phone_number']) ? $counselor['phone_number'] : '';
+    $c_license = isset($counselor['license_number']) ? $counselor['license_number'] : '';
+    $c_spec = isset($counselor['specialization']) ? $counselor['specialization'] : '';
+    $c_exp = isset($counselor['years_experience']) ? $counselor['years_experience'] : '';
+    $c_bio = isset($counselor['bio']) ? $counselor['bio'] : '';
+    $c_profile_pic = isset($counselor['profile_picture']) && !empty($counselor['profile_picture'])
+        ? $counselor['profile_picture']
+        : 'https://via.placeholder.com/150';
+    $qualifications = isset($qualifications) && is_array($qualifications) ? $qualifications : [];
     ?>
-    <!-- Navigation Bar -->
+
     <nav class="navbar">
         <div class="nav-content">
             <div class="logo">
@@ -41,36 +43,33 @@
         </div>
     </nav>
 
-    <!-- Main Container -->
     <div class="main-container">
-        <!-- Sidebar -->
         <div class="sidebar">
             <ul class="sidebar-menu">
                 <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
                 <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
-                <li class="sidebar-item "><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓️ Appointment
+                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓️ Appointment
                         Management</a></li>
                 <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session
                         History</a></li>
                 <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
                 <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
-                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile"
-                        style="color: #2563eb;">👤 Profile</a></li>
+                <li class="sidebar-item active">
+                    <a href="<?php echo BASE_URL; ?>/counselor/counselor_profile" style="color: #2563eb;">👤 Profile</a>
+                </li>
                 <li class="sidebar-item"><a href="#">⚙️ Settings</a></li>
-                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout"
-                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
+                <li class="sidebar-item logout-item">
+                    <a href="<?php echo BASE_URL; ?>/logout"
+                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a>
+                </li>
             </ul>
         </div>
 
-
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-picture-container">
-                    <img id="profilePic" src="https://via.placeholder.com/150" alt="Profile Picture"
+                    <img id="profilePic" src="<?php echo htmlspecialchars($c_profile_pic); ?>" alt="Profile Picture"
                         class="profile-picture">
-
                     <button class="change-photo-btn" onclick="openPhotoModal()">📷</button>
                 </div>
                 <div class="profile-info">
@@ -84,15 +83,10 @@
                             <div class="stat-value">4.8</div>
                             <div class="stat-label">Average Rating</div>
                         </div>
-                        <!-- <div class="stat-item">
-                            <div class="stat-value">94%</div>
-                            <div class="stat-label">Success Rate</div>
-                        </div> -->
                     </div>
                 </div>
             </div>
 
-            <!-- Personal Details Section -->
             <div class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Personal Details</h2>
@@ -124,7 +118,6 @@
                 </div>
             </div>
 
-            <!-- Professional Summary -->
             <div class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Professional Details</h2>
@@ -134,15 +127,15 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <label class="info-label">Specialization</label>
-                            <div class="info-value " id="c_spec"><?php echo htmlspecialchars($c_spec); ?></div>
+                            <div class="info-value" id="c_spec"><?php echo htmlspecialchars($c_spec); ?></div>
                         </div>
                         <div class="info-item">
                             <label class="info-label">Years of Experience</label>
-                            <div class="info-value " id="c_exp"><?php echo htmlspecialchars((string)$c_exp); ?></div>
+                            <div class="info-value" id="c_exp"><?php echo htmlspecialchars((string) $c_exp); ?></div>
                         </div>
                         <div class="info-item" style="grid-column: 1 / -1;">
                             <label class="info-label">Bio</label>
-                            <div class="info-value " id="c_bio"><?php echo htmlspecialchars($c_bio); ?></div>
+                            <div class="info-value" id="c_bio"><?php echo htmlspecialchars($c_bio); ?></div>
                         </div>
                     </div>
                 </div>
@@ -152,7 +145,6 @@
                 </div>
             </div>
 
-            <!-- Qualifications Section -->
             <div class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Qualifications & Experience</h2>
@@ -167,47 +159,28 @@
                             <div class="qualification-item empty-state" style="text-align: center; color: #888;">
                                 No qualifications added yet. Click Add to create one.
                             </div>
-                            <p class="qualification-description">Specialized in cognitive behavioral therapy and
-                                adolescent mental health. Research focus on anxiety disorders and stress management
-                                techniques.</p>
-                        </div>
-                        <div class="qualification-item">
-                            <div class="qualification-header">
-                                <div>
-                                    <div class="qualification-title">M.Sc. in Counseling Psychology</div>
-                                    <div class="qualification-institution">University of Kelaniya</div>
-
+                        <?php else: ?>
+                            <?php foreach ($qualifications as $qual): ?>
+                                <div class="qualification-item">
+                                    <div class="qualification-header">
+                                        <div>
+                                            <div class="qualification-title">
+                                                <?php echo htmlspecialchars($qual['title'] ?? 'Untitled Qualification'); ?>
+                                            </div>
+                                            <div class="qualification-institution">
+                                                <?php echo htmlspecialchars($qual['institution'] ?? ''); ?>
+                                            </div>
+                                        </div>
+                                        <span class="qualification-year">
+                                            <?php echo htmlspecialchars($qual['year'] ?? ''); ?>
+                                        </span>
+                                    </div>
+                                    <p class="qualification-description">
+                                        <?php echo nl2br(htmlspecialchars($qual['description'] ?? '')); ?>
+                                    </p>
                                 </div>
-                                <p class="qualification-description"><?php echo nl2br(htmlspecialchars($qual['description'])); ?></p>
-                            </div>
-                            <p class="qualification-description">Advanced training in therapeutic techniques including
-                                CBT, DBT, and mindfulness-based interventions.</p>
-                        </div>
-                        <div class="qualification-item">
-                            <div class="qualification-header">
-                                <div>
-                                    <div class="qualification-title">Senior Counselor</div>
-                                    <div class="qualification-institution">Mindheaven Mental Health Center</div>
-                                </div>
-                                <span class="qualification-year">2019 - Present</span>
-                            </div>
-                            <p class="qualification-description">Providing individual and group therapy sessions for
-                                students and young adults. Specializing in academic stress, anxiety, depression, and
-                                relationship counseling.</p>
-                        </div>
-                        <div class="qualification-item">
-                            <div class="qualification-header">
-                                <div>
-                                    <div class="qualification-title">Clinical Psychologist</div>
-                                    <div class="qualification-institution">National Hospital Colombo</div>
-                                </div>
-                                <span class="qualification-year">2014 - 2019</span>
-                            </div>
-                            <p class="qualification-description">Conducted psychological assessments and therapy for
-                                diverse patient populations. Developed treatment plans and collaborated with
-                                multidisciplinary teams.</p>
-                        </div>
-
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="save-section" id="qualificationSave">
@@ -218,7 +191,6 @@
         </div>
     </div>
 
-    <!-- Photo Upload Modal -->
     <div id="photoModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
