@@ -1,793 +1,428 @@
-// Appointments Page JavaScript
+// MindHeaven — Appointments JS (DB-backed, modal form)
 
-// Global variables
-let appointments = [];
-let isSubmitting = false;
+// ─── Constants ────────────────────────────────────────────────────────────────
+const ALL_SLOTS = ['09:00', '13:00', '16:00'];
+const BASE      = window.BASE_URL || '/MindHeaven/public';
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM loaded, initializing appointments page');
-    console.log('BASE_URL available:', window.BASE_URL);
-    initializeAppointmentsPage();
-});
+const MODE_LABELS = {
+    audio_video: '🎥 Audio/Video',
+    chat:        '💬 Chat'
+};
 
-function initializeAppointmentsPage() {
-    console.log('Appointments page initialized');
+const STATUS_CLASS = {
+    pending:   'pending',
+    scheduled: 'scheduled',
+    accepted:  'accepted',
+    accept:    'accepted',
+    completed: 'completed',
+    cancelled: 'cancelled',
+    rejected:  'rejected'
+};
 
-    // Load appointments from localStorage
-    loadAppointments();
+let _appointments = [];
 
-    // Load counselors and appointment types
+// ─── Init ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
     loadCounselors();
     loadAppointmentTypes();
-
-    // Set up form validation
-    setupFormValidation();
-
-    // Set up form submission
     setupFormSubmission();
-
-    // Set up event listeners
     setupEventListeners();
-
-    // Add direct button click handler for testing
-    const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
-    if (submitBtn) {
-        console.log('Adding direct click handler to submit button');
-        submitBtn.addEventListener('click', function (e) {
-            console.log('Submit button clicked directly');
-            e.preventDefault();
-            if (validateForm()) {
-                submitForm();
-            }
-        });
-    } else {
-        console.log('Submit button not found');
-    }
-
-    // Update stats
-    updateStats();
-
-    // Render appointments
     renderAppointments();
-}
 
-// Form Validation
-function setupFormValidation() {
-    const form = document.getElementById('appointmentForm');
-    const inputs = form.querySelectorAll('input[required], select[required]');
+    // Min date = today
+    const dateEl = document.getElementById('appointmentDate');
+    if (dateEl) dateEl.min = new Date().toISOString().split('T')[0];
 
-    inputs.forEach(input => {
-        input.addEventListener('blur', function () {
-            validateField(this);
-        });
-
-        input.addEventListener('input', function () {
-            clearFieldError(this);
-        });
+    // Close modal on overlay click
+    document.getElementById('bookingModal')?.addEventListener('click', function (e) {
+        if (e.target === this) closeBookingModal();
     });
+
+    // Close on Escape key
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeBookingModal();
+    });
+});
+
+// ─── Modal Controls ───────────────────────────────────────────────────────────
+function openBookingModal(appointment = null) {
+    const modal     = document.getElementById('bookingModal');
+    const title     = document.getElementById('modalTitle');
+    const submitTxt = document.getElementById('submitBtnText');
+
+    resetForm();
+
+    if (appointment) {
+        // Edit mode
+        title.textContent     = 'Edit Appointment';
+        submitTxt.textContent = 'Update Appointment';
+        prefillForm(appointment);
+    } else {
+        title.textContent     = 'Book an Appointment';
+        submitTxt.textContent = 'Save Appointment';
+    }
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('appointmentTitle')?.focus(), 100);
 }
 
-function validateField(field) {
-    const value = field.value.trim();
-    const fieldName = field.name || field.id;
-    const errorElement = document.getElementById(fieldName.replace('appointment', '') + 'Error');
-
-    // Clear previous error
-    clearFieldError(field);
-
-    // Required field validation
-    if (field.hasAttribute('required') && !value) {
-        showFieldError(field, 'This field is required');
-        return false;
-    }
-
-    // Date validation
-    if (field.type === 'date' && value) {
-        const selectedDate = new Date(value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (selectedDate < today) {
-            showFieldError(field, 'Appointment date cannot be in the past');
-            return false;
-        }
-    }
-
-    // Time validation
-    if (field.type === 'time' && value) {
-        const selectedTime = value;
-        const [hours, minutes] = selectedTime.split(':').map(Number);
-
-        // Check if time is within business hours (8 AM - 6 PM)
-        if (hours < 8 || hours > 18) {
-            showFieldError(field, 'Appointments are only available between 8 AM and 6 PM');
-            return false;
-        }
-    }
-
-    return true;
+function closeBookingModal() {
+    const modal = document.getElementById('bookingModal');
+    if (!modal) return;
+    modal.style.animation = 'mh-overlay-in .18s ease reverse forwards';
+    setTimeout(() => {
+        modal.style.display = '';
+        modal.style.animation = '';
+        document.body.style.overflow = '';
+        resetForm();
+    }, 160);
 }
 
-function showFieldError(field, message) {
-    field.classList.add('error');
-    const fieldName = field.name || field.id;
-    const errorElement = document.getElementById(fieldName.replace('appointment', '') + 'Error');
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.classList.add('show');
-    }
-}
+function prefillForm(a) {
+    document.getElementById('appointmentId').value        = a.id;
+    document.getElementById('appointmentTitle').value     = a.title    || '';
+    document.getElementById('appointmentType').value      = a.type     || '';
+    document.getElementById('appointmentMode').value      = a.mode     || '';
+    document.getElementById('appointmentDate').value      = a.date     || '';
+    document.getElementById('appointmentCounselor').value = a.counselor_user_id || '';
+    document.getElementById('appointmentNotes').value     = a.notes    || '';
 
-function clearFieldError(field) {
-    field.classList.remove('error');
-    const fieldName = field.name || field.id;
-    const errorElement = document.getElementById(fieldName.replace('appointment', '') + 'Error');
-    if (errorElement) {
-        errorElement.classList.remove('show');
+    const timeSel = document.getElementById('appointmentTime');
+    if (timeSel && a.time) {
+        const slot = a.time.substring(0, 5);
+        timeSel.innerHTML = `<option value="${slot}">${formatSlotLabel(slot)}</option>`;
+        timeSel.disabled = false;
     }
 }
 
-// Form Submission
-function setupFormSubmission() {
-    const form = document.getElementById('appointmentForm');
-    console.log('Setting up form submission for:', form);
-
-    form.addEventListener('submit', function (e) {
-        console.log('Form submit event triggered');
-        e.preventDefault();
-
-        if (isSubmitting) {
-            console.log('Already submitting, returning');
+// ─── Counselors ───────────────────────────────────────────────────────────────
+async function loadCounselors() {
+    const sel = document.getElementById('appointmentCounselor');
+    if (!sel) return;
+    try {
+        const res  = await fetch(`${BASE}/api/counselors`, { credentials: 'same-origin' });
+        const data = await res.json();
+        if (!Array.isArray(data) || !data.length) {
+            sel.innerHTML = '<option value="">No counselors available</option>';
             return;
         }
-
-        console.log('Calling validateForm');
-        if (validateForm()) {
-            console.log('Validation passed, calling submitForm');
-            submitForm();
-        } else {
-            console.log('Validation failed');
-        }
-    });
+        sel.innerHTML = '<option value="">Select a counselor…</option>' +
+            data.map(c => {
+                const name = (c.full_name || c.username) + (c.specialization ? ` (${c.specialization})` : '');
+                return `<option value="${c.id}">${escHtml(name)}</option>`;
+            }).join('');
+    } catch {
+        sel.innerHTML = '<option value="">Error loading counselors</option>';
+    }
 }
 
-function validateForm() {
-    console.log('validateForm called');
-    const form = document.getElementById('appointmentForm');
-    const inputs = form.querySelectorAll('input[required], select[required]');
-    console.log('Found required inputs:', inputs.length);
-    let isValid = true;
-
-    inputs.forEach(input => {
-        console.log('Validating field:', input.name, 'value:', input.value);
-        if (!validateField(input)) {
-            isValid = false;
-        }
-    });
-
-    console.log('Form validation result:', isValid);
-    return isValid;
+// ─── Appointment Types ────────────────────────────────────────────────────────
+function loadAppointmentTypes() {
+    const sel = document.getElementById('appointmentType');
+    if (!sel) return;
+    const types = [
+        { value: 'individual', label: 'Individual Therapy' },
+        { value: 'group',      label: 'Group Therapy' },
+        { value: 'crisis',     label: 'Crisis Intervention' },
+        { value: 'assessment', label: 'Assessment' },
+        { value: 'follow_up',  label: 'Follow-up Session' }
+    ];
+    sel.innerHTML = '<option value="">Select type…</option>' +
+        types.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
 }
 
-function submitForm() {
-    console.log('submitForm called');
-    if (isSubmitting) {
-        console.log('Already submitting, returning');
+// ─── Time Slots ───────────────────────────────────────────────────────────────
+function formatSlotLabel(time) {
+    if (!time) return '—';
+    const [h, m] = time.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    return `${h % 12 || 12}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+async function loadTimeSlots() {
+    const counselorId = document.getElementById('appointmentCounselor')?.value;
+    const date        = document.getElementById('appointmentDate')?.value;
+    const timeSel     = document.getElementById('appointmentTime');
+    if (!timeSel) return;
+
+    if (!counselorId || !date) {
+        timeSel.innerHTML = '<option value="">Select counselor &amp; date first</option>';
+        timeSel.disabled = true;
         return;
     }
 
-    isSubmitting = true;
-    const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
-    console.log('Submit button found:', submitBtn);
+    timeSel.innerHTML = '<option value="">Loading slots…</option>';
+    timeSel.disabled  = true;
 
-    // Show loading state
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="btn-icon">⏳</span><span class="btn-text">Saving...</span>';
+    try {
+        const url  = `${BASE}/api/appointments/slots?counselor_id=${encodeURIComponent(counselorId)}&date=${encodeURIComponent(date)}`;
+        const res  = await fetch(url, { credentials: 'same-origin' });
+        const data = await res.json();
+        const booked = Array.isArray(data.booked) ? data.booked : [];
 
-    // Collect form data
-    const formData = new FormData(document.getElementById('appointmentForm'));
-    const data = Object.fromEntries(formData.entries());
-    console.log('Form data collected:', data);
-
-    // Get appointment ID
-    const appointmentId = document.getElementById('appointmentId').value;
-    console.log('Appointment ID:', appointmentId);
-
-    // Create appointment object
-    const appointment = {
-        id: appointmentId || Date.now(),
-        title: data.title,
-        type: data.type,
-        date: data.date,
-        time: data.time,
-        notes: data.notes || '',
-        counselor_user_id: data.counselor_user_id,
-        status: 'scheduled',
-        createdAt: appointmentId ? appointments.find(a => a.id == appointmentId)?.createdAt : new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    };
-
-    // Determine if this is an update or create operation
-    const isUpdate = appointmentId && appointmentId !== '';
-    console.log('Is update operation:', isUpdate, 'Appointment ID:', appointmentId);
-
-    // Save to database via API
-    saveAppointmentToDatabase(appointment, appointmentId, submitBtn, isUpdate);
+        timeSel.innerHTML = '<option value="">Choose a time slot</option>' +
+            ALL_SLOTS.map(s => {
+                const taken = booked.includes(s);
+                return `<option value="${s}"${taken ? ' disabled' : ''}>${formatSlotLabel(s)}${taken ? ' — Booked' : ''}</option>`;
+            }).join('');
+        timeSel.disabled = false;
+    } catch {
+        timeSel.innerHTML = '<option value="">Choose a time slot</option>' +
+            ALL_SLOTS.map(s => `<option value="${s}">${formatSlotLabel(s)}</option>`).join('');
+        timeSel.disabled = false;
+    }
 }
 
-// Save appointment to database
-async function saveAppointmentToDatabase(appointment, appointmentId, submitBtn, isUpdate = false) {
-    console.log('saveAppointmentToDatabase called with:', appointment, 'isUpdate:', isUpdate);
+// ─── Form Submit ──────────────────────────────────────────────────────────────
+function setupFormSubmission() {
+    document.getElementById('appointmentForm')?.addEventListener('submit', onFormSubmit);
+}
+
+async function onFormSubmit(e) {
+    e?.preventDefault();
+
+    const id          = document.getElementById('appointmentId')?.value?.trim();
+    const title       = document.getElementById('appointmentTitle')?.value?.trim();
+    const type        = document.getElementById('appointmentType')?.value;
+    const mode        = document.getElementById('appointmentMode')?.value;
+    const date        = document.getElementById('appointmentDate')?.value;
+    const time        = document.getElementById('appointmentTime')?.value;
+    const notes       = document.getElementById('appointmentNotes')?.value?.trim() || '';
+    const counselorId = document.getElementById('appointmentCounselor')?.value;
+
+    // Clear previous errors
+    document.querySelectorAll('.mh-field-error').forEach(el => el.textContent = '');
+
+    // Validate
+    let valid = true;
+    const err = (id, msg) => { const el = document.getElementById(id); if (el) el.textContent = msg; valid = false; };
+
+    if (!title)       err('titleError',    'Please enter a session title.');
+    if (!type)        err('typeError',     'Please select a session type.');
+    if (!mode)        err('modeError',     'Please select a mode.');
+    if (!counselorId) err('counselorError','Please choose a counselor.');
+    if (!date)        err('dateError',     'Please pick a date.');
+    if (!time)        err('timeError',     'Please choose a time slot.');
+    if (!valid) return;
+
+    const submitBtn = document.getElementById('submitAppointmentBtn');
+    const submitTxt = document.getElementById('submitBtnText');
+    if (submitBtn) { submitBtn.disabled = true; }
+    if (submitTxt) { submitTxt.textContent = 'Saving…'; }
+
+    const isUpdate = !!id;
+    const endpoint = `${BASE}/api/appointments/${isUpdate ? 'update' : 'create'}`;
+    const method   = isUpdate ? 'PUT' : 'POST';
+    const payload  = isUpdate
+        ? { id: parseInt(id), title, type, mode, date, time, notes }
+        : { counselor_user_id: parseInt(counselorId), title, type, mode, date, time, notes };
+
     try {
-        // Prepare appointment data for API
-        const appointmentData = {
-            counselor_user_id: parseInt(appointment.counselor_user_id),
-            title: appointment.title,
-            type: appointment.type,
-            date: appointment.date,
-            time: appointment.time,
-            notes: appointment.notes || null
-        };
-
-        // Add ID for update operations
-        if (isUpdate) {
-            appointmentData.id = parseInt(appointmentId);
-        }
-
-        console.log('Submitting appointment data:', appointmentData);
-
-        // Determine API endpoint and method
-        const endpoint = isUpdate ? '/api/appointments/update' : '/api/appointments/create';
-        const method = isUpdate ? 'PUT' : 'POST';
-
-        console.log('Using endpoint:', endpoint, 'method:', method);
-
-        // Send to API
-        const response = await fetch(window.BASE_URL + endpoint, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(appointmentData)
+        const res  = await fetch(endpoint, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify(payload)
         });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.detail || json.error || 'Server error');
 
-        console.log('API response status:', response.status);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('API error:', errorData);
-            throw new Error(errorData.error || 'Failed to save appointment');
-        }
-
-        const result = await response.json();
-        console.log(isUpdate ? 'Appointment updated:' : 'Appointment created:', result);
-
-        if (isUpdate) {
-            // Update existing appointment in local array
-            const index = appointments.findIndex(a => a.id == appointmentId);
-            if (index !== -1) {
-                appointments[index] = appointment;
-            }
-        } else {
-            // Update appointment with database ID for new appointments
-            appointment.id = result.id;
-            // Add to local appointments array
-            appointments.push(appointment);
-        }
-
-        // Save to localStorage for local display
-        saveAppointments();
-
-        // Reset form
-        resetForm();
-
-        // Update UI
-        updateStats();
+        toastSuccess(isUpdate ? 'Appointment updated!' : 'Appointment booked successfully!');
+        closeBookingModal();
         renderAppointments();
-
-        // Show success message
-        const action = isUpdate ? 'updated' : 'booked';
-        const actionPast = isUpdate ? 'updated' : 'saved';
-        showAlert(`Appointment ${action} successfully!`, 'success');
-        alert(`✅ Appointment ${action} successfully!\n\nDetails:\n• Title: ${appointment.title}\n• Type: ${appointment.type}\n• Date: ${appointment.date}\n• Time: ${appointment.time}\n\nYour appointment has been ${actionPast} to the database.`);
-
-    } catch (error) {
-        console.error('Error saving appointment:', error);
-        showAlert('Failed to save appointment: ' + error.message, 'error');
-        alert(`❌ Failed to save appointment!\n\nError: ${error.message}\n\nPlease try again or contact support if the problem persists.`);
+    } catch (err) {
+        toastError('Could not save: ' + err.message);
     } finally {
-        // Reset button state
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span class="btn-icon">💾</span><span class="btn-text">Save Appointment</span>';
-        isSubmitting = false;
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitTxt) submitTxt.textContent = isUpdate ? 'Update Appointment' : 'Save Appointment';
     }
 }
 
-// Event Listeners
+// ─── Event Listeners ─────────────────────────────────────────────────────────
 function setupEventListeners() {
-    // Reset form button
-    document.getElementById('resetAppointmentForm').addEventListener('click', resetForm);
-
-    // Import demo data
-    document.getElementById('importDemoAppointments').addEventListener('click', importDemoAppointments);
-
-    // Export CSV
-    document.getElementById('exportAppointmentsCsv').addEventListener('click', exportAppointmentsCsv);
+    document.getElementById('appointmentCounselor')?.addEventListener('change', loadTimeSlots);
+    document.getElementById('appointmentDate')?.addEventListener('change', loadTimeSlots);
+    document.getElementById('resetAppointmentForm')?.addEventListener('click', resetForm);
+    document.getElementById('importDemoAppointments')?.addEventListener('click', () =>
+        toastInfo('Use the Book Appointment button to add sessions.'));
+    document.getElementById('exportAppointmentsCsv')?.addEventListener('click', exportCsv);
 }
 
-// Data Management
-function loadAppointments() {
-    const saved = localStorage.getItem('appointments');
-    appointments = saved ? JSON.parse(saved) : [];
-}
-
-// Load counselors from API
-async function loadCounselors() {
-    try {
-        console.log('Loading counselors from:', window.BASE_URL + '/api/counselors');
-
-        // First test if API is working
-        try {
-            const testResponse = await fetch(window.BASE_URL + '/api/test');
-            const testData = await testResponse.json();
-            console.log('API test result:', testData);
-        } catch (testError) {
-            console.error('API test failed:', testError);
-        }
-
-        const response = await fetch(window.BASE_URL + '/api/counselors');
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Response error:', errorText);
-            throw new Error(`Failed to load counselors: ${response.status} ${errorText}`);
-        }
-
-        const counselors = await response.json();
-        console.log('Counselors data:', counselors);
-
-        const counselorSelect = document.getElementById('appointmentCounselor');
-        counselorSelect.innerHTML = '<option value="">Select a counselor...</option>';
-
-        if (counselors.length === 0) {
-            counselorSelect.innerHTML = '<option value="">No counselors available</option>';
-            console.log('No counselors found');
-            return;
-        }
-
-        counselors.forEach(counselor => {
-            const option = document.createElement('option');
-            option.value = counselor.id;
-            option.textContent = counselor.full_name || counselor.username;
-            if (counselor.specialization) {
-                option.textContent += ` (${counselor.specialization})`;
-            }
-            counselorSelect.appendChild(option);
-        });
-
-        console.log('Counselors loaded successfully:', counselors.length);
-    } catch (error) {
-        console.error('Error loading counselors:', error);
-        const counselorSelect = document.getElementById('appointmentCounselor');
-        counselorSelect.innerHTML = '<option value="">Error loading counselors</option>';
-    }
-}
-
-// Load appointment types
-function loadAppointmentTypes() {
-    const typeSelect = document.getElementById('appointmentType');
-    const types = [
-        'Individual Therapy',
-        'Group Therapy',
-        'Crisis Intervention',
-        'Assessment',
-        'Follow-up Session',
-        'Initial Consultation',
-        'Family Therapy',
-        'Couples Counseling'
-    ];
-
-    typeSelect.innerHTML = '<option value="">Select appointment type...</option>';
-    types.forEach(type => {
-        const option = document.createElement('option');
-        option.value = type;
-        option.textContent = type;
-        typeSelect.appendChild(option);
-    });
-}
-
-function saveAppointments() {
-    localStorage.setItem('appointments', JSON.stringify(appointments));
-}
-
-function getAppointments() {
-    return appointments;
-}
-
-// CRUD Operations
-function editAppointment(id) {
-    const appointment = appointments.find(a => a.id == id);
-    if (!appointment) return;
-
-    console.log('Editing appointment:', appointment);
-
-    // Populate form
-    document.getElementById('appointmentId').value = appointment.id;
-    document.getElementById('appointmentTitle').value = appointment.title;
-    document.getElementById('appointmentType').value = appointment.type;
-    document.getElementById('appointmentDate').value = appointment.date;
-    document.getElementById('appointmentTime').value = appointment.time;
-    document.getElementById('appointmentNotes').value = appointment.notes || '';
-
-    // Populate counselor if available
-    if (appointment.counselor_user_id) {
-        document.getElementById('appointmentCounselor').value = appointment.counselor_user_id;
-    }
-
-    // Update form title to indicate edit mode
-    const formTitle = document.querySelector('.booking-form-card h2');
-    if (formTitle) {
-        formTitle.textContent = '✏️ Edit Appointment';
-    }
-
-    // Update submit button text
-    const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.innerHTML = '<span class="btn-icon">💾</span><span class="btn-text">Update Appointment</span>';
-    }
-
-    // Show cancel edit button
-    showCancelEditButton();
-
-    // Scroll to form
-    document.querySelector('.booking-form-card').scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-    });
-
-    // Focus on title field
-    document.getElementById('appointmentTitle').focus();
-}
-
-async function deleteAppointment(id) {
-    if (confirm('Are you sure you want to delete this appointment?')) {
-        try {
-            console.log('Deleting appointment with ID:', id);
-
-            // Call API to delete from database
-            const response = await fetch(window.BASE_URL + '/api/appointments/delete', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: id })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to delete appointment');
-            }
-
-            const result = await response.json();
-            console.log('Delete API response:', result);
-
-            // Remove from local array
-            appointments = appointments.filter(a => a.id != id);
-            saveAppointments();
-            updateStats();
-            renderAppointments();
-
-            // Show success message
-            showAlert('Appointment deleted successfully from database!', 'success');
-            alert('✅ Appointment deleted successfully!\n\nThe appointment has been removed from the database.');
-
-        } catch (error) {
-            console.error('Error deleting appointment:', error);
-            showAlert('Failed to delete appointment: ' + error.message, 'error');
-            alert('❌ Failed to delete appointment!\n\nError: ' + error.message + '\n\nPlease try again or contact support if the problem persists.');
-        }
-    }
-}
-
-function updateAppointmentStatus(id, status) {
-    const appointment = appointments.find(a => a.id == id);
-    if (appointment) {
-        appointment.status = status;
-        appointment.updatedAt = new Date().toISOString();
-        saveAppointments();
-        updateStats();
-        renderAppointments();
-        showAlert('Appointment status updated!', 'success');
-    }
-}
-
-// UI Updates
-function renderAppointments() {
+// ─── Render Appointments ──────────────────────────────────────────────────────
+async function renderAppointments() {
     const tbody = document.getElementById('appointmentsTableBody');
-    const emptyState = document.getElementById('appointmentsEmptyState');
+    const empty = document.getElementById('appointmentsEmptyState');
+    if (!tbody) return;
 
-    if (appointments.length === 0) {
-        emptyState.style.display = 'block';
+    tbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading">
+        <span class="mh-spinner"></span> Loading appointments…</td></tr>`;
+    if (empty) empty.style.display = 'none';
+
+    try {
+        const res  = await fetch(`${BASE}/api/appointments/mine`, { credentials: 'same-origin' });
+        const rows = await res.json();
+        _appointments = Array.isArray(rows) ? rows : [];
+        _renderRows(_appointments);
+        _updateStats(_appointments);
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading" style="color:var(--crisis)">
+            Failed to load appointments.</td></tr>`;
+    }
+}
+
+function _renderRows(list) {
+    const tbody = document.getElementById('appointmentsTableBody');
+    const empty = document.getElementById('appointmentsEmptyState');
+
+    if (!list.length) {
+        if (empty) empty.style.display = 'block';
         tbody.innerHTML = '';
         return;
     }
+    if (empty) empty.style.display = 'none';
 
-    emptyState.style.display = 'none';
+    tbody.innerHTML = list.map(a => {
+        const statusKey   = (a.status || 'pending').toLowerCase();
+        const statusClass = STATUS_CLASS[statusKey] || 'pending';
+        const modeLabel   = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_',' ') : '—');
+        const typeLabel   = a.type ? a.type.replace('_',' ').replace(/\b\w/g, c => c.toUpperCase()) : '—';
+        const counselor   = a.counselor_name || '—';
 
-    // Sort appointments by date and time
-    const sortedAppointments = [...appointments].sort((a, b) => {
-        const dateA = new Date(a.date + ' ' + a.time);
-        const dateB = new Date(b.date + ' ' + b.time);
-        return dateA - dateB;
-    });
-
-    tbody.innerHTML = sortedAppointments.map(appointment => `
-        <tr>
+        return `<tr>
             <td>
-                <div class="appointment-title">${appointment.title}</div>
-                ${appointment.notes ? `<div class="appointment-notes">${appointment.notes}</div>` : ''}
+                <strong style="font-weight:600;font-size:.9rem;">${escHtml(a.title)}</strong>
+                ${a.notes ? `<div style="font-size:.78rem;color:var(--text-secondary);margin-top:2px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(a.notes)}</div>` : ''}
             </td>
+            <td><span class="mh-type-badge">${escHtml(typeLabel)}</span></td>
+            <td><span class="mh-mode-badge">${modeLabel}</span></td>
+            <td style="font-size:.88rem;color:var(--text-secondary);">${escHtml(counselor)}</td>
+            <td style="font-size:.88rem;white-space:nowrap;">${formatDate(a.date)}</td>
+            <td style="font-size:.88rem;font-weight:600;white-space:nowrap;">${formatSlotLabel(a.time?.substring(0,5))}</td>
+            <td><span class="mh-status-pill mh-status-pill--${statusClass}">${escHtml(a.status || 'pending')}</span></td>
             <td>
-                <span class="type-badge ${appointment.type}">${formatAppointmentType(appointment.type)}</span>
-            </td>
-            <td>${formatDate(appointment.date)}</td>
-            <td>${formatTime(appointment.time)}</td>
-            <td>
-                <select onchange="updateAppointmentStatus(${appointment.id}, this.value)" class="status-select">
-                    <option value="scheduled" ${appointment.status === 'scheduled' ? 'selected' : ''}>Scheduled</option>
-                    <option value="completed" ${appointment.status === 'completed' ? 'selected' : ''}>Completed</option>
-                    <option value="cancelled" ${appointment.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                </select>
-            </td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn btn-xs" onclick="editAppointment(${appointment.id})" title="Edit">
-                        ✏️
+                <div style="display:flex;gap:6px;">
+                    <button class="mh-action-btn" onclick="editAppointment(${a.id})" title="Edit">
+                        <i class="fas fa-pen"></i>
                     </button>
-                    <button class="btn btn-xs btn-danger" onclick="deleteAppointment(${appointment.id})" title="Delete">
-                        🗑️
+                    <button class="mh-action-btn mh-action-btn--danger" onclick="deleteAppointment(${a.id})" title="Cancel">
+                        <i class="fas fa-trash-can"></i>
                     </button>
                 </div>
             </td>
-        </tr>
-    `).join('');
+        </tr>`;
+    }).join('');
 }
 
-function updateStats() {
-    const total = appointments.length;
-    const completed = appointments.filter(a => a.status === 'completed').length;
-    const upcoming = appointments.filter(a => a.status === 'scheduled' && new Date(a.date + ' ' + a.time) > new Date()).length;
-    const attendanceRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+function _updateStats(list) {
+    const today     = new Date().toISOString().split('T')[0];
+    const total     = list.length;
+    const completed = list.filter(a => a.status === 'completed').length;
+    const upcoming  = list.filter(a =>
+        ['scheduled','accepted','accept','pending'].includes(a.status) && a.date >= today
+    ).length;
+    const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-    document.getElementById('totalAppointments').textContent = total;
-    document.getElementById('completedAppointments').textContent = completed;
-    document.getElementById('upcomingAppointments').textContent = upcoming;
-    document.getElementById('attendanceRate').textContent = attendanceRate + '%';
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('totalAppointments',    total);
+    set('upcomingAppointments', upcoming);
+    set('completedAppointments', completed);
+    set('attendanceRate',       rate + '%');
 }
 
-// Utility Functions
+// ─── Edit / Delete ────────────────────────────────────────────────────────────
+function editAppointment(id) {
+    const a = _appointments.find(x => String(x.id) === String(id));
+    if (!a) return;
+    openBookingModal(a);
+}
+
+async function deleteAppointment(id) {
+    if (!confirm('Cancel this appointment? This cannot be undone.')) return;
+    try {
+        const res  = await fetch(`${BASE}/api/appointments/delete`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ id })
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Failed');
+        toastSuccess('Appointment cancelled.');
+        renderAppointments();
+    } catch (err) {
+        toastError('Could not cancel: ' + err.message);
+    }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function resetForm() {
-    document.getElementById('appointmentForm').reset();
-    document.getElementById('appointmentId').value = '';
-
-    // Reset form title to create mode
-    const formTitle = document.querySelector('.booking-form-card h2');
-    if (formTitle) {
-        formTitle.textContent = '📝 Book / Edit Appointment';
+    document.getElementById('appointmentForm')?.reset();
+    const idEl = document.getElementById('appointmentId');
+    if (idEl) idEl.value = '';
+    const timeSel = document.getElementById('appointmentTime');
+    if (timeSel) {
+        timeSel.innerHTML = '<option value="">Select counselor &amp; date first</option>';
+        timeSel.disabled = true;
     }
-
-    // Reset submit button text
-    const submitBtn = document.querySelector('#appointmentForm button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.innerHTML = '<span class="btn-icon">💾</span><span class="btn-text">Save Appointment</span>';
-    }
-
-    // Hide cancel edit button
-    hideCancelEditButton();
-
-    // Clear all error states
-    const inputs = document.querySelectorAll('#appointmentForm input, #appointmentForm select, #appointmentForm textarea');
-    inputs.forEach(input => {
-        clearFieldError(input);
-    });
+    document.querySelectorAll('.mh-field-error').forEach(el => el.textContent = '');
 }
 
-function showCancelEditButton() {
-    // Check if cancel button already exists
-    let cancelBtn = document.getElementById('cancelEditBtn');
-    if (!cancelBtn) {
-        // Create cancel edit button
-        cancelBtn = document.createElement('button');
-        cancelBtn.id = 'cancelEditBtn';
-        cancelBtn.type = 'button';
-        cancelBtn.className = 'btn outline';
-        cancelBtn.innerHTML = '<span class="btn-icon">❌</span><span class="btn-text">Cancel Edit</span>';
-        cancelBtn.onclick = cancelEdit;
-
-        // Insert after the reset button
-        const resetBtn = document.getElementById('resetAppointmentForm');
-        resetBtn.parentNode.insertBefore(cancelBtn, resetBtn.nextSibling);
-    }
-    cancelBtn.style.display = 'inline-flex';
-}
-
-function hideCancelEditButton() {
-    const cancelBtn = document.getElementById('cancelEditBtn');
-    if (cancelBtn) {
-        cancelBtn.style.display = 'none';
-    }
-}
-
-function cancelEdit() {
-    if (confirm('Are you sure you want to cancel editing? Any unsaved changes will be lost.')) {
-        resetForm();
-    }
-}
-
-function importDemoAppointments() {
-    const demoAppointments = [
-        {
-            id: Date.now() + 1,
-            title: 'Dr. Sarah Johnson - Individual Counseling',
-            type: 'individual',
-            date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            time: '10:00',
-            notes: 'Discuss anxiety management techniques',
-            status: 'scheduled',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        },
-        {
-            id: Date.now() + 2,
-            title: 'Group Therapy Session',
-            type: 'group',
-            date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            time: '14:00',
-            notes: 'Social anxiety support group',
-            status: 'scheduled',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        },
-        {
-            id: Date.now() + 3,
-            title: 'Dr. Michael Chen - Follow-up Session',
-            type: 'follow-up',
-            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            time: '16:00',
-            notes: 'Review progress on depression treatment',
-            status: 'completed',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        }
+function exportCsv() {
+    if (!_appointments.length) { toastInfo('No appointments to export.'); return; }
+    const rows = [
+        ['ID','Title','Type','Mode','Counselor','Date','Time','Status','Notes'],
+        ..._appointments.map(a => [a.id, a.title, a.type, a.mode, a.counselor_name, a.date, a.time, a.status, a.notes || ''])
     ];
-
-    appointments = [...appointments, ...demoAppointments];
-    saveAppointments();
-    updateStats();
-    renderAppointments();
-    showAlert('Demo appointments loaded successfully!', 'success');
+    const csv  = rows.map(r => r.map(f => `"${String(f??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'appointments.csv'; a.click();
+    URL.revokeObjectURL(url);
 }
 
-function exportAppointmentsCsv() {
-    if (appointments.length === 0) {
-        showAlert('No appointments to export', 'info');
-        return;
+function formatDate(dateString) {
+    if (!dateString) return '—';
+    const d = new Date(dateString + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+}
+
+function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Toast Notifications ──────────────────────────────────────────────────────
+function toastSuccess(msg) { toast(msg, '#4CAF82', '✅'); }
+function toastError(msg)   { toast(msg, '#D64F4F', '❌'); }
+function toastInfo(msg)    { toast(msg, '#3D8B6E', 'ℹ️'); }
+
+function toast(msg, color, icon) {
+    // Remove old toasts
+    document.querySelectorAll('.mh-toast').forEach(t => t.remove());
+
+    const div = document.createElement('div');
+    div.className = 'mh-toast';
+    div.style.cssText = `
+        position:fixed; bottom:28px; right:28px; z-index:99999;
+        background:${color}; color:#fff;
+        padding:12px 20px; border-radius:12px;
+        font-family:'DM Sans','Inter',sans-serif; font-size:.88rem; font-weight:600;
+        box-shadow:0 8px 24px rgba(0,0,0,.18);
+        display:flex; align-items:center; gap:8px;
+        animation:mh-toast-in .3s cubic-bezier(.34,1.56,.64,1);
+        max-width:340px;
+    `;
+    div.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+
+    // Add keyframe if not present
+    if (!document.getElementById('mh-toast-style')) {
+        const s = document.createElement('style');
+        s.id = 'mh-toast-style';
+        s.textContent = '@keyframes mh-toast-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}';
+        document.head.appendChild(s);
     }
 
-    const csvContent = [
-        ['Title', 'Type', 'Date', 'Time', 'Status', 'Notes', 'Created At'],
-        ...appointments.map(appointment => [
-            appointment.title,
-            formatAppointmentType(appointment.type),
-            formatDate(appointment.date),
-            formatTime(appointment.time),
-            appointment.status,
-            appointment.notes || '',
-            formatDateTime(appointment.createdAt)
-        ])
-    ].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `appointments-${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-
-    showAlert('Appointments exported successfully!', 'success');
+    document.body.appendChild(div);
+    setTimeout(() => { div.style.opacity = '0'; div.style.transition = 'opacity .3s'; setTimeout(() => div.remove(), 300); }, 3500);
 }
-
-// Formatting Functions
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-}
-
-function formatTime(timeString) {
-    const [hours, minutes] = timeString.split(':');
-    const date = new Date();
-    date.setHours(parseInt(hours), parseInt(minutes));
-    return date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-    });
-}
-
-function formatDateTime(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-    });
-}
-
-function formatAppointmentType(type) {
-    const types = {
-        'individual': 'Individual Counseling',
-        'group': 'Group Therapy',
-        'crisis': 'Crisis Support',
-        'assessment': 'Assessment',
-        'follow-up': 'Follow-up Session'
-    };
-    return types[type] || type;
-}
-
-// Alert System
-function showAlert(message, type = 'info') {
-    // Remove existing alerts
-    const existingAlerts = document.querySelectorAll('.alert');
-    existingAlerts.forEach(alert => alert.remove());
-
-    // Create new alert
-    const alert = document.createElement('div');
-    alert.className = `alert ${type}`;
-    alert.innerHTML = `
-        <span class="alert-icon">${getAlertIcon(type)}</span>
-        <span class="alert-message">${message}</span>
-    `;
-
-    // Insert at top of main content
-    const main = document.getElementById('main');
-    main.insertBefore(alert, main.firstChild);
-
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        if (alert.parentNode) {
-            alert.remove();
-        }
-    }, 5000);
-}
-
-function getAlertIcon(type) {
-    const icons = {
-        'success': '✅',
-        'error': '❌',
-        'info': 'ℹ️',
-        'warning': '⚠️'
-    };
-    return icons[type] || 'ℹ️';
-}
-
-// Initialize page when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeAppointmentsPage);
-} else {
-    initializeAppointmentsPage();
-}
-

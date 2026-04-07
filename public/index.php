@@ -131,6 +131,8 @@ $router->get('/counselor/getEventById', 'COControl@getEventById');
 
 // Minimal Appointment APIs (create + counselors list + counselor view)
 $router->get('/api/counselors', 'AppointmentApiControl@listCounselors');
+$router->get('/api/appointments/slots', 'AppointmentApiControl@getSlots');
+$router->get('/api/appointments/mine', 'AppointmentApiControl@listForStudent');
 $router->get('/api/test', 'AppointmentApiControl@test');
 $router->post('/api/appointments/create', 'AppointmentApiControl@create');
 $router->put('/api/appointments/update', 'AppointmentApiControl@update');

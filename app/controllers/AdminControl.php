@@ -87,16 +87,23 @@ class AdminControl
             $stmt->execute();
             $counselors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+            // Fetch pending counselors (is_approved = 0)
+            require_once BASE_PATH . '/app/models/Counselor.php';
+            $counselorModel = new Counselor();
+            $pendingCounselors = $counselorModel->getPending();
+
             view('Admin/manage-users', [
                 'users' => $users,
                 'undergraduateStudents' => $undergraduateStudents,
-                'counselors' => $counselors
+                'counselors' => $counselors,
+                'pendingCounselors' => $pendingCounselors
             ]);
         } catch (Exception $e) {
             view('Admin/manage-users', [
                 'users' => [],
                 'undergraduateStudents' => [],
                 'counselors' => [],
+                'pendingCounselors' => [],
                 'error' => 'Failed to load users: ' . $e->getMessage()
             ]);
         }
@@ -1158,21 +1165,35 @@ class AdminControl
         }
 
         try {
+            $pdo = Database::getConnection();
+            $pdo->beginTransaction();
+
             require_once BASE_PATH . '/app/models/Counselor.php';
             $counselorModel = new Counselor();
-            
+
+            // Mark counselor as approved in counselors table
             $result = $counselorModel->approve($counselorId, $adminId);
-            
+
             if ($result) {
-                header('Location: ' . BASE_URL . '/admin/manage-users?success=Counselor approved successfully');
+                // Also activate the user account so they can log in
+                $stmt = $pdo->prepare("
+                    UPDATE users 
+                    SET account_status = 'active', status = 'active', is_active = 1
+                    WHERE id = ?
+                ");
+                $stmt->execute([$counselorId]);
+                $pdo->commit();
+                header('Location: ' . BASE_URL . '/admin/manage-users?success=Counselor approved and account activated');
             } else {
+                $pdo->rollBack();
                 header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to approve counselor');
             }
             exit;
-            
+
         } catch (Exception $e) {
+            if (isset($pdo)) $pdo->rollBack();
             error_log("AdminControl approveCounselor error: " . $e->getMessage());
-            header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to approve counselor');
+            header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to approve counselor: ' . urlencode($e->getMessage()));
             exit;
         }
     }

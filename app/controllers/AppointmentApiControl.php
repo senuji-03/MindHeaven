@@ -10,6 +10,24 @@ class AppointmentApiControl
     }
 
     /**
+     * List appointments for the currently logged-in student
+     */
+    public function listForStudent()
+    {
+        if (empty($_SESSION['user_id'])) {
+            return $this->json(['error' => 'Not logged in'], 401);
+        }
+
+        try {
+            $rows = $this->appointmentModel->getByStudentUserId((int)$_SESSION['user_id']);
+            $this->json($rows);
+        } catch (Throwable $e) {
+            error_log("AppointmentApiControl listForStudent error: " . $e->getMessage());
+            $this->json(['error' => 'Failed to fetch appointments', 'detail' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * List appointments for the currently logged-in counselor
      */
     public function listForCounselor()
@@ -93,33 +111,120 @@ class AppointmentApiControl
     public function create()
     {
         $data = $this->getJsonInput();
-        $user = ['id' => $_SESSION['user_id'] ?? 1]; 
+        $userId = (int)($_SESSION['user_id'] ?? 0);
 
+        if (!$userId) {
+            return $this->json(['error' => 'Not logged in'], 401);
+        }
+
+        // Validate required fields
         $required = ['counselor_user_id', 'title', 'type', 'date', 'time'];
         foreach ($required as $field) {
-            if (!isset($data[$field]) || $data[$field] === '') {
-                return $this->json(['error' => "$field is required"], 400);
+            if (empty($data[$field])) {
+                return $this->json(['error' => "'$field' is required"], 400);
             }
         }
 
+        // Normalise time slot to HH:MM and validate
+        $allowedSlots = ['09:00', '13:00', '16:00'];
+        $timeVal = substr(trim((string)$data['time']), 0, 5);
+        if (!in_array($timeVal, $allowedSlots, true)) {
+            return $this->json(['error' => 'Invalid time slot. Choose 9:00 AM, 1:00 PM, or 4:00 PM.'], 400);
+        }
+        $dbTime = $timeVal . ':00'; // MySQL TIME = HH:MM:SS
+
+        // Validate mode
+        $allowedModes = ['audio_video', 'chat'];
+        $mode = trim((string)($data['mode'] ?? 'audio_video'));
+        if (!in_array($mode, $allowedModes, true)) {
+            $mode = 'audio_video'; // safe default
+        }
+
         try {
+            $pdo = Database::getConnection();
+
+            // ── Auto-migrate: add `mode` column if the table doesn't have it yet ──
+            $cols = $pdo->query("SHOW COLUMNS FROM appointments LIKE 'mode'")->fetchAll();
+            if (empty($cols)) {
+                $pdo->exec("ALTER TABLE appointments ADD COLUMN `mode` VARCHAR(20) NOT NULL DEFAULT 'audio_video' AFTER `type`");
+                error_log('AppointmentApiControl: auto-added mode column to appointments table');
+            }
+
+            // Check the slot is not already booked for this counselor
+            $chk = $pdo->prepare("
+                SELECT COUNT(*) FROM appointments
+                WHERE counselor_user_id = ? AND date = ? AND time = ?
+                  AND status NOT IN ('cancelled', 'rejected')
+            ");
+            $chk->execute([(int)$data['counselor_user_id'], $data['date'], $dbTime]);
+            if ((int)$chk->fetchColumn() > 0) {
+                return $this->json(['error' => 'This time slot is already booked. Please choose another.'], 409);
+            }
+
             $id = $this->appointmentModel->create(
-                (int) $user['id'],
-                (int) $data['counselor_user_id'],
-                trim($data['title']),
-                trim($data['type']),
+                $userId,
+                (int)$data['counselor_user_id'],
+                trim((string)$data['title']),
+                trim((string)$data['type']),
+                $mode,
                 $data['date'],
-                $data['time']
+                $dbTime,
+                trim((string)($data['notes'] ?? ''))
             );
 
             if ($id) {
                 $this->json(['message' => 'Appointment created', 'id' => $id], 201);
             } else {
-                $this->json(['error' => 'Failed to create appointment'], 500);
+                $this->json(['error' => 'Database insert returned no ID'], 500);
             }
         } catch (Throwable $e) {
-            error_log("AppointmentApiControl create error: " . $e->getMessage());
-            $this->json(['error' => 'Failed to create appointment', 'detail' => $e->getMessage()], 500);
+            error_log('AppointmentApiControl create error: ' . $e->getMessage());
+            // Return real error so it's visible in browser console
+            $this->json([
+                'error'  => 'Failed to create appointment',
+                'detail' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * GET /api/appointments/slots?counselor_id=X&date=YYYY-MM-DD
+     * Returns which of the 3 fixed time slots are already booked.
+     */
+    public function getSlots()
+    {
+        $counselorId = (int)($_GET['counselor_id'] ?? 0);
+        $date        = $_GET['date'] ?? '';
+
+        if (!$counselorId || !$date) {
+            return $this->json(['error' => 'counselor_id and date are required'], 400);
+        }
+
+        // Validate date format
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return $this->json(['error' => 'Invalid date format'], 400);
+        }
+
+        try {
+            $pdo  = Database::getConnection();
+            $stmt = $pdo->prepare("
+                SELECT TIME_FORMAT(time, '%H:%i') AS slot
+                FROM appointments
+                WHERE counselor_user_id = ?
+                  AND date = ?
+                  AND status NOT IN ('cancelled', 'rejected')
+            ");
+            $stmt->execute([$counselorId, $date]);
+            $booked = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            $this->json([
+                'date'    => $date,
+                'booked'  => $booked,
+                'all'     => ['09:00', '13:00', '16:00']
+            ]);
+        } catch (Throwable $e) {
+            error_log("AppointmentApiControl getSlots error: " . $e->getMessage());
+            $this->json(['booked' => [], 'all' => ['09:00', '13:00', '16:00']]);
         }
     }
 
