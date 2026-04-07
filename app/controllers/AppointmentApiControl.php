@@ -228,9 +228,74 @@ class AppointmentApiControl
         }
     }
 
+    /**
+     * PUT /api/appointments/update
+     * Student can edit their own appointment's title, type, mode, date, time, notes.
+     */
+    public function update()
+    {
+        $data   = $this->getJsonInput();
+        $userId = (int)($_SESSION['user_id'] ?? 0);
+
+        if (!$userId) {
+            return $this->json(['error' => 'Not logged in'], 401);
+        }
+
+        if (empty($data['id'])) {
+            return $this->json(['error' => 'Appointment ID is required'], 400);
+        }
+
+        $required = ['title', 'type', 'date', 'time'];
+        foreach ($required as $field) {
+            if (empty($data[$field])) {
+                return $this->json(['error' => "'$field' is required"], 400);
+            }
+        }
+
+        // Normalise time slot
+        $allowedSlots = ['09:00', '13:00', '16:00'];
+        $timeVal = substr(trim((string)$data['time']), 0, 5);
+        if (!in_array($timeVal, $allowedSlots, true)) {
+            return $this->json(['error' => 'Invalid time slot. Choose 9:00 AM, 1:00 PM, or 4:00 PM.'], 400);
+        }
+        $dbTime = $timeVal . ':00';
+
+        // Normalise mode
+        $allowedModes = ['audio_video', 'chat'];
+        $mode = trim((string)($data['mode'] ?? 'audio_video'));
+        if (!in_array($mode, $allowedModes, true)) {
+            $mode = 'audio_video';
+        }
+
+        try {
+            $updated = $this->appointmentModel->update(
+                (int)$data['id'],
+                trim((string)$data['title']),
+                trim((string)$data['type']),
+                $mode,
+                $data['date'],
+                $dbTime,
+                trim((string)($data['notes'] ?? '')),
+                $userId   // ownership check
+            );
+
+            if ($updated) {
+                $this->json(['message' => 'Appointment updated']);
+            } else {
+                // Could be no-change or wrong owner — be vague for security
+                $this->json(['error' => 'Appointment not found or no changes made'], 404);
+            }
+        } catch (Throwable $e) {
+            error_log('AppointmentApiControl update error: ' . $e->getMessage());
+            $this->json(['error' => 'Failed to update appointment', 'detail' => $e->getMessage()], 500);
+        }
+    }
+
     public function delete()
     {
-        $data = $this->getJsonInput();
+        $data   = $this->getJsonInput();
+        $userId = (int)($_SESSION['user_id'] ?? 0);
+
         if (!isset($data['id'])) {
             return $this->json(['error' => 'Appointment ID required'], 400);
         }

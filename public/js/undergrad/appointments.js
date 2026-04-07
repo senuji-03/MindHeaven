@@ -22,7 +22,7 @@ const STATUS_CLASS = {
 let _appointments = [];
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+function initAppointmentsPage() {
     loadCounselors();
     loadAppointmentTypes();
     setupFormSubmission();
@@ -42,7 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeBookingModal();
     });
-});
+}
+
+// Safe init: works whether DOM is ready or not
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAppointmentsPage);
+} else {
+    initAppointmentsPage();
+}
 
 // ─── Modal Controls ───────────────────────────────────────────────────────────
 function openBookingModal(appointment = null) {

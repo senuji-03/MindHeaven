@@ -35,24 +35,30 @@ class Appointment
         $id,
         $title,
         $type,
+        $mode,
         $date,
         $time,
-        $notes
+        $notes,
+        $studentUserId = null
     ) {
         $pdo = Database::getConnection();
-        error_log("Appointment model: Attempting to update appointment with ID: " . $id);
 
-        $stmt = $pdo->prepare("
+        $sql = "
             UPDATE appointments 
-            SET title = ?, type = ?, date = ?, time = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+            SET title = ?, type = ?, mode = ?, date = ?, time = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
-        ");
-        $stmt->execute([$title, $type, $date, $time, $notes, $id]);
+        ";
+        $params = [$title, $type, $mode, $date, $time, $notes, $id];
 
-        $updated = $stmt->rowCount() > 0;
-        error_log("Appointment model: Update result - " . ($updated ? "SUCCESS" : "FAILED") . " (rows affected: " . $stmt->rowCount() . ")");
+        // Optional ownership check: only the booking student can edit
+        if ($studentUserId !== null) {
+            $sql .= " AND student_user_id = ?";
+            $params[] = (int)$studentUserId;
+        }
 
-        return $updated;
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->rowCount() > 0;
     }
 
     public function delete($id)
