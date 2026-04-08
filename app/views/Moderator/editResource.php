@@ -336,8 +336,8 @@
                         </div>
                         
                         <div class="form-row">
-                            <label for="summary">Summary</label>
-                            <textarea id="summary" name="summary" rows="3" placeholder="Brief description of what this resource covers..." required><?= htmlspecialchars($resource['summary']); ?></textarea>
+                            <label for="summary">Summary (Optional)</label>
+                            <textarea id="summary" name="summary" rows="3" placeholder="Brief description of what this resource covers..."><?= htmlspecialchars($resource['summary']); ?></textarea>
                         </div>
                         
                         <div class="form-row">
@@ -395,12 +395,17 @@
                     <div id="videoFields" class="stack card" style="display:none;">
                         <h3>🎥 Video Content</h3>
                         <div class="form-group">
-                            <label for="videoFile">🎬 Upload Video</label>
+                            <label for="videoFile">🎬 Upload Video File (optional)</label>
                             <div class="file-upload-area" id="videoFileUpload">
                                 <input id="videoFile" type="file" name="video_file" accept="video/*" style="display: none;">
                                 <p>📁 Click to upload or drag and drop a video file</p>
                                 <small>Supported formats: MP4, AVI, MOV. Max size: 100MB</small>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="youtubeUrl">🔗 YouTube Link (optional)</label>
+                            <input id="youtubeUrl" type="url" name="youtube_url" value="<?= htmlspecialchars($resource['youtube_url'] ?? '') ?>" placeholder="https://www.youtube.com/watch?v=..." />
+                            <small style="color:#6b7280;">If provided, clicking the resource card will open YouTube directly.</small>
                         </div>
                         <div class="form-group">
                             <label for="videoDescription">Video Description</label>
@@ -538,11 +543,7 @@
                 errorMessage = 'Please select a content type.';
             } else {
                 if (contentType === 'article') {
-                    var content = document.getElementById('articleContent').value.trim();
-                    if (!content) {
-                        isValid = false;
-                        errorMessage = 'Please provide article content.';
-                    }
+                    // Article content is optional now
                 } else if (contentType === 'video') {
                     var videoFile = document.getElementById('videoFile').files.length;
                     var videoContent = document.getElementById('videoDescription').value.trim();

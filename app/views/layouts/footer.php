@@ -2,6 +2,9 @@
 </div><!-- /.main-wrapper -->
 
 <script>
+    // Expose BASE_URL for all page scripts
+    window.BASE_URL = '<?= defined("BASE_URL") ? rtrim(BASE_URL, "/") : "/MindHeaven/public" ?>';
+
     // Mobile menu toggle
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -25,6 +28,12 @@
         });
     }
 </script>
-</body>
 
+<?php if (!empty($PAGE_JS)): ?>
+    <?php foreach ($PAGE_JS as $js): ?>
+        <script src="<?= htmlspecialchars($js) ?>"></script>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+</body>
 </html>

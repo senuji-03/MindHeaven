@@ -7,6 +7,7 @@ class Appointment
         $counselorUserId,
         $title,
         $type,
+        $mode,
         $date,
         $time,
         $notes
@@ -14,14 +15,15 @@ class Appointment
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("
             INSERT INTO appointments 
-                (student_user_id, counselor_user_id, title, type, date, time, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+                (student_user_id, counselor_user_id, title, type, mode, date, time, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $studentUserId,
             $counselorUserId,
             $title,
             $type,
+            $mode,
             $date,
             $time,
             $notes
@@ -33,24 +35,30 @@ class Appointment
         $id,
         $title,
         $type,
+        $mode,
         $date,
         $time,
-        $notes
+        $notes,
+        $studentUserId = null
     ) {
         $pdo = Database::getConnection();
-        error_log("Appointment model: Attempting to update appointment with ID: " . $id);
 
-        $stmt = $pdo->prepare("
+        $sql = "
             UPDATE appointments 
-            SET title = ?, type = ?, date = ?, time = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+            SET title = ?, type = ?, mode = ?, date = ?, time = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
-        ");
-        $stmt->execute([$title, $type, $date, $time, $notes, $id]);
+        ";
+        $params = [$title, $type, $mode, $date, $time, $notes, $id];
 
-        $updated = $stmt->rowCount() > 0;
-        error_log("Appointment model: Update result - " . ($updated ? "SUCCESS" : "FAILED") . " (rows affected: " . $stmt->rowCount() . ")");
+        // Optional ownership check: only the booking student can edit
+        if ($studentUserId !== null) {
+            $sql .= " AND student_user_id = ?";
+            $params[] = (int)$studentUserId;
+        }
 
-        return $updated;
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->rowCount() > 0;
     }
 
     public function delete($id)
@@ -134,6 +142,43 @@ class Appointment
         $stmt->execute([$status, $id]);
 
         return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Get all appointments for a student (the logged-in undergrad).
+     */
+    public function getByStudentUserId($studentUserId)
+    {
+        $pdo = Database::getConnection();
+
+        // Auto-add mode column if missing (same guard as AppointmentApiControl)
+        $cols = $pdo->query("SHOW COLUMNS FROM appointments LIKE 'mode'")->fetchAll();
+        if (empty($cols)) {
+            $pdo->exec("ALTER TABLE appointments ADD COLUMN `mode` VARCHAR(20) NOT NULL DEFAULT 'audio_video' AFTER `type`");
+        }
+
+        $sql = "
+            SELECT 
+                a.id,
+                a.title,
+                a.type,
+                IFNULL(a.mode, 'audio_video')   AS mode,
+                a.date,
+                a.time,
+                a.notes,
+                IFNULL(a.status, 'pending')     AS status,
+                a.counselor_user_id,
+                COALESCE(c.full_name, u2.username, 'Unknown') AS counselor_name,
+                c.specialization
+            FROM appointments a
+            LEFT JOIN counselors c  ON a.counselor_user_id = c.user_id
+            LEFT JOIN users     u2 ON a.counselor_user_id  = u2.id
+            WHERE a.student_user_id = :student_user_id
+            ORDER BY a.date DESC, a.time DESC
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':student_user_id' => (int)$studentUserId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

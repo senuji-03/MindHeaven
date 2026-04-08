@@ -39,6 +39,10 @@ $router->get('/ug/category-resources', 'UGControl@categoryResources');
 $router->get('/ug/mood', 'UGControl@mood');
 $router->get('/ug/about', 'UGControl@about');
 $router->get('/ug/forum', 'UGControl@forum');
+$router->get('/ug/viewResource', 'UGControl@viewResource');
+$router->post('/ug/addComment', 'UGControl@addComment');
+$router->post('/ug/likeResource', 'UGControl@likeResource');
+$router->post('/ug/reportResource', 'UGControl@reportResource');
 $router->get('/ug/quiz', 'UGControl@quiz');
 $router->get('/ug/profile', 'UGControl@profile');
 $router->get('/ug/profile/complete', 'UGControl@completeProfile');
@@ -131,6 +135,8 @@ $router->get('/counselor/getEventById', 'COControl@getEventById');
 
 // Minimal Appointment APIs (create + counselors list + counselor view)
 $router->get('/api/counselors', 'AppointmentApiControl@listCounselors');
+$router->get('/api/appointments/slots', 'AppointmentApiControl@getSlots');
+$router->get('/api/appointments/mine', 'AppointmentApiControl@listForStudent');
 $router->get('/api/test', 'AppointmentApiControl@test');
 $router->post('/api/appointments/create', 'AppointmentApiControl@create');
 $router->put('/api/appointments/update', 'AppointmentApiControl@update');
@@ -171,6 +177,8 @@ $router->post('/Moderator/resource/delete', 'ModeratorControl@deleteResource');
 $router->get('/Moderator/resource/edit', 'ModeratorControl@editResource');
 $router->post('/Moderator/resource/update', 'ModeratorControl@updateResource');
 $router->post('/moderator/edit-reported-content', 'ModeratorControl@editReportedContent');
+$router->get('/Moderator/reported-resources', 'ModeratorControl@reportedResources');
+$router->post('/Moderator/resolve-report', 'ModeratorControl@resolveReport');
 
 
 $router->get('/UniversityRepresentative/dashboard', 'UniversityRepresentativeControl@index');

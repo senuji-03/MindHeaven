@@ -176,7 +176,7 @@ class ModeratorControl
             $contentType = trim($_POST['content_type'] ?? '');
             $summary = trim($_POST['summary'] ?? '');
 
-            if (empty($title) || empty($category) || empty($contentType) || empty($summary)) {
+            if (empty($title) || empty($category) || empty($contentType)) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=missing_fields');
                 exit;
             }
@@ -189,7 +189,8 @@ class ModeratorControl
                 'tags' => trim($_POST['tags'] ?? ''),
                 'status' => $_POST['status'] ?? 'draft',
                 'created_by' => $userId,
-                'content' => trim($_POST['content'] ?? '')
+                'content' => trim($_POST['content'] ?? ''),
+                'youtube_url' => trim($_POST['youtube_url'] ?? '') ?: null,
             ];
 
             // Handle file upload based on content type
@@ -307,7 +308,7 @@ class ModeratorControl
             $contentType = trim($_POST['content_type'] ?? '');
             $summary = trim($_POST['summary'] ?? '');
 
-            if (empty($title) || empty($category) || empty($contentType) || empty($summary)) {
+            if (empty($title) || empty($category) || empty($contentType)) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=missing_fields');
                 exit;
             }
@@ -320,6 +321,7 @@ class ModeratorControl
                 'tags'         => trim($_POST['tags'] ?? ''),
                 'status'       => $_POST['status'] ?? 'draft',
                 'content'      => trim($_POST['content'] ?? ''),
+                'youtube_url'  => trim($_POST['youtube_url'] ?? '') ?: null,
                 // Preserve existing file info by default
                 'file_path'    => $existing['file_path'],
                 'file_name'    => $existing['file_name'],
@@ -407,5 +409,50 @@ class ModeratorControl
 
         error_log("move_uploaded_file failed: tmp={$file['tmp_name']} target={$targetPath}");
         return ['success' => false, 'error' => 'Could not move uploaded file.'];
+    }
+
+    public function reportedResources()
+    {
+        try {
+            $resourceHub = new ResourceHub();
+            $reports = $resourceHub->getPendingReports();
+            view('Moderator/reportedResources', ['reports' => $reports]);
+        } catch (Exception $e) {
+            echo "Failed to load reports: " . $e->getMessage();
+        }
+    }
+
+    public function resolveReport()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/Moderator/reported-resources');
+            exit;
+        }
+
+        $reportId = (int)($_POST['report_id'] ?? 0);
+        $action = $_POST['action'] ?? '';
+        
+        if ($reportId > 0 && in_array($action, ['removed', 'warning issued', 'ignored'])) {
+            $resourceHub = new ResourceHub();
+            
+            // Default to 'reviewed'. Except maybe 'ignored' would still be reviewed?
+            $status = 'reviewed';
+            
+            // Get original report to know which resource to update if "removed"
+            $stmt = Database::getConnection()->prepare("SELECT resource_id FROM resource_reports WHERE id = ?");
+            $stmt->execute([$reportId]);
+            $res = $stmt->fetch();
+
+            if ($action === 'removed' && $res) {
+                // If the moderator decides to remove the content, set resource status to 'archived' or 'flagged' permanently
+                $upd = Database::getConnection()->prepare("UPDATE resource_hub SET status = 'archived' WHERE id = ?");
+                $upd->execute([$res['resource_id']]);
+            }
+
+            $resourceHub->reviewReport($reportId, $_SESSION['user_id'] ?? null, $action, $status);
+        }
+
+        header('Location: ' . BASE_URL . '/Moderator/reported-resources?resolved=1');
+        exit;
     }
 }
