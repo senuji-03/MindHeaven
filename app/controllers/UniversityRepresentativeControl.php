@@ -206,7 +206,7 @@ class UniversityRepresentativeControl
     }
 
     // View event details
-    public function viewEvent()
+    public function viewEvent($id = null)
     {
         try {
             $pdo = Database::getConnection();
@@ -215,7 +215,7 @@ class UniversityRepresentativeControl
             $isOwner = false;
 
             // Get event ID from URL parameter
-            $eventId = $_GET['id'] ?? null;
+            $eventId = $id ?? $_GET['id'] ?? null;
             if (!$eventId) {
                 $_SESSION['error'] = 'Event ID is required';
                 header('Location: ' . BASE_URL . '/university-rep/events');
@@ -261,7 +261,7 @@ class UniversityRepresentativeControl
     }
 
     // Show edit event form
-    public function editEvent()
+    public function editEvent($id = null)
     {
         try {
             $pdo = Database::getConnection();
@@ -275,7 +275,7 @@ class UniversityRepresentativeControl
             }
 
             // Get event ID from URL parameter
-            $eventId = $_GET['id'] ?? null;
+            $eventId = $id ?? $_GET['id'] ?? null;
             if (!$eventId) {
                 $_SESSION['error'] = 'Event ID is required';
                 header('Location: ' . BASE_URL . '/university-rep/events');

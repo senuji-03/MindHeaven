@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<?php
+$currentMode = $mode ?? 'forum';
+$pageTitle = $currentMode === 'report' ? 'Manage Report Categories' : 'Manage Forum Thread Categories';
+$actionBase = $currentMode === 'report' ? '/admin/report-categories' : '/admin/forum-categories';
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Forum Thread Categories - Admin | Mind Haven</title>
+    <title><?= $pageTitle ?> - Admin | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
 </head>
 
@@ -50,7 +54,7 @@
     <div class="main-content">
         <!-- ... topbar ... -->
         <div class="topbar">
-            <h1>Manage Forum Thread Categories</h1>
+            <h1><?= $pageTitle ?></h1>
             <div class="topbar-right">
                 <div class="admin-profile">
                     <span>Admin User</span>
@@ -69,7 +73,7 @@
             </div>
 
             <!-- Inline Add Category Form -->
-            <form id="addCatInline" action="<?= BASE_URL ?>/admin/forum-categories/create" method="POST"
+            <form id="addCatInline" action="<?= BASE_URL ?><?= $actionBase ?>/create" method="POST"
               style="display:none; align-items:center; gap:8px; padding:10px 0; border-bottom:1px solid #e5e7eb; margin-bottom:12px;">
               <input type="text" name="name" placeholder="Category name" required
                 style="padding:6px 10px; border:1px solid #d1d5db; border-radius:6px; font-size:0.9rem; min-width:220px;">
@@ -164,7 +168,7 @@
                 <h3>Add New Category</h3>
                 <button class="close-btn" onclick="closeModal('addCategoryModal')">&times;</button>
             </div>
-            <form action="<?= BASE_URL ?>/admin/forum-categories/create" method="POST">
+            <form action="<?= BASE_URL ?><?= $actionBase ?>/create" method="POST">
                 <div class="form-row">
                     <label for="add_name">Name</label>
                     <input type="text" name="name" id="add_name" class="form-input" required autocomplete="off">
@@ -188,7 +192,7 @@
                 <h3>Edit Category</h3>
                 <button class="close-btn" onclick="closeModal('editCategoryModal')">&times;</button>
             </div>
-            <form action="<?= BASE_URL ?>/admin/forum-categories/update" method="POST">
+            <form action="<?= BASE_URL ?><?= $actionBase ?>/update" method="POST">
                 <input type="hidden" name="id" id="edit_id">
                 <div class="form-row">
                     <label for="edit_name">Name</label>
@@ -208,12 +212,12 @@
     </div>
 
     <!-- Delete Form (Hidden) -->
-    <form id="deleteForm" action="<?= BASE_URL ?>/admin/forum-categories/delete" method="POST" style="display:none;">
+    <form id="deleteForm" action="<?= BASE_URL ?><?= $actionBase ?>/delete" method="POST" style="display:none;">
         <input type="hidden" name="id" id="delete_id">
     </form>
 
     <!-- Activate Form (Hidden) -->
-    <form id="activateForm" action="<?= BASE_URL ?>/admin/forum-categories/activate" method="POST"
+    <form id="activateForm" action="<?= BASE_URL ?><?= $actionBase ?>/activate" method="POST"
         style="display:none;">
         <input type="hidden" name="id" id="activate_id">
     </form>

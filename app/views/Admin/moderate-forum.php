@@ -489,51 +489,7 @@
         }
     </style>
 </head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>Admin Panel</p>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/admin" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item">
-                <span class="icon">👥</span>
-                Manage Users
-            </a>
-            
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
-                <span class="icon">💬</span>
-                Moderate Forum
-            </a>
-            
-            <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
-                <span class="icon">📅</span>
-                Appointments
-            </a>
-            <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
-                <span class="icon">📈</span>
-                Reports
-            </a>
-            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
-                <span class="icon"></span>
-                Donation logs
-            </a>
-            
-        </nav>
 
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Moderate Forum - Admin | Mind Haven</title>
-  <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
-</head>
 
 <body>
   <!-- Sidebar -->
@@ -633,7 +589,7 @@
           </a>
         </div>
         <div>
-          <a href="<?= BASE_URL ?>/admin/forum-categories" class="btn">Categories</a>
+          <a href="<?= BASE_URL ?>/admin/report-categories" class="btn">Categories</a>
         </div>
       </div>
 
@@ -673,10 +629,10 @@
                 <!-- <input type="checkbox" /> -->
                 <div class="report-details" style="flex: 1;">
                   <span class="title">
-                    <strong><?= htmlspecialchars($report['content_type']) ?>:</strong>
-                    <?= htmlspecialchars($report['content_title']) ?>
+                    <strong><?= htmlspecialchars(!empty($report['content_type']) ? $report['content_type'] : 'unknown') ?>:</strong>
+                    <?= htmlspecialchars($report['content_title'] ?? 'Unknown/Deleted Content') ?>
                   </span>
-                  <p class="snippet"><?= htmlspecialchars($report['content_snippet']) ?></p>
+                  <p class="snippet"><?= htmlspecialchars($report['content_snippet'] ?? 'Content could not be loaded.') ?></p>
                   <div class="meta">
                     <span class="chip">Reported by: <?= htmlspecialchars($report['reporter_name']) ?></span>
                     <span class="chip">Category: <?= htmlspecialchars($report['category_name']) ?></span>
@@ -718,6 +674,10 @@
                       Suspend User
                     </button>
                   <?php endif; ?>
+
+                  <?php if (!empty($report['context_url'])): ?>
+                    <a href="<?= htmlspecialchars($report['context_url']) ?>" target="_blank" class="btn secondary" style="margin-left:5px;">View Context</a>
+                  <?php endif; ?>
                 </div>
               </div>
             <?php endforeach; ?>
@@ -737,10 +697,10 @@
               <div class="row" style="background: #fff4f4; border-left: 4px solid #ef4444;">
                 <div class="report-details" style="flex: 1;">
                   <span class="title">
-                    <strong><?= htmlspecialchars($flag['content_type']) ?>:</strong>
-                    <?= htmlspecialchars($flag['content_title']) ?>
+                    <strong><?= htmlspecialchars(!empty($flag['content_type']) ? $flag['content_type'] : 'unknown') ?>:</strong>
+                    <?= htmlspecialchars($flag['content_title'] ?? 'Unknown/Deleted Content') ?>
                   </span>
-                  <p class="snippet"><?= htmlspecialchars($flag['content_snippet']) ?></p>
+                  <p class="snippet"><?= htmlspecialchars($flag['content_snippet'] ?? 'Content could not be loaded.') ?></p>
                   <div class="user-stats" style="margin-top: 5px; font-size: 0.9em; color: #555;">
                     <strong>Matched Keyword:</strong> <span class="match-highlight"
                       style="background-color: #fca5a5; padding: 2px 5px; border-radius: 4px; font-weight: bold;"><?= htmlspecialchars($flag['matched_keyword']) ?></span>
@@ -784,8 +744,9 @@
                     </button>
                   <?php endif; ?>
 
-                  <a href="<?= BASE_URL ?>/forum/thread/<?= $flag['content_type'] === 'thread' ? $flag['content_id'] : '' ?>"
-                    target="_blank" class="btn secondary" style="margin-left:5px;">View Context</a>
+                  <?php if (!empty($flag['context_url'])): ?>
+                    <a href="<?= htmlspecialchars($flag['context_url']) ?>" target="_blank" class="btn secondary" style="margin-left:5px;">View Context</a>
+                  <?php endif; ?>
                 </div>
               </div>
             <?php endforeach; ?>

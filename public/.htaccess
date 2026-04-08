@@ -8,3 +8,14 @@ RewriteRule ^ index.php [L]
 # Raise upload limits for file uploads (images, video, audio)
 php_value upload_max_filesize 20M
 php_value post_max_size 25M
+
+# Correct MIME types for audio and video playback
+<IfModule mod_mime.c>
+    AddType audio/mpeg mp3
+    AddType audio/ogg ogg oga
+    AddType audio/wav wav
+    AddType audio/mp4 m4a
+    AddType video/mp4 mp4
+    AddType video/webm webm
+    AddType video/ogg ogv
+</IfModule>
