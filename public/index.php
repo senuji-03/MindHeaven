@@ -154,6 +154,11 @@ $router->post('/api/habits/complete', 'HabitApiControl@complete');
 $router->post('/api/habits/uncomplete', 'HabitApiControl@uncomplete');
 $router->get('/api/habits/stats', 'HabitApiControl@stats');
 $router->get('/api/habits/test', 'HabitApiControl@test');
+// Calendar-aware Habits API
+$router->get('/api/habits/calendar', 'HabitApiControl@calendarData');
+$router->get('/api/habits/for-date', 'HabitApiControl@listByDate');
+$router->post('/api/habits/log-date', 'HabitApiControl@logForDate');
+$router->post('/api/habits/unlog-date', 'HabitApiControl@unlogForDate');
 
 $router->get('/CallResponder', 'CallResponderControl@index');
 $router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');

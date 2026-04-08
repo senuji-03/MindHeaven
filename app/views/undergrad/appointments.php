@@ -2,7 +2,7 @@
 $TITLE = 'MindHeaven — Appointments';
 $CURRENT_PAGE = 'appointments';
 $PAGE_CSS = ["/MindHeaven/public/css/undergrad/appointments.css"];
-$PAGE_JS  = ["/MindHeaven/public/js/undergrad/appointments.js"];
+$PAGE_JS  = ["/MindHeaven/public/js/undergrad/appointments.js?v=" . time()];
 require BASE_PATH . '/app/views/layouts/header.php';
 ?>
 
@@ -22,7 +22,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 					<p class="mh-modal__subtitle">Schedule your counseling session</p>
 				</div>
 			</div>
-			<button class="mh-modal__close" onclick="closeBookingModal()" aria-label="Close">
+			<button type="button" class="mh-modal__close" onclick="closeBookingModal(event)" aria-label="Close">
 				<i class="fas fa-times"></i>
 			</button>
 		</div>
@@ -114,7 +114,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 				<!-- Actions -->
 				<div class="mh-modal__actions">
-					<button type="button" class="mh-btn mh-btn--outline" onclick="closeBookingModal()">
+				<button type="button" class="mh-btn mh-btn--outline" onclick="closeBookingModal(event)">
 						<i class="fas fa-xmark"></i> Cancel
 					</button>
 					<button type="button" id="resetAppointmentForm" class="mh-btn mh-btn--ghost">

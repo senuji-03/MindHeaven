@@ -1,4 +1,4 @@
-// MindHeaven — Appointments JS (DB-backed, modal form)
+// MindHeaven — Appointments JS
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const ALL_SLOTS = ['09:00', '13:00', '16:00'];
@@ -33,59 +33,100 @@ function initAppointmentsPage() {
     const dateEl = document.getElementById('appointmentDate');
     if (dateEl) dateEl.min = new Date().toISOString().split('T')[0];
 
-    // Close modal on overlay click
-    document.getElementById('bookingModal')?.addEventListener('click', function (e) {
-        if (e.target === this) closeBookingModal();
-    });
+    // Close on backdrop click (only when clicking the dark overlay, not the card)
+    const modal = document.getElementById('bookingModal');
+    if (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                closeBookingModal();
+            }
+        });
+    }
 
     // Close on Escape key
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeBookingModal();
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeBookingModal();
+        }
     });
 }
 
-// Safe init: works whether DOM is ready or not
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAppointmentsPage);
 } else {
     initAppointmentsPage();
 }
 
-// ─── Modal Controls ───────────────────────────────────────────────────────────
+// ─── Modal Open ───────────────────────────────────────────────────────────────
 function openBookingModal(appointment = null) {
     const modal     = document.getElementById('bookingModal');
     const title     = document.getElementById('modalTitle');
     const submitTxt = document.getElementById('submitBtnText');
+    if (!modal) return;
 
+    // Reset form and labels
     resetForm();
-
     if (appointment) {
-        // Edit mode
-        title.textContent     = 'Edit Appointment';
-        submitTxt.textContent = 'Update Appointment';
+        if (title)     title.textContent     = 'Edit Appointment';
+        if (submitTxt) submitTxt.textContent = 'Update Appointment';
         prefillForm(appointment);
     } else {
-        title.textContent     = 'Book an Appointment';
-        submitTxt.textContent = 'Save Appointment';
+        if (title)     title.textContent     = 'Book an Appointment';
+        if (submitTxt) submitTxt.textContent = 'Save Appointment';
     }
 
-    modal.style.display = 'flex';
+    // Show the overlay (start transparent for fade-in)
+    modal.style.cssText = 'display:flex; opacity:0; transition:opacity 0.2s ease;';
     document.body.style.overflow = 'hidden';
-    setTimeout(() => document.getElementById('appointmentTitle')?.focus(), 100);
+
+    // Animate the inner card
+    const card = modal.querySelector('.mh-modal');
+    if (card) {
+        card.style.cssText = 'opacity:0; transform:scale(0.94) translateY(12px); transition:opacity 0.2s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);';
+    }
+
+    // Trigger transition on next frame
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.style.opacity = '1';
+            if (card) {
+                card.style.opacity   = '1';
+                card.style.transform = 'scale(1) translateY(0)';
+            }
+        });
+    });
+
+    // Focus first input
+    setTimeout(() => document.getElementById('appointmentTitle')?.focus(), 220);
 }
 
+// ─── Modal Close ──────────────────────────────────────────────────────────────
+// ONE function. Called from ✕ button, Cancel button, backdrop, Escape — everywhere.
 function closeBookingModal() {
     const modal = document.getElementById('bookingModal');
-    if (!modal) return;
-    modal.style.animation = 'mh-overlay-in .18s ease reverse forwards';
+    if (!modal || modal.style.display === 'none' || modal.style.display === '') return;
+
+    const card = modal.querySelector('.mh-modal');
+
+    // Fade out
+    modal.style.transition = 'opacity 0.15s ease';
+    modal.style.opacity    = '0';
+    if (card) {
+        card.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+        card.style.opacity    = '0';
+        card.style.transform  = 'scale(0.96) translateY(6px)';
+    }
+
+    // Hide after transition completes
     setTimeout(() => {
-        modal.style.display = '';
-        modal.style.animation = '';
+        modal.style.cssText = 'display:none;';
+        if (card) card.style.cssText = '';
         document.body.style.overflow = '';
         resetForm();
     }, 160);
 }
 
+// ─── Prefill (edit mode) ──────────────────────────────────────────────────────
 function prefillForm(a) {
     document.getElementById('appointmentId').value        = a.id;
     document.getElementById('appointmentTitle').value     = a.title    || '';
@@ -203,20 +244,24 @@ async function onFormSubmit(e) {
 
     // Validate
     let valid = true;
-    const err = (id, msg) => { const el = document.getElementById(id); if (el) el.textContent = msg; valid = false; };
+    const err = (elId, msg) => {
+        const el = document.getElementById(elId);
+        if (el) el.textContent = msg;
+        valid = false;
+    };
 
-    if (!title)       err('titleError',    'Please enter a session title.');
-    if (!type)        err('typeError',     'Please select a session type.');
-    if (!mode)        err('modeError',     'Please select a mode.');
-    if (!counselorId) err('counselorError','Please choose a counselor.');
-    if (!date)        err('dateError',     'Please pick a date.');
-    if (!time)        err('timeError',     'Please choose a time slot.');
+    if (!title)       err('titleError',     'Please enter a session title.');
+    if (!type)        err('typeError',      'Please select a session type.');
+    if (!mode)        err('modeError',      'Please select a mode.');
+    if (!counselorId) err('counselorError', 'Please choose a counselor.');
+    if (!date)        err('dateError',      'Please pick a date.');
+    if (!time)        err('timeError',      'Please choose a time slot.');
     if (!valid) return;
 
     const submitBtn = document.getElementById('submitAppointmentBtn');
     const submitTxt = document.getElementById('submitBtnText');
-    if (submitBtn) { submitBtn.disabled = true; }
-    if (submitTxt) { submitTxt.textContent = 'Saving…'; }
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitTxt) submitTxt.textContent = 'Saving…';
 
     const isUpdate = !!id;
     const endpoint = `${BASE}/api/appointments/${isUpdate ? 'update' : 'create'}`;
@@ -237,10 +282,10 @@ async function onFormSubmit(e) {
 
         toastSuccess(isUpdate ? 'Appointment updated!' : 'Appointment booked successfully!');
         closeBookingModal();
-        renderAppointments();
+        setTimeout(() => renderAppointments(), 180);
+
     } catch (err) {
         toastError('Could not save: ' + err.message);
-    } finally {
         if (submitBtn) submitBtn.disabled = false;
         if (submitTxt) submitTxt.textContent = isUpdate ? 'Update Appointment' : 'Save Appointment';
     }
@@ -272,7 +317,7 @@ async function renderAppointments() {
         _appointments = Array.isArray(rows) ? rows : [];
         _renderRows(_appointments);
         _updateStats(_appointments);
-    } catch (err) {
+    } catch {
         tbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading" style="color:var(--crisis)">
             Failed to load appointments.</td></tr>`;
     }
@@ -331,10 +376,10 @@ function _updateStats(list) {
     const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    set('totalAppointments',    total);
-    set('upcomingAppointments', upcoming);
+    set('totalAppointments',     total);
+    set('upcomingAppointments',  upcoming);
     set('completedAppointments', completed);
-    set('attendanceRate',       rate + '%');
+    set('attendanceRate',        rate + '%');
 }
 
 // ─── Edit / Delete ────────────────────────────────────────────────────────────
@@ -346,6 +391,7 @@ function editAppointment(id) {
 
 async function deleteAppointment(id) {
     if (!confirm('Cancel this appointment? This cannot be undone.')) return;
+
     try {
         const res  = await fetch(`${BASE}/api/appointments/delete`, {
             method: 'DELETE',
@@ -355,8 +401,11 @@ async function deleteAppointment(id) {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || 'Failed');
+
         toastSuccess('Appointment cancelled.');
-        renderAppointments();
+        closeBookingModal();
+        setTimeout(() => renderAppointments(), 180);
+
     } catch (err) {
         toastError('Could not cancel: ' + err.message);
     }
@@ -364,15 +413,24 @@ async function deleteAppointment(id) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function resetForm() {
-    document.getElementById('appointmentForm')?.reset();
+    const form = document.getElementById('appointmentForm');
+    if (form) form.reset();
+
     const idEl = document.getElementById('appointmentId');
     if (idEl) idEl.value = '';
+
     const timeSel = document.getElementById('appointmentTime');
     if (timeSel) {
         timeSel.innerHTML = '<option value="">Select counselor &amp; date first</option>';
         timeSel.disabled = true;
     }
+
     document.querySelectorAll('.mh-field-error').forEach(el => el.textContent = '');
+
+    const submitBtn = document.getElementById('submitAppointmentBtn');
+    const submitTxt = document.getElementById('submitBtnText');
+    if (submitBtn) submitBtn.disabled = false;
+    if (submitTxt) submitTxt.textContent = 'Save Appointment';
 }
 
 function exportCsv() {
@@ -405,7 +463,6 @@ function toastError(msg)   { toast(msg, '#D64F4F', '❌'); }
 function toastInfo(msg)    { toast(msg, '#3D8B6E', 'ℹ️'); }
 
 function toast(msg, color, icon) {
-    // Remove old toasts
     document.querySelectorAll('.mh-toast').forEach(t => t.remove());
 
     const div = document.createElement('div');
@@ -422,7 +479,6 @@ function toast(msg, color, icon) {
     `;
     div.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
 
-    // Add keyframe if not present
     if (!document.getElementById('mh-toast-style')) {
         const s = document.createElement('style');
         s.id = 'mh-toast-style';
