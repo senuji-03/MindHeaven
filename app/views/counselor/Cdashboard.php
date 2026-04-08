@@ -32,24 +32,7 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <ul class="sidebar-menu">
-                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/dashboard"
-                        style="color: #2563eb;">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
-                <li class="sidebar-item "><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓 Appointment
-                        Management</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session
-                        History</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile">👤 Profile</a>
-                </li>
-                <li class="sidebar-item"><a href="#">⚙ Settings</a></li>
-                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout"
-                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
-            </ul>
-        </div>
+        <?php include __DIR__ . '/sidebar.php'; ?>
 
 
         <!-- Main Content -->
@@ -61,7 +44,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Total Patients</div>
-                            <div class="stat-value"><?php echo (int)$dashStats['totalPatients']; ?></div>
+                            <div class="stat-value"><?php echo (int) $dashStats['totalPatients']; ?></div>
                         </div>
                         <div class="stat-icon">👥</div>
                     </div>
@@ -70,7 +53,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Today's Sessions</div>
-                            <div class="stat-value"><?php echo (int)$dashStats['todaysSessions']; ?></div>
+                            <div class="stat-value"><?php echo (int) $dashStats['todaysSessions']; ?></div>
                         </div>
                         <div class="stat-icon">📅</div>
                     </div>
@@ -94,106 +77,82 @@
                 <?php
                 $upcomingAppointments = isset($upcomingAppointments) ? $upcomingAppointments : array();
                 if (empty($upcomingAppointments)):
-                ?>
-                <div class="feedback-empty-state">
-                    <p class="feedback-empty-text">No upcoming appointments yet. Appointments booked by undergraduates will appear here.</p>
-                </div>
+                    ?>
+                    <div class="feedback-empty-state">
+                        <p class="feedback-empty-text">No upcoming appointments yet. Appointments booked by undergraduates
+                            will appear here.</p>
+                    </div>
                 <?php else: ?>
-                <?php foreach ($upcomingAppointments as $appt): ?>
-                <?php
-                    $studentNameSafe = htmlspecialchars(isset($appt['student_name']) ? $appt['student_name'] : 'Student');
-                    $titleSafe = htmlspecialchars(isset($appt['title']) ? $appt['title'] : 'Appointment');
-                    $type = strtolower(isset($appt['type']) ? (string)$appt['type'] : '');
+                    <?php foreach ($upcomingAppointments as $appt): ?>
+                        <?php
+                        $studentNameSafe = htmlspecialchars(isset($appt['student_name']) ? $appt['student_name'] : 'Student');
+                        $titleSafe = htmlspecialchars(isset($appt['title']) ? $appt['title'] : 'Appointment');
+                        $type = strtolower(isset($appt['type']) ? (string) $appt['type'] : '');
 
-                    $dateStr = isset($appt['date']) ? (string)$appt['date'] : '';
-                    $timeStr = isset($appt['time']) ? (string)$appt['time'] : '';
+                        $dateStr = isset($appt['date']) ? (string) $appt['date'] : '';
+                        $timeStr = isset($appt['time']) ? (string) $appt['time'] : '';
 
-                    $labelDate = $dateStr;
-                    try {
-                        $apptDate = new DateTime($dateStr);
-                        $today = new DateTime(date('Y-m-d'));
-                        $tomorrow = new DateTime(date('Y-m-d', strtotime('+1 day')));
-                        if ($apptDate->format('Y-m-d') === $today->format('Y-m-d')) {
-                            $labelDate = 'Today';
-                        } elseif ($apptDate->format('Y-m-d') === $tomorrow->format('Y-m-d')) {
-                            $labelDate = 'Tomorrow';
-                        } else {
-                            $labelDate = $apptDate->format('M j');
+                        $labelDate = $dateStr;
+                        try {
+                            $apptDate = new DateTime($dateStr);
+                            $today = new DateTime(date('Y-m-d'));
+                            $tomorrow = new DateTime(date('Y-m-d', strtotime('+1 day')));
+                            if ($apptDate->format('Y-m-d') === $today->format('Y-m-d')) {
+                                $labelDate = 'Today';
+                            } elseif ($apptDate->format('Y-m-d') === $tomorrow->format('Y-m-d')) {
+                                $labelDate = 'Tomorrow';
+                            } else {
+                                $labelDate = $apptDate->format('M j');
+                            }
+                        } catch (Exception $e) {
                         }
-                    } catch (Exception $e) {}
 
-                    $labelTime = $timeStr;
-                    $parsedTime = strtotime($timeStr);
-                    if ($parsedTime) {
-                        $labelTime = date('g:i A', $parsedTime);
-                    }
+                        $labelTime = $timeStr;
+                        $parsedTime = strtotime($timeStr);
+                        if ($parsedTime) {
+                            $labelTime = date('g:i A', $parsedTime);
+                        }
 
-                    // Booking form stores "type" (individual/group/crisis/follow_up). Map to existing badge styles.
-                    $badgeClass = ($type === 'group') ? 'audio-call' : 'video-call';
-                    $badgeText = ($badgeClass === 'video-call') ? '🔹 Session' : '🎧 Group Session';
-                ?>
-                <div class="appointment-row">
-                    <div class="patient-info">
-                        <h4><?php echo $studentNameSafe; ?></h4>
-                        <p>Topic: <?php echo $titleSafe; ?></p>
-                    </div>
-                    <div class="time-slot">
-                        <div class="date"><?php echo htmlspecialchars($labelDate); ?></div>
-                        <div class="time"><?php echo htmlspecialchars($labelTime); ?></div>
-                    </div>
-                    <div class="media-type <?php echo $badgeClass; ?>">
-                        <?php echo $badgeText; ?>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-start" onclick="startMeeting('Sarah Johnson')">Start</button>
-                        <button class="btn btn-reschedule"
-                            onclick="reschedule('Sarah Johnson', 'Anxiety and stress management')">Reschedule</button>
-                        <button class="btn btn-feedback"
-                            onclick="sendFeedback('Sarah Johnson', 'Anxiety and stress management')">Feedback</button>
-                    </div>
-                </div>
-                <div class="appointment-row">
-                    <div class="patient-info">
-                        <h4>Michael Chen</h4>
-                        <p>Reason: Academic pressure and burnout</p>
-                    </div>
-                    <div class="time-slot">
-                        <div class="date">Today</div>
-                        <div class="time">2:00 PM</div>
-                    </div>
-                    <div class="media-type audio-call">
-                        🎧 Audio Call
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-start" onclick="startMeeting('Michael Chen')">Start</button>
-                        <button class="btn btn-reschedule"
-                            onclick="reschedule('Michael Chen', 'Academic pressure and burnout')">Reschedule</button>
-                        <button class="btn btn-feedback"
-                            onclick="sendFeedback('Michael Chen', 'Academic pressure and burnout')">Feedback</button>
-                    </div>
-                </div>
-                <div class="appointment-row">
-                    <div class="patient-info">
-                        <h4>Emily Davis</h4>
-                        <p>Reason: Social anxiety and relationship issues</p>
-                    </div>
-                    <div class="time-slot">
-                        <div class="date">Tomorrow</div>
-                        <div class="time">11:00 AM</div>
-                    </div>
-                    <div class="media-type video-call">
-                        🔹 Video Call
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-start" onclick="startMeeting('Emily Davis')">Start</button>
-                        <button class="btn btn-reschedule"
-                            onclick="reschedule('Emily Davis', 'Social anxiety and relationship issues')">Reschedule</button>
-                        <button class="btn btn-feedback"
-                            onclick="sendFeedback('Emily Davis', 'Social anxiety and relationship issues')">Feedback</button>
+                        $apptMode = strtolower(isset($appt['mode']) && $appt['mode'] ? (string) $appt['mode'] : 'audio_video');
 
-                    </div>
-                </div>
-                <?php endforeach; ?>
+                        // Session Mode Badge
+                        $modeBadgeClass = ($apptMode === 'chat') ? 'audio-call' : 'video-call';
+                        $modeBadgeText = ($apptMode === 'chat') ? '💬 Chat' : '🎥 Audio/Video';
+
+                        // Session Type Badge
+                        $typeFormatted = ucfirst(str_replace('_', ' ', $type));
+                        if (empty($typeFormatted)) {
+                            $typeFormatted = 'Standard';
+                        }
+                        ?>
+                        <div class="appointment-row">
+                            <div class="patient-info">
+                                <h4><?php echo $studentNameSafe; ?></h4>
+                                <p>Topic: <?php echo $titleSafe; ?></p>
+                            </div>
+                            <div class="time-slot">
+                                <div class="date"><?php echo htmlspecialchars($labelDate); ?></div>
+                                <div class="time"><?php echo htmlspecialchars($labelTime); ?></div>
+                            </div>
+                            <div class="badges-group"
+                                style="display: flex; flex-direction: column; gap: 6px; justify-self: center;">
+                                <div class="media-type <?php echo $modeBadgeClass; ?>" style="margin: 0;">
+                                    <?php echo $modeBadgeText; ?>
+                                </div>
+                                <div class="media-type" style="margin: 0; background: #f1f5f9; color: #475569;">
+                                    🏷️ <?php echo htmlspecialchars($typeFormatted); ?>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-start"
+                                    onclick="startMeeting('<?php echo addslashes($studentNameSafe); ?>')">Start Session</button>
+                                <!-- <button class="btn btn-reschedule"
+                                    onclick="reschedule('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Reschedule</button> -->
+                                <button class="btn btn-feedback"
+                                    onclick="sendFeedback('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Feedback</button>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 <?php endif; ?>
             </div>
 
@@ -202,64 +161,37 @@
                 <div class="section-header">
                     <h2 class="section-title">Recent Student Feedbacks</h2>
                     <?php if (!empty($counselorFeedback)): ?>
-                    <a href="<?php echo BASE_URL; ?>/counselor/feedback" class="view-all-btn" style="text-decoration: none;">View All</a>
+                        <a href="<?php echo BASE_URL; ?>/counselor/feedback" class="view-all-btn"
+                            style="text-decoration: none;">View All</a>
                     <?php endif; ?>
                 </div>
                 <?php
                 $counselorFeedback = isset($counselorFeedback) ? $counselorFeedback : array();
                 if (empty($counselorFeedback)):
-                ?>
-                <div class="feedback-empty-state">
-                    <p class="feedback-empty-text">No counselor feedback from students yet. Feedback given by undergraduates about your sessions will appear here.</p>
-                </div>
+                    ?>
+                    <div class="feedback-empty-state">
+                        <p class="feedback-empty-text">No counselor feedback from students yet. Feedback given by
+                            undergraduates about your sessions will appear here.</p>
+                    </div>
                 <?php else: ?>
-                <?php foreach ($counselorFeedback as $fb): ?>
-                <div class="feedback-item">
-                    <div class="feedback-header">
-                        <span class="student-name"><?php echo !empty($fb['is_anonymous']) ? 'Anonymous' : htmlspecialchars(isset($fb['user_name']) ? $fb['user_name'] : 'Student'); ?></span>
-                        <div class="rating" title="Rating: <?php echo (int)(isset($fb['rating']) ? $fb['rating'] : 0); ?>/5">
-                            <?php
-                            $rating = (int)(isset($fb['rating']) ? $fb['rating'] : 0);
-                            for ($i = 1; $i <= 5; $i++) {
-                                echo '<span class="star">' . ($i <= $rating ? '★' : '☆') . '</span>';
-                            }
-                            ?>
+                    <?php foreach ($counselorFeedback as $fb): ?>
+                        <div class="feedback-item">
+                            <div class="feedback-header">
+                                <span
+                                    class="student-name"><?php echo !empty($fb['is_anonymous']) ? 'Anonymous' : htmlspecialchars(isset($fb['user_name']) ? $fb['user_name'] : 'Student'); ?></span>
+                                <div class="rating"
+                                    title="Rating: <?php echo (int) (isset($fb['rating']) ? $fb['rating'] : 0); ?>/5">
+                                    <?php
+                                    $rating = (int) (isset($fb['rating']) ? $fb['rating'] : 0);
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        echo '<span class="star">' . ($i <= $rating ? '★' : '☆') . '</span>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                            <p class="feedback-text"><?php echo nl2br(htmlspecialchars(isset($fb['content']) ? $fb['content'] : 'No feedback content provided.')); ?></p>
                         </div>
-                    </div>
-                    <p class="feedback-text">Dr. Smith was incredibly helpful and understanding. The session really
-                        helped me manage my anxiety better. I feel more confident about handling stressful situations
-                        now.</p>
-                </div>
-                <div class="feedback-item">
-                    <div class="feedback-header">
-                        <span class="student-name">Maria Rodriguez</span>
-                        <div class="rating">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">☆</span>
-                        </div>
-                    </div>
-                    <p class="feedback-text">Great counseling session. The techniques shared for managing time and
-                        reducing academic stress were very practical. Looking forward to the next session.</p>
-                </div>
-                <div class="feedback-item">
-                    <div class="feedback-header">
-                        <span class="student-name">James Wilson</span>
-                        <div class="rating">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                    </div>
-                    <p class="feedback-text">Excellent support during a difficult time. The counselor provided valuable
-                        insights and coping strategies that have made a real difference in my daily life.</p>
-
-                </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -274,8 +206,8 @@
             </div>
             <div class="modal-body">
                 <div id="reschedulePatientInfo" class="patient-info-card"> -->
-                    <!-- Patient info will be populated here -->
-                <!-- </div>
+    <!-- Patient info will be populated here -->
+    <!-- </div>
                 <form id="rescheduleForm">
                     <div class="form-row">
                         <div class="form-group">
@@ -377,7 +309,10 @@
         </div>
     </div>
 
-    <script src="\MindHeaven\public\js\counselor\Cdashboard.js"></script>
+    <script>
+        window.BASE_URL = '<?php echo htmlspecialchars(BASE_URL); ?>';
+    </script>
+    <script src="<?php echo BASE_URL; ?>/js/counselor/Cdashboard.js"></script>
 </body>
 
 </html>

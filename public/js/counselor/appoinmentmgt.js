@@ -60,8 +60,8 @@ function renderAppointments(appointmentsToRender = appointments) {
                             <div class="date-time">${formatDate(appointment.requestedDate)} at ${formatTime(appointment.requestedTime)}</div>
                             <div class="duration">${appointment.duration}</div>
                         </div>
-                        <div class="media-type ${appointment.mediaType}-call">
-                            ${appointment.mediaType === 'video' ? '🎥' : '🎧'} ${appointment.mediaType.charAt(0).toUpperCase() + appointment.mediaType.slice(1)} Call
+                        <div class="media-type ${appointment.mediaType === 'chat' ? 'audio' : 'video'}-call">
+                            ${appointment.mediaType === 'chat' ? '💬 Chat' : '🎥 Audio/Video'}
                         </div>
                         <div class="status-badge status-${appointment.status}">
                             ${appointment.status}
@@ -76,32 +76,26 @@ function renderAppointments(appointmentsToRender = appointments) {
                         <div class="details-grid">
                             <div class="detail-section">
                                 <h5>Patient Information</h5>
-                                <div class="detail-item">
-                                    <span class="detail-label">Email:</span>
-                                    <span class="detail-value">${appointment.email}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Phone:</span>
-                                    <span class="detail-value">${appointment.phone}</span>
-                                </div>
+                                
                                 <div class="detail-item">
                                     <span class="detail-label">Request Date:</span>
-                                    <span class="detail-value">${formatDate(appointment.requestDate)}</span>
+                                    <span class="detail-value">${formatDate(appointment.bookedDate)}</span>
                                 </div>
                             </div>
                             <div class="detail-section">
                                 <h5>Appointment Details</h5>
-                                <div class="detail-item">
-                                    <span class="detail-label">Urgency:</span>
-                                    <span class="detail-value">${appointment.urgency.charAt(0).toUpperCase() + appointment.urgency.slice(1)}</span>
-                                </div>
+    
                                 <div class="detail-item">
                                     <span class="detail-label">Duration:</span>
                                     <span class="detail-value">${appointment.duration}</span>
                                 </div>
                                 <div class="detail-item">
                                     <span class="detail-label">Media Type:</span>
-                                    <span class="detail-value">${appointment.mediaType.charAt(0).toUpperCase() + appointment.mediaType.slice(1)} Call</span>
+                                    <span class="detail-value">${appointment.mediaType === 'chat' ? 'Chat' : 'Audio/Video'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Session Type:</span>
+                                    <span class="detail-value">${appointment.sessionType ? appointment.sessionType.charAt(0).toUpperCase() + appointment.sessionType.slice(1).replace('_', ' ') : 'Standard'}</span>
                                 </div>
                             </div>
                         </div>
@@ -114,7 +108,7 @@ function renderAppointments(appointmentsToRender = appointments) {
                         <div class="action-section">
                             <div class="action-buttons">
                                 ${appointment.status === 'pending' ? `
-                                    <button class="btn btn-accept" onclick="updateStatus(${appointment.id}, 'accept')">Accept</button>
+                                    <button class="btn btn-accept" onclick="updateStatus(${appointment.id}, 'accepted')">Accept</button>
                                     <button class="btn btn-reject" onclick="updateStatus(${appointment.id}, 'rejected')">Reject</button>
                                 ` : ''}
                                 <button class="btn btn-reschedule" onclick="reschedule('${appointment.patientName}', '${appointment.reason}', ${appointment.id})">Reschedule</button>
@@ -200,13 +194,17 @@ function filterAppointments() {
     const statusFilter = document.getElementById('statusFilter').value;
     const dateFilter = document.getElementById('dateFilter').value;
     const patientSearch = document.getElementById('patientSearch').value.toLowerCase();
+    const modeFilter = document.getElementById('modeFilter') ? document.getElementById('modeFilter').value : 'all';
+    const typeFilter = document.getElementById('typeFilter') ? document.getElementById('typeFilter').value : 'all';
 
     let filteredAppointments = appointments.filter(appointment => {
-        const statusMatch = statusFilter === 'all' || appointment.status === statusFilter || (statusFilter === 'accept' && appointment.status === 'accepted');
+        const statusMatch = statusFilter === 'all' || appointment.status === statusFilter || (statusFilter === 'accepted' && appointment.status === 'accept');
         const dateMatch = !dateFilter || appointment.requestedDate === dateFilter;
         const patientMatch = !patientSearch || appointment.patientName.toLowerCase().includes(patientSearch);
+        const modeMatch = modeFilter === 'all' || appointment.mediaType === modeFilter;
+        const typeMatch = typeFilter === 'all' || appointment.sessionType === typeFilter;
 
-        return statusMatch && dateMatch && patientMatch;
+        return statusMatch && dateMatch && patientMatch && modeMatch && typeMatch;
     });
 
     renderAppointments(filteredAppointments);
@@ -252,14 +250,12 @@ function submitReschedule() {
 
     const payload = {
         id: appointment.id,
-        title: appointment.reason || '',
-        type: appointment.mediaType || 'video',
         date: newDate,
         time: newTime,
-        notes: appointment.notes || ''
+        reason: reason
     };
 
-    fetch(BASE_URL + '/api/appointments/update', {
+    fetch(BASE_URL + '/api/appointments/reschedule', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -271,7 +267,7 @@ function submitReschedule() {
             // Update local copy after successful backend update
             appointment.requestedDate = newDate;
             appointment.requestedTime = newTime;
-            appointment.notes = (appointment.notes || '') + `\n\nRescheduled: ${reason}`;
+            appointment.notes = (appointment.notes || '') + `\n\nRescheduled Reason: ${reason}`;
 
             showSuccessMessage(`Appointment rescheduled successfully!\nNew Date: ${formatDate(newDate)}\nNew Time: ${formatTime(newTime)}`);
             renderAppointments();
@@ -300,20 +296,20 @@ function saveToCalendar(appointmentId) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showSuccessMessage(`Appointment saved to calendar successfully!\nPatient: ${appointment.patientName}\nDate: ${formatDate(appointment.requestedDate)}\nTime: ${formatTime(appointment.requestedTime)}`);
-        } else if (data.message === 'Time conflict: Another event exists at this time') {
-            alert('Cannot save: an event already exists at this time in your calendar.');
-        } else {
-            alert('Failed to save to calendar: ' + (data.message || 'Unknown error.'));
-        }
-    })
-    .catch(error => {
-        console.error('Error saving to calendar:', error);
-        alert('An error occurred while saving to calendar.');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage(`Appointment saved to calendar successfully!\nPatient: ${appointment.patientName}\nDate: ${formatDate(appointment.requestedDate)}\nTime: ${formatTime(appointment.requestedTime)}`);
+            } else if (data.message === 'Time conflict: Another event exists at this time') {
+                alert('Cannot save: an event already exists at this time in your calendar.');
+            } else {
+                alert('Failed to save to calendar: ' + (data.message || 'Unknown error.'));
+            }
+        })
+        .catch(error => {
+            console.error('Error saving to calendar:', error);
+            alert('An error occurred while saving to calendar.');
+        });
 }
 
 // Show success message

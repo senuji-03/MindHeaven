@@ -44,26 +44,8 @@
     </nav>
 
     <div class="main-container">
-        <div class="sidebar">
-            <ul class="sidebar-menu">
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt">🗓️ Appointment
-                        Management</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session
-                        History</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
-                <li class="sidebar-item active">
-                    <a href="<?php echo BASE_URL; ?>/counselor/counselor_profile" style="color: #2563eb;">👤 Profile</a>
-                </li>
-                <li class="sidebar-item"><a href="#">⚙️ Settings</a></li>
-                <li class="sidebar-item logout-item">
-                    <a href="<?php echo BASE_URL; ?>/logout"
-                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a>
-                </li>
-            </ul>
-        </div>
+        <!-- Sidebar -->
+        <?php include __DIR__ . '/sidebar.php'; ?>
 
         <div class="main-content">
             <div class="profile-header">

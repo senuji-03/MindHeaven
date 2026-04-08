@@ -15,8 +15,8 @@ class Appointment
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("
             INSERT INTO appointments 
-                (student_user_id, counselor_user_id, title, type, mode, date, time, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (student_user_id, counselor_user_id, title, type, mode, date, time, notes, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')
         ");
         $stmt->execute([
             $studentUserId,
@@ -54,6 +54,28 @@ class Appointment
         if ($studentUserId !== null) {
             $sql .= " AND student_user_id = ?";
             $params[] = (int)$studentUserId;
+        }
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->rowCount() > 0;
+    }
+
+    public function reschedule($id, $date, $time, $reason, $counselorUserId = null)
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "
+            UPDATE appointments 
+            SET date = ?, time = ?, notes = CONCAT(IFNULL(notes, ''), ?), updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ";
+        $params = [$date, $time, "\n\nRescheduled Reason: " . $reason, $id];
+
+        // Optional ownership check for counselor
+        if ($counselorUserId !== null) {
+            $sql .= " AND counselor_user_id = ?";
+            $params[] = (int)$counselorUserId;
         }
 
         $stmt = $pdo->prepare($sql);

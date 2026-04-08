@@ -136,6 +136,7 @@ $router->get('/api/appointments/mine', 'AppointmentApiControl@listForStudent');
 $router->get('/api/test', 'AppointmentApiControl@test');
 $router->post('/api/appointments/create', 'AppointmentApiControl@create');
 $router->put('/api/appointments/update', 'AppointmentApiControl@update');
+$router->put('/api/appointments/reschedule', 'AppointmentApiControl@reschedule');
 $router->delete('/api/appointments/delete', 'AppointmentApiControl@delete');
 $router->get('/api/counselor/appointments', 'AppointmentApiControl@listForCounselor');
 $router->post('/api/appointments/status', 'AppointmentApiControl@updateStatus');
@@ -240,7 +241,8 @@ $router->post('/university-rep/profile/update', 'UniversityRepresentativeControl
 // ========================================
 // CHAT SYSTEM ROUTES
 // ========================================
-$router->get('/chat', 'ChatControl@index');                       // Chat inbox (counselor & undergrad)
+$router->get('/chat', 'ChatControl@index');                       // Chat inbox (counselor)
+$router->get('/ug/chat', 'ChatControl@index');                    // Chat inbox (undergrad alias)
 $router->get('/chat/room', 'ChatControl@room');                   // Enter a chat room
 $router->post('/api/chat/start', 'ChatControl@startSession');     // CREATE: start/resume a session
 $router->get('/api/chat/messages', 'ChatControl@getMessages');    // READ:   fetch messages

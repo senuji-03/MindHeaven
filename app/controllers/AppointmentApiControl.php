@@ -19,7 +19,7 @@ class AppointmentApiControl
         }
 
         try {
-            $rows = $this->appointmentModel->getByStudentUserId((int)$_SESSION['user_id']);
+            $rows = $this->appointmentModel->getByStudentUserId((int) $_SESSION['user_id']);
             $this->json($rows);
         } catch (Throwable $e) {
             error_log("AppointmentApiControl listForStudent error: " . $e->getMessage());
@@ -41,12 +41,12 @@ class AppointmentApiControl
         }
 
         try {
-            $rows = $this->appointmentModel->getByCounselorUserId((int)$_SESSION['user_id']);
+            $rows = $this->appointmentModel->getByCounselorUserId((int) $_SESSION['user_id']);
 
             // Map database rows to the structure expected by the counselor UI
             $appointments = array_map(function ($row) {
                 return [
-                    'id' => isset($row['id']) ? (int)$row['id'] : null,
+                    'id' => isset($row['id']) ? (int) $row['id'] : null,
                     'patientName' => isset($row['student_name']) ? $row['student_name'] : 'Unknown student',
                     'reason' => isset($row['title']) ? $row['title'] : '',
                     'requestedDate' => isset($row['date']) ? $row['date'] : '',
@@ -55,9 +55,11 @@ class AppointmentApiControl
                     'email' => '',
                     'phone' => '',
                     'duration' => '60 minutes',
-                    'mediaType' => isset($row['type']) ? $row['type'] : 'video',
+                    'mediaType' => isset($row['mode']) && $row['mode'] ? $row['mode'] : 'audio_video',
+                    'sessionType' => isset($row['type']) ? $row['type'] : 'individual',
                     'status' => isset($row['status']) ? $row['status'] : 'pending',
                     'urgency' => 'medium',
+                    'bookedDate' => isset($row['created_at']) ? $row['created_at'] : '',
                 ];
             }, $rows);
 
@@ -111,7 +113,7 @@ class AppointmentApiControl
     public function create()
     {
         $data = $this->getJsonInput();
-        $userId = (int)($_SESSION['user_id'] ?? 0);
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
 
         if (!$userId) {
             return $this->json(['error' => 'Not logged in'], 401);
@@ -127,7 +129,7 @@ class AppointmentApiControl
 
         // Normalise time slot to HH:MM and validate
         $allowedSlots = ['09:00', '13:00', '16:00'];
-        $timeVal = substr(trim((string)$data['time']), 0, 5);
+        $timeVal = substr(trim((string) $data['time']), 0, 5);
         if (!in_array($timeVal, $allowedSlots, true)) {
             return $this->json(['error' => 'Invalid time slot. Choose 9:00 AM, 1:00 PM, or 4:00 PM.'], 400);
         }
@@ -135,7 +137,7 @@ class AppointmentApiControl
 
         // Validate mode
         $allowedModes = ['audio_video', 'chat'];
-        $mode = trim((string)($data['mode'] ?? 'audio_video'));
+        $mode = trim((string) ($data['mode'] ?? 'audio_video'));
         if (!in_array($mode, $allowedModes, true)) {
             $mode = 'audio_video'; // safe default
         }
@@ -156,20 +158,20 @@ class AppointmentApiControl
                 WHERE counselor_user_id = ? AND date = ? AND time = ?
                   AND status NOT IN ('cancelled', 'rejected')
             ");
-            $chk->execute([(int)$data['counselor_user_id'], $data['date'], $dbTime]);
-            if ((int)$chk->fetchColumn() > 0) {
+            $chk->execute([(int) $data['counselor_user_id'], $data['date'], $dbTime]);
+            if ((int) $chk->fetchColumn() > 0) {
                 return $this->json(['error' => 'This time slot is already booked. Please choose another.'], 409);
             }
 
             $id = $this->appointmentModel->create(
                 $userId,
-                (int)$data['counselor_user_id'],
-                trim((string)$data['title']),
-                trim((string)$data['type']),
+                (int) $data['counselor_user_id'],
+                trim((string) $data['title']),
+                trim((string) $data['type']),
                 $mode,
                 $data['date'],
                 $dbTime,
-                trim((string)($data['notes'] ?? ''))
+                trim((string) ($data['notes'] ?? ''))
             );
 
             if ($id) {
@@ -181,7 +183,7 @@ class AppointmentApiControl
             error_log('AppointmentApiControl create error: ' . $e->getMessage());
             // Return real error so it's visible in browser console
             $this->json([
-                'error'  => 'Failed to create appointment',
+                'error' => 'Failed to create appointment',
                 'detail' => $e->getMessage()
             ], 500);
         }
@@ -193,8 +195,8 @@ class AppointmentApiControl
      */
     public function getSlots()
     {
-        $counselorId = (int)($_GET['counselor_id'] ?? 0);
-        $date        = $_GET['date'] ?? '';
+        $counselorId = (int) ($_GET['counselor_id'] ?? 0);
+        $date = $_GET['date'] ?? '';
 
         if (!$counselorId || !$date) {
             return $this->json(['error' => 'counselor_id and date are required'], 400);
@@ -206,7 +208,7 @@ class AppointmentApiControl
         }
 
         try {
-            $pdo  = Database::getConnection();
+            $pdo = Database::getConnection();
             $stmt = $pdo->prepare("
                 SELECT TIME_FORMAT(time, '%H:%i') AS slot
                 FROM appointments
@@ -218,9 +220,9 @@ class AppointmentApiControl
             $booked = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
             $this->json([
-                'date'    => $date,
-                'booked'  => $booked,
-                'all'     => ['09:00', '13:00', '16:00']
+                'date' => $date,
+                'booked' => $booked,
+                'all' => ['09:00', '13:00', '16:00']
             ]);
         } catch (Throwable $e) {
             error_log("AppointmentApiControl getSlots error: " . $e->getMessage());
@@ -234,8 +236,8 @@ class AppointmentApiControl
      */
     public function update()
     {
-        $data   = $this->getJsonInput();
-        $userId = (int)($_SESSION['user_id'] ?? 0);
+        $data = $this->getJsonInput();
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
 
         if (!$userId) {
             return $this->json(['error' => 'Not logged in'], 401);
@@ -254,7 +256,7 @@ class AppointmentApiControl
 
         // Normalise time slot
         $allowedSlots = ['09:00', '13:00', '16:00'];
-        $timeVal = substr(trim((string)$data['time']), 0, 5);
+        $timeVal = substr(trim((string) $data['time']), 0, 5);
         if (!in_array($timeVal, $allowedSlots, true)) {
             return $this->json(['error' => 'Invalid time slot. Choose 9:00 AM, 1:00 PM, or 4:00 PM.'], 400);
         }
@@ -262,20 +264,20 @@ class AppointmentApiControl
 
         // Normalise mode
         $allowedModes = ['audio_video', 'chat'];
-        $mode = trim((string)($data['mode'] ?? 'audio_video'));
+        $mode = trim((string) ($data['mode'] ?? 'audio_video'));
         if (!in_array($mode, $allowedModes, true)) {
             $mode = 'audio_video';
         }
 
         try {
             $updated = $this->appointmentModel->update(
-                (int)$data['id'],
-                trim((string)$data['title']),
-                trim((string)$data['type']),
+                (int) $data['id'],
+                trim((string) $data['title']),
+                trim((string) $data['type']),
                 $mode,
                 $data['date'],
                 $dbTime,
-                trim((string)($data['notes'] ?? '')),
+                trim((string) ($data['notes'] ?? '')),
                 $userId   // ownership check
             );
 
@@ -291,17 +293,59 @@ class AppointmentApiControl
         }
     }
 
+    public function reschedule()
+    {
+        $data = $this->getJsonInput();
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
+        $role = $_SESSION['role'] ?? '';
+
+        if (!$userId) {
+            return $this->json(['error' => 'Not logged in'], 401);
+        }
+
+        if (empty($data['id']) || empty($data['date']) || empty($data['time']) || empty($data['reason'])) {
+            return $this->json(['error' => 'Missing required fields'], 400);
+        }
+
+        // Parse time slot
+        $timeVal = substr(trim((string) $data['time']), 0, 5);
+        if (!preg_match('/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/', $timeVal)) {
+            return $this->json(['error' => 'Invalid time format. Use HH:MM.'], 400);
+        }
+        $dbTime = $timeVal . ':00';
+
+        try {
+            $counselorId = ($role === 'counselor') ? $userId : null;
+            $updated = $this->appointmentModel->reschedule(
+                (int) $data['id'],
+                $data['date'],
+                $dbTime,
+                $data['reason'],
+                $counselorId
+            );
+
+            if ($updated) {
+                $this->json(['message' => 'Appointment rescheduled']);
+            } else {
+                $this->json(['error' => 'Appointment not found or unauthorized'], 404);
+            }
+        } catch (Throwable $e) {
+            error_log('AppointmentApiControl reschedule error: ' . $e->getMessage());
+            $this->json(['error' => 'Failed to reschedule appointment'], 500);
+        }
+    }
+
     public function delete()
     {
-        $data   = $this->getJsonInput();
-        $userId = (int)($_SESSION['user_id'] ?? 0);
+        $data = $this->getJsonInput();
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
 
         if (!isset($data['id'])) {
             return $this->json(['error' => 'Appointment ID required'], 400);
         }
 
         try {
-            $result = $this->appointmentModel->delete((int)$data['id']);
+            $result = $this->appointmentModel->delete((int) $data['id']);
             if ($result) {
                 $this->json(['message' => 'Appointment deleted']);
             } else {
@@ -330,7 +374,7 @@ class AppointmentApiControl
         }
 
         try {
-            $result = $this->appointmentModel->updateStatus((int)$data['id'], $data['status']);
+            $result = $this->appointmentModel->updateStatus((int) $data['id'], $data['status']);
 
             if ($result) {
                 $this->json(['message' => 'Appointment status updated'], 200);

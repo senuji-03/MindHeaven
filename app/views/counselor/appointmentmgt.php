@@ -32,23 +32,7 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <ul class="sidebar-menu">
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/dashboard">📊 Dashboard</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/calender">📅 Calendar</a></li>
-                <li class="sidebar-item active"><a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt"
-                        style="color: #2563eb;">🗓️ Appointment Management</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/sessionHistory">📋 Session
-                        History</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/forum">💭 Forum</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/resources">📚 Resource Hub</a></li>
-                <li class="sidebar-item"><a href="<?php echo BASE_URL; ?>/counselor/counselor_profile">👤 Profile</a>
-                </li>
-                <li class="sidebar-item"><a href="#">⚙️ Settings</a></li>
-                <li class="sidebar-item logout-item"><a href="<?php echo BASE_URL; ?>/logout"
-                        onclick="return confirm('Are you sure you want to logout?')">🚪 Logout</a></li>
-            </ul>
-        </div>
+        <?php include __DIR__ . '/sidebar.php'; ?>
 
 
         <!-- Main Content -->
@@ -70,7 +54,7 @@
                         <select class="filter-input" id="statusFilter" onchange="filterAppointments()">
                             <option value="all">All Requests</option>
                             <option value="pending">Pending</option>
-                            <option value="accept">Accepted</option>
+                            <option value="accepted">Accepted</option>
                             <option value="rejected">Rejected</option>
                         </select>
                     </div>
@@ -82,6 +66,31 @@
                         <label class="filter-label">Search Patient</label>
                         <input type="text" class="filter-input" id="patientSearch" placeholder="Search by name..."
                             onkeyup="filterAppointments()">
+                    </div>
+                </div>
+                <div class="filter-row" style="margin-top: 15px;">
+                    <div class="filter-group">
+                        <label class="filter-label">Filter by Mode</label>
+                        <select class="filter-input" id="modeFilter" onchange="filterAppointments()">
+                            <option value="all">All Modes</option>
+                            <option value="chat">Chat</option>
+                            <option value="audio_video">Audio / Video</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Filter by Session Type</label>
+                        <select class="filter-input" id="typeFilter" onchange="filterAppointments()">
+                            <option value="all">All Types</option>
+                            <option value="individual">Individual</option>
+                            <option value="group">Group</option>
+                            <option value="crisis">Crisis</option>
+                            <option value="assessment">Assessment</option>
+                            <option value="follow_up">Follow Up</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="visibility: hidden;">
+                        <!-- Placeholder to keep the 3-column layout consistent -->
+                        <input class="filter-input">
                     </div>
                 </div>
             </div>

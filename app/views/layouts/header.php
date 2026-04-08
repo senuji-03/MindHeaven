@@ -28,7 +28,7 @@ function getNavigationItems($role)
         ['icon' => '✅', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
         ['icon' => '😊', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
         ['icon' => '📅', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
-        ['icon' => '💬', 'text' => 'Chat', 'url' => '/chat', 'slug' => 'chat'],
+        ['icon' => '💬', 'text' => 'Chat', 'url' => '/ug/chat', 'slug' => 'chat'],
       ],
       'support' => [
         ['icon' => '📚', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],

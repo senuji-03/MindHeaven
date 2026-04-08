@@ -15,8 +15,8 @@ $undergrads = isset($undergrads) ? $undergrads : [];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MindHeaven — Counselor Chat</title>
-    <link rel="stylesheet" href="/MindHeaven/public/css/counselor/Cdashboard.css">
-    <link rel="stylesheet" href="/MindHeaven/public/css/chat/chat.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/Cdashboard.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/chat/chat.css">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -132,7 +132,7 @@ $undergrads = isset($undergrads) ? $undergrads : [];
         btn.disabled = true;
         btn.textContent = 'Opening…';
 
-        fetch('/MindHeaven/public/api/chat/start', {
+        fetch('<?php echo BASE_URL; ?>/api/chat/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
@@ -141,7 +141,7 @@ $undergrads = isset($undergrads) ? $undergrads : [];
         .then(function (r) { return r.json(); })
         .then(function (data) {
             if (data.success) {
-                window.location.href = '/MindHeaven/public/chat/room?session_id=' + data.session_id;
+                window.location.href = '<?php echo BASE_URL; ?>/chat/room?session_id=' + data.session_id;
             } else {
                 showError(data.message || 'Could not start chat. Please try again.');
                 btn.disabled = false;

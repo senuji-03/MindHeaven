@@ -376,7 +376,7 @@ class COControl
 
         // Verify event belongs to counselor
         $event = $this->eventModel->getEventById($eventId);
-        if (!$event || $event->counselor_id != $counselorId) {
+        if (!$event || $event->counselor_user_id != $counselorId) {
             echo json_encode(array('success' => false, 'message' => 'Event not found or access denied'));
             return;
         }
@@ -431,7 +431,7 @@ class COControl
 
         // Verify event belongs to counselor
         $event = $this->eventModel->getEventById($eventId);
-        if (!$event || $event->counselor_id != $counselorId) {
+        if (!$event || $event->counselor_user_id != $counselorId) {
             echo json_encode(array('success' => false, 'message' => 'Event not found or access denied'));
             return;
         }

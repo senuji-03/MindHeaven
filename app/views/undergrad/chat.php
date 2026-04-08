@@ -7,7 +7,7 @@
 
 $TITLE        = 'MindHeaven — My Chats';
 $CURRENT_PAGE = 'chat';
-$PAGE_CSS     = ['/MindHeaven/public/css/chat/chat.css'];
+$PAGE_CSS     = [BASE_URL . '/css/chat/chat.css'];
 
 require BASE_PATH . '/app/views/layouts/header.php';
 

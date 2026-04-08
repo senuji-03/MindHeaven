@@ -81,7 +81,7 @@ class ChatControl {
                 'sessions'   => $sessions,
                 'undergrads' => $undergrads,
             ]);
-        } elseif ($role === 'undergrad') {
+        } elseif ($role === 'undergraduate' || $role === 'undergrad') {
             $sessions = $this->chatModel->getSessionsForUndergrad($userId);
             view('/undergrad/chat', [
                 'sessions' => $sessions,

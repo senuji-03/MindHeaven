@@ -42,7 +42,7 @@ function fmt_date(string $ts): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with <?php echo htmlspecialchars($otherName); ?> — MindHeaven</title>
     <meta name="description" content="Private counselling chat session on MindHeaven.">
-    <link rel="stylesheet" href="/MindHeaven/public/css/chat/chat.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/chat/chat.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0f172a; }
@@ -170,7 +170,7 @@ function fmt_date(string $ts): string {
 
 var SESSION_ID  = <?php echo $sessionId; ?>;
 var CURRENT_UID = <?php echo $userId; ?>;
-var BASE_API    = '/MindHeaven/public/api/chat';
+var BASE_API    = '<?php echo BASE_URL; ?>/api/chat';
 
 /* scroll to bottom of messages */
 function scrollToBottom() {

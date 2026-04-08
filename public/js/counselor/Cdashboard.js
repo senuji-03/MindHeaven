@@ -48,7 +48,10 @@ function startMeeting(patientName) {
     alert(`Starting meeting with ${patientName}...\nThis would typically open the video/audio call interface.`);
 }
 
-function reschedule(patientName, reason) {
+let currentRescheduleId = null;
+
+function reschedule(appointmentId, patientName, reason) {
+    currentRescheduleId = appointmentId;
     // Populate patient info
     const patientInfoDiv = document.getElementById('reschedulePatientInfo');
     patientInfoDiv.innerHTML = `
@@ -95,8 +98,6 @@ function closeModal(modalId) {
 }
 
 function submitReschedule() {
-    const form = document.getElementById('rescheduleForm');
-    const formData = new FormData(form);
     const newDate = document.getElementById('newDate').value;
     const newTime = document.getElementById('newTime').value;
     const reason = document.getElementById('rescheduleReason').value;
@@ -106,10 +107,39 @@ function submitReschedule() {
         return;
     }
     
-    // Here you would typically send the data to your PHP backend
-    alert(`Appointment rescheduled successfully!\nNew Date: ${newDate}\nNew Time: ${newTime}\nReason: ${reason}`);
-    
-    closeModal('rescheduleModal');
+    if (!currentRescheduleId) {
+        alert('Missing appointment ID.');
+        return;
+    }
+
+    const payload = {
+        id: currentRescheduleId,
+        date: newDate,
+        time: newTime,
+        reason: reason
+    };
+
+    fetch(window.BASE_URL + '/api/appointments/reschedule', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('Error: ' + data.error);
+        } else {
+            alert(`Appointment rescheduled successfully!\nNew Date: ${newDate}\nNew Time: ${newTime}\nReason: ${reason}`);
+            closeModal('rescheduleModal');
+            window.location.reload(); // refresh page to see updated appointment
+        }
+    })
+    .catch(error => {
+        console.error('Failed to reschedule:', error);
+        alert('Failed to reschedule. Please try again.');
+    });
 }
 
 function submitFeedback() {
