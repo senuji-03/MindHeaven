@@ -285,6 +285,10 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
         <span class="icon">✏️</span>
         Edit Resources
       </a>
+      <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
+        <span class="icon">🚨</span>
+        Reported Resources
+      </a>
       <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
         <span class="icon">🚩</span>
         Flagged Users
@@ -308,7 +312,10 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
     <!-- Top Bar -->
     <div class="topbar">
       <h1>Moderator Dashboard</h1>
-      <div class="topbar-right">
+      <div class="topbar-right" style="display: flex; align-items: center; gap: 1.5rem;">
+        <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="btn btn-primary" style="text-decoration: none; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
+            📚 Resource Hub
+        </a>
         <div class="admin-profile">
           <span>Moderator</span>
           <div class="avatar">M</div>
@@ -366,6 +373,11 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
               <div class="quick-access-icon">👥</div>
               <h3>Flagged Users</h3>
               <p>Manage user warnings and actions</p>
+            </a>
+            <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="quick-access-item">
+              <div class="quick-access-icon">🚨</div>
+              <h3>Reported Resources</h3>
+              <p>Review and moderate reported resources</p>
             </a>
           </div>
         </section>
