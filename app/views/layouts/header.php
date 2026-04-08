@@ -42,9 +42,16 @@ function getNavigationItems($role)
     ],
     'admin' => [
       'main' => [
-        ['icon' => 'fas fa-th-large', 'text' => 'Dashboard', 'url' => '/admin', 'slug' => 'dashboard'],
-        ['icon' => 'fas fa-users-cog', 'text' => 'Manage Users', 'url' => '/admin/manage-users', 'slug' => 'manage-users'],
-        ['icon' => 'fas fa-folder-open', 'text' => 'Resource Hub', 'url' => '/admin/resource-hub', 'slug' => 'resource-hub'],
+        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/admin', 'slug' => 'dashboard'],
+        ['icon' => '👥', 'text' => 'Manage Users', 'url' => '/admin/manage-users', 'slug' => 'manage-users'],
+        ['icon' => '📚', 'text' => 'Resource Hub', 'url' => '/admin/resource-hub', 'slug' => 'resource-hub'],
+        ['icon' => '💬', 'text' => 'Moderate Forum', 'url' => '/admin/moderate-forum', 'slug' => 'moderate-forum'],
+        ['icon' => '👨‍⚕️', 'text' => 'Manage Counselors', 'url' => '/admin/counselors', 'slug' => 'counselors'],
+        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/admin/appointments', 'slug' => 'appointments'],
+        ['icon' => '📈', 'text' => 'Reports', 'url' => '/admin/reports', 'slug' => 'reports'],
+        ['icon' => '🏛️', 'text' => 'University Events', 'url' => '/admin/university-events', 'slug' => 'university-events'],
+        ['icon' => '⚙️', 'text' => 'Settings', 'url' => '/admin/settings', 'slug' => 'settings'],
+        ['icon' => '💰', 'text' => 'Donation logs', 'url' => '/admin/donations', 'slug' => 'donations'],
       ]
     ],
     'counselor' => [
@@ -456,7 +463,13 @@ $navigationItems = getNavigationItems($userRole);
               <li>
                 <a class="nav-link <?= is_active($item['slug'], $CURRENT_PAGE) ?> <?= $item['class'] ?? '' ?>"
                   href="<?= BASE_URL . $item['url'] ?>">
-                  <span class="nav-icon"><?= $item['icon'] ?></span>
+                  <span class="nav-icon">
+                    <?php if (strpos($item['icon'], 'fas ') === 0 || strpos($item['icon'], 'far') === 0): ?>
+                      <i class="<?= $item['icon'] ?>"></i>
+                    <?php else: ?>
+                      <?= $item['icon'] ?>
+                    <?php endif; ?>
+                  </span>
                   <span class="nav-text"><?= $item['text'] ?></span>
                 </a>
               </li>

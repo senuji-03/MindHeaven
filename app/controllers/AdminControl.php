@@ -290,8 +290,52 @@ class AdminControl
                 $universityId = $stmt->fetchColumn();
 
                 if (!$universityId) {
-                    $stmt = $pdo->prepare("INSERT INTO universities (name) VALUES (?)");
-                    $stmt->execute([$universityName]);
+
+                    $baseShortName = strtoupper(preg_replace('/[^A-Za-z0-9]+/', '_', $universityName));
+                    $baseShortName = trim($baseShortName, '_');
+
+                    if ($baseShortName === '') {
+                        $baseShortName = 'UNI';
+                    }
+
+                    $shortName = $baseShortName;
+                    $i = 1;
+
+                    $checkStmt = $pdo->prepare("SELECT id FROM universities WHERE short_name = ?");
+
+                    while (true) {
+                        $checkStmt->execute([$shortName]);
+                        if (!$checkStmt->fetchColumn()) {
+                            break;
+                        }
+                        $shortName = $baseShortName . '_' . $i;
+                        $i++;
+                    }
+
+                    $baseDomain = strtolower(preg_replace('/[^a-z0-9]+/', '-', $universityName));
+                    $baseDomain = trim($baseDomain, '-');
+
+                    if ($baseDomain === '') {
+                        $baseDomain = 'university';
+                    }
+
+                    $domain = $baseDomain . '.local';
+                    $d = 1;
+
+                    $checkDomainStmt = $pdo->prepare("SELECT id FROM universities WHERE domain = ?");
+
+                    while (true) {
+                        $checkDomainStmt->execute([$domain]);
+                        if (!$checkDomainStmt->fetchColumn()) {
+                            break;
+                        }
+                        $domain = $baseDomain . '-' . $d . '.local';
+                        $d++;
+                    }
+
+                    $stmt = $pdo->prepare("INSERT INTO universities (name, short_name, domain) VALUES (?, ?, ?)");
+                    $stmt->execute([$universityName, $shortName, $domain]);
+
                     $universityId = $pdo->lastInsertId();
                 }
 
@@ -544,21 +588,31 @@ class AdminControl
         // Fetch pending reports
         $reports = $reportModel->getAll('pending');
 
-        // Enrich reports with content details if needed, though getById/getAll might already offer some info.
-        // The Report model's getAll joins with users and categories, but not the content itself (Thread or Post)
-        // We might want to fetch the content title/snippet here to display in the queue.
+        $db = Database::getConnection();
 
+        // Enrich reports with content details
         foreach ($reports as &$report) {
+            $report['content_title'] = 'Unknown/Deleted Content';
+            $report['content_snippet'] = 'Content could not be loaded.';
+            $report['full_content'] = '';
+            $report['context_url'] = null;
+
             if ($report['content_type'] === 'thread') {
                 $content = $threadModel->getById($report['content_id']);
-                $report['content_title'] = $content['title'] ?? 'Deleted Content';
-                $report['content_snippet'] = substr($content['description'] ?? '', 0, 100);
-                $report['full_content'] = $content['description'] ?? '';
-            } elseif ($report['content_type'] === 'post' || $report['content_type'] === 'reply') {
+                if ($content) {
+                    $report['content_title'] = 'Thread: ' . ($content['title'] ?? 'Deleted Content');
+                    $report['content_snippet'] = substr($content['description'] ?? '', 0, 100);
+                    $report['full_content'] = $content['description'] ?? '';
+                    $report['context_url'] = BASE_URL . '/forum/thread/' . $content['id'];
+                }
+            } elseif (in_array($report['content_type'], ['post', 'reply', 'reply_reply'])) {
                 $content = $threadModel->getPostById($report['content_id']);
-                $report['content_title'] = 'Post/Reply';
-                $report['content_snippet'] = substr($content['content'] ?? '', 0, 100);
-                $report['full_content'] = $content['content'] ?? '';
+                if ($content) {
+                    $report['content_title'] = 'Reported ' . ucfirst($report['content_type']);
+                    $report['content_snippet'] = substr($content['content'] ?? '', 0, 100);
+                    $report['full_content'] = $content['content'] ?? '';
+                    $report['context_url'] = BASE_URL . '/forum/thread/' . $content['thread_id'] . '#post-' . $content['id'];
+                }
             }
         }
 
@@ -569,16 +623,43 @@ class AdminControl
 
         // Enrich system flags with content details
         foreach ($systemFlags as &$flag) {
-            if ($flag['content_type'] === 'thread') {
+            if (empty($flag['content_type'])) {
+                $stmt = $db->prepare("SELECT id FROM forum_posts WHERE id = ?");
+                $stmt->execute([$flag['content_id']]);
+                if ($stmt->fetchColumn()) {
+                    $flag['content_type'] = 'post';
+                } else {
+                    $stmt = $db->prepare("SELECT id FROM forum_threads WHERE id = ?");
+                    $stmt->execute([$flag['content_id']]);
+                    if ($stmt->fetchColumn()) {
+                        $flag['content_type'] = 'thread';
+                    }
+                }
+            }
+
+            $flag['content_title'] = 'Unknown/Deleted Content';
+            $flag['content_snippet'] = 'Content could not be loaded.';
+            $flag['full_content'] = '';
+            $flag['context_url'] = null;
+
+            $typeToCheck = $flag['content_type'] ?? '';
+
+            if ($typeToCheck === 'thread') {
                 $content = $threadModel->getById($flag['content_id']);
-                $flag['content_title'] = $content['title'] ?? 'Deleted Content';
-                $flag['content_snippet'] = substr($content['description'] ?? '', 0, 100);
-                $flag['full_content'] = $content['description'] ?? '';
-            } elseif ($flag['content_type'] === 'post' || $flag['content_type'] === 'reply' || $flag['content_type'] === 'reply_reply') {
-                $content = $threadModel->getPostById($flag['content_id']); // Assuming getPostById handles replies too or we need a specific method
-                $flag['content_title'] = ucfirst($flag['content_type']);
-                $flag['content_snippet'] = substr($content['content'] ?? '', 0, 100);
-                $flag['full_content'] = $content['content'] ?? '';
+                if ($content) {
+                    $flag['content_title'] = 'Thread: ' . ($content['title'] ?? 'Deleted Content');
+                    $flag['content_snippet'] = substr($content['description'] ?? '', 0, 100);
+                    $flag['full_content'] = $content['description'] ?? '';
+                    $flag['context_url'] = BASE_URL . '/forum/thread/' . $content['id'];
+                }
+            } elseif (in_array($typeToCheck, ['post', 'reply', 'reply_reply'])) {
+                $content = $threadModel->getPostById($flag['content_id']);
+                if ($content) {
+                    $flag['content_title'] = 'Flagged ' . ucfirst($typeToCheck);
+                    $flag['content_snippet'] = substr($content['content'] ?? '', 0, 100);
+                    $flag['full_content'] = $content['content'] ?? '';
+                    $flag['context_url'] = BASE_URL . '/forum/thread/' . $content['thread_id'] . '#post-' . $content['id'];
+                }
             }
         }
 
@@ -833,7 +914,8 @@ class AdminControl
         $categories = $reportModel->getAllCategories(true); // Include inactive
 
         view('Admin/customize-forum-categories', [
-            'categories' => $categories
+            'categories' => $categories,
+            'mode' => 'report'
         ]);
     }
 
@@ -1040,7 +1122,10 @@ class AdminControl
         $pdo = Database::getConnection();
         $stmt = $pdo->query("SELECT id, name, description, is_active, sort_order FROM forum_categories ORDER BY sort_order ASC, id ASC");
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        view('admin/customize-forum-categories', ['categories' => $categories]);
+        view('admin/customize-forum-categories', [
+            'categories' => $categories,
+            'mode' => 'forum'
+        ]);
     }
 
     public function createForumCategory()
@@ -1070,8 +1155,8 @@ class AdminControl
             header('Location: ' . BASE_URL . '/admin/forum-categories');
             exit;
         }
-        $id          = (int) ($_POST['id'] ?? 0);
-        $name        = trim($_POST['name'] ?? '');
+        $id = (int) ($_POST['id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
         if (!$id || empty($name)) {
             $_SESSION['error'] = 'Invalid request.';
@@ -1127,12 +1212,13 @@ class AdminControl
     /**
      * Get pending counselors for approval
      */
-    public function getPendingCounselors() {
+    public function getPendingCounselors()
+    {
         try {
             require_once BASE_PATH . '/app/models/Counselor.php';
             $counselorModel = new Counselor();
             $pendingCounselors = $counselorModel->getPending();
-            
+
             return $pendingCounselors;
         } catch (Exception $e) {
             error_log("AdminControl getPendingCounselors error: " . $e->getMessage());
@@ -1143,7 +1229,8 @@ class AdminControl
     /**
      * Approve a counselor
      */
-    public function approveCounselor() {
+    public function approveCounselor()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/admin/manage-users');
             exit;
@@ -1160,16 +1247,16 @@ class AdminControl
         try {
             require_once BASE_PATH . '/app/models/Counselor.php';
             $counselorModel = new Counselor();
-            
+
             $result = $counselorModel->approve($counselorId, $adminId);
-            
+
             if ($result) {
                 header('Location: ' . BASE_URL . '/admin/manage-users?success=Counselor approved successfully');
             } else {
                 header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to approve counselor');
             }
             exit;
-            
+
         } catch (Exception $e) {
             error_log("AdminControl approveCounselor error: " . $e->getMessage());
             header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to approve counselor');
@@ -1180,7 +1267,8 @@ class AdminControl
     /**
      * Reject a counselor
      */
-    public function rejectCounselor() {
+    public function rejectCounselor()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/admin/manage-users');
             exit;
@@ -1196,21 +1284,21 @@ class AdminControl
 
         try {
             $pdo = Database::getConnection();
-            
+
             // Mirror status and account_status deactivation
             $stmt = $pdo->prepare("UPDATE users u 
                                   JOIN counselors c ON u.id = c.user_id 
                                   SET u.status = 'inactive', u.account_status = 'inactive', c.is_active = 0 
                                   WHERE c.user_id = ?");
             $result = $stmt->execute([$counselorId]);
-            
+
             if ($result) {
                 header('Location: ' . BASE_URL . '/admin/manage-users?success=Counselor rejected and account deactivated');
             } else {
                 header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to reject counselor');
             }
             exit;
-            
+
         } catch (Exception $e) {
             error_log("AdminControl rejectCounselor error: " . $e->getMessage());
             header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to reject counselor');

@@ -9,7 +9,6 @@
 </head>
 
 <body>
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <h2>🧠 Mind Haven</h2>
@@ -52,7 +51,7 @@
             <a href="<?= BASE_URL ?>/admin/system-flags" class="nav-item active">
                 <span class="icon">🚩</span>
                 Automated Flags
-                        </a>
+            </a>
             <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
                 <span class="icon">🏛️</span>
                 University Events
@@ -71,7 +70,6 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div class="topbar">
             <h1>Automated Flags Queue</h1>
@@ -91,61 +89,83 @@
                 </div>
             <?php endif; ?>
 
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <?= $_SESSION['error'];
+                    unset($_SESSION['error']); ?>
+                </div>
+            <?php endif; ?>
+
             <div class="flag-list">
                 <?php if (empty($flags)): ?>
                     <p>No content currently flagged.</p>
                 <?php else: ?>
                     <?php foreach ($flags as $flag): ?>
+                        <?php
+                        $contentType = $flag['content_type'] ?? '';
+                        $contentId = $flag['content_id'] ?? '';
+                        $username = $flag['username'] ?? ('User #' . ($flag['user_id'] ?? 'Unknown'));
+                        $matchedKeyword = $flag['matched_keyword'] ?? '';
+                        $createdAt = $flag['created_at'] ?? '';
+                        $flagId = $flag['id'] ?? '';
+
+                        $link = '#';
+                        if ($contentType === 'thread' && !empty($contentId)) {
+                            $link = BASE_URL . '/forum/thread/' . $contentId;
+                        } elseif (in_array($contentType, ['post', 'reply', 'reply_reply']) && !empty($contentId)) {
+                            $link = BASE_URL . '/forum';
+                        }
+
+                        $displayType = !empty($contentType) ? $contentType : 'unknown';
+                        ?>
                         <div class="flag-item">
                             <div class="flag-header">
                                 <span>
-                                <span class="chip">Type: <?= htmlspecialchars($flag['content_type']) ?></span>
-                                <span class="chip">User: <?= htmlspecialchars($flag['username']) ?></span>
+                                    <span class="chip">Type:
+                                        <?= htmlspecialchars($displayType) ?>
+                                    </span>
+                                    <span class="chip">User:
+                                        <?= htmlspecialchars($username) ?>
+                                    </span>
                                 </span>
                                 <span style="font-size:0.9em; color:#888;">
-                                    <?= $flag['created_at'] ?>
+                                    <?= htmlspecialchars($createdAt) ?>
                                 </span>
                             </div>
 
                             <div class="flag-content">
-                                <p>Matched Keyword: <span class="match-highlight">
-                                        <?= htmlspecialchars($flag['matched_keyword']) ?>
-                                    </span></p>
-                                <p>Content ID:
-                                    <?= $flag['content_id'] ?>
+                                <p>
+                                    Matched Keyword:
+                                    <span class="match-highlight">
+                                        <?= htmlspecialchars($matchedKeyword) ?>
+                                    </span>
+                                </p>
+                                <p>
+                                    Content ID:
+                                    <?= htmlspecialchars((string) $contentId) ?>
                                 </p>
 
-                                <?php
-                                // Determine link to content based on type
-                                $link = '#';
-                                if ($flag['content_type'] === 'thread') {
-                                    $link = BASE_URL . '/forum/thread/' . $flag['content_id'];
-                                } elseif ($flag['content_type'] === 'post' || $flag['content_type'] === 'reply' || $flag['content_type'] === 'reply_reply') {
-                                    // For posts, we need the thread ID to link properly. 
-                                    // Ideally, we'd fetch this. accessible via manual lookup or link to forum home.
-                                    // For now, let's just link to forum home or maybe implement a direct lookup later.
-                                    // Or simplified: Link to forum home
-                                    $link = BASE_URL . '/forum';
-                                }
-                                ?>
-                                <a href="<?= $link ?>" target="_blank" style="color:#2563eb; text-decoration:underline;">View
-                                    Content Context (New Tab)</a>
+                                <?php if ($link !== '#'): ?>
+                                    <a href="<?= $link ?>" target="_blank" style="color:#2563eb; text-decoration:underline;">
+                                        View Content Context (New Tab)
+                                    </a>
+                                <?php else: ?>
+                                    <span style="color:#6b7280;">Content context link unavailable.</span>
+                                <?php endif; ?>
                             </div>
 
                             <div class="flag-actions" style="display:flex; gap:10px;">
                                 <form action="<?= BASE_URL ?>/admin/system-flags/update" method="POST">
-                                    <input type="hidden" name="id" value="<?= $flag['id'] ?>">
+                                    <input type="hidden" name="id" value="<?= htmlspecialchars((string) $flagId) ?>">
                                     <input type="hidden" name="status" value="dismissed">
                                     <button type="submit" class="btn btn-secondary">Dismiss (Ignore)</button>
                                 </form>
 
                                 <form action="<?= BASE_URL ?>/admin/system-flags/update" method="POST">
-                                    <input type="hidden" name="id" value="<?= $flag['id'] ?>">
+                                    <input type="hidden" name="id" value="<?= htmlspecialchars((string) $flagId) ?>">
                                     <input type="hidden" name="status" value="reviewed">
                                     <button type="submit" class="btn btn-primary">Mark Reviewed</button>
                                 </form>
-
-                                <!-- Deletion should be handled via standard moderation tools if needed -->
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -156,4 +176,3 @@
 </body>
 
 </html>
-

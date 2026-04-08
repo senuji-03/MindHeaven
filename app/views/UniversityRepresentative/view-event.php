@@ -7,35 +7,6 @@
     <title>View Event - University Representative | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/university-rep/style.css">
 </head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>University Representative</p>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
-                <span class="icon">📅</span>
-                Manage Events
-            </a>
-            
-            <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
-                <span class="icon">🏫</span>
-                University Profile
-            </a>
-           
-            <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
-                <span class="icon">👤</span>
-                My Profile
-            </a>
-        </nav>
-
 
 <body>
     <?php $isRep = isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'university_representative'; ?>
@@ -226,12 +197,12 @@
                         <h3>📅 Event Logistics</h3>
                         <div class="info-item">
                             <label>Date:</label>
-                            <p><?= date('F j, Y', strtotime($event['event_date'])) ?></p>
+                            <p><?= !empty($event['event_date']) ? date('F j, Y', strtotime($event['event_date'])) : 'TBD' ?></p>
                         </div>
                         <div class="info-item">
                             <label>Time:</label>
-                            <p><?= date('g:i A', strtotime($event['start_time'])) ?> -
-                                <?= date('g:i A', strtotime($event['end_time'])) ?>
+                            <p><?= !empty($event['start_time']) ? date('g:i A', strtotime($event['start_time'])) : 'TBD' ?> -
+                                <?= !empty($event['end_time']) ? date('g:i A', strtotime($event['end_time'])) : 'TBD' ?>
                             </p>
                         </div>
                         <div class="info-item">
@@ -242,13 +213,13 @@
                             <label>Mode:</label>
                             <p><?= ucfirst($event['mode']) ?> Event</p>
                         </div>
-                        <?php if ($event['max_participants']): ?>
+                        <?php if (!empty($event['max_participants'])): ?>
                             <div class="info-item">
                                 <label>Maximum Participants:</label>
                                 <p><?= htmlspecialchars($event['max_participants']) ?></p>
                             </div>
                         <?php endif; ?>
-                        <?php if ($event['registration_deadline']): ?>
+                        <?php if (!empty($event['registration_deadline'])): ?>
                             <div class="info-item">
                                 <label>Registration Deadline:</label>
                                 <p><?= date('F j, Y', strtotime($event['registration_deadline'])) ?></p>
@@ -300,11 +271,11 @@
                         <h3>📊 Event Metadata</h3>
                         <div class="info-item">
                             <label>Created:</label>
-                            <p><?= date('F j, Y \a\t g:i A', strtotime($event['created_at'])) ?></p>
+                            <p><?= !empty($event['created_at']) ? date('F j, Y \a\t g:i A', strtotime($event['created_at'])) : 'N/A' ?></p>
                         </div>
                         <div class="info-item">
                             <label>Last Updated:</label>
-                            <p><?= date('F j, Y \a\t g:i A', strtotime($event['updated_at'])) ?></p>
+                            <p><?= !empty($event['updated_at']) ? date('F j, Y \a\t g:i A', strtotime($event['updated_at'])) : 'N/A' ?></p>
                         </div>
                     </div>
                 </div>
