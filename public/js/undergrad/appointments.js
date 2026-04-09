@@ -1,22 +1,24 @@
-// MindHeaven â€” Appointments JS (DB-backed, modal form)
+
+
+// MindHeaven — Appointments JS
 
 // â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ALL_SLOTS = ['09:00', '13:00', '16:00'];
-const BASE      = window.BASE_URL || '/MindHeaven/public';
+const BASE = window.BASE_URL || '/MindHeaven/public';
 
 const MODE_LABELS = {
     audio_video: 'ðŸŽ¥ Audio/Video',
-    chat:        'ðŸ’¬ Chat'
+    chat: 'ðŸ’¬ Chat'
 };
 
 const STATUS_CLASS = {
-    pending:     'pending',
-    scheduled:   'scheduled',
-    accepted:    'accepted',
-    accept:      'accepted',
-    completed:   'completed',
-    cancelled:   'cancelled',
-    rejected:    'rejected',
+    pending: 'pending',
+    scheduled: 'scheduled',
+    accepted: 'accepted',
+    accept: 'accepted',
+    completed: 'completed',
+    cancelled: 'cancelled',
+    rejected: 'rejected',
     rescheduled: 'pending'
 };
 
@@ -34,67 +36,109 @@ function initAppointmentsPage() {
     const dateEl = document.getElementById('appointmentDate');
     if (dateEl) dateEl.min = new Date().toISOString().split('T')[0];
 
-    // Close modal on overlay click
-    document.getElementById('bookingModal')?.addEventListener('click', function (e) {
-        if (e.target === this) closeBookingModal();
-    });
+    // Close on backdrop click (only when clicking the dark overlay, not the card)
+    const modal = document.getElementById('bookingModal');
+    if (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                closeBookingModal();
+            }
+        });
+    }
 
     // Close on Escape key
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeBookingModal();
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeBookingModal();
+        }
     });
 }
 
-// Safe init: works whether DOM is ready or not
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAppointmentsPage);
 } else {
     initAppointmentsPage();
 }
 
-// â”€â”€â”€ Modal Controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+// ─── Modal Open ───────────────────────────────────────────────────────────────
 function openBookingModal(appointment = null) {
-    const modal     = document.getElementById('bookingModal');
-    const title     = document.getElementById('modalTitle');
+    const modal = document.getElementById('bookingModal');
+    const title = document.getElementById('modalTitle');
     const submitTxt = document.getElementById('submitBtnText');
+    if (!modal) return;
 
+    // Reset form and labels
     resetForm();
-
     if (appointment) {
-        // Edit mode
-        title.textContent     = 'Edit Appointment';
-        submitTxt.textContent = 'Update Appointment';
+        if (title) title.textContent = 'Edit Appointment';
+        if (submitTxt) submitTxt.textContent = 'Update Appointment';
         prefillForm(appointment);
     } else {
-        title.textContent     = 'Book an Appointment';
-        submitTxt.textContent = 'Save Appointment';
+        if (title) title.textContent = 'Book an Appointment';
+        if (submitTxt) submitTxt.textContent = 'Save Appointment';
     }
 
-    modal.style.display = 'flex';
+    // Show the overlay (start transparent for fade-in)
+    modal.style.cssText = 'display:flex; opacity:0; transition:opacity 0.2s ease;';
     document.body.style.overflow = 'hidden';
-    setTimeout(() => document.getElementById('appointmentTitle')?.focus(), 100);
+
+    // Animate the inner card
+    const card = modal.querySelector('.mh-modal');
+    if (card) {
+        card.style.cssText = 'opacity:0; transform:scale(0.94) translateY(12px); transition:opacity 0.2s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);';
+    }
+
+    // Trigger transition on next frame
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.style.opacity = '1';
+            if (card) {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1) translateY(0)';
+            }
+        });
+    });
+
+    // Focus first input
+    setTimeout(() => document.getElementById('appointmentTitle')?.focus(), 220);
 }
 
+// ─── Modal Close ──────────────────────────────────────────────────────────────
+// ONE function. Called from ✕ button, Cancel button, backdrop, Escape — everywhere.
 function closeBookingModal() {
     const modal = document.getElementById('bookingModal');
-    if (!modal) return;
-    modal.style.animation = 'mh-overlay-in .18s ease reverse forwards';
+    if (!modal || modal.style.display === 'none' || modal.style.display === '') return;
+
+    const card = modal.querySelector('.mh-modal');
+
+    // Fade out
+    modal.style.transition = 'opacity 0.15s ease';
+    modal.style.opacity = '0';
+    if (card) {
+        card.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.96) translateY(6px)';
+    }
+
+    // Hide after transition completes
     setTimeout(() => {
-        modal.style.display = '';
-        modal.style.animation = '';
+        modal.style.cssText = 'display:none;';
+        if (card) card.style.cssText = '';
         document.body.style.overflow = '';
         resetForm();
     }, 160);
 }
 
+// ─── Prefill (edit mode) ──────────────────────────────────────────────────────
 function prefillForm(a) {
-    document.getElementById('appointmentId').value        = a.id;
-    document.getElementById('appointmentTitle').value     = a.title    || '';
-    document.getElementById('appointmentType').value      = a.type     || '';
-    document.getElementById('appointmentMode').value      = a.mode     || '';
-    document.getElementById('appointmentDate').value      = a.date     || '';
+    document.getElementById('appointmentId').value = a.id;
+    document.getElementById('appointmentTitle').value = a.title || '';
+    document.getElementById('appointmentType').value = a.type || '';
+    document.getElementById('appointmentMode').value = a.mode || '';
+    document.getElementById('appointmentDate').value = a.date || '';
     document.getElementById('appointmentCounselor').value = a.counselor_user_id || '';
-    document.getElementById('appointmentNotes').value     = a.notes    || '';
+    document.getElementById('appointmentNotes').value = a.notes || '';
 
     const timeSel = document.getElementById('appointmentTime');
     if (timeSel && a.time) {
@@ -109,7 +153,7 @@ async function loadCounselors() {
     const sel = document.getElementById('appointmentCounselor');
     if (!sel) return;
     try {
-        const res  = await fetch(`${BASE}/api/counselors`, { credentials: 'same-origin' });
+        const res = await fetch(`${BASE}/api/counselors`, { credentials: 'same-origin' });
         const data = await res.json();
         if (!Array.isArray(data) || !data.length) {
             sel.innerHTML = '<option value="">No counselors available</option>';
@@ -131,10 +175,10 @@ function loadAppointmentTypes() {
     if (!sel) return;
     const types = [
         { value: 'individual', label: 'Individual Therapy' },
-        { value: 'group',      label: 'Group Therapy' },
-        { value: 'crisis',     label: 'Crisis Intervention' },
+        { value: 'group', label: 'Group Therapy' },
+        { value: 'crisis', label: 'Crisis Intervention' },
         { value: 'assessment', label: 'Assessment' },
-        { value: 'follow_up',  label: 'Follow-up Session' }
+        { value: 'follow_up', label: 'Follow-up Session' }
     ];
     sel.innerHTML = '<option value="">Select typeâ€¦</option>' +
         types.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
@@ -145,13 +189,13 @@ function formatSlotLabel(time) {
     if (!time) return 'â€”';
     const [h, m] = time.split(':').map(Number);
     const ampm = h >= 12 ? 'PM' : 'AM';
-    return `${h % 12 || 12}:${m.toString().padStart(2,'0')} ${ampm}`;
+    return `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${ampm}`;
 }
 
 async function loadTimeSlots() {
     const counselorId = document.getElementById('appointmentCounselor')?.value;
-    const date        = document.getElementById('appointmentDate')?.value;
-    const timeSel     = document.getElementById('appointmentTime');
+    const date = document.getElementById('appointmentDate')?.value;
+    const timeSel = document.getElementById('appointmentTime');
     if (!timeSel) return;
 
     if (!counselorId || !date) {
@@ -161,11 +205,11 @@ async function loadTimeSlots() {
     }
 
     timeSel.innerHTML = '<option value="">Loading slots...</option>';
-    timeSel.disabled  = true;
+    timeSel.disabled = true;
 
     try {
-        const url  = `${BASE}/api/appointments/slots?counselor_id=${encodeURIComponent(counselorId)}&date=${encodeURIComponent(date)}`;
-        const res  = await fetch(url, { credentials: 'same-origin' });
+        const url = `${BASE}/api/appointments/slots?counselor_id=${encodeURIComponent(counselorId)}&date=${encodeURIComponent(date)}`;
+        const res = await fetch(url, { credentials: 'same-origin' });
         const data = await res.json();
         const slots = Array.isArray(data.slots) ? data.slots : [];
 
@@ -178,8 +222,8 @@ async function loadTimeSlots() {
         timeSel.innerHTML = '<option value="">Choose a time slot</option>' +
             slots.map(s => {
                 const startFmt = formatSlotLabel(s.start_time);
-                const endFmt   = formatSlotLabel(s.end_time);
-                const label    = `${startFmt} \u2013 ${endFmt}`;
+                const endFmt = formatSlotLabel(s.end_time);
+                const label = `${startFmt} \u2013 ${endFmt}`;
                 const isBooked = s.is_booked == 1 || s.is_booked === '1';
                 const isFrozen = s.is_frozen == 1 || s.is_frozen === '1';
                 const isUnavailable = isBooked || isFrozen;
@@ -200,13 +244,13 @@ function setupFormSubmission() {
 async function onFormSubmit(e) {
     e?.preventDefault();
 
-    const id          = document.getElementById('appointmentId')?.value?.trim();
-    const title       = document.getElementById('appointmentTitle')?.value?.trim();
-    const type        = document.getElementById('appointmentType')?.value;
-    const mode        = document.getElementById('appointmentMode')?.value;
-    const date        = document.getElementById('appointmentDate')?.value;
-    const time        = document.getElementById('appointmentTime')?.value;
-    const notes       = document.getElementById('appointmentNotes')?.value?.trim() || '';
+    const id = document.getElementById('appointmentId')?.value?.trim();
+    const title = document.getElementById('appointmentTitle')?.value?.trim();
+    const type = document.getElementById('appointmentType')?.value;
+    const mode = document.getElementById('appointmentMode')?.value;
+    const date = document.getElementById('appointmentDate')?.value;
+    const time = document.getElementById('appointmentTime')?.value;
+    const notes = document.getElementById('appointmentNotes')?.value?.trim() || '';
     const counselorId = document.getElementById('appointmentCounselor')?.value;
 
     // Clear previous errors
@@ -214,30 +258,36 @@ async function onFormSubmit(e) {
 
     // Validate
     let valid = true;
-    const err = (id, msg) => { const el = document.getElementById(id); if (el) el.textContent = msg; valid = false; };
+    const err = (elId, msg) => {
+        const el = document.getElementById(elId);
+        if (el) el.textContent = msg;
+        valid = false;
+    };
 
-    if (!title)       err('titleError',    'Please enter a session title.');
-    if (!type)        err('typeError',     'Please select a session type.');
-    if (!mode)        err('modeError',     'Please select a mode.');
-    if (!counselorId) err('counselorError','Please choose a counselor.');
-    if (!date)        err('dateError',     'Please pick a date.');
-    if (!time)        err('timeError',     'Please choose a time slot.');
+    if (!title) err('titleError', 'Please enter a session title.');
+    if (!type) err('typeError', 'Please select a session type.');
+    if (!mode) err('modeError', 'Please select a mode.');
+    if (!counselorId) err('counselorError', 'Please choose a counselor.');
+    if (!date) err('dateError', 'Please pick a date.');
+    if (!time) err('timeError', 'Please choose a time slot.');
     if (!valid) return;
 
     const submitBtn = document.getElementById('submitAppointmentBtn');
     const submitTxt = document.getElementById('submitBtnText');
+
     if (submitBtn) { submitBtn.disabled = true; }
     if (submitTxt) { submitTxt.textContent = 'Savingâ€¦'; }
 
+
     const isUpdate = !!id;
     const endpoint = `${BASE}/api/appointments/${isUpdate ? 'update' : 'create'}`;
-    const method   = isUpdate ? 'PUT' : 'POST';
-    const payload  = isUpdate
+    const method = isUpdate ? 'PUT' : 'POST';
+    const payload = isUpdate
         ? { id: parseInt(id), title, type, mode, date, time, notes }
         : { counselor_user_id: parseInt(counselorId), title, type, mode, date, time, notes };
 
     try {
-        const res  = await fetch(endpoint, {
+        const res = await fetch(endpoint, {
             method,
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
@@ -248,10 +298,10 @@ async function onFormSubmit(e) {
 
         toastSuccess(isUpdate ? 'Appointment updated!' : 'Appointment booked successfully!');
         closeBookingModal();
-        renderAppointments();
+        setTimeout(() => renderAppointments(), 180);
+
     } catch (err) {
         toastError('Could not save: ' + err.message);
-    } finally {
         if (submitBtn) submitBtn.disabled = false;
         if (submitTxt) submitTxt.textContent = isUpdate ? 'Update Appointment' : 'Save Appointment';
     }
@@ -278,12 +328,12 @@ async function renderAppointments() {
     if (empty) empty.style.display = 'none';
 
     try {
-        const res  = await fetch(`${BASE}/api/appointments/mine`, { credentials: 'same-origin' });
+        const res = await fetch(`${BASE}/api/appointments/mine`, { credentials: 'same-origin' });
         const rows = await res.json();
         _appointments = Array.isArray(rows) ? rows : [];
         _renderRows(_appointments);
         _updateStats(_appointments);
-    } catch (err) {
+    } catch {
         tbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading" style="color:var(--crisis)">
             Failed to load appointments.</td></tr>`;
     }
@@ -301,11 +351,11 @@ function _renderRows(list) {
     if (empty) empty.style.display = 'none';
 
     tbody.innerHTML = list.map(a => {
-        const statusKey   = (a.status || 'pending').toLowerCase();
+        const statusKey = (a.status || 'pending').toLowerCase();
         const statusClass = STATUS_CLASS[statusKey] || 'pending';
-        const modeLabel   = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_',' ') : 'â€”');
-        const typeLabel   = a.type ? a.type.replace('_',' ').replace(/\b\w/g, c => c.toUpperCase()) : 'â€”';
-        const counselor   = a.counselor_name || 'â€”';
+        const modeLabel = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_', ' ') : 'â€”');
+        const typeLabel = a.type ? a.type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'â€”';
+        const counselor = a.counselor_name || 'â€”';
 
         return `<tr>
             <td>
@@ -316,7 +366,7 @@ function _renderRows(list) {
             <td><span class="mh-mode-badge">${modeLabel}</span></td>
             <td style="font-size:.88rem;color:var(--text-secondary);">${escHtml(counselor)}</td>
             <td style="font-size:.88rem;white-space:nowrap;">${formatDate(a.date)}</td>
-            <td style="font-size:.88rem;font-weight:600;white-space:nowrap;">${formatSlotLabel(a.time?.substring(0,5))}</td>
+            <td style="font-size:.88rem;font-weight:600;white-space:nowrap;">${formatSlotLabel(a.time?.substring(0, 5))}</td>
             <td>
                 <span class="mh-status-pill mh-status-pill--${statusClass}">${escHtml(a.status || 'pending')}</span>
                 ${statusKey === 'rejected' && a.rejection_reason ? `<div style="font-size:.7rem;color:var(--crisis);margin-top:4px;max-width:150px;">Reason: ${escHtml(a.rejection_reason)}</div>` : ''}
@@ -343,19 +393,19 @@ function _renderRows(list) {
 }
 
 function _updateStats(list) {
-    const today     = new Date().toISOString().split('T')[0];
-    const total     = list.length;
+    const today = new Date().toISOString().split('T')[0];
+    const total = list.length;
     const completed = list.filter(a => a.status === 'completed').length;
-    const upcoming  = list.filter(a =>
-        ['scheduled','accepted','accept','pending'].includes(a.status) && a.date >= today
+    const upcoming = list.filter(a =>
+        ['scheduled', 'accepted', 'accept', 'pending'].includes(a.status) && a.date >= today
     ).length;
     const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    set('totalAppointments',    total);
+    set('totalAppointments', total);
     set('upcomingAppointments', upcoming);
     set('completedAppointments', completed);
-    set('attendanceRate',       rate + '%');
+    set('attendanceRate', rate + '%');
 }
 
 // â”€â”€â”€ Edit / Delete â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -367,8 +417,9 @@ function editAppointment(id) {
 
 async function deleteAppointment(id) {
     if (!confirm('Cancel this appointment? This cannot be undone.')) return;
+
     try {
-        const res  = await fetch(`${BASE}/api/appointments/delete`, {
+        const res = await fetch(`${BASE}/api/appointments/delete`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
@@ -376,8 +427,11 @@ async function deleteAppointment(id) {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || 'Failed');
+
         toastSuccess('Appointment cancelled.');
-        renderAppointments();
+        closeBookingModal();
+        setTimeout(() => renderAppointments(), 180);
+
     } catch (err) {
         toastError('Could not cancel: ' + err.message);
     }
@@ -403,27 +457,36 @@ async function acceptReschedule(id) {
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function resetForm() {
-    document.getElementById('appointmentForm')?.reset();
+    const form = document.getElementById('appointmentForm');
+    if (form) form.reset();
+
     const idEl = document.getElementById('appointmentId');
     if (idEl) idEl.value = '';
+
     const timeSel = document.getElementById('appointmentTime');
     if (timeSel) {
         timeSel.innerHTML = '<option value="">Select counselor &amp; date first</option>';
         timeSel.disabled = true;
     }
+
     document.querySelectorAll('.mh-field-error').forEach(el => el.textContent = '');
+
+    const submitBtn = document.getElementById('submitAppointmentBtn');
+    const submitTxt = document.getElementById('submitBtnText');
+    if (submitBtn) submitBtn.disabled = false;
+    if (submitTxt) submitTxt.textContent = 'Save Appointment';
 }
 
 function exportCsv() {
     if (!_appointments.length) { toastInfo('No appointments to export.'); return; }
     const rows = [
-        ['ID','Title','Type','Mode','Counselor','Date','Time','Status','Notes'],
+        ['ID', 'Title', 'Type', 'Mode', 'Counselor', 'Date', 'Time', 'Status', 'Notes'],
         ..._appointments.map(a => [a.id, a.title, a.type, a.mode, a.counselor_name, a.date, a.time, a.status, a.notes || ''])
     ];
-    const csv  = rows.map(r => r.map(f => `"${String(f??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const csv = rows.map(r => r.map(f => `"${String(f ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
     a.href = url; a.download = 'appointments.csv'; a.click();
     URL.revokeObjectURL(url);
 }
@@ -431,20 +494,19 @@ function exportCsv() {
 function formatDate(dateString) {
     if (!dateString) return 'â€”';
     const d = new Date(dateString + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function escHtml(str) {
-    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // â”€â”€â”€ Toast Notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function toastSuccess(msg) { toast(msg, '#4CAF82', 'âœ…'); }
-function toastError(msg)   { toast(msg, '#D64F4F', 'âŒ'); }
-function toastInfo(msg)    { toast(msg, '#3D8B6E', 'â„¹ï¸'); }
+function toastError(msg) { toast(msg, '#D64F4F', 'âŒ'); }
+function toastInfo(msg) { toast(msg, '#3D8B6E', 'â„¹ï¸'); }
 
 function toast(msg, color, icon) {
-    // Remove old toasts
     document.querySelectorAll('.mh-toast').forEach(t => t.remove());
 
     const div = document.createElement('div');
@@ -461,7 +523,6 @@ function toast(msg, color, icon) {
     `;
     div.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
 
-    // Add keyframe if not present
     if (!document.getElementById('mh-toast-style')) {
         const s = document.createElement('style');
         s.id = 'mh-toast-style';
