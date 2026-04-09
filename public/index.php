@@ -165,7 +165,17 @@ $router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');
 $router->get('/CallSuccess', 'CallResponderControl@success');
 
 $router->get('/donation', 'DonationControl@index');
-$router->post('/donation/submit', 'DonationControl@submit');
+// New PayHere sandbox flow routes
+$router->get('/donation/event/{id}', 'DonationControl@showEventDonationForm');
+$router->post('/donation/payhere/start', 'DonationControl@startPayHereCheckout');
+$router->get('/donation/payhere/return', 'DonationControl@payhereReturn');
+$router->get('/donation/payhere/cancel', 'DonationControl@payhereCancel');
+$router->post('/donation/payhere/notify', 'DonationControl@payhereNotify');
+$router->get('/donation/history', 'DonationControl@myDonations');
+$router->get('/donation/receipt/{id}', 'DonationControl@receipt');
+$router->get('/donation/request-confirmation/{id}', 'DonationControl@requestConfirmation');
+$router->get('/university-rep/donations', 'UniversityRepresentativeControl@donations');
+$router->post('/university-rep/university-bank/update', 'UniversityRepresentativeControl@updateBankDetails');
 
 $router->get('/DonationForm', 'DonorControl@DonationForm');
 $router->get('/DonationSuccess', 'DonorControl@DonationSuccess');

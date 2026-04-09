@@ -703,4 +703,66 @@ class UniversityRepresentativeControl
         header('Location: ' . BASE_URL . '/university-rep/profile');
         exit;
     }
+
+    // ========================================
+    // DONATIONS & BANK DETAILS
+    // ========================================
+
+    public function donations()
+    {
+        $universityRepId = $_SESSION['user_id'] ?? null;
+        if (!$universityRepId) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+        require_once BASE_PATH . '/app/models/Donation.php';
+        $donations = Donation::getDonationsForUniversityRep($universityRepId);
+        view('UniversityRepresentative/donations', ['donations' => $donations]);
+    }
+
+    public function updateBankDetails()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/university-rep/university-profile');
+            exit;
+        }
+        $universityRepId = $_SESSION['user_id'] ?? null;
+        if (!$universityRepId) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+        $pdo = Database::getConnection();
+        // find university id
+        $stmt = $pdo->prepare("SELECT university_id FROM university_representatives WHERE user_id = ?");
+        $stmt->execute([$universityRepId]);
+        $university_id = $stmt->fetchColumn();
+
+        if ($university_id) {
+            $bank_name = $_POST['bank_name'] ?? null;
+            $bank_branch = $_POST['bank_branch'] ?? null;
+            $account_name = $_POST['account_name'] ?? null;
+            $account_number = $_POST['account_number'] ?? null;
+            $bank_code = $_POST['bank_code'] ?? null;
+            $bank_details_notes = $_POST['bank_details_notes'] ?? null;
+
+            $sql = "UPDATE universities SET 
+                    bank_name = ?, bank_branch = ?, account_name = ?, 
+                    account_number = ?, bank_code = ?, bank_details_notes = ?, 
+                    bank_details_updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?";
+            $upd = $pdo->prepare($sql);
+            $upd->execute([
+                $bank_name,
+                $bank_branch,
+                $account_name,
+                $account_number,
+                $bank_code,
+                $bank_details_notes,
+                $university_id
+            ]);
+            $_SESSION['success'] = 'Bank details updated successfully.';
+        }
+        header('Location: ' . BASE_URL . '/university-rep/university-profile');
+        exit;
+    }
 }

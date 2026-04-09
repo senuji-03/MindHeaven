@@ -298,10 +298,8 @@
                     <?php else: ?>
                         <!-- Public Buttons -->
                         <?php if ($event['status'] === 'approved'): ?>
-                            <button class="btn btn-primary" onclick="alert('Donation functionality coming soon!')">💖
-                                Donate</button>
-                            <button class="btn btn-secondary" onclick="alert('Payment confirmation feature coming soon!')">📝
-                                Request Confirmation</button>
+                            <a href="<?= BASE_URL ?>/donation/event/<?= $event['id'] ?>" class="btn btn-primary">💖 Donate</a>
+                            <a href="<?= BASE_URL ?>/donation/request-confirmation/<?= $event['id'] ?>" class="btn btn-secondary">📝 Request Confirmation</a>
                         <?php endif; ?>
                     <?php endif; ?>
                     <a href="<?= (isset($isOwner) && $isOwner) ? BASE_URL . '/university-rep/events' : BASE_URL . '/' ?>"
