@@ -12,6 +12,9 @@ $current_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
         <li class="sidebar-item <?php echo strpos($current_url, '/counselor/appointmentmgt') !== false ? 'active' : ''; ?>">
             <a href="<?php echo BASE_URL; ?>/counselor/appointmentmgt" <?php echo strpos($current_url, '/counselor/appointmentmgt') !== false ? 'style="color: #2563eb;"' : ''; ?>>🗓️ Appointment Management</a>
         </li>
+        <li class="sidebar-item <?php echo strpos($current_url, '/counselor/timeslots') !== false ? 'active' : ''; ?>">
+            <a href="<?php echo BASE_URL; ?>/counselor/timeslots" <?php echo strpos($current_url, '/counselor/timeslots') !== false ? 'style="color: #2563eb;"' : ''; ?>>⏰ Timeslots</a>
+        </li>
         <li class="sidebar-item <?php echo strpos($current_url, '/counselor/sessionHistory') !== false ? 'active' : ''; ?>">
             <a href="<?php echo BASE_URL; ?>/counselor/sessionHistory" <?php echo strpos($current_url, '/counselor/sessionHistory') !== false ? 'style="color: #2563eb;"' : ''; ?>>📋 Session History</a>
         </li>

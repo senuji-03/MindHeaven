@@ -553,6 +553,39 @@ ob_start();
     margin-bottom: 10px;
 }
 .counselor-exp i { color: var(--primary); margin-right: 4px; }
+.counselor-quals {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+.counselor-qual-item {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+.counselor-qual-title {
+    font-weight: 600;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.counselor-qual-desc {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    opacity: 0.8;
+    line-height: 1.4;
+    margin-top: 2px;
+}
+.counselor-qual-item i {
+    color: var(--accent-warm);
+    font-size: 0.7rem;
+}
 .counselor-bio { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
 .counselor-card-footer { padding: 16px 22px; border-top: 1px solid var(--border); }
 .counselor-book-btn { width: 100%; justify-content: center; }
@@ -918,6 +951,25 @@ if (!empty($counselors)):
                         <?php if ($exp !== null): ?>
                         <div class="counselor-exp"><i class="fas fa-briefcase"></i> <?php echo $exp; ?> year<?php echo $exp !== 1 ? 's' : ''; ?> experience</div>
                         <?php endif; ?>
+
+                        <?php if (!empty($counselor['qualifications'])): ?>
+                        <div class="counselor-quals">
+                            <?php 
+                            $qualsToShow = array_slice($counselor['qualifications'], 0, 3);
+                            foreach ($qualsToShow as $q): ?>
+                                <div class="counselor-qual-item">
+                                    <div class="counselor-qual-title">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        <span><?php echo htmlspecialchars($q['title']); ?></span>
+                                    </div>
+                                    <?php if (!empty($q['description'])): ?>
+                                        <span class="counselor-qual-desc"><?php echo nl2br(htmlspecialchars($q['description'])); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+
                         <p class="counselor-bio"><?php echo $bioShort; ?></p>
                     </div>
                     <div class="counselor-card-footer">

@@ -88,6 +88,16 @@ class COControl
         view('/counselor/appointmentmgt');
     }
 
+    public function timeslots()
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'counselor') {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+        view('/counselor/timeslots');
+    }
+
     public function forum()
     {
         // Redirect to the canonical forum page (ForumControl@index) for consistency.

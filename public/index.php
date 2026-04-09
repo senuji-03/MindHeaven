@@ -125,6 +125,8 @@ $router->get('/counselor/forum', 'COControl@forum');
 $router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
 $router->get('/counselor/resources', 'UGControl@resources');
 
+$router->get('/counselor/timeslots', 'COControl@timeslots');
+
 // Counselor calendar API routes
 $router->post('/counselor/createEvent', 'COControl@createEvent');
 $router->post('/counselor/updateEvent', 'COControl@updateEvent');
@@ -132,6 +134,16 @@ $router->post('/counselor/deleteEvent', 'COControl@deleteEvent');
 $router->get('/counselor/getEventsByDate', 'COControl@getEventsByDate');
 $router->get('/counselor/getEventsByMonth', 'COControl@getEventsByMonth');
 $router->get('/counselor/getEventById', 'COControl@getEventById');
+
+// Timeslot API routes (public — for undergrad booking form)
+$router->get('/api/timeslots', 'TimeslotControl@getForBooking');
+
+// Timeslot API routes (counselor — authenticated)
+$router->get('/api/counselor/timeslots', 'TimeslotControl@getCounselorSlots');
+$router->post('/api/counselor/timeslots/save-fixed', 'TimeslotControl@saveFixed');
+$router->post('/api/counselor/timeslots/create-custom', 'TimeslotControl@createCustom');
+$router->put('/api/counselor/timeslots/update', 'TimeslotControl@updateCustom');
+$router->delete('/api/counselor/timeslots/delete', 'TimeslotControl@deleteSlot');
 
 // Minimal Appointment APIs (create + counselors list + counselor view)
 $router->get('/api/counselors', 'AppointmentApiControl@listCounselors');
@@ -141,6 +153,7 @@ $router->get('/api/test', 'AppointmentApiControl@test');
 $router->post('/api/appointments/create', 'AppointmentApiControl@create');
 $router->put('/api/appointments/update', 'AppointmentApiControl@update');
 $router->put('/api/appointments/reschedule', 'AppointmentApiControl@reschedule');
+$router->post('/api/appointments/hide', 'AppointmentApiControl@hide');
 $router->delete('/api/appointments/delete', 'AppointmentApiControl@delete');
 $router->get('/api/counselor/appointments', 'AppointmentApiControl@listForCounselor');
 $router->post('/api/appointments/status', 'AppointmentApiControl@updateStatus');

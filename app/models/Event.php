@@ -17,7 +17,7 @@ class Event {
      */
     public function getEventsByCounselor($counselorUserId) {
         if (!$this->db) {
-            return [];
+            return array();
         }
         $sql = "SELECT * FROM events WHERE counselor_user_id = :counselor_user_id ORDER BY event_date, event_time";
         $stmt = $this->db->prepare($sql);
@@ -31,7 +31,7 @@ class Event {
      */
     public function getEventsByDate($counselorUserId, $date) {
         if (!$this->db) {
-            return [];
+            return array();
         }
         $sql = "SELECT * FROM events WHERE counselor_user_id = :counselor_user_id AND event_date = :event_date ORDER BY event_time";
         $stmt = $this->db->prepare($sql);
@@ -155,7 +155,7 @@ class Event {
     public function getEventsByMonth($counselorUserId, $year, $month) {
         if (!$this->db) {
             error_log("Event model: Database connection is null");
-            return [];
+            return array();
         }
         
         $sql = "SELECT * FROM events 
@@ -184,7 +184,7 @@ class Event {
     public function getAllEvents() {
         if (!$this->db) {
             error_log("Event model: Database connection is null");
-            return [];
+            return array();
         }
         
         $sql = "SELECT * FROM events ORDER BY event_date, event_time";

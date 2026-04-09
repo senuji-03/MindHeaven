@@ -311,4 +311,30 @@ class Counselor
             return false;
         }
     }
+
+    /**
+     * Get qualifications for multiple counselors in bulk.
+     */
+    public function getQualificationsBulk($counselorIds) {
+        if (empty($counselorIds)) return array();
+        
+        $placeholders = str_repeat('?,', count($counselorIds) - 1) . '?';
+        $stmt = $this->pdo->prepare("
+            SELECT * FROM counselor_qualifications 
+            WHERE counselor_id IN ($placeholders)
+            ORDER BY id ASC
+        ");
+        $stmt->execute($counselorIds);
+        $allQuails = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $grouped = array();
+        foreach ($allQuails as $q) {
+            $cid = $q['counselor_id'];
+            if (!isset($grouped[$cid])) {
+                $grouped[$cid] = array();
+            }
+            $grouped[$cid][] = $q;
+        }
+        return $grouped;
+    }
 }

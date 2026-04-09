@@ -21,7 +21,7 @@
     $c_profile_pic = isset($counselor['profile_picture']) && !empty($counselor['profile_picture'])
         ? $counselor['profile_picture']
         : 'https://via.placeholder.com/150';
-    $qualifications = isset($qualifications) && is_array($qualifications) ? $qualifications : [];
+    $qualifications = isset($qualifications) && is_array($qualifications) ? $qualifications : array();
     ?>
 
     <nav class="navbar">
@@ -143,7 +143,7 @@
                             </div>
                         <?php else: ?>
                             <?php foreach ($qualifications as $qual): ?>
-                                <div class="qualification-item">
+                                <div class="qualification-item" data-id="<?php echo htmlspecialchars($qual['id']); ?>">
                                     <div class="qualification-header">
                                         <div>
                                             <div class="qualification-title">
@@ -154,7 +154,7 @@
                                             </div>
                                         </div>
                                         <span class="qualification-year">
-                                            <?php echo htmlspecialchars($qual['year'] ?? ''); ?>
+                                            <?php echo htmlspecialchars($qual['year_range'] ?? $qual['year'] ?? ''); ?>
                                         </span>
                                     </div>
                                     <p class="qualification-description">

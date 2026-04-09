@@ -7,6 +7,18 @@ class LandingControl
         $counselorModel = new Counselor();
         $counselors = $counselorModel->getApproved(8);
 
+        // Fetch qualifications for display
+        $counselorIds = array();
+        foreach ($counselors as $c) {
+            $counselorIds[] = $c['id'];
+        }
+        $qualificationsMap = $counselorModel->getQualificationsBulk($counselorIds);
+
+        foreach ($counselors as &$counselor) {
+            $counselor['qualifications'] = isset($qualificationsMap[$counselor['id']]) ? $qualificationsMap[$counselor['id']] : array();
+        }
+        unset($counselor); // Clean up reference
+
         $eventsByUniversity = [];
 
         try {

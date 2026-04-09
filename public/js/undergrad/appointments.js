@@ -1,27 +1,28 @@
-// MindHeaven — Appointments JS (DB-backed, modal form)
+// MindHeaven â€” Appointments JS (DB-backed, modal form)
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ALL_SLOTS = ['09:00', '13:00', '16:00'];
 const BASE      = window.BASE_URL || '/MindHeaven/public';
 
 const MODE_LABELS = {
-    audio_video: '🎥 Audio/Video',
-    chat:        '💬 Chat'
+    audio_video: 'ðŸŽ¥ Audio/Video',
+    chat:        'ðŸ’¬ Chat'
 };
 
 const STATUS_CLASS = {
-    pending:   'pending',
-    scheduled: 'scheduled',
-    accepted:  'accepted',
-    accept:    'accepted',
-    completed: 'completed',
-    cancelled: 'cancelled',
-    rejected:  'rejected'
+    pending:     'pending',
+    scheduled:   'scheduled',
+    accepted:    'accepted',
+    accept:      'accepted',
+    completed:   'completed',
+    cancelled:   'cancelled',
+    rejected:    'rejected',
+    rescheduled: 'pending'
 };
 
 let _appointments = [];
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initAppointmentsPage() {
     loadCounselors();
     loadAppointmentTypes();
@@ -51,7 +52,7 @@ if (document.readyState === 'loading') {
     initAppointmentsPage();
 }
 
-// ─── Modal Controls ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Modal Controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function openBookingModal(appointment = null) {
     const modal     = document.getElementById('bookingModal');
     const title     = document.getElementById('modalTitle');
@@ -103,7 +104,7 @@ function prefillForm(a) {
     }
 }
 
-// ─── Counselors ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Counselors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadCounselors() {
     const sel = document.getElementById('appointmentCounselor');
     if (!sel) return;
@@ -114,7 +115,7 @@ async function loadCounselors() {
             sel.innerHTML = '<option value="">No counselors available</option>';
             return;
         }
-        sel.innerHTML = '<option value="">Select a counselor…</option>' +
+        sel.innerHTML = '<option value="">Select a counselorâ€¦</option>' +
             data.map(c => {
                 const name = (c.full_name || c.username) + (c.specialization ? ` (${c.specialization})` : '');
                 return `<option value="${c.id}">${escHtml(name)}</option>`;
@@ -124,7 +125,7 @@ async function loadCounselors() {
     }
 }
 
-// ─── Appointment Types ────────────────────────────────────────────────────────
+// â”€â”€â”€ Appointment Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function loadAppointmentTypes() {
     const sel = document.getElementById('appointmentType');
     if (!sel) return;
@@ -135,13 +136,13 @@ function loadAppointmentTypes() {
         { value: 'assessment', label: 'Assessment' },
         { value: 'follow_up',  label: 'Follow-up Session' }
     ];
-    sel.innerHTML = '<option value="">Select type…</option>' +
+    sel.innerHTML = '<option value="">Select typeâ€¦</option>' +
         types.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
 }
 
-// ─── Time Slots ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Time Slots â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function formatSlotLabel(time) {
-    if (!time) return '—';
+    if (!time) return 'â€”';
     const [h, m] = time.split(':').map(Number);
     const ampm = h >= 12 ? 'PM' : 'AM';
     return `${h % 12 || 12}:${m.toString().padStart(2,'0')} ${ampm}`;
@@ -159,29 +160,39 @@ async function loadTimeSlots() {
         return;
     }
 
-    timeSel.innerHTML = '<option value="">Loading slots…</option>';
+    timeSel.innerHTML = '<option value="">Loading slots...</option>';
     timeSel.disabled  = true;
 
     try {
         const url  = `${BASE}/api/appointments/slots?counselor_id=${encodeURIComponent(counselorId)}&date=${encodeURIComponent(date)}`;
         const res  = await fetch(url, { credentials: 'same-origin' });
         const data = await res.json();
-        const booked = Array.isArray(data.booked) ? data.booked : [];
+        const slots = Array.isArray(data.slots) ? data.slots : [];
+
+        if (!slots.length) {
+            timeSel.innerHTML = '<option value="">No timeslots set by counselor for this date</option>';
+            timeSel.disabled = true;
+            return;
+        }
 
         timeSel.innerHTML = '<option value="">Choose a time slot</option>' +
-            ALL_SLOTS.map(s => {
-                const taken = booked.includes(s);
-                return `<option value="${s}"${taken ? ' disabled' : ''}>${formatSlotLabel(s)}${taken ? ' — Booked' : ''}</option>`;
+            slots.map(s => {
+                const startFmt = formatSlotLabel(s.start_time);
+                const endFmt   = formatSlotLabel(s.end_time);
+                const label    = `${startFmt} \u2013 ${endFmt}`;
+                const isBooked = s.is_booked == 1 || s.is_booked === '1';
+                const isFrozen = s.is_frozen == 1 || s.is_frozen === '1';
+                const isUnavailable = isBooked || isFrozen;
+                return `<option value="${s.start_time}"${isUnavailable ? ' disabled' : ''}>${label}${isUnavailable ? ' \u2014 \uD83D\uDD12 Booked' : ''}</option>`;
             }).join('');
         timeSel.disabled = false;
     } catch {
-        timeSel.innerHTML = '<option value="">Choose a time slot</option>' +
-            ALL_SLOTS.map(s => `<option value="${s}">${formatSlotLabel(s)}</option>`).join('');
+        timeSel.innerHTML = '<option value="">Failed to load slots. Try again.</option>';
         timeSel.disabled = false;
     }
 }
 
-// ─── Form Submit ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Form Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function setupFormSubmission() {
     document.getElementById('appointmentForm')?.addEventListener('submit', onFormSubmit);
 }
@@ -216,7 +227,7 @@ async function onFormSubmit(e) {
     const submitBtn = document.getElementById('submitAppointmentBtn');
     const submitTxt = document.getElementById('submitBtnText');
     if (submitBtn) { submitBtn.disabled = true; }
-    if (submitTxt) { submitTxt.textContent = 'Saving…'; }
+    if (submitTxt) { submitTxt.textContent = 'Savingâ€¦'; }
 
     const isUpdate = !!id;
     const endpoint = `${BASE}/api/appointments/${isUpdate ? 'update' : 'create'}`;
@@ -246,7 +257,7 @@ async function onFormSubmit(e) {
     }
 }
 
-// ─── Event Listeners ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Event Listeners â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function setupEventListeners() {
     document.getElementById('appointmentCounselor')?.addEventListener('change', loadTimeSlots);
     document.getElementById('appointmentDate')?.addEventListener('change', loadTimeSlots);
@@ -256,14 +267,14 @@ function setupEventListeners() {
     document.getElementById('exportAppointmentsCsv')?.addEventListener('click', exportCsv);
 }
 
-// ─── Render Appointments ──────────────────────────────────────────────────────
+// â”€â”€â”€ Render Appointments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function renderAppointments() {
     const tbody = document.getElementById('appointmentsTableBody');
     const empty = document.getElementById('appointmentsEmptyState');
     if (!tbody) return;
 
     tbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading">
-        <span class="mh-spinner"></span> Loading appointments…</td></tr>`;
+        <span class="mh-spinner"></span> Loading appointmentsâ€¦</td></tr>`;
     if (empty) empty.style.display = 'none';
 
     try {
@@ -292,9 +303,9 @@ function _renderRows(list) {
     tbody.innerHTML = list.map(a => {
         const statusKey   = (a.status || 'pending').toLowerCase();
         const statusClass = STATUS_CLASS[statusKey] || 'pending';
-        const modeLabel   = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_',' ') : '—');
-        const typeLabel   = a.type ? a.type.replace('_',' ').replace(/\b\w/g, c => c.toUpperCase()) : '—';
-        const counselor   = a.counselor_name || '—';
+        const modeLabel   = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_',' ') : 'â€”');
+        const typeLabel   = a.type ? a.type.replace('_',' ').replace(/\b\w/g, c => c.toUpperCase()) : 'â€”';
+        const counselor   = a.counselor_name || 'â€”';
 
         return `<tr>
             <td>
@@ -306,12 +317,22 @@ function _renderRows(list) {
             <td style="font-size:.88rem;color:var(--text-secondary);">${escHtml(counselor)}</td>
             <td style="font-size:.88rem;white-space:nowrap;">${formatDate(a.date)}</td>
             <td style="font-size:.88rem;font-weight:600;white-space:nowrap;">${formatSlotLabel(a.time?.substring(0,5))}</td>
-            <td><span class="mh-status-pill mh-status-pill--${statusClass}">${escHtml(a.status || 'pending')}</span></td>
+            <td>
+                <span class="mh-status-pill mh-status-pill--${statusClass}">${escHtml(a.status || 'pending')}</span>
+                ${statusKey === 'rejected' && a.rejection_reason ? `<div style="font-size:.7rem;color:var(--crisis);margin-top:4px;max-width:150px;">Reason: ${escHtml(a.rejection_reason)}</div>` : ''}
+                ${statusKey === 'rescheduled' && a.reschedule_reason ? `<div style="font-size:.7rem;color:var(--primary);margin-top:4px;max-width:150px;font-style:italic;">New Time Proposed: ${escHtml(a.reschedule_reason)}</div>` : ''}
+            </td>
             <td>
                 <div style="display:flex;gap:6px;">
-                    <button class="mh-action-btn" onclick="editAppointment(${a.id})" title="Edit">
-                        <i class="fas fa-pen"></i>
-                    </button>
+                    ${statusKey === 'rescheduled' ? `
+                        <button class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 8px;font-size:.75rem;" onclick="acceptReschedule(${a.id})" title="Accept New Time">
+                            Accept
+                        </button>
+                    ` : `
+                        <button class="mh-action-btn" onclick="editAppointment(${a.id})" title="Edit">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    `}
                     <button class="mh-action-btn mh-action-btn--danger" onclick="deleteAppointment(${a.id})" title="Cancel">
                         <i class="fas fa-trash-can"></i>
                     </button>
@@ -337,7 +358,7 @@ function _updateStats(list) {
     set('attendanceRate',       rate + '%');
 }
 
-// ─── Edit / Delete ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Edit / Delete â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function editAppointment(id) {
     const a = _appointments.find(x => String(x.id) === String(id));
     if (!a) return;
@@ -362,7 +383,25 @@ async function deleteAppointment(id) {
     }
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+async function acceptReschedule(id) {
+    if (!confirm('Accept this new proposed time for your appointment?')) return;
+    try {
+        const res = await fetch(`${BASE}/api/appointments/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ id, status: 'accepted' })
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Failed to accept');
+        toastSuccess('Appointment accepted successfully!');
+        renderAppointments();
+    } catch (err) {
+        toastError('Error: ' + err.message);
+    }
+}
+
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function resetForm() {
     document.getElementById('appointmentForm')?.reset();
     const idEl = document.getElementById('appointmentId');
@@ -390,7 +429,7 @@ function exportCsv() {
 }
 
 function formatDate(dateString) {
-    if (!dateString) return '—';
+    if (!dateString) return 'â€”';
     const d = new Date(dateString + 'T00:00:00');
     return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
 }
@@ -399,10 +438,10 @@ function escHtml(str) {
     return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── Toast Notifications ──────────────────────────────────────────────────────
-function toastSuccess(msg) { toast(msg, '#4CAF82', '✅'); }
-function toastError(msg)   { toast(msg, '#D64F4F', '❌'); }
-function toastInfo(msg)    { toast(msg, '#3D8B6E', 'ℹ️'); }
+// â”€â”€â”€ Toast Notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function toastSuccess(msg) { toast(msg, '#4CAF82', 'âœ…'); }
+function toastError(msg)   { toast(msg, '#D64F4F', 'âŒ'); }
+function toastInfo(msg)    { toast(msg, '#3D8B6E', 'â„¹ï¸'); }
 
 function toast(msg, color, icon) {
     // Remove old toasts

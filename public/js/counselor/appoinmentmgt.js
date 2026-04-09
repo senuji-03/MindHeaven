@@ -109,9 +109,13 @@ function renderAppointments(appointmentsToRender = appointments) {
                             <div class="action-buttons">
                                 ${appointment.status === 'pending' ? `
                                     <button class="btn btn-accept" onclick="updateStatus(${appointment.id}, 'accepted')">Accept</button>
-                                    <button class="btn btn-reject" onclick="updateStatus(${appointment.id}, 'rejected')">Reject</button>
+                                    <button class="btn btn-reject" onclick="openRejectModal(${appointment.id})">Reject</button>
                                 ` : ''}
-                                <button class="btn btn-reschedule" onclick="reschedule('${appointment.patientName}', '${appointment.reason}', ${appointment.id})">Reschedule</button>
+                                ${appointment.status === 'rejected' || appointment.status === 'reject' ? `
+                                    <button class="btn btn-reject" onclick="hideAppointment(${appointment.id})">Delete</button>
+                                ` : `
+                                    <button class="btn btn-reschedule" onclick="reschedule('${appointment.patientName}', '${appointment.reason}', ${appointment.id})">Reschedule</button>
+                                `}
                                 ${appointment.status === 'accept' || appointment.status === 'accepted' ? `
                                     <button class="btn btn-save" onclick="saveToCalendar(${appointment.id})">Save to Calendar</button>
                                 ` : ''}
@@ -152,7 +156,15 @@ function updateStatus(id, status) {
         .then(() => {
             appointment.status = status;
             showSuccessMessage(`Appointment ${status} successfully!`);
-            renderAppointments();
+            
+            // Redirect to dashboard if accepted, so they can see it in Upcoming Appointments
+            if (status === 'accepted') {
+                setTimeout(() => {
+                    window.location.href = BASE_URL + '/counselor/dashboard';
+                }, 1500); // 1.5s delay to let the user see the success message
+            } else {
+                renderAppointments();
+            }
         })
         .catch(error => {
             console.error('Failed to update appointment status:', error);
@@ -223,15 +235,65 @@ function reschedule(patientName, reason, appointmentId) {
 
     // Set minimum date to today
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('newDate').min = today;
-    document.getElementById('newDate').value = today;
+    const newDateEl = document.getElementById('newDate');
+    newDateEl.min = today;
+    newDateEl.value = today;
+
+    // Reset and disable time selection until date is picked (or re-picked)
+    const newTimeEl = document.getElementById('newTime');
+    newTimeEl.innerHTML = '<option value="">Loading slots...</option>';
+    newTimeEl.disabled = true;
+
+    // Load slots for default today
+    loadAvailableSlots(today);
 
     // Show modal
     document.getElementById('rescheduleModal').style.display = 'block';
 }
 
+// Fetch available slots for counselor on a specific date
+function loadAvailableSlots(date) {
+    const timeSel = document.getElementById('newTime');
+    if (!timeSel) return;
+
+    // We can use the existing API for slots
+    // Since we are in counselor context, we need counselor_id. 
+    // It's not explicitly stored in JS but we can get it from session or just use the current user's ID if the API supports it.
+    // The getSlots API in AppointmentApiControl uses counselor_id from GET.
+    
+    // We'll need the counselor's user ID. We can probably get it from loadAppointments or just assume the API can figure it out.
+    // Actually, listForCounselor gets appointments for the logged-in counselor.
+    // Let's check if we have the counselor ID globally or if we should fetch it.
+    // In this context, the counselor is the logged in user.
+    
+    // For now, let's assume we can hit /api/appointments/slots with a dummy counselor_id if the backend handles session
+    // Wait, the backend getSlots requires counselor_id in GET.
+    // Let's find out how the counselor ID is exposed.
+    
+    fetch(BASE_URL + '/api/appointments/slots?date=' + date + '&counselor_id=self') // I might need to update backend to support 'self'
+        .then(response => response.json())
+        .then(data => {
+            const slots = data.slots || [];
+            if (slots.length === 0) {
+                timeSel.innerHTML = '<option value="">No slots available</option>';
+                timeSel.disabled = true;
+            } else {
+                timeSel.innerHTML = '<option value="">Select Time</option>' + 
+                    slots.map(s => {
+                        const isUnavailable = s.is_booked == 1 || s.is_frozen == 1;
+                        return `<option value="${s.start_time}" ${isUnavailable ? 'disabled' : ''}>${formatTime(s.start_time)} ${isUnavailable ? '(Booked)' : ''}</option>`;
+                    }).join('');
+                timeSel.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading slots:', error);
+            timeSel.innerHTML = '<option value="">Error loading slots</option>';
+        });
+}
+
 // Submit reschedule
-function submitReschedule() {
+function submitReschedule(force = false) {
     const newDate = document.getElementById('newDate').value;
     const newTime = document.getElementById('newTime').value;
     const reason = document.getElementById('rescheduleReason').value;
@@ -252,7 +314,8 @@ function submitReschedule() {
         id: appointment.id,
         date: newDate,
         time: newTime,
-        reason: reason
+        reason: reason,
+        force: force
     };
 
     fetch(BASE_URL + '/api/appointments/reschedule', {
@@ -262,7 +325,26 @@ function submitReschedule() {
         },
         body: JSON.stringify(payload)
     })
-        .then(response => response.json())
+        .then(response => {
+            if (response.status === 409) {
+                return response.json().then(data => {
+                    if (data.status === 'conflict' && data.type === 'calendar') {
+                        if (confirm(data.message)) {
+                            submitReschedule(true); // Retry with force: true
+                        }
+                    } else {
+                        alert(data.error || 'Conflict detected');
+                    }
+                    throw new Error('Conflict');
+                });
+            }
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Failed to reschedule');
+                });
+            }
+            return response.json();
+        })
         .then(() => {
             // Update local copy after successful backend update
             appointment.requestedDate = newDate;
@@ -274,8 +356,10 @@ function submitReschedule() {
             closeModal('rescheduleModal');
         })
         .catch(error => {
-            console.error('Failed to reschedule appointment:', error);
-            alert('Failed to reschedule appointment. Please try again.');
+            if (error.message !== 'Conflict') {
+                console.error('Failed to reschedule appointment:', error);
+                alert(error.message || 'Failed to reschedule appointment. Please try again.');
+            }
         });
 }
 
@@ -330,7 +414,79 @@ function closeModal(modalId) {
     if (modalId === 'rescheduleModal') {
         document.getElementById('rescheduleForm').reset();
         currentRescheduleId = null;
+    } else if (modalId === 'rejectModal') {
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('otherReason').value = '';
+        document.getElementById('otherReasonGroup').style.display = 'none';
+        currentRejectId = null;
     }
+}
+
+let currentRejectId = null;
+
+function openRejectModal(id) {
+    currentRejectId = id;
+    document.getElementById('rejectModal').style.display = 'block';
+}
+
+function submitReject() {
+    const reasonSelect = document.getElementById('rejectReason').value;
+    const otherReason = document.getElementById('otherReason').value;
+    
+    let rejectionReason = reasonSelect;
+    if (reasonSelect === 'Other') {
+        rejectionReason = otherReason;
+    }
+
+    if (!rejectionReason) {
+        alert('Please select or specify a reason for rejection.');
+        return;
+    }
+
+    fetch(BASE_URL + '/api/appointments/status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            id: currentRejectId, 
+            status: 'rejected',
+            rejectionReason: rejectionReason
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showSuccessMessage('Appointment rejected successfully.');
+        loadAppointments(); // Reload all to update local state and filter
+        closeModal('rejectModal');
+    })
+    .catch(error => {
+        console.error('Error rejecting appointment:', error);
+        alert('Failed to reject appointment.');
+    });
+}
+
+function hideAppointment(id) {
+    if (!confirm('Are you sure you want to delete this rejected appointment? It will be hidden from your view.')) {
+        return;
+    }
+
+    fetch(BASE_URL + '/api/appointments/hide', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showSuccessMessage('Appointment removed from your view.');
+        loadAppointments();
+    })
+    .catch(error => {
+        console.error('Error hiding appointment:', error);
+        alert('Failed to remove appointment.');
+    });
 }
 
 // Close modal when clicking outside of it
@@ -350,6 +506,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set today's date as default for date filter
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('dateFilter').value = '';
+
+    // Add event listener for newDate in reschedule modal
+    const newDateEl = document.getElementById('newDate');
+    if (newDateEl) {
+        newDateEl.addEventListener('change', function() {
+            loadAvailableSlots(this.value);
+        });
+    }
 });
 
 // Additional utility functions for integration

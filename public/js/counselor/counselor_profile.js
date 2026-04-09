@@ -253,33 +253,47 @@
             
             const list = document.getElementById('qualificationList');
             
+            // Remove empty state if present
+            const emptyState = list.querySelector('.empty-state');
+            if (emptyState) {
+                list.innerHTML = '';
+            }
+            
             if (editingSection !== 'qualification') {
-               originalData.qualificationHTML = list.innerHTML;
-               editingSection = 'qualification';
-               document.getElementById('qualificationSave').classList.add('active');
-               
-               const qualItems = document.querySelectorAll('.qualification-item');
-               qualItems.forEach((item) => {
-                   item.querySelector('.qualification-title').contentEditable = true;
-                   item.querySelector('.qualification-institution').contentEditable = true;
-                   item.querySelector('.qualification-year').contentEditable = true;
-                   item.querySelector('.qualification-description').contentEditable = true;
-                   item.style.background = '#fff8e1';
-                   
-                   if (!item.querySelector('.delete-qual-btn')) {
-                       const delBtn = document.createElement('button');
-                       delBtn.className = 'delete-qual-btn';
-                       delBtn.innerHTML = '🗑️';
-                       delBtn.style.cssText = 'position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; font-size: 1.2rem;';
-                       delBtn.onclick = function() {
-                           if (confirm('Delete this qualification?')) {
-                               item.remove();
-                           }
-                       };
-                       item.style.position = 'relative';
-                       item.appendChild(delBtn);
-                   }
-               });
+                if (!emptyState) {
+                    originalData.qualificationHTML = list.innerHTML;
+                } else {
+                    originalData.qualificationHTML = '<div class="qualification-item empty-state" style="text-align: center; color: #888;">No qualifications added yet. Click Add to create one.</div>';
+                }
+                
+                editingSection = 'qualification';
+                document.getElementById('qualificationSave').classList.add('active');
+                
+                const qualItems = document.querySelectorAll('.qualification-item:not(.empty-state)');
+                qualItems.forEach((item) => {
+                    item.querySelector('.qualification-title').contentEditable = true;
+                    item.querySelector('.qualification-institution').contentEditable = true;
+                    item.querySelector('.qualification-year').contentEditable = true;
+                    item.querySelector('.qualification-description').contentEditable = true;
+                    item.style.background = '#fff8e1';
+                    
+                    if (!item.querySelector('.delete-qual-btn')) {
+                        const delBtn = document.createElement('button');
+                        delBtn.className = 'delete-qual-btn';
+                        delBtn.innerHTML = '🗑️';
+                        delBtn.style.cssText = 'position: absolute; right: 10px; top: 10px; background: none; border: none; cursor: pointer; font-size: 1.2rem;';
+                        delBtn.onclick = function() {
+                            if (confirm('Delete this qualification?')) {
+                                item.remove();
+                                if (document.querySelectorAll('.qualification-item').length === 0) {
+                                    list.innerHTML = '<div class="qualification-item empty-state" style="text-align: center; color: #888;">No qualifications added yet. Click Add to create one.</div>';
+                                }
+                            }
+                        };
+                        item.style.position = 'relative';
+                        item.appendChild(delBtn);
+                    }
+                });
             }
 
             const newItemHTML = `

@@ -18,7 +18,7 @@ class Appointment
                 (student_user_id, counselor_user_id, title, type, mode, date, time, notes, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')
         ");
-        $stmt->execute([
+        $stmt->execute(array(
             $studentUserId,
             $counselorUserId,
             $title,
@@ -27,7 +27,7 @@ class Appointment
             $date,
             $time,
             $notes
-        ]);
+        ));
         return (int) $pdo->lastInsertId();
     }
 
@@ -48,7 +48,7 @@ class Appointment
             SET title = ?, type = ?, mode = ?, date = ?, time = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ";
-        $params = [$title, $type, $mode, $date, $time, $notes, $id];
+        $params = array($title, $type, $mode, $date, $time, $notes, $id);
 
         // Optional ownership check: only the booking student can edit
         if ($studentUserId !== null) {
@@ -67,10 +67,10 @@ class Appointment
 
         $sql = "
             UPDATE appointments 
-            SET date = ?, time = ?, notes = CONCAT(IFNULL(notes, ''), ?), updated_at = CURRENT_TIMESTAMP
+            SET date = ?, time = ?, reschedule_reason = ?, status = 'rescheduled', updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ";
-        $params = [$date, $time, "\n\nRescheduled Reason: " . $reason, $id];
+        $params = array($date, $time, $reason, $id);
 
         // Optional ownership check for counselor
         if ($counselorUserId !== null) {
@@ -89,7 +89,7 @@ class Appointment
         error_log("Appointment model: Attempting to delete appointment with ID: " . $id);
 
         $stmt = $pdo->prepare("DELETE FROM appointments WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt->execute(array($id));
 
         $deleted = $stmt->rowCount() > 0;
         error_log("Appointment model: Delete result - " . ($deleted ? "SUCCESS" : "FAILED") . " (rows affected: " . $stmt->rowCount() . ")");
@@ -107,12 +107,14 @@ class Appointment
 
         $sql = "
             SELECT a.*,
-                   COALESCE(us.full_name, u.full_name, u.username) AS student_name
+                   COALESCE(us.full_name, u.full_name, u.username) AS student_name,
+                   a.rejection_reason
             FROM appointments a
             LEFT JOIN users u ON a.student_user_id = u.id
             LEFT JOIN undergraduate_students us ON a.student_user_id = us.user_id
             WHERE a.counselor_user_id = :counselor_user_id
-              AND a.status IN ('accept', 'accepted')
+              AND (a.hidden_by_counselor = 0 OR a.hidden_by_counselor IS NULL)
+              AND a.status IN ('accept', 'accepted', 'scheduled', 'confirmed')
               AND (
                 a.date > CURDATE()
                 OR (a.date = CURDATE() AND a.time >= CURTIME())
@@ -141,6 +143,7 @@ class Appointment
             LEFT JOIN users u ON a.student_user_id = u.id
             LEFT JOIN undergraduate_students us ON a.student_user_id = us.user_id
             WHERE a.counselor_user_id = :counselor_user_id
+              AND (a.hidden_by_counselor = 0 OR a.hidden_by_counselor IS NULL)
             ORDER BY a.date DESC, a.time DESC
         ";
 
@@ -152,17 +155,35 @@ class Appointment
     /**
      * Update the status of an appointment (pending/accepted/rejected/etc.).
      */
-    public function updateStatus($id, $status)
+    public function updateStatus($id, $status, $rejectionReason = null)
     {
         $pdo = Database::getConnection();
 
-        $stmt = $pdo->prepare("
-            UPDATE appointments 
-            SET status = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ");
-        $stmt->execute([$status, $id]);
+        $sql = "UPDATE appointments SET status = ?, updated_at = CURRENT_TIMESTAMP";
+        $params = array($status);
 
+        if ($rejectionReason !== null) {
+            $sql .= ", rejection_reason = ?";
+            $params[] = $rejectionReason;
+        }
+
+        $sql .= " WHERE id = ?";
+        $params[] = $id;
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Hide an appointment for the counselor (soft delete).
+     */
+    public function hideForCounselor($id)
+    {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("UPDATE appointments SET hidden_by_counselor = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+        $stmt->execute(array((int)$id));
         return $stmt->rowCount() > 0;
     }
 
@@ -188,6 +209,8 @@ class Appointment
                 a.date,
                 a.time,
                 a.notes,
+                a.rejection_reason,
+                a.reschedule_reason,
                 IFNULL(a.status, 'pending')     AS status,
                 a.counselor_user_id,
                 COALESCE(c.full_name, u2.username, 'Unknown') AS counselor_name,
@@ -199,7 +222,7 @@ class Appointment
             ORDER BY a.date DESC, a.time DESC
         ";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':student_user_id' => (int)$studentUserId]);
+        $stmt->execute(array(':student_user_id' => (int)$studentUserId));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -210,7 +233,7 @@ class Appointment
     {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("SELECT COUNT(DISTINCT student_user_id) as total FROM appointments WHERE counselor_user_id = ? AND status NOT IN ('reject', 'rejected')");
-        $stmt->execute([(int)$counselorUserId]);
+        $stmt->execute(array((int)$counselorUserId));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ? (int)$row['total'] : 0;
     }
@@ -221,9 +244,17 @@ class Appointment
     public function getTodaysSessionsCount($counselorUserId)
     {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM appointments WHERE counselor_user_id = ? AND date = CURDATE() AND status IN ('accept', 'accepted')");
-        $stmt->execute([(int)$counselorUserId]);
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM appointments WHERE counselor_user_id = ? AND date = CURDATE() AND status IN ('accept', 'accepted', 'scheduled', 'confirmed')");
+        $stmt->execute(array((int)$counselorUserId));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ? (int)$row['count'] : 0;
+    }
+
+    public function getById($id)
+    {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT * FROM appointments WHERE id = ?");
+        $stmt->execute(array((int)$id));
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

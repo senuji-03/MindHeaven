@@ -103,6 +103,38 @@
     </div>
 
     <!-- Reschedule Modal -->
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Reject Appointment</h3>
+                <button class="close" onclick="closeModal('rejectModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 1.5rem; color: #64748b;">Please select a reason for rejecting this appointment. This reason will be visible to the student.</p>
+                <div class="form-group">
+                    <label class="form-label" for="rejectReason">Reason for Rejection</label>
+                    <select id="rejectReason" class="form-input" onchange="toggleOtherReason()">
+                        <option value="">Select a reason</option>
+                        <option value="Emergency situation">Emergency situation</option>
+                        <option value="Fully booked / workload limit reached">Fully booked / workload limit reached</option>
+                        <option value="Requires different specialization">Requires different specialization</option>
+                        <option value="Not suitable for this session type">Not suitable for this session type</option>
+                        <option value="Duplicate or conflicting booking">Duplicate or conflicting booking</option>
+                        <option value="Requires urgent support">Requires urgent support</option>
+                        <option value="Other">Other (please specify)</option>
+                    </select>
+                </div>
+                <div id="otherReasonGroup" class="form-group" style="display: none; margin-top: 15px;">
+                    <label class="form-label" for="otherReason">Specify Reason</label>
+                    <textarea id="otherReason" class="form-textarea" placeholder="Please specify the reason..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal('rejectModal')">Cancel</button>
+                <button class="btn-reject" onclick="submitReject()">Confirm Rejection</button>
+            </div>
+        </div>
+    </div>
     <div id="rescheduleModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -121,20 +153,8 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="newTime">New Time</label>
-                            <select id="newTime" class="form-input" required>
-                                <option value="">Select Time</option>
-                                <option value="09:00">9:00 AM</option>
-                                <option value="09:30">9:30 AM</option>
-                                <option value="10:00">10:00 AM</option>
-                                <option value="10:30">10:30 AM</option>
-                                <option value="11:00">11:00 AM</option>
-                                <option value="11:30">11:30 AM</option>
-                                <option value="14:00">2:00 PM</option>
-                                <option value="14:30">2:30 PM</option>
-                                <option value="15:00">3:00 PM</option>
-                                <option value="15:30">3:30 PM</option>
-                                <option value="16:00">4:00 PM</option>
-                                <option value="16:30">4:30 PM</option>
+                            <select id="newTime" class="form-input" required disabled>
+                                <option value="">Select date first</option>
                             </select>
                         </div>
                     </div>
@@ -155,6 +175,14 @@
     <script>
         // Expose BASE_URL to JavaScript so we can call APIs reliably
         window.BASE_URL = '<?php echo BASE_URL; ?>';
+
+        function toggleOtherReason() {
+            const reasonSelect = document.getElementById('rejectReason');
+            const otherReasonGroup = document.getElementById('otherReasonGroup');
+            if (otherReasonGroup) {
+                otherReasonGroup.style.display = reasonSelect.value === 'Other' ? 'block' : 'none';
+            }
+        }
     </script>
     <script src="<?php echo BASE_URL; ?>/js/counselor/appoinmentmgt.js"></script>
 </body>
