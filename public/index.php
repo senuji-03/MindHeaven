@@ -207,6 +207,7 @@ $router->post('/university-rep/university-bank/update', 'UniversityRepresentativ
 
 
 $router->get('/EditPosts', 'ModeratorControl@edit');
+$router->get('/AddResource', 'ModeratorControl@addResource');
 $router->get('/FlaggedUsers', 'ModeratorControl@flagged');
 $router->get('/ModeratorDashboard', 'ModeratorControl@ModeratorDashboard');
 $router->get('/WarnForm', 'ModeratorControl@warn');

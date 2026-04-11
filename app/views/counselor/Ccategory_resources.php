@@ -178,6 +178,19 @@
                     </div>
                 </div>
             </section>
+            
+            <!-- Filter Bar -->
+            <div class="filter-bar" style="max-width: 1200px; margin: 2rem 0; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="filter-btn active" onclick="filterContent('all', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">All</button>
+                <button class="filter-btn" onclick="filterContent('article', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Articles</button>
+                <button class="filter-btn" onclick="filterContent('audio', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Audio</button>
+                <button class="filter-btn" onclick="filterContent('video', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Videos</button>
+            </div>
+
+            <style>
+                .filter-btn:hover { background: #f4f4f4; }
+                .filter-btn.active { background: #222 !important; color: #fff !important; border-color: #222 !important; }
+            </style>
 
             <?php
             function renderResourceCard($resource, $userLikes) {
@@ -241,7 +254,7 @@
                 ?>
                 <div style="padding: 1rem 0;">
                     <?php if (!empty($articles)): ?>
-                        <div style="margin-bottom: 3rem;">
+                        <div class="resource-section" data-type="article" style="margin-bottom: 3rem;">
                             <h2 style="font-size: 1.4rem; font-weight: 700; color: #222; margin-bottom: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 0.75rem;">📄 Articles</h2>
                             <div class="airbnb-grid">
                                 <?php foreach ($articles as $resource): renderResourceCard($resource, $userLikes ?? []); endforeach; ?>
@@ -250,7 +263,7 @@
                     <?php endif; ?>
 
                     <?php if (!empty($videos)): ?>
-                        <div style="margin-bottom: 3rem;">
+                        <div class="resource-section" data-type="video" style="margin-bottom: 3rem;">
                             <h2 style="font-size: 1.4rem; font-weight: 700; color: #222; margin-bottom: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 0.75rem;">🎬 Videos</h2>
                             <div class="airbnb-grid">
                                 <?php foreach ($videos as $resource): renderResourceCard($resource, $userLikes ?? []); endforeach; ?>
@@ -259,7 +272,7 @@
                     <?php endif; ?>
 
                     <?php if (!empty($audios)): ?>
-                        <div style="margin-bottom: 3rem;">
+                        <div class="resource-section" data-type="audio" style="margin-bottom: 3rem;">
                             <h2 style="font-size: 1.4rem; font-weight: 700; color: #222; margin-bottom: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 0.75rem;">🎧 Audios</h2>
                             <div class="airbnb-grid">
                                 <?php foreach ($audios as $resource): renderResourceCard($resource, $userLikes ?? []); endforeach; ?>
@@ -272,6 +285,37 @@
     </div>
 
     <script>
+        function filterContent(type, btn) {
+            // Update buttons
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Filter sections
+            const sections = document.querySelectorAll('.resource-section');
+            let found = false;
+            sections.forEach(s => {
+                if (type === 'all' || s.getAttribute('data-type') === type) {
+                    s.style.display = 'block';
+                    found = true;
+                } else {
+                    s.style.display = 'none';
+                }
+            });
+
+            // Handle empty state
+            const emptyMsg = document.getElementById('no-filter-results');
+            if (!found) {
+                if (!emptyMsg) {
+                    const msg = document.createElement('div');
+                    msg.id = 'no-filter-results';
+                    msg.innerHTML = '<p style="text-align:center; padding:3rem; color:#717171;">No resources of this type found in this category.</p>';
+                    document.querySelector('.resource-section')?.parentNode.appendChild(msg);
+                }
+            } else if (emptyMsg) {
+                emptyMsg.remove();
+            }
+        }
+
         function openResource(resource) {
             if (resource.youtube_url) {
                 window.open(resource.youtube_url, '_blank');

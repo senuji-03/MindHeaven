@@ -471,19 +471,27 @@
         
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
-                <!-- <span class="icon">📊</span> -->
+                <span class="icon">📊</span>
                 Dashboard
             </a>
+            <a href="<?= BASE_URL ?>/AddResource" class="nav-item">
+                <span class="icon">➕</span>
+                Add Resource
+            </a>
             <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <!-- <span class="icon">✏</span> -->
+                <span class="icon">✏️</span>
                 Edit Resources
             </a>
+            <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
+                <span class="icon">🚨</span>
+                Reported Resources
+            </a>
             <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
-                <!-- <span class="icon">🚩</span> -->
+                <span class="icon">🚩</span>
                 Flagged Users
             </a>
             <a href="<?= BASE_URL ?>/WarnForm" class="nav-item active">
-                <!-- <span class="icon">⚠</span> -->
+                <span class="icon">⚠️</span>
                 Warn Users
             </a>
         </nav>

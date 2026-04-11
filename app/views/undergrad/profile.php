@@ -74,6 +74,8 @@ require BASE_PATH.'/app/views/layouts/header.php';
                                 <thead>
                                     <tr style="border-bottom: 2px solid #e5e7eb; text-align: left;">
                                         <th style="padding: 12px 8px; font-size: 14px; color: #374151;">Event</th>
+                                        <th style="padding: 12px 8px; font-size: 14px; color: #374151;">University</th>
+                                        <th style="padding: 12px 8px; font-size: 14px; color: #374151;">Bank Info</th>
                                         <th style="padding: 12px 8px; font-size: 14px; color: #374151;">Amount</th>
                                         <th style="padding: 12px 8px; font-size: 14px; color: #374151;">Status</th>
                                         <th style="padding: 12px 8px; font-size: 14px; color: #374151;">Date</th>
@@ -83,6 +85,16 @@ require BASE_PATH.'/app/views/layouts/header.php';
                                     <?php foreach ($donations as $donation): ?>
                                         <tr style="border-bottom: 1px solid #f3f4f6;">
                                             <td style="padding: 12px 8px; font-size: 14px;"><?= htmlspecialchars($donation['event_title'] ?? 'General Donation') ?></td>
+                                            <td style="padding: 12px 8px; font-size: 14px;"><?= htmlspecialchars($donation['university_name'] ?? 'N/A') ?></td>
+                                            <td style="padding: 12px 8px; font-size: 12px; color: #4b5563;">
+                                                <?php if (!empty($donation['bank_name'])): ?>
+                                                    <div><strong>Bank:</strong> <?= htmlspecialchars($donation['bank_name']) ?></div>
+                                                    <div><strong>Branch:</strong> <?= htmlspecialchars($donation['bank_branch'] ?? 'N/A') ?></div>
+                                                    <div><strong>Acc:</strong> <?= htmlspecialchars($donation['account_number'] ?? 'N/A') ?></div>
+                                                <?php else: ?>
+                                                    <span style="font-style: italic; color: #9ca3af;">No bank details</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td style="padding: 12px 8px; font-size: 14px;"><?= htmlspecialchars($donation['currency'] ?? 'LKR') ?> <?= htmlspecialchars($donation['amount']) ?></td>
                                             <td style="padding: 12px 8px;">
                                                 <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: <?= $donation['payment_status'] === 'success' ? '#dcfce7; color: #166534;' : ($donation['payment_status'] === 'pending' ? '#fef9c3; color: #854d0e;' : '#fee2e2; color: #991b1b;') ?>">

@@ -220,10 +220,53 @@
 
         /* Resource grid for better display */
         .resources-grid {
-            display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
+        }
+
+        /* Filter section styles */
+        .filter-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin: 1.5rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+            border: 1px solid #e5e7eb;
+        }
+
+        .filter-group {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .filter-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .resource-card[style*="display: none"] {
+            display: none !important;
         }
 
         .resource-card {
@@ -318,11 +361,15 @@
         
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
-                <!-- <span class="icon"></span> -->
+                <span class="icon">📊</span>
                 Dashboard
             </a>
+            <a href="<?= BASE_URL ?>/AddResource" class="nav-item">
+                <span class="icon">➕</span>
+                Add Resource
+            </a>
             <a href="<?= BASE_URL ?>/EditPosts" class="nav-item active">
-                <!-- <span class="icon">✏️</span> -->
+                <span class="icon">✏️</span>
                 Edit Resources
             </a>
             <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
@@ -330,11 +377,11 @@
                 Reported Resources
             </a>
             <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
-                <!-- <span class="icon">🚩</span> -->
+                <span class="icon">🚩</span>
                 Flagged Users
             </a>
             <a href="<?= BASE_URL ?>/WarnForm" class="nav-item">
-                <!-- <span class="icon">⚠️</span> -->
+                <span class="icon">⚠️</span>
                 Warn Users
             </a>
         </nav>
@@ -350,125 +397,7 @@
     <div class="main-content">
         <header><h1>Edit Resources</h1></header>
 
-        <div class="form-wrapper">
-            <div class="section-header-bar" style="display: flex; justify-content: space-between; align-items: center;">
-                <h2>📚 Create New Resource</h2>
-                <a href="<?= BASE_URL ?>/resource-categories" class="btn btn-secondary btn-small" style="background: rgba(255,255,255,0.2); border: 1px solid white;">⚙️ Manage Categories</a>
-            </div>
-            <section class="create-resource card flush-top stack">
-                <form id="addPostForm" action="<?= BASE_URL ?>/Moderator/resource/create" method="POST" enctype="multipart/form-data" class="stack">
-                    <div class="form-rows">
-                        <div class="form-row">
-                            <label for="postName">Resource Title</label>
-                            <input id="postName" type="text" name="title" placeholder="Enter a descriptive title for your resource" required>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="category">Category</label>
-                            <select id="category" name="category" required>
-                                <option value="">Select a category</option>
-                                <?php foreach ($categories as $cat): ?>
-                                    <option value="<?= htmlspecialchars($cat['name']) ?>">
-                                        <?= htmlspecialchars($cat['name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="contentTypeSelect">Content Type</label>
-                            <select name="content_type" id="contentTypeSelect" required>
-                                <option value="">Select content type</option>
-                                <option value="article">📝 Article</option>
-                                <option value="video">🎥 Video</option>
-                                <option value="audio">🎵 Audio</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="summary">Summary (Optional)</label>
-                            <textarea id="summary" name="summary" rows="3" placeholder="Brief description of what this resource covers..."></textarea>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="tags">Tags</label>
-                            <input id="tags" type="text" name="tags" placeholder="Enter tags separated by commas (e.g., anxiety, stress, coping)" />
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="status">Status</label>
-                            <select name="status" id="status">
-                                <option value="draft">📝 Draft</option>
-                                <option value="published">✅ Published</option>
-                                <option value="archived">📦 Archived</option>
-                            </select>
-                        </div>
-                    </div>
 
-                <div id="articleFields" class="stack card" style="display:none;">
-                        <h3>📝 Article Content</h3>
-                    <div class="form-group">
-                            <label for="articleImage">🖼️ Featured Image</label>
-                            <div class="file-upload-area" id="articleImageUpload">
-                                <input id="articleImage" type="file" name="article_image" accept="image/*" style="display: none;">
-                                <p>📁 Click to upload or drag and drop an image</p>
-                                <small>Recommended: 1200x630px, max 5MB</small>
-                            </div>
-                    </div>
-                    <div class="form-group">
-                            <label for="articleContent">Article Content</label>
-                            <textarea id="articleContent" name="content" rows="12" placeholder="Write your article content here. You can use basic HTML formatting..."></textarea>
-                        </div>
-                </div>
-
-                <div id="videoFields" class="stack card" style="display:none;">
-                        <h3>🎥 Video Content</h3>
-                        <div class="form-group">
-                            <label for="videoFile">🎬 Upload Video File (optional)</label>
-                            <div class="file-upload-area" id="videoFileUpload">
-                                <input id="videoFile" type="file" name="video_file" accept="video/*" style="display: none;">
-                                <p>📁 Click to upload or drag and drop a video file</p>
-                                <small>Supported formats: MP4, AVI, MOV. Max size: 100MB</small>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="youtubeUrl">🔗 YouTube Link (optional)</label>
-                            <input id="youtubeUrl" type="url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." />
-                            <small style="color:#6b7280;">If provided, clicking the resource will open YouTube directly.</small>
-                        </div>
-                    <div class="form-group">
-                            <label for="videoDescription">Video Description</label>
-                            <textarea id="videoDescription" name="content" rows="6" placeholder="Describe what this video covers and any key points..."></textarea>
-                        </div>
-                </div>
-
-                <div id="audioFields" class="stack card" style="display:none;">
-                        <h3>🎵 Audio Content</h3>
-                        <div class="form-group">
-                            <label for="audioFile">🎧 Upload Audio</label>
-                            <div class="file-upload-area" id="audioFileUpload">
-                                <input id="audioFile" type="file" name="audio_file" accept="audio/*" style="display: none;">
-                                <p>📁 Click to upload or drag and drop an audio file</p>
-                                <small>Supported formats: MP3, WAV, M4A. Max size: 50MB</small>
-                            </div>
-                        </div>
-                    <div class="form-group">
-                            <label for="audioDescription">Audio Description</label>
-                            <textarea id="audioDescription" name="content" rows="6" placeholder="Describe what this audio covers and any key points..."></textarea>
-                        </div>
-                </div>
-
-                <div class="actions">
-                        <button class="btn btn-secondary" type="reset">
-                            🗑️ Clear Form
-                        </button>
-                        <button class="btn btn-primary" type="submit">
-                            💾 Create Resource
-                        </button>
-                </div>
-                </form>
-            </section>
-        </div>
 
         <?php if (isset($_GET['created'])): ?>
             <div class="alert success">✅ Resource created successfully! It should now appear in the undergraduate resources section.</div>
@@ -502,10 +431,53 @@
         </div>
         
         <section class="resources-management card flush-top">
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="searchTitle">Search Title</label>
+                    <input type="text" id="searchTitle" class="filter-input" placeholder="Find by title...">
+                </div>
+                <div class="filter-group">
+                    <label for="searchTag">Search Tag</label>
+                    <input type="text" id="searchTag" class="filter-input" placeholder="e.g. #counselor">
+                </div>
+                <div class="filter-group">
+                    <label for="filterCategory">Category</label>
+                    <select id="filterCategory" class="filter-input">
+                        <option value="all">All Categories</option>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?= htmlspecialchars($cat['name']); ?>"><?= htmlspecialchars($cat['name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterType">Type</label>
+                    <select id="filterType" class="filter-input">
+                        <option value="all">All Types</option>
+                        <option value="article">Article</option>
+                        <option value="video">Video</option>
+                        <option value="audio">Audio</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterStatus">Status</label>
+                    <select id="filterStatus" class="filter-input">
+                        <option value="all">All Statuses</option>
+                        <option value="published">Published</option>
+                        <option value="draft">Draft</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                </div>
+            </div>
+
             <?php if (!empty($resources)): ?>
                 <div class="resources-grid">
                     <?php foreach ($resources as $r): ?>
-                        <div class="resource-card">
+                        <div class="resource-card" 
+                             data-title="<?= htmlspecialchars(strtolower($r['title'])); ?>" 
+                             data-tags="<?= htmlspecialchars(strtolower($r['tags'] ?? '')); ?>" 
+                             data-category="<?= htmlspecialchars($r['category']); ?>" 
+                             data-type="<?= htmlspecialchars($r['content_type']); ?>" 
+                             data-status="<?= htmlspecialchars($r['status']); ?>">
                             <div class="resource-header">
                                 <h3><?= htmlspecialchars($r['title']); ?></h3>
                                 <div class="resource-meta">
@@ -609,7 +581,7 @@
             <?php else: ?>
                 <div class="empty-state" style="text-align: center; padding: 3rem; color: #6b7280;">
                     <h3>📚 No Resources Yet</h3>
-                    <p>Create your first resource using the form above to get started!</p>
+                    <p>Click the "Add New Resource" button to get started!</p>
                 </div>
             <?php endif; ?>
         </section>
@@ -618,128 +590,6 @@
     <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
     <script>
     (function(){
-        // Content type visibility management
-        var select = document.getElementById('contentTypeSelect');
-        var article = document.getElementById('articleFields');
-        var video = document.getElementById('videoFields');
-        var audio = document.getElementById('audioFields');
-        
-        function updateVisibility(){
-            var v = select.value;
-            article.style.display = (v === 'article') ? 'block' : 'none';
-            video.style.display = (v === 'video') ? 'block' : 'none';
-            audio.style.display = (v === 'audio') ? 'block' : 'none';
-        }
-        
-        if (select) {
-            select.addEventListener('change', updateVisibility);
-            updateVisibility();
-        }
-        
-        // Form reset handling
-        var form = document.getElementById('addPostForm');
-        if (form) {
-            form.addEventListener('reset', function(){
-                setTimeout(updateVisibility, 0);
-            });
-        }
-        
-        // Enhanced file upload areas
-        function setupFileUpload(uploadAreaId, fileInputId) {
-            var uploadArea = document.getElementById(uploadAreaId);
-            var fileInput = document.getElementById(fileInputId);
-            
-            if (uploadArea && fileInput) {
-                uploadArea.addEventListener('click', function() {
-                    fileInput.click();
-                });
-                
-                uploadArea.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.add('dragover');
-                });
-                
-                uploadArea.addEventListener('dragleave', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.remove('dragover');
-                });
-                
-                uploadArea.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.remove('dragover');
-                    var files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        fileInput.files = files;
-                        updateFileDisplay(fileInput);
-                    }
-                });
-                
-                fileInput.addEventListener('change', function() {
-                    updateFileDisplay(fileInput);
-                });
-            }
-        }
-        
-        function updateFileDisplay(fileInput) {
-            var uploadArea = fileInput.parentElement;
-            if (fileInput.files.length > 0) {
-                var fileName = fileInput.files[0].name;
-                var fileSize = (fileInput.files[0].size / 1024 / 1024).toFixed(2);
-                // Remove input first so it survives the innerHTML reset
-                uploadArea.removeChild(fileInput);
-                uploadArea.innerHTML = `<p>✅ <strong>${fileName}</strong> (${fileSize} MB)</p><small>Click to change file</small>`;
-                uploadArea.appendChild(fileInput);
-            }
-        }
-        
-        // Setup file upload areas
-        setupFileUpload('articleImageUpload', 'articleImage');
-        setupFileUpload('videoFileUpload', 'videoFile');
-        setupFileUpload('audioFileUpload', 'audioFile');
-        
-        // Form validation + loading state (single submit listener)
-        form.addEventListener('submit', function(e) {
-            var contentType = select.value;
-            var isValid = true;
-            var errorMessage = '';
-            
-            if (!contentType) {
-                isValid = false;
-                errorMessage = 'Please select a content type.';
-            } else {
-                if (contentType === 'article') {
-                    // Article content is optional now
-                } else if (contentType === 'video') {
-                    var videoFile = document.getElementById('videoFile').files.length;
-                    var videoContent = document.getElementById('videoDescription').value.trim();
-                    if (!videoFile && !videoContent) {
-                        isValid = false;
-                        errorMessage = 'Please provide video file or description.';
-                    }
-                } else if (contentType === 'audio') {
-                    var audioFile = document.getElementById('audioFile').files.length;
-                    var audioContent = document.getElementById('audioDescription').value.trim();
-                    if (!audioFile && !audioContent) {
-                        isValid = false;
-                        errorMessage = 'Please provide audio file or description.';
-                    }
-                }
-            }
-            
-            if (!isValid) {
-                e.preventDefault();
-                alert('❌ ' + errorMessage);
-                return;
-            }
-
-            // Valid — show loading state
-            var submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.innerHTML = '⏳ Creating Resource...';
-                submitBtn.disabled = true;
-            }
-        });
-        
         // Auto-resize textareas
         var textareas = document.querySelectorAll('textarea');
         textareas.forEach(function(textarea) {
@@ -749,6 +599,53 @@
             });
         });
         
+        // Filtering Logic
+        const filterInputs = {
+            title: document.getElementById('searchTitle'),
+            tag: document.getElementById('searchTag'),
+            category: document.getElementById('filterCategory'),
+            type: document.getElementById('filterType'),
+            status: document.getElementById('filterStatus')
+        };
+        const resourceCards = document.querySelectorAll('.resource-card');
+
+        function filterResources() {
+            const filters = {
+                title: filterInputs.title.value.toLowerCase(),
+                tag: filterInputs.tag.value.toLowerCase(),
+                category: filterInputs.category.value,
+                type: filterInputs.type.value,
+                status: filterInputs.status.value
+            };
+
+            resourceCards.forEach(card => {
+                const cardData = {
+                    title: card.getAttribute('data-title'),
+                    tags: card.getAttribute('data-tags'),
+                    category: card.getAttribute('data-category'),
+                    type: card.getAttribute('data-type'),
+                    status: card.getAttribute('data-status')
+                };
+
+                const matchesTitle = cardData.title.includes(filters.title);
+                const matchesTag = filters.tag === '' || cardData.tags.includes(filters.tag);
+                const matchesCategory = filters.category === 'all' || cardData.category === filters.category;
+                const matchesType = filters.type === 'all' || cardData.type === filters.type;
+                const matchesStatus = filters.status === 'all' || cardData.status === filters.status;
+
+                if (matchesTitle && matchesTag && matchesCategory && matchesType && matchesStatus) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Add event listeners to all filters
+        Object.values(filterInputs).forEach(input => {
+            input.addEventListener('input', filterResources);
+            input.addEventListener('change', filterResources);
+        });
     })();
     </script>
 </body>

@@ -185,6 +185,8 @@
                                 <thead>
                                     <tr style="border-bottom: 2px solid #eee; text-align: left;">
                                         <th style="padding: 12px 8px; font-size: 14px; color: #666;">Event</th>
+                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">University</th>
+                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Bank Info</th>
                                         <th style="padding: 12px 8px; font-size: 14px; color: #666;">Amount</th>
                                         <th style="padding: 12px 8px; font-size: 14px; color: #666;">Status</th>
                                         <th style="padding: 12px 8px; font-size: 14px; color: #666;">Date</th>
@@ -194,6 +196,16 @@
                                     <?php foreach ($donations as $donation): ?>
                                         <tr style="border-bottom: 1px solid #f9f9f9;">
                                             <td style="padding: 12px 8px; font-size: 14px; color: #333;"><?php echo htmlspecialchars($donation['event_title'] ?? 'General Donation'); ?></td>
+                                            <td style="padding: 12px 8px; font-size: 14px; color: #333;"><?php echo htmlspecialchars($donation['university_name'] ?? 'N/A'); ?></td>
+                                            <td style="padding: 12px 8px; font-size: 12px; color: #555;">
+                                                <?php if (!empty($donation['bank_name'])): ?>
+                                                    <div><strong>Bank:</strong> <?php echo htmlspecialchars($donation['bank_name']); ?></div>
+                                                    <div><strong>Branch:</strong> <?php echo htmlspecialchars($donation['bank_branch'] ?? 'N/A'); ?></div>
+                                                    <div><strong>Acc:</strong> <?php echo htmlspecialchars($donation['account_number'] ?? 'N/A'); ?></div>
+                                                <?php else: ?>
+                                                    <span style="font-style: italic; color: #999;">No bank details</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td style="padding: 12px 8px; font-size: 14px; color: #333;"><?php echo htmlspecialchars($donation['currency'] ?? 'LKR'); ?> <?php echo htmlspecialchars($donation['amount']); ?></td>
                                             <td style="padding: 12px 8px;">
                                                 <span style="padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; background: <?php echo $donation['payment_status'] === 'success' ? '#e6f4ea; color: #1e7e34;' : ($donation['payment_status'] === 'pending' ? '#fff3cd; color: #856404;' : '#f8d7da; color: #721c24;'); ?>">

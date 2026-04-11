@@ -16,6 +16,17 @@ class ModeratorControl
         }
     }
 
+    public function addResource()
+    {
+        try {
+            $resourceHub = new ResourceHub();
+            $categories = $resourceHub->getCategories();
+            view('Moderator/addResource', ['categories' => $categories]);
+        } catch (Exception $e) {
+            view('Moderator/addResource', ['categories' => [], 'error' => 'Failed to load categories: ' . $e->getMessage()]);
+        }
+    }
+
     public function flagged()
     {
         view('Moderator/FlaggedUsers');
@@ -172,7 +183,7 @@ class ModeratorControl
             $summary = trim($_POST['summary'] ?? '');
 
             if (empty($title) || empty($category) || empty($contentType)) {
-                header('Location: ' . BASE_URL . '/EditPosts?error=missing_fields');
+                header('Location: ' . BASE_URL . '/AddResource?error=missing_fields');
                 exit;
             }
 
@@ -215,11 +226,11 @@ class ModeratorControl
             }
 
             $resourceHub->create($data);
-            header('Location: ' . BASE_URL . '/EditPosts?created=1');
+            header('Location: ' . BASE_URL . '/AddResource?created=1');
             exit;
 
         } catch (Exception $e) {
-            header('Location: ' . BASE_URL . '/EditPosts?error=creation_failed');
+            header('Location: ' . BASE_URL . '/AddResource?error=creation_failed');
             exit;
         }
     }

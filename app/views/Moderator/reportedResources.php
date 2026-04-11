@@ -23,15 +23,54 @@ $TITLE = 'MindHeaven — Reported Resources';
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar" style="background: #2c3e50; color: white; width: 250px; height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column;">
+        <div class="sidebar-header" style="padding: 20px; background: #1a252f; text-align: center; border-bottom: 1px solid #34495e;">
+            <h2>🧠 Mind Haven</h2>
+            <p style="font-size: 12px; color: #95a5a6;">Moderator Panel</p>
+        </div>
+        <nav class="sidebar-nav" style="flex: 1; padding: 20px 0;">
+            <style>
+                .nav-item { display: flex; align-items: center; padding: 12px 20px; color: #ecf0f1; text-decoration: none; transition: 0.3s; border-left: 3px solid transparent; }
+                .nav-item:hover { background: #34495e; border-left-color: #3498db; }
+                .nav-item.active { background: #34495e; border-left-color: #3498db; font-weight: 600; }
+                .nav-item .icon { margin-right: 10px; font-size: 18px; }
+            </style>
+            <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
+                <span class="icon">📊</span> Dashboard
+            </a>
+            <a href="<?= BASE_URL ?>/AddResource" class="nav-item">
+                <span class="icon">➕</span> Add Resource
+            </a>
+            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
+                <span class="icon">✏️</span> Edit Resources
+            </a>
+            <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item active">
+                <span class="icon">🚨</span> Reported Resources
+            </a>
+            <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
+                <span class="icon">🚩</span> Flagged Users
+            </a>
+            <a href="<?= BASE_URL ?>/WarnForm" class="nav-item">
+                <span class="icon">⚠️</span> Warn Users
+            </a>
+        </nav>
+        <div class="sidebar-footer" style="padding: 20px; border-top: 1px solid #34495e;">
+            <a href="<?= BASE_URL ?>/logout" style="display: flex; align-items: center; padding: 12px 20px; background: #e74c3c; color: white; text-decoration: none; border-radius: 5px;">
+                <span class="icon" style="margin-right: 10px;">🚪</span> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" style="margin-left: 250px; flex: 1; padding: 2rem; background: #f8f9fa; min-height: 100vh;">
         <div class="header">
             <h1>Reported Resources</h1>
-            <a href="<?= BASE_URL ?>/ModeratorDashboard" class="btn btn-secondary">Back to Dashboard</a>
         </div>
 
         <?php if (isset($_GET['resolved'])): ?>
             <div style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                Report successfully resolved!
+                ✅ Report successfully resolved!
             </div>
         <?php endif; ?>
 
