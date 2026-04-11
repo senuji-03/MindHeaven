@@ -78,8 +78,7 @@ function getNavigationItems($role)
     ],
     'donor' => [
       'main' => [
-        ['icon' => 'fas fa-heart', 'text' => 'Donation Form', 'url' => '/DonationForm', 'slug' => 'donation-form'],
-        ['icon' => 'fas fa-check-circle', 'text' => 'Donation Success', 'url' => '/DonationSuccess', 'slug' => 'donation-success'],
+        ['icon' => 'fas fa-hand-holding-heart', 'text' => 'Donate', 'url' => '/donation', 'slug' => 'donation'],
       ]
     ]
   ];

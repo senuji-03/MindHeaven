@@ -225,7 +225,7 @@ class SignupControl
             'admin' => BASE_URL . '/admin',
             'call_responder' => BASE_URL . '/CallResponder',
             'counselor' => BASE_URL . '/counselor',
-            'donor' => BASE_URL . '/DonationForm',
+            'donor' => BASE_URL . '/donation',
             'moderator' => BASE_URL . '/ModeratorDashboard',
             'undergrad' => BASE_URL . '/ug',
             'undergraduate' => BASE_URL . '/ug'

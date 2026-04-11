@@ -4,9 +4,19 @@ class DonationControl
 {
 
     // Fallback index
+    // Redirect to home page fundraising section
     public function index()
     {
-        view('donation/index');
+        $eventId = $_GET['event_id'] ?? null;
+        if ($eventId) {
+            // If they are trying to donate to a specific event via query param, redirect to the correct route
+            header('Location: ' . BASE_URL . '/donation/event/' . $eventId);
+            exit;
+        }
+
+        // Otherwise redirect to the fundraising events section on home page
+        header('Location: ' . BASE_URL . '/#fundraising-events');
+        exit;
     }
 
     // Show donation form for a specific event

@@ -313,15 +313,11 @@
                             <label for="category">Category</label>
                             <select id="category" name="category" required>
                                 <option value="">Select a category</option>
-                                <option value="Mental Health Basics" <?= $resource['category'] === 'Mental Health Basics' ? 'selected' : '' ?>>Mental Health Basics</option>
-                                <option value="Anxiety & Stress" <?= $resource['category'] === 'Anxiety & Stress' ? 'selected' : '' ?>>Anxiety & Stress</option>
-                                <option value="Depression Support" <?= $resource['category'] === 'Depression Support' ? 'selected' : '' ?>>Depression Support</option>
-                                <option value="Mindfulness & Meditation" <?= $resource['category'] === 'Mindfulness & Meditation' ? 'selected' : '' ?>>Mindfulness & Meditation</option>
-                                <option value="Sleep & Wellness" <?= $resource['category'] === 'Sleep & Wellness' ? 'selected' : '' ?>>Sleep & Wellness</option>
-                                <option value="Relationships & Social" <?= $resource['category'] === 'Relationships & Social' ? 'selected' : '' ?>>Relationships & Social</option>
-                                <option value="Crisis Support" <?= $resource['category'] === 'Crisis Support' ? 'selected' : '' ?>>Crisis Support</option>
-                                <option value="Self-Help Tools" <?= $resource['category'] === 'Self-Help Tools' ? 'selected' : '' ?>>Self-Help Tools</option>
-                                <option value="Professional Development" <?= $resource['category'] === 'Professional Development' ? 'selected' : '' ?>>Professional Development</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= htmlspecialchars($cat['name']) ?>" <?= $resource['category'] === $cat['name'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($cat['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         

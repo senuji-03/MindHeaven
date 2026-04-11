@@ -12,7 +12,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
   <section class="resources-hero">
     <div class="hero-content">
       <div>
-        <h1 class="hero-title"><?= htmlspecialchars($categoryInfo['icon'] ?? '📚') ?> <?= htmlspecialchars($category) ?></h1>
+        <h1 class="hero-title"><?= htmlspecialchars($category) ?></h1>
         <p class="hero-subtitle"><?= htmlspecialchars($categoryInfo['description'] ?? 'Resources related to ' . $category) ?></p>
         <div class="hero-actions">
           <a href="<?= BASE_URL ?>/ug/resources" class="btn btn-secondary" style="display:inline-flex; width: fit-content; margin-top:1rem; background:rgba(255,255,255,0.2); color:white; border:none;">&larr; Back to Categories</a>

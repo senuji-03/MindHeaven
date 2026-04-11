@@ -121,10 +121,11 @@ class ResourceHub {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getCategories() {
-        $stmt = $this->pdo->prepare("SELECT DISTINCT category FROM resource_hub WHERE status = 'published' ORDER BY category");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    public function getCategories()
+    {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->query("SELECT name, description FROM resource_categories WHERE is_active = 1 ORDER BY name ASC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getStats() {
@@ -234,4 +235,5 @@ class ResourceHub {
         $stmt = $this->pdo->prepare("UPDATE resource_reports SET status = ?, reviewed_by = ?, action_taken = ? WHERE id = ?");
         return $stmt->execute([$rejectOrReviewed, $moderatorId, $actionTaken, $reportId]);
     }
+
 }

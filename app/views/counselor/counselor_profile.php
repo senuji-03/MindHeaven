@@ -170,8 +170,61 @@
                     <button class="save-btn" onclick="saveSection('qualification')">Save Changes</button>
                 </div>
             </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Donation History</h2>
+                    <button class="edit-btn" onclick="toggleDonationHistory()">View History</button>
+                </div>
+                <div class="section-content" id="donation-history-content" style="display: none;">
+                    <?php if (empty($donations)): ?>
+                        <p style="color: #888; text-align: center; padding: 20px;">No donations yet.</p>
+                    <?php else: ?>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid #eee; text-align: left;">
+                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Event</th>
+                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Amount</th>
+                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Status</th>
+                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($donations as $donation): ?>
+                                        <tr style="border-bottom: 1px solid #f9f9f9;">
+                                            <td style="padding: 12px 8px; font-size: 14px; color: #333;"><?php echo htmlspecialchars($donation['event_title'] ?? 'General Donation'); ?></td>
+                                            <td style="padding: 12px 8px; font-size: 14px; color: #333;"><?php echo htmlspecialchars($donation['currency'] ?? 'LKR'); ?> <?php echo htmlspecialchars($donation['amount']); ?></td>
+                                            <td style="padding: 12px 8px;">
+                                                <span style="padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; background: <?php echo $donation['payment_status'] === 'success' ? '#e6f4ea; color: #1e7e34;' : ($donation['payment_status'] === 'pending' ? '#fff3cd; color: #856404;' : '#f8d7da; color: #721c24;'); ?>">
+                                                    <?php echo htmlspecialchars(ucfirst($donation['payment_status'])); ?>
+                                                </span>
+                                            </td>
+                                            <td style="padding: 12px 8px; font-size: 14px; color: #777;"><?php echo date('M j, Y', strtotime($donation['created_at'])); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        function toggleDonationHistory() {
+            const content = document.getElementById('donation-history-content');
+            const btn = event.target;
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                btn.textContent = 'Hide History';
+            } else {
+                content.style.display = 'none';
+                btn.textContent = 'View History';
+            }
+        }
+    </script>
 
     <div id="photoModal" class="modal">
         <div class="modal-content">

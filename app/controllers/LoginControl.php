@@ -55,13 +55,13 @@ class LoginControl
                     $stmt = $pdo->prepare("SELECT is_approved FROM counselors WHERE user_id = ?");
                     $stmt->execute([$user['id']]);
                     $counselor = $stmt->fetch(PDO::FETCH_ASSOC);
-                    
+
                     if (!$counselor || !$counselor['is_approved']) {
                         $this->view('layouts/login', ['error' => 'Your counselor account is pending approval. Please wait for admin approval before logging in.']);
                         return;
                     }
                 }
-                
+
                 // 1. Check if deleted
                 if ($user['is_deleted']) {
                     $this->view('layouts/login', ['error' => 'Your account does not exist or has been deleted.']);
@@ -329,7 +329,7 @@ class LoginControl
         // Clear all session data
         session_unset();
         session_destroy();
-        
+
         // Add security headers to prevent caching and back-button access
         if (class_exists('Auth')) {
             Auth::setSecurityHeaders();
@@ -349,7 +349,7 @@ class LoginControl
             'admin' => BASE_URL . '/admin',
             'call_responder' => BASE_URL . '/CallResponder',
             'counselor' => BASE_URL . '/counselor',
-            'donor' => BASE_URL . '/DonationForm',
+            'donor' => BASE_URL . '/donation',
             'moderator' => BASE_URL . '/ModeratorDashboard',
             'undergraduate' => BASE_URL . '/ug',
             'university_representative' => BASE_URL . '/university-rep/dashboard'

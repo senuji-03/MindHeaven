@@ -93,6 +93,15 @@ $router->post('/admin/forum-categories/delete', 'AdminControl@deleteForumCategor
 $router->post('/admin/forum-categories/activate', 'AdminControl@activateForumCategory');
 
 
+// Resource Hub Categories Management
+$router->get('/resource-categories', 'ResourceCategoryControl@index');
+$router->post('/resource-categories/create', 'ResourceCategoryControl@create');
+$router->post('/resource-categories/update', 'ResourceCategoryControl@update');
+$router->post('/resource-categories/delete', 'ResourceCategoryControl@delete');
+$router->post('/resource-categories/activate', 'ResourceCategoryControl@activate');
+
+
+
 // Report API Routes (for frontend)
 $router->get('/report/categories', 'ReportControl@getCategories');
 $router->post('/report/submit', 'ReportControl@submit');
@@ -122,8 +131,13 @@ $router->post('/counselor/updateProfile', 'COControl@updateProfile');
 $router->post('/counselor/uploadProfilePhoto', 'COControl@uploadProfilePhoto');
 $router->post('/api/counselor/qualifications/sync', 'COControl@syncQualifications');
 $router->get('/counselor/forum', 'COControl@forum');
-$router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
-$router->get('/counselor/resources', 'UGControl@resources');
+$router->get('/counselor/Cresource_hub', 'COControl@Cresource_hub');
+$router->get('/counselor/category-resources', 'COControl@CcategoryResources');
+$router->get('/counselor/resources', 'COControl@Cresource_hub'); // Alias
+$router->get('/counselor/viewResource', 'COControl@CviewResource');
+$router->post('/counselor/likeResource', 'COControl@ClikeResource');
+$router->post('/counselor/addComment', 'COControl@CaddComment');
+$router->post('/counselor/reportResource', 'COControl@CreportResource');
 
 $router->get('/counselor/timeslots', 'COControl@timeslots');
 
@@ -190,8 +204,7 @@ $router->get('/donation/request-confirmation/{id}', 'DonationControl@requestConf
 $router->get('/university-rep/donations', 'UniversityRepresentativeControl@donations');
 $router->post('/university-rep/university-bank/update', 'UniversityRepresentativeControl@updateBankDetails');
 
-$router->get('/DonationForm', 'DonorControl@DonationForm');
-$router->get('/DonationSuccess', 'DonorControl@DonationSuccess');
+
 
 $router->get('/EditPosts', 'ModeratorControl@edit');
 $router->get('/FlaggedUsers', 'ModeratorControl@flagged');

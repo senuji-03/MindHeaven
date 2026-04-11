@@ -179,7 +179,15 @@ class COControl
             $qualifications = $counselorModel->getQualifications($counselor['id']);
         }
 
-        view('/counselor/counselor_profile', array('counselor' => $counselor, 'qualifications' => $qualifications));
+        // Fetch donation history
+        require_once BASE_PATH . '/app/models/Donation.php';
+        $donations = Donation::getDonationsByDonor($_SESSION['user_id']);
+
+        view('/counselor/counselor_profile', array(
+            'counselor' => $counselor,
+            'qualifications' => $qualifications,
+            'donations' => $donations
+        ));
     }
 
     public function updateProfile() {
@@ -577,8 +585,190 @@ class COControl
     }
 
 
-     public function Cresource_hub() {
-        view('/counselor/Cresource_hub');
+    public function Cresource_hub() {
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+
+            // Get all published resources
+            $allResources = $resourceHub->getAll('published');
+
+            // Group resources by category
+            $resourcesByCategory = [];
+            foreach ($allResources as $resource) {
+                $category = $resource['category'];
+                if (!isset($resourcesByCategory[$category])) {
+                    $resourcesByCategory[$category] = [];
+                }
+                $resourcesByCategory[$category][] = $resource;
+            }
+
+            // Get resource statistics
+            $stats = $resourceHub->getStats();
+
+            view('/counselor/Cresource_hub', [
+                'resources' => $allResources,
+                'resourcesByCategory' => $resourcesByCategory,
+                'stats' => $stats
+            ]);
+        } catch (Exception $e) {
+            error_log("Counselor ResourceHub Error: " . $e->getMessage());
+            view('/counselor/Cresource_hub', [
+                'resources' => [],
+                'resourcesByCategory' => [],
+                'stats' => ['total_resources' => 0, 'published' => 0]
+            ]);
+        }
+    }
+
+    public function CcategoryResources()
+    {
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+
+            $category = $_GET['category'] ?? '';
+            if (empty($category)) {
+                header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
+                exit;
+            }
+
+            $categoryResources = $resourceHub->getByCategory($category, 'published');
+            $userLikes = [];
+            if (isset($_SESSION['user_id'])) {
+                $userLikes = $resourceHub->getUserLikes($_SESSION['user_id']);
+            }
+
+            $allResources = $resourceHub->getAll('published');
+            $allCategories = [];
+            foreach ($allResources as $resource) {
+                $cat = $resource['category'];
+                if (!isset($allCategories[$cat])) {
+                    $allCategories[$cat] = count(array_filter($allResources, function ($r) use ($cat) {
+                        return $r['category'] === $cat;
+                    }));
+                }
+            }
+
+            $categoriesList = $resourceHub->getCategories();
+            $categoryInfo = [];
+            foreach ($categoriesList as $cat) {
+                $categoryInfo[$cat['name']] = ['description' => $cat['description']];
+            }
+            $currentCategoryInfo = $categoryInfo[$category] ?? ['description' => 'Resources for ' . $category];
+
+            view('/counselor/Ccategory_resources', [
+                'category' => $category,
+                'categoryInfo' => $currentCategoryInfo,
+                'resources' => $categoryResources,
+                'allCategories' => $allCategories,
+                'totalResources' => count($categoryResources),
+                'userLikes' => $userLikes
+            ]);
+
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=category_not_found');
+            exit;
+        }
+    }
+
+    public function CviewResource()
+    {
+        if (!isset($_GET['id'])) {
+            header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
+            exit;
+        }
+
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            
+            $resourceId = (int)$_GET['id'];
+            $resource = $resourceHub->getById($resourceId);
+            
+            if (!$resource) {
+                header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
+                exit;
+            }
+
+            $userLikes = [];
+            if (isset($_SESSION['user_id'])) {
+                $userLikes = $resourceHub->getUserLikes($_SESSION['user_id']);
+            }
+
+            $comments = $resourceHub->getComments($resourceId);
+
+            view('/counselor/Cresource_details', [
+                'resource' => $resource,
+                'userLikes' => $userLikes,
+                'comments' => $comments
+            ]);
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
+            exit;
+        }
+    }
+
+    public function ClikeResource()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (isset($input['resource_id'])) {
+                require_once BASE_PATH . '/app/models/ResourceHub.php';
+                $resourceHub = new ResourceHub();
+                $result = $resourceHub->toggleLike($input['resource_id'], $_SESSION['user_id']);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'action' => $result['action']]);
+                exit;
+            }
+        }
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'error' => 'Invalid request']);
+        exit;
+    }
+
+    public function CaddComment()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resource_id'], $_POST['comment'])) {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            
+            $resourceId = (int)$_POST['resource_id'];
+            $userId = $_SESSION['user_id'];
+            $comment = trim($_POST['comment']);
+            
+            if (!empty($comment)) {
+                $resourceHub->addComment($resourceId, $userId, $comment);
+            }
+            
+            header('Location: ' . BASE_URL . '/counselor/viewResource?id=' . $resourceId);
+            exit;
+        }
+        
+        header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
+        exit;
+    }
+
+    public function CreportResource() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (isset($input['resource_id'], $input['reason'])) {
+                require_once BASE_PATH . '/app/models/ResourceHub.php';
+                $resourceHub = new ResourceHub();
+                $success = $resourceHub->reportResource($input['resource_id'], $_SESSION['user_id'], $input['reason'], $input['description'] ?? '');
+                
+                header('Content-Type: application/json');
+                if ($success) {
+                    echo json_encode(['success' => true]);
+                } else {
+                    echo json_encode(['success' => false, 'error' => 'Rate limit exceeded or duplicate report.']);
+                }
+                exit;
+            }
+        }
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'error' => 'Invalid request']);
+        exit;
     }
     
 }

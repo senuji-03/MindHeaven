@@ -27,6 +27,15 @@ $current_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
         <li class="sidebar-item <?php echo (strpos($current_url, '/counselor/Cresource_hub') !== false || strpos($current_url, '/counselor/resources') !== false)  ? 'active' : ''; ?>">
             <a href="<?php echo BASE_URL; ?>/counselor/Cresource_hub" <?php echo (strpos($current_url, '/counselor/Cresource_hub') !== false || strpos($current_url, '/counselor/resources') !== false) ? 'style="color: #2563eb;"' : ''; ?>>📚 Resource Hub</a>
         </li>
+        <li class="sidebar-item <?php echo strpos($current_url, '/EditPosts') !== false ? 'active' : ''; ?>">
+            <a href="<?php echo BASE_URL; ?>/EditPosts" <?php echo strpos($current_url, '/EditPosts') !== false ? 'style="color: #2563eb;"' : ''; ?>>✏️ Edit Resources</a>
+        </li>
+        <li class="sidebar-item <?php echo strpos($current_url, '/resource-categories') !== false ? 'active' : ''; ?>">
+            <a href="<?php echo BASE_URL; ?>/resource-categories" <?php echo strpos($current_url, '/resource-categories') !== false ? 'style="color: #2563eb;"' : ''; ?>>⚙️ Resource Categories</a>
+        </li>
+        <li class="sidebar-item">
+            <a href="<?php echo BASE_URL; ?>/donation">💰 Donate</a>
+        </li>
         <li class="sidebar-item <?php echo strpos($current_url, '/counselor/counselor_profile') !== false ? 'active' : ''; ?>">
             <a href="<?php echo BASE_URL; ?>/counselor/counselor_profile" <?php echo strpos($current_url, '/counselor/counselor_profile') !== false ? 'style="color: #2563eb;"' : ''; ?>>👤 Profile</a>
         </li>

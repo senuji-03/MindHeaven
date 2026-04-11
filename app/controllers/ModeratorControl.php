@@ -9,7 +9,8 @@ class ModeratorControl
         try {
             $resourceHub = new ResourceHub();
             $resources = $resourceHub->getAll();
-            view('Moderator/editPosts', ['resources' => $resources]);
+            $categories = $resourceHub->getCategories();
+            view('Moderator/editPosts', ['resources' => $resources, 'categories' => $categories]);
         } catch (Exception $e) {
             view('Moderator/editPosts', ['resources' => [], 'error' => 'Failed to load resources: ' . $e->getMessage()]);
         }
@@ -77,17 +78,11 @@ class ModeratorControl
                     }));
                 }
             }
-            $categoryInfo = [
-                'Mental Health Basics'     => ['icon' => '🧠', 'description' => 'Understanding mental health, common conditions, and when to seek help'],
-                'Anxiety & Stress'         => ['icon' => '😰', 'description' => 'Coping strategies and techniques for managing anxiety and stress'],
-                'Depression Support'       => ['icon' => '😢', 'description' => 'Resources and support for dealing with depression'],
-                'Mindfulness & Meditation' => ['icon' => '🧘‍♀️', 'description' => 'Guided practices for mindfulness and meditation'],
-                'Sleep & Wellness'         => ['icon' => '💤', 'description' => 'Tips for better sleep and overall wellness'],
-                'Relationships & Social'   => ['icon' => '👥', 'description' => 'Building healthy relationships and social connections'],
-                'Crisis Support'           => ['icon' => '🆘', 'description' => 'Emergency resources and crisis intervention'],
-                'Self-Help Tools'          => ['icon' => '🛠️', 'description' => 'Interactive tools and exercises for mental wellness'],
-                'Professional Development' => ['icon' => '🎓', 'description' => 'Resources for academic and career success']
-            ];
+            $categoriesList = $resourceHub->getCategories();
+            $categoryInfo = [];
+            foreach ($categoriesList as $cat) {
+                $categoryInfo[$cat['name']] = ['icon' => '📚', 'description' => $cat['description']];
+            }
             $currentCategoryInfo = $categoryInfo[$category] ?? ['icon' => '📚', 'description' => 'Resources for ' . $category];
             $resourcesByType = ['article' => [], 'video' => [], 'audio' => []];
             foreach ($categoryResources as $resource) {
@@ -271,7 +266,8 @@ class ModeratorControl
                 exit;
             }
 
-            view('Moderator/editResource', ['resource' => $resource]);
+            $categories = $resourceHub->getCategories();
+            view('Moderator/editResource', ['resource' => $resource, 'categories' => $categories]);
 
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/EditPosts?error=load_failed');

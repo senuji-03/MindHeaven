@@ -2,8 +2,8 @@
 <html lang="en">
 <?php
 $currentMode = $mode ?? 'forum';
-$pageTitle = $currentMode === 'report' ? 'Manage Report Categories' : 'Manage Forum Thread Categories';
-$actionBase = $currentMode === 'report' ? '/admin/report-categories' : '/admin/forum-categories';
+$pageTitle = $currentMode === 'resource' ? 'Manage Resource Hub Categories' : ($currentMode === 'report' ? 'Manage Report Categories' : 'Manage Forum Thread Categories');
+$actionBase = $currentMode === 'resource' ? '/resource-categories' : ($currentMode === 'report' ? '/admin/report-categories' : '/admin/forum-categories');
 ?>
 <head>
     <meta charset="UTF-8">
@@ -40,6 +40,10 @@ $actionBase = $currentMode === 'report' ? '/admin/report-categories' : '/admin/f
                 Moderate Forum
             </a>
             <!-- ... -->
+                    <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
+                <span class="icon">✏️</span>
+                Edit Resources
+            </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -66,7 +70,7 @@ $actionBase = $currentMode === 'report' ? '/admin/report-categories' : '/admin/f
         <div class="content-wrapper">
             <!-- ... toolbar ... -->
             <div class="toolbar">
-                <a href="<?= BASE_URL ?>/admin/moderate-forum" class="btn secondary">
+                <a href="<?= BASE_URL ?>/admin/resource-hub" class="btn secondary">
                     &larr; Back to Moderation
                 </a>
                 <button class="btn" onclick="var f=document.getElementById('addCatInline'); f.style.display=f.style.display==='none'?'flex':'none';">+ Add Category</button>

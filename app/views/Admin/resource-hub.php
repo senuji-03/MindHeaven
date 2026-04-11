@@ -55,6 +55,10 @@
                 <span class="icon"></span>
                 Donation logs
             </a>
+                    <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
+                <span class="icon">✏️</span>
+                Edit Resources
+            </a>
         </nav>
 
         <div class="sidebar-footer">

@@ -33,6 +33,10 @@
         <li><a href="<?= BASE_URL ?>/admin/profile">Profile</a></li>
       </ul>
     </aside>  
+                    <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
+                <span class="icon">✏️</span>
+                Edit Resources
+            </a>
         </nav>
 
         <div class="sidebar-footer">

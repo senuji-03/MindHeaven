@@ -351,8 +351,9 @@
         <header><h1>Edit Resources</h1></header>
 
         <div class="form-wrapper">
-            <div class="section-header-bar">
+            <div class="section-header-bar" style="display: flex; justify-content: space-between; align-items: center;">
                 <h2>📚 Create New Resource</h2>
+                <a href="<?= BASE_URL ?>/resource-categories" class="btn btn-secondary btn-small" style="background: rgba(255,255,255,0.2); border: 1px solid white;">⚙️ Manage Categories</a>
             </div>
             <section class="create-resource card flush-top stack">
                 <form id="addPostForm" action="<?= BASE_URL ?>/Moderator/resource/create" method="POST" enctype="multipart/form-data" class="stack">
@@ -366,15 +367,11 @@
                             <label for="category">Category</label>
                             <select id="category" name="category" required>
                                 <option value="">Select a category</option>
-                                <option value="Mental Health Basics">Mental Health Basics</option>
-                                <option value="Anxiety & Stress">Anxiety & Stress</option>
-                                <option value="Depression Support">Depression Support</option>
-                                <option value="Mindfulness & Meditation">Mindfulness & Meditation</option>
-                                <option value="Sleep & Wellness">Sleep & Wellness</option>
-                                <option value="Relationships & Social">Relationships & Social</option>
-                                <option value="Crisis Support">Crisis Support</option>
-                                <option value="Self-Help Tools">Self-Help Tools</option>
-                                <option value="Professional Development">Professional Development</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= htmlspecialchars($cat['name']) ?>">
+                                        <?= htmlspecialchars($cat['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         
