@@ -339,23 +339,14 @@ async function renderAppointments() {
     }
 }
 
-function _renderRows(list) {
-    const tbody = document.getElementById('appointmentsTableBody');
-    const empty = document.getElementById('appointmentsEmptyState');
-
-    if (!list.length) {
-        if (empty) empty.style.display = 'block';
-        tbody.innerHTML = '';
-        return;
-    }
-    if (empty) empty.style.display = 'none';
-
-    tbody.innerHTML = list.map(a => {
+function _generateRowsHtml(list) {
+    if (!list.length) return '';
+    return list.map(a => {
         const statusKey = (a.status || 'pending').toLowerCase();
         const statusClass = STATUS_CLASS[statusKey] || 'pending';
-        const modeLabel = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_', ' ') : 'â€”');
-        const typeLabel = a.type ? a.type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'â€”';
-        const counselor = a.counselor_name || 'â€”';
+        const modeLabel = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_', ' ') : '—');
+        const typeLabel = a.type ? a.type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) : '—';
+        const counselor = a.counselor_name || '—';
 
         return `<tr>
             <td>
@@ -383,6 +374,11 @@ function _renderRows(list) {
                             <i class="fas fa-pen"></i>
                         </button>
                     `}
+                    ${a.meeting_link && (statusKey === 'accepted' || statusKey === 'accept') ? `
+                        <button type="button" onclick="promptJoin('${escHtml(a.meeting_link)}')" class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 12px;font-size:.8rem;display:inline-flex;align-items:center;line-height:30px;border-radius:6px;" title="Join Video Call">
+                            <i class="fas fa-video" style="margin-right:6px;"></i> Join Call
+                        </button>
+                    ` : ''}
                     <button class="mh-action-btn mh-action-btn--danger" onclick="deleteAppointment(${a.id})" title="Cancel">
                         <i class="fas fa-trash-can"></i>
                     </button>
@@ -390,6 +386,35 @@ function _renderRows(list) {
             </td>
         </tr>`;
     }).join('');
+}
+
+function _renderRows(list) {
+    const tbody = document.getElementById('appointmentsTableBody');
+    const upcomingTbody = document.getElementById('upcomingAppointmentsTableBody');
+    const empty = document.getElementById('appointmentsEmptyState');
+
+    if (!list.length) {
+        if (empty) empty.style.display = 'block';
+        if (tbody) tbody.innerHTML = '';
+        if (upcomingTbody) upcomingTbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading">No upcoming sessions right now. Let's book one!</td></tr>`;
+        return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    const todayVal = new Date().toISOString().split('T')[0];
+    const upcomingList = list.filter(a => ['accepted', 'accept'].includes((a.status || '').toLowerCase()) && a.date >= todayVal);
+    
+    if (upcomingTbody) {
+        if (upcomingList.length) {
+            upcomingTbody.innerHTML = _generateRowsHtml(upcomingList);
+        } else {
+            upcomingTbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading">No upcoming sessions right now. Let's book one!</td></tr>`;
+        }
+    }
+
+    if (tbody) {
+        tbody.innerHTML = _generateRowsHtml(list);
+    }
 }
 
 function _updateStats(list) {
@@ -533,3 +558,71 @@ function toast(msg, color, icon) {
     document.body.appendChild(div);
     setTimeout(() => { div.style.opacity = '0'; div.style.transition = 'opacity .3s'; setTimeout(() => div.remove(), 300); }, 3500);
 }
+
+// ─── Join Preference Logic ──────────────────────────────────────────────────
+let activeJoinUrl = '';
+let currentCallFrame = null;
+
+function promptJoin(url) {
+    activeJoinUrl = url;
+    document.getElementById('joinPreferenceModal').style.display = 'flex';
+}
+
+function launchDailyCall(audioOnly) {
+    document.getElementById('joinPreferenceModal').style.display = 'none';
+    if (!activeJoinUrl) return;
+
+    // Show Fullscreen container
+    const container = document.getElementById('dailyCallContainer');
+    const placeholder = document.getElementById('dailyIframePlaceholder');
+    container.style.display = 'block';
+
+    // Clear any existing frame
+    placeholder.innerHTML = '';
+    if (currentCallFrame) {
+        currentCallFrame.destroy();
+    }
+
+    try {
+        currentCallFrame = window.DailyIframe.createFrame(placeholder, {
+            iframeStyle: {
+                width: '100%',
+                height: '100%',
+                border: '0',
+                backgroundColor: '#111'
+            },
+            dailyConfig: {
+                startVideoOff: audioOnly,
+                startAudioOff: false
+            }
+        });
+
+        currentCallFrame.join({ url: activeJoinUrl });
+
+        // Listen for user manually ending the call from Daily's internal UI
+        currentCallFrame.on('left-meeting', (event) => {
+            leaveDailyCall();
+        });
+    } catch (err) {
+        toastError('Failed to initialize video call: ' + err.message);
+        leaveDailyCall();
+    }
+}
+
+function leaveDailyCall() {
+    if (currentCallFrame) {
+        currentCallFrame.leave();
+        currentCallFrame.destroy();
+        currentCallFrame = null;
+    }
+    document.getElementById('dailyCallContainer').style.display = 'none';
+    activeJoinUrl = '';
+}
+
+document.getElementById('btnJoinVideo')?.addEventListener('click', () => {
+    launchDailyCall(false); // Audio & Video
+});
+
+document.getElementById('btnJoinAudio')?.addEventListener('click', () => {
+    launchDailyCall(true); // Audio Only (disables video initially)
+});

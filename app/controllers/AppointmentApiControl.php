@@ -157,6 +157,14 @@ class AppointmentApiControl
                 error_log('AppointmentApiControl: auto-added mode column to appointments table');
             }
 
+            // Auto-migrate: reschedule_reason column and modify status enum if missing
+            $cols = $pdo->query("SHOW COLUMNS FROM appointments LIKE 'reschedule_reason'")->fetchAll();
+            if (empty($cols)) {
+                $pdo->exec("ALTER TABLE appointments ADD COLUMN `reschedule_reason` text DEFAULT NULL AFTER `rejection_reason`");
+                $pdo->exec("ALTER TABLE appointments MODIFY COLUMN status ENUM('scheduled','confirmed','in_progress','completed','cancelled','no_show','pending','accept','accepted','reject','rejected','rescheduled') NOT NULL DEFAULT 'scheduled'");
+                error_log('AppointmentApiControl: auto-added reschedule_reason and modified status enum');
+            }
+
             // ── Validate that the slot exists in counselor_timeslots ──
             $slotCheck = $pdo->prepare("
                 SELECT id, is_booked FROM counselor_timeslots
@@ -573,6 +581,46 @@ class AppointmentApiControl
                             $appointment['date'],
                             $appointment['time']
                         );
+
+                        // Integrate Daily.co for audio/video appointments
+                        if (
+                            isset($appointment['mode']) &&
+                            $appointment['mode'] === 'audio_video' &&
+                            empty($appointment['meeting_link']) &&
+                            defined('DAILY_API_KEY')
+                        ) {
+                            $dailyRoomName = 'mindheaven-session-' . $appointment['id'] . '-' . time();
+                            $postData = array(
+                                'name' => $dailyRoomName,
+                                'properties' => array(
+                                    'exp' => strtotime($appointment['date'] . ' ' . $appointment['time'] . ' +3 hours'),
+                                    'enable_chat' => true
+                                )
+                            );
+
+                            $ch = curl_init('https://api.daily.co/v1/rooms');
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch, CURLOPT_POST, true);
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+                            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                'Authorization: Bearer ' . DAILY_API_KEY,
+                                'Content-Type: application/json'
+                            ));
+
+                            $response = curl_exec($ch);
+                            if (!curl_errno($ch)) {
+                                $result = json_decode($response, true);
+                                if (!empty($result['url'])) {
+                                    $this->appointmentModel->updateMeetingLink((int)$appointment['id'], $result['url']);
+                                    error_log("Daily.co room created successfully for appointment ID: " . $appointment['id']);
+                                } else {
+                                    error_log("Daily.co error: " . print_r($result, true));
+                                }
+                            } else {
+                                error_log("Failed to connect to Daily.co API for appointment ID: " . $appointment['id']);
+                            }
+                            curl_close($ch);
+                        }
                     } elseif ($status === 'rejected') {
                         $this->timeslotModel->markFree(
                             (int)$appointment['counselor_user_id'],

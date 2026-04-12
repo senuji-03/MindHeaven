@@ -200,6 +200,13 @@ class Appointment
             $pdo->exec("ALTER TABLE appointments ADD COLUMN `mode` VARCHAR(20) NOT NULL DEFAULT 'audio_video' AFTER `type`");
         }
 
+        // Auto-add reschedule_reason column and modify status enum if missing
+        $cols = $pdo->query("SHOW COLUMNS FROM appointments LIKE 'reschedule_reason'")->fetchAll();
+        if (empty($cols)) {
+            $pdo->exec("ALTER TABLE appointments ADD COLUMN `reschedule_reason` text DEFAULT NULL AFTER `rejection_reason`");
+            $pdo->exec("ALTER TABLE appointments MODIFY COLUMN status ENUM('scheduled','confirmed','in_progress','completed','cancelled','no_show','pending','accept','accepted','reject','rejected','rescheduled') NOT NULL DEFAULT 'scheduled'");
+        }
+
         $sql = "
             SELECT 
                 a.id,
@@ -211,6 +218,7 @@ class Appointment
                 a.notes,
                 a.rejection_reason,
                 a.reschedule_reason,
+                a.meeting_link,
                 IFNULL(a.status, 'pending')     AS status,
                 a.counselor_user_id,
                 COALESCE(c.full_name, u2.username, 'Unknown') AS counselor_name,
@@ -256,5 +264,16 @@ class Appointment
         $stmt = $pdo->prepare("SELECT * FROM appointments WHERE id = ?");
         $stmt->execute(array((int)$id));
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Update the meeting link (Daily.co URL) for an appointment.
+     */
+    public function updateMeetingLink($id, $url)
+    {
+        $pdo = Database::getConnection();
+        $sql = "UPDATE appointments SET meeting_link = ? WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute(array($url, (int)$id));
     }
 }

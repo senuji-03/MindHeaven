@@ -187,6 +187,12 @@ $router->get('/api/habits/for-date', 'HabitApiControl@listByDate');
 $router->post('/api/habits/log-date', 'HabitApiControl@logForDate');
 $router->post('/api/habits/unlog-date', 'HabitApiControl@unlogForDate');
 
+// Mood API
+$router->get('/api/mood/list',   'MoodApiControl@list');
+$router->post('/api/mood/create','MoodApiControl@create');
+$router->put('/api/mood/update', 'MoodApiControl@update');
+$router->delete('/api/mood/delete','MoodApiControl@delete');
+
 $router->get('/CallResponder', 'CallResponderControl@index');
 $router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');
 $router->get('/CallSuccess', 'CallResponderControl@success');
@@ -297,5 +303,16 @@ $router->get('/api/chat/messages', 'ChatControl@getMessages');    // READ:   fet
 $router->post('/api/chat/send', 'ChatControl@sendMessage');       // CREATE: send a message
 $router->post('/api/chat/edit', 'ChatControl@editMessage');       // UPDATE: edit a message
 $router->post('/api/chat/delete', 'ChatControl@deleteMessage');   // DELETE: soft-delete a message
+
+// ========================================
+// CRISIS HOTLINE & RESPONDER ROUTES
+// ========================================
+$router->post('/api/crisis/connect', 'CrisisApiControl@connect');
+$router->get('/api/crisis/waiting', 'CrisisApiControl@getWaitingCalls');
+$router->post('/api/crisis/answer', 'CrisisApiControl@answerCall');
+$router->post('/api/crisis/update', 'CrisisApiControl@updateCall');
+
+$router->get('/responder/dashboard', 'CallResponderControl@dashboard');
+$router->get('/CallResponder', 'CallResponderControl@dashboard');
 
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

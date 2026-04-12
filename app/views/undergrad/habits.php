@@ -232,8 +232,8 @@ require BASE_PATH . '/app/views/layouts/header.php';
   }
   .habit-row {
     display: flex;
-    align-items: stretch;
-    gap: 12px;
+    flex-direction: column;
+    gap: 10px;
     padding: 11px 13px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
@@ -243,6 +243,11 @@ require BASE_PATH . '/app/views/layouts/header.php';
   }
   .habit-row:hover { border-color: var(--primary-light); box-shadow: var(--shadow-sm); }
   .habit-row.completed-row { background: #f0faf5; border-color: #a8d8c0; }
+  .habit-row-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
   .habit-icon-badge {
     width: 36px; height: 36px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
@@ -966,6 +971,9 @@ function makeHabitRow(habit, dateStr) {
   const row = document.createElement('div');
   row.className = 'habit-row' + (isDone ? ' completed-row' : '');
 
+  const topRow = document.createElement('div');
+  topRow.className = 'habit-row-top';
+
   const badge = document.createElement('div');
   badge.className = 'habit-icon-badge';
   badge.style.background = (habit.color ? habit.color + '22' : '#10b98122');
@@ -981,6 +989,12 @@ function makeHabitRow(habit, dateStr) {
   sub.innerHTML = `${escHtml(habit.category)} <span class="freq-badge freq-${habit.frequency || 'daily'}">${habit.frequency || ''}</span>`;
   info.appendChild(name);
   info.appendChild(sub);
+
+  const toggle = document.createElement('div');
+  toggle.className = 'habit-toggle' + (isDone ? ' checked' : '');
+  toggle.title = isDone ? 'Mark incomplete' : 'Mark complete';
+  toggle.textContent = isDone ? '✓' : '';
+  toggle.addEventListener('click', () => toggleHabit(habit.id, isDone ? 1 : 0, dateStr, toggle));
 
   const actions = document.createElement('div');
   actions.className = 'habit-action-group';
@@ -1003,19 +1017,15 @@ function makeHabitRow(habit, dateStr) {
   deleteBtn.textContent = 'Delete';
   deleteBtn.addEventListener('click', () => deleteHabit(habit));
 
-  const toggle = document.createElement('div');
-  toggle.className = 'habit-toggle' + (isDone ? ' checked' : '');
-  toggle.title = isDone ? 'Mark incomplete' : 'Mark complete';
-  toggle.textContent = isDone ? '✓' : '';
-  toggle.addEventListener('click', () => toggleHabit(habit.id, isDone ? 1 : 0, dateStr, toggle));
-
   actions.appendChild(viewBtn);
   actions.appendChild(editBtn);
   actions.appendChild(deleteBtn);
-  actions.appendChild(toggle);
 
-  row.appendChild(badge);
-  row.appendChild(info);
+  topRow.appendChild(badge);
+  topRow.appendChild(info);
+  topRow.appendChild(toggle);
+
+  row.appendChild(topRow);
   row.appendChild(actions);
   return row;
 }
