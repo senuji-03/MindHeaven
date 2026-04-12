@@ -144,8 +144,12 @@
                                 </div>
                             </div>
                             <div class="action-buttons">
-                                <button class="btn btn-start"
-                                    onclick="startMeeting('<?php echo addslashes($studentNameSafe); ?>')">Start Session</button>
+                                <?php if (!empty($appt['meeting_link'])): ?>
+                                    <a href="<?php echo htmlspecialchars($appt['meeting_link']); ?>" target="_blank" class="btn btn-start" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">🎥 Join Meeting</a>
+                                <?php else: ?>
+                                    <button class="btn btn-start"
+                                        onclick="startMeeting('<?php echo addslashes($studentNameSafe); ?>')">Start Session</button>
+                                <?php endif; ?>
                                 <!-- <button class="btn btn-reschedule"
                                     onclick="reschedule('<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')">Reschedule</button> -->
                                 <button class="btn btn-feedback"

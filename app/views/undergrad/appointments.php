@@ -2,7 +2,7 @@
 $TITLE = 'MindHeaven — Appointments';
 $CURRENT_PAGE = 'appointments';
 $PAGE_CSS = ["/MindHeaven/public/css/undergrad/appointments.css"];
-$PAGE_JS  = ["/MindHeaven/public/js/undergrad/appointments.js?v=" . time()];
+$PAGE_JS  = ["/MindHeaven/public/js/undergrad/appointments.js"];
 require BASE_PATH . '/app/views/layouts/header.php';
 ?>
 
@@ -22,7 +22,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 					<p class="mh-modal__subtitle">Schedule your counseling session</p>
 				</div>
 			</div>
-			<button type="button" class="mh-modal__close" onclick="closeBookingModal(event)" aria-label="Close">
+			<button type="button" class="mh-modal__close" onclick="closeBookingModal()" aria-label="Close">
 				<i class="fas fa-times"></i>
 			</button>
 		</div>
@@ -114,7 +114,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 				<!-- Actions -->
 				<div class="mh-modal__actions">
-				<button type="button" class="mh-btn mh-btn--outline" onclick="closeBookingModal(event)">
+				<button type="button" class="mh-btn mh-btn--outline" onclick="closeBookingModal()">
 						<i class="fas fa-xmark"></i> Cancel
 					</button>
 					<button type="button" id="resetAppointmentForm" class="mh-btn mh-btn--ghost">
@@ -127,6 +127,34 @@ require BASE_PATH . '/app/views/layouts/header.php';
 				</div>
 			</form>
 		</div>
+	</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     JOIN PREFERENCE MODAL
+═══════════════════════════════════════════ -->
+<div id="joinPreferenceModal" class="mh-modal-overlay" style="display:none;z-index:9999;">
+	<div class="mh-modal" style="max-width:380px;text-align:center;padding:30px;">
+		<div style="font-size:3rem;color:var(--primary);margin-bottom:15px;">
+			<i class="fas fa-headset"></i>
+		</div>
+		<h3 style="margin-bottom:10px;font-size:1.4rem;">Choose Call Mode</h3>
+		<p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:25px;">
+			How would you like to join your counseling session today?
+		</p>
+		
+		<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+			<button class="mh-btn mh-btn--primary" id="btnJoinVideo" style="width:100%;justify-content:center;">
+				<i class="fas fa-video"></i> Join with Video
+			</button>
+			<button class="mh-btn mh-btn--outline" id="btnJoinAudio" style="width:100%;justify-content:center;color:var(--text);border-color:#cbd5e1;">
+				<i class="fas fa-phone"></i> Join with Audio Only
+			</button>
+		</div>
+		
+		<button class="mh-btn mh-btn--ghost" onclick="document.getElementById('joinPreferenceModal').style.display='none'" style="font-size:0.85rem;">
+			Cancel
+		</button>
 	</div>
 </div>
 
@@ -181,7 +209,55 @@ require BASE_PATH . '/app/views/layouts/header.php';
 		</div>
 	</div>
 
-	<!-- Appointments Table Card -->
+	<!-- Daily.co JS -->
+	<script crossorigin src="https://unpkg.com/@daily-co/daily-js"></script>
+
+	<!-- Daily Call Fullscreen Container -->
+	<div id="dailyCallContainer" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999999; background:#000;">
+		<div style="position:absolute; top:20px; left:20px; z-index:100;">
+			<button class="mh-btn mh-btn--danger" onclick="leaveDailyCall()" style="box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+				<i class="fas fa-phone-slash"></i> Leave Session
+			</button>
+		</div>
+		<div id="dailyIframePlaceholder" style="width:100%; height:100%;"></div>
+	</div>
+
+	<!-- Upcoming Appointments Table Card -->
+	<div class="mh-table-card" style="margin-bottom: 24px; border-top: 4px solid var(--apricot);">
+		<div class="mh-table-card__header">
+			<div>
+				<h2 class="mh-table-card__title" style="color: var(--apricot);"><i class="fas fa-clock"></i> Upcoming Sessions</h2>
+				<p class="mh-table-card__sub">Your next scheduled counseling appointments</p>
+			</div>
+		</div>
+
+		<!-- Upcoming Table -->
+		<div class="mh-table-wrap">
+			<table class="mh-table">
+				<thead>
+					<tr>
+						<th>Session</th>
+						<th>Type</th>
+						<th>Mode</th>
+						<th>Counselor</th>
+						<th>Date</th>
+						<th>Time</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody id="upcomingAppointmentsTableBody">
+					<tr>
+						<td colspan="8" class="mh-table__loading">
+							No upcoming sessions right now. Let's book one!
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- All Appointments Table Card -->
 	<div class="mh-table-card">
 		<div class="mh-table-card__header">
 			<div>
