@@ -80,6 +80,7 @@ function openBookingModal(appointment = null) {
     }
 
     // Show the overlay (start transparent for fade-in)
+    modal.setAttribute('data-open', 'true');
     modal.style.cssText = 'display:flex; opacity:0; transition:opacity 0.2s ease;';
     document.body.style.overflow = 'hidden';
 
@@ -123,6 +124,7 @@ function closeBookingModal() {
 
     // Hide after transition completes
     setTimeout(() => {
+        modal.setAttribute('data-open', 'false');
         modal.style.cssText = 'display:none;';
         if (card) card.style.cssText = '';
         document.body.style.overflow = '';
