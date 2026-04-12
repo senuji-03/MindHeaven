@@ -4,7 +4,7 @@ require_once __DIR__ . '/core/Database.php';
 try {
     $pdo = Database::getConnection();
     
-    $tables = ['habits', 'habit_completions', 'habit_streaks'];
+    $tables = array('habits', 'habit_completions', 'habit_streaks');
     
     foreach ($tables as $table) {
         echo "Table: $table\n";

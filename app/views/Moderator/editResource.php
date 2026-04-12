@@ -362,7 +362,10 @@
                     <!-- Current File Display -->
                     <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
                         <div class="current-file">
-                            <?php if ($resource['content_type'] === 'article' && in_array(strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
+                            <?php 
+                            $fileExt = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
+                            if ($resource['content_type'] === 'article' && in_array($fileExt, array('jpg', 'jpeg', 'png', 'gif', 'webp'))): 
+                            ?>
                                 <img src="<?= BASE_URL . '/' . $resource['file_path']; ?>" alt="Current image" />
                             <?php else: ?>
                                 <div style="width: 100px; height: 100px; background: #e5e7eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
@@ -408,7 +411,7 @@
                         </div>
                         <div class="form-group">
                             <label for="youtubeUrl">🔗 YouTube Link (optional)</label>
-                            <input id="youtubeUrl" type="url" name="youtube_url" value="<?= htmlspecialchars($resource['youtube_url'] ?? '') ?>" placeholder="https://www.youtube.com/watch?v=..." />
+                            <input id="youtubeUrl" type="url" name="youtube_url" value="<?= htmlspecialchars(isset($resource['youtube_url']) ? $resource['youtube_url'] : '') ?>" placeholder="https://www.youtube.com/watch?v=..." />
                             <small style="color:#6b7280;">If provided, clicking the resource card will open YouTube directly.</small>
                         </div>
                         <div class="form-group">

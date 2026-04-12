@@ -409,7 +409,7 @@
             <div class="alert error">
                 ❌ Error: 
                 <?php 
-                $error = $_GET['error'] ?? 'Unknown error';
+                $error = isset($_GET['error']) ? $_GET['error'] : 'Unknown error';
                 switch($error) {
                     case 'missing_fields':
                         echo 'Please provide all required fields.';
@@ -474,7 +474,7 @@
                     <?php foreach ($resources as $r): ?>
                         <div class="resource-card" 
                              data-title="<?= htmlspecialchars(strtolower($r['title'])); ?>" 
-                             data-tags="<?= htmlspecialchars(strtolower($r['tags'] ?? '')); ?>" 
+                             data-tags="<?= htmlspecialchars(strtolower(isset($r['tags']) ? $r['tags'] : '')); ?>" 
                              data-category="<?= htmlspecialchars($r['category']); ?>" 
                              data-type="<?= htmlspecialchars($r['content_type']); ?>" 
                              data-status="<?= htmlspecialchars($r['status']); ?>">
@@ -495,7 +495,7 @@
                                         <div style="display: flex; align-items: center; gap: 1rem;">
                                             <?php 
                                             $fileExtension = strtolower(pathinfo($r['file_name'], PATHINFO_EXTENSION));
-                                            $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                            $isImage = in_array($fileExtension, array('jpg', 'jpeg', 'png', 'gif', 'webp'));
                                             $fileExists = file_exists(BASE_PATH . '/public/' . $r['file_path']);
                                             ?>
                                             
@@ -524,7 +524,7 @@
                                                     <?php if (!empty($r['file_size'])): ?>
                                                         Size: <?= number_format($r['file_size'] / 1024 / 1024, 2); ?> MB | 
                                                     <?php endif; ?>
-                                                    Type: <?= htmlspecialchars($r['file_type'] ?? 'Unknown'); ?>
+                                                    Type: <?= htmlspecialchars(isset($r['file_type']) ? $r['file_type'] : 'Unknown'); ?>
                                                 </p>
                                             </div>
                                             

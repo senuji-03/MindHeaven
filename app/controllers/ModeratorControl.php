@@ -10,9 +10,9 @@ class ModeratorControl
             $resourceHub = new ResourceHub();
             $resources = $resourceHub->getAll();
             $categories = $resourceHub->getCategories();
-            view('Moderator/editPosts', ['resources' => $resources, 'categories' => $categories]);
+            view('Moderator/editPosts', array('resources' => $resources, 'categories' => $categories));
         } catch (Exception $e) {
-            view('Moderator/editPosts', ['resources' => [], 'error' => 'Failed to load resources: ' . $e->getMessage()]);
+            view('Moderator/editPosts', array('resources' => array(), 'error' => 'Failed to load resources: ' . $e->getMessage()));
         }
     }
 
@@ -21,9 +21,9 @@ class ModeratorControl
         try {
             $resourceHub = new ResourceHub();
             $categories = $resourceHub->getCategories();
-            view('Moderator/addResource', ['categories' => $categories]);
+            view('Moderator/addResource', array('categories' => $categories));
         } catch (Exception $e) {
-            view('Moderator/addResource', ['categories' => [], 'error' => 'Failed to load categories: ' . $e->getMessage()]);
+            view('Moderator/addResource', array('categories' => array(), 'error' => 'Failed to load categories: ' . $e->getMessage()));
         }
     }
 
@@ -42,37 +42,37 @@ class ModeratorControl
         try {
             $resourceHub = new ResourceHub();
             $allResources = $resourceHub->getAll('published');
-            $resourcesByCategory = [];
+            $resourcesByCategory = array();
             foreach ($allResources as $resource) {
                 $cat = $resource['category'];
                 if (!isset($resourcesByCategory[$cat])) {
-                    $resourcesByCategory[$cat] = [];
+                    $resourcesByCategory[$cat] = array();
                 }
                 $resourcesByCategory[$cat][] = $resource;
             }
             $stats = $resourceHub->getStats();
-            view('undergrad/resources', [
+            view('undergrad/resources', array(
                 'resources'           => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
                 'stats'               => $stats,
                 'lastUpdated'         => date('Y-m-d H:i:s'),
                 'categoryBaseUrl'     => BASE_URL . '/Moderator/category-resources'
-            ]);
+            ));
         } catch (Exception $e) {
-            view('undergrad/resources', [
-                'resources'           => [],
-                'resourcesByCategory' => [],
-                'stats'               => ['total_resources' => 0, 'published' => 0],
+            view('undergrad/resources', array(
+                'resources'           => array(),
+                'resourcesByCategory' => array(),
+                'stats'               => array('total_resources' => 0, 'published' => 0),
                 'error'               => 'Unable to load resources.',
                 'lastUpdated'         => date('Y-m-d H:i:s')
-            ]);
+            ));
         }
     }
 
     public function categoryResources()
     {
         try {
-            $category = $_GET['category'] ?? '';
+            $category = isset($_GET['category']) ? $_GET['category'] : '';
             if (empty($category)) {
                 header('Location: ' . BASE_URL . '/Moderator/resource-hub');
                 exit;
@@ -80,7 +80,7 @@ class ModeratorControl
             $resourceHub = new ResourceHub();
             $categoryResources = $resourceHub->getByCategory($category, 'published');
             $allResources = $resourceHub->getAll('published');
-            $allCategories = [];
+            $allCategories = array();
             foreach ($allResources as $resource) {
                 $cat = $resource['category'];
                 if (!isset($allCategories[$cat])) {
@@ -90,19 +90,19 @@ class ModeratorControl
                 }
             }
             $categoriesList = $resourceHub->getCategories();
-            $categoryInfo = [];
+            $categoryInfo = array();
             foreach ($categoriesList as $cat) {
-                $categoryInfo[$cat['name']] = ['icon' => '📚', 'description' => $cat['description']];
+                $categoryInfo[$cat['name']] = array('icon' => '📚', 'description' => $cat['description']);
             }
-            $currentCategoryInfo = $categoryInfo[$category] ?? ['icon' => '📚', 'description' => 'Resources for ' . $category];
-            $resourcesByType = ['article' => [], 'video' => [], 'audio' => []];
+            $currentCategoryInfo = isset($categoryInfo[$category]) ? $categoryInfo[$category] : array('icon' => '📚', 'description' => 'Resources for ' . $category);
+            $resourcesByType = array('article' => array(), 'video' => array(), 'audio' => array());
             foreach ($categoryResources as $resource) {
                 $ct = $resource['content_type'];
                 if (isset($resourcesByType[$ct])) {
                     $resourcesByType[$ct][] = $resource;
                 }
             }
-            view('undergrad/category-resources', [
+            view('undergrad/category-resources', array(
                 'category'         => $category,
                 'categoryInfo'     => $currentCategoryInfo,
                 'resources'        => $categoryResources,
@@ -111,7 +111,7 @@ class ModeratorControl
                 'totalResources'   => count($categoryResources),
                 'categoryBaseUrl'  => BASE_URL . '/Moderator/category-resources',
                 'backUrl'          => BASE_URL . '/Moderator/resource-hub'
-            ]);
+            ));
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/Moderator/resource-hub?error=category_not_found');
             exit;
@@ -120,15 +120,14 @@ class ModeratorControl
 
     public function warn()
     {
-        // Get user data from URL parameters
-        $data = [
-            'userId' => $_GET['userId'] ?? null,
-            'username' => $_GET['username'] ?? null,
-            'email' => $_GET['email'] ?? null,
-            'strikes' => $_GET['strikes'] ?? 0,
-            'joinDate' => $_GET['joinDate'] ?? null,
-            'lastActivity' => $_GET['lastActivity'] ?? null
-        ];
+        $data = array(
+            'userId' => isset($_GET['userId']) ? $_GET['userId'] : null,
+            'username' => isset($_GET['username']) ? $_GET['username'] : null,
+            'email' => isset($_GET['email']) ? $_GET['email'] : null,
+            'strikes' => isset($_GET['strikes']) ? $_GET['strikes'] : 0,
+            'joinDate' => isset($_GET['joinDate']) ? $_GET['joinDate'] : null,
+            'lastActivity' => isset($_GET['lastActivity']) ? $_GET['lastActivity'] : null
+        );
 
         view('Moderator/WarnForm', $data);
     }
@@ -140,9 +139,9 @@ class ModeratorControl
             exit;
         }
 
-        $reportId = $_POST['report_id'] ?? null;
-        $content = $_POST['content'] ?? '';
-        $postId = $_POST['post_id'] ?? null;
+        $reportId = isset($_POST['report_id']) ? $_POST['report_id'] : null;
+        $content = isset($_POST['content']) ? $_POST['content'] : '';
+        $postId = isset($_POST['post_id']) ? $_POST['post_id'] : null;
 
         if ($postId && $content) {
             require_once BASE_PATH . '/app/models/Thread.php';
@@ -174,30 +173,30 @@ class ModeratorControl
             $resourceHub = new ResourceHub();
 
             // Get current user ID
-            $userId = $_SESSION['user_id'] ?? 1;
+            $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1;
 
             // Validate required fields
-            $title = trim($_POST['title'] ?? '');
-            $category = trim($_POST['category'] ?? '');
-            $contentType = trim($_POST['content_type'] ?? '');
-            $summary = trim($_POST['summary'] ?? '');
+            $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
+            $category = trim(isset($_POST['category']) ? $_POST['category'] : '');
+            $contentType = trim(isset($_POST['content_type']) ? $_POST['content_type'] : '');
+            $summary = trim(isset($_POST['summary']) ? $_POST['summary'] : '');
 
             if (empty($title) || empty($category) || empty($contentType)) {
                 header('Location: ' . BASE_URL . '/AddResource?error=missing_fields');
                 exit;
             }
 
-            $data = [
+            $data = array(
                 'title' => $title,
                 'category' => $category,
                 'content_type' => $contentType,
                 'summary' => $summary,
-                'tags' => trim($_POST['tags'] ?? ''),
-                'status' => $_POST['status'] ?? 'draft',
+                'tags' => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
+                'status' => isset($_POST['status']) ? $_POST['status'] : 'draft',
                 'created_by' => $userId,
-                'content' => trim($_POST['content'] ?? ''),
-                'youtube_url' => trim($_POST['youtube_url'] ?? '') ?: null,
-            ];
+                'content' => trim(isset($_POST['content']) ? $_POST['content'] : ''),
+                'youtube_url' => trim(isset($_POST['youtube_url']) ? $_POST['youtube_url'] : '') ? trim($_POST['youtube_url']) : null,
+            );
 
             // Handle file upload based on content type
             if ($contentType === 'article') {
@@ -243,7 +242,7 @@ class ModeratorControl
         }
 
         try {
-            $resourceId = (int) ($_POST['id'] ?? 0);
+            $resourceId = (int) (isset($_POST['id']) ? $_POST['id'] : 0);
             if ($resourceId <= 0) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
                 exit;
@@ -262,7 +261,7 @@ class ModeratorControl
 
     public function editResource()
     {
-        $resourceId = (int) ($_GET['id'] ?? 0);
+        $resourceId = (int) (isset($_GET['id']) ? $_GET['id'] : 0);
         if ($resourceId <= 0) {
             header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
             exit;
@@ -310,31 +309,31 @@ class ModeratorControl
             }
 
             // Validate required fields
-            $title = trim($_POST['title'] ?? '');
-            $category = trim($_POST['category'] ?? '');
-            $contentType = trim($_POST['content_type'] ?? '');
-            $summary = trim($_POST['summary'] ?? '');
+            $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
+            $category = trim(isset($_POST['category']) ? $_POST['category'] : '');
+            $contentType = trim(isset($_POST['content_type']) ? $_POST['content_type'] : '');
+            $summary = trim(isset($_POST['summary']) ? $_POST['summary'] : '');
 
             if (empty($title) || empty($category) || empty($contentType)) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=missing_fields');
                 exit;
             }
 
-            $data = [
+            $data = array(
                 'title'        => $title,
                 'category'     => $category,
                 'content_type' => $contentType,
                 'summary'      => $summary,
-                'tags'         => trim($_POST['tags'] ?? ''),
-                'status'       => $_POST['status'] ?? 'draft',
-                'content'      => trim($_POST['content'] ?? ''),
-                'youtube_url'  => trim($_POST['youtube_url'] ?? '') ?: null,
+                'tags'         => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
+                'status'       => isset($_POST['status']) ? $_POST['status'] : 'draft',
+                'content'      => trim(isset($_POST['content']) ? $_POST['content'] : ''),
+                'youtube_url'  => trim(isset($_POST['youtube_url']) ? $_POST['youtube_url'] : '') ? trim($_POST['youtube_url']) : null,
                 // Preserve existing file info by default
                 'file_path'    => $existing['file_path'],
                 'file_name'    => $existing['file_name'],
                 'file_size'    => $existing['file_size'],
                 'file_type'    => $existing['file_type'],
-            ];
+            );
 
             // Handle file upload based on content type
             if ($contentType === 'article') {
@@ -375,17 +374,17 @@ class ModeratorControl
     private function handleFileUpload($file, $uploadDir)
     {
         // Allowed types per category
-        $allowedTypes = [
-            'images'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-            'videos'    => ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-msvideo'],
-            'audio'     => ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/m4a', 'audio/x-m4a'],
-            'resources' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        $allowedTypes = array(
+            'images'    => array('image/jpeg', 'image/png', 'image/gif', 'image/webp'),
+            'videos'    => array('video/mp4', 'video/avi', 'video/quicktime', 'video/x-msvideo'),
+            'audio'     => array('audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/m4a', 'audio/x-m4a'),
+            'resources' => array('image/jpeg', 'image/png', 'image/gif', 'image/webp',
                             'video/mp4', 'video/avi', 'video/quicktime',
-                            'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/mp4'],
-        ];
+                            'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/mp4'),
+        );
 
         $mimeType = mime_content_type($file['tmp_name']);
-        $allowed  = $allowedTypes[$uploadDir] ?? [];
+        $allowed  = isset($allowedTypes[$uploadDir]) ? $allowedTypes[$uploadDir] : array();
 
         if (!empty($allowed) && !in_array($mimeType, $allowed)) {
             error_log("File upload rejected — mime type '{$mimeType}' not allowed in '{$uploadDir}'.");
@@ -421,9 +420,8 @@ class ModeratorControl
     public function reportedResources()
     {
         try {
-            $resourceHub = new ResourceHub();
             $reports = $resourceHub->getPendingReports();
-            view('Moderator/reportedResources', ['reports' => $reports]);
+            view('Moderator/reportedResources', array('reports' => $reports));
         } catch (Exception $e) {
             echo "Failed to load reports: " . $e->getMessage();
         }
@@ -436,10 +434,10 @@ class ModeratorControl
             exit;
         }
 
-        $reportId = (int)($_POST['report_id'] ?? 0);
-        $action = $_POST['action'] ?? '';
+        $reportId = (int)(isset($_POST['report_id']) ? $_POST['report_id'] : 0);
+        $action = isset($_POST['action']) ? $_POST['action'] : '';
         
-        if ($reportId > 0 && in_array($action, ['removed', 'warning issued', 'ignored'])) {
+        if ($reportId > 0 && in_array($action, array('removed', 'warning issued', 'ignored'))) {
             $resourceHub = new ResourceHub();
             
             // Default to 'reviewed'. Except maybe 'ignored' would still be reviewed?
@@ -456,7 +454,7 @@ class ModeratorControl
                 $upd->execute([$res['resource_id']]);
             }
 
-            $resourceHub->reviewReport($reportId, $_SESSION['user_id'] ?? null, $action, $status);
+            $resourceHub->reviewReport($reportId, isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null, $action, $status);
         }
 
         header('Location: ' . BASE_URL . '/Moderator/reported-resources?resolved=1');
