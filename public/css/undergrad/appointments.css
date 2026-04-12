@@ -388,11 +388,6 @@
     /* No CSS animation here — all transitions are JS-driven */
 }
 
-/* Modal closed state - ensure it's completely hidden */
-.mh-modal-overlay[data-open="false"],
-.mh-modal-overlay:not([data-open]) {
-    pointer-events: none;
-}
 
 .mh-modal {
     background: var(--surface);
