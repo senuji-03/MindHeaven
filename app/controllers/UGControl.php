@@ -64,7 +64,8 @@ class UGControl
                 'resources' => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
                 'stats' => $stats,
-                'lastUpdated' => $lastUpdated
+                'lastUpdated' => $lastUpdated,
+                'categoryBaseUrl' => BASE_URL . '/ug/category-resources'
             ]);
         } catch (Exception $e) {
             // Log the error for debugging
@@ -76,7 +77,8 @@ class UGControl
                 'resourcesByCategory' => [],
                 'stats' => ['total_resources' => 0, 'published' => 0],
                 'error' => 'Unable to load resources. Please try again later.',
-                'lastUpdated' => date('Y-m-d H:i:s')
+                'lastUpdated' => date('Y-m-d H:i:s'),
+                'categoryBaseUrl' => BASE_URL . '/ug/category-resources'
             ]);
         }
     }
@@ -151,7 +153,11 @@ class UGControl
                 'resourcesByType' => $resourcesByType,
                 'allCategories' => $allCategories,
                 'totalResources' => count($categoryResources),
-                'userLikes' => $userLikes
+                'userLikes' => $userLikes,
+                'categoryBaseUrl' => BASE_URL . '/ug/category-resources',
+                'backUrl' => BASE_URL . '/ug/resources',
+                'viewUrl' => BASE_URL . '/ug/viewResource',
+                'likeUrl' => BASE_URL . '/ug/likeResource'
             ]);
 
         } catch (Exception $e) {
@@ -206,7 +212,11 @@ class UGControl
             view('undergrad/resource-details', [
                 'resource' => $resource,
                 'userLikes' => $userLikes,
-                'comments' => $comments
+                'comments' => $comments,
+                'categoryBaseUrl' => BASE_URL . '/ug/category-resources',
+                'likeUrl' => BASE_URL . '/ug/likeResource',
+                'addCommentUrl' => BASE_URL . '/ug/addComment',
+                'reportResourceUrl' => BASE_URL . '/ug/reportResource'
             ]);
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/ug/resources');

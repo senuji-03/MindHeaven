@@ -17,7 +17,7 @@ if (!empty($resource['file_path'])) {
 
 <main id="main" class="resources-main" style="padding-top: 2rem;">
     <div class="container" style="max-width: 900px; margin: 0 auto; padding: 2rem;">
-        <a href="<?= BASE_URL ?>/ug/category-resources?category=<?= urlencode($resource['category']) ?>"
+        <a href="<?= $categoryBaseUrl ?? (BASE_URL . '/ug/category-resources') ?>?category=<?= urlencode($resource['category']) ?>"
             class="btn btn-secondary" style="margin-bottom: 2rem;">&larr; Back to
             <?= htmlspecialchars($resource['category']) ?></a>
 
@@ -139,7 +139,7 @@ if (!empty($resource['file_path'])) {
         <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
             <h3 style="font-size: 1.5rem; color: #222; margin-bottom: 1.5rem;">Comments (<?= count($comments) ?>)</h3>
 
-            <form action="<?= BASE_URL ?>/ug/addComment" method="POST"
+            <form action="<?= $addCommentUrl ?? (BASE_URL . '/ug/addComment') ?>" method="POST"
                 style="margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 1rem;">
                 <input type="hidden" name="resource_id" value="<?= $resource['id'] ?>">
                 <textarea name="comment" rows="3" placeholder="Add a comment..." required
@@ -256,7 +256,8 @@ if (!empty($resource['file_path'])) {
     });
 
     function toggleLikeDetail(btn, resourceId) {
-        fetch('<?= BASE_URL ?>/ug/likeResource', {
+        const likeUrlBase = '<?= $likeUrl ?? (BASE_URL . "/ug/likeResource") ?>';
+        fetch(likeUrlBase, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ resource_id: resourceId })
@@ -290,7 +291,8 @@ if (!empty($resource['file_path'])) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
 
-        fetch('<?= BASE_URL ?>/ug/reportResource', {
+        const reportUrlBase = '<?= $reportResourceUrl ?? (BASE_URL . "/ug/reportResource") ?>';
+        fetch(reportUrlBase, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ resource_id: resourceId, reason: reason, description: description })

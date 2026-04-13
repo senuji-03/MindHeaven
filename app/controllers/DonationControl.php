@@ -132,7 +132,7 @@ class DonationControl
             'return_url' => BASE_URL . '/donation/payhere/return?order_id=' . urlencode($transactionId),
             'cancel_url' => BASE_URL . '/donation/payhere/cancel?order_id=' . urlencode($transactionId),
             'notify_url' => BASE_URL . '/donation/payhere/notify',
-            'get_order_id' => $transactionId,
+            'order_id' => $transactionId,
             'items' => 'Donation: ' . $eventTitle,
             'currency' => $currency,
             'amount' => $formattedAmount,
