@@ -118,6 +118,7 @@ function renderAppointments(appointmentsToRender = appointments) {
                                 `}
                                 ${appointment.status === 'accept' || appointment.status === 'accepted' ? `
                                     <button class="btn btn-save" onclick="saveToCalendar(${appointment.id})">Save to Calendar</button>
+                                    ${appointment.meeting_link ? `<a href="${appointment.meeting_link}" target="_blank" class="btn btn-accept" style="text-decoration:none;display:inline-flex;align-items:center;">🎥 Join Meeting</a>` : ''}
                                 ` : ''}
                             </div>
                         </div>

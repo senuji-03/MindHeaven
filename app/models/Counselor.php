@@ -21,16 +21,16 @@ class Counselor
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
         ");
 
-        $stmt->execute([
+        $stmt->execute(array(
             $userId,
             $data['full_name'],
-            $data['email'] ?? null,
+            isset($data['email']) ? $data['email'] : null,
             $data['phone_number'],
             $data['license_number'],
-            $data['specialization'] ?? null,
-            $data['years_experience'] ?? null,
-            $data['bio'] ?? null
-        ]);
+            isset($data['specialization']) ? $data['specialization'] : null,
+            isset($data['years_experience']) ? $data['years_experience'] : null,
+            isset($data['bio']) ? $data['bio'] : null
+        ));
 
         return $this->pdo->lastInsertId();
     }
@@ -46,7 +46,7 @@ class Counselor
             JOIN users u ON c.user_id = u.id 
             WHERE c.user_id = ? AND c.is_active = 1
         ");
-        $stmt->execute([$userId]);
+        $stmt->execute(array($userId));
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -55,13 +55,13 @@ class Counselor
      */
     public function update($userId, $data)
     {
-        $fields = [];
-        $values = [];
+        $fields = array();
+        $values = array();
 
-        $allowedFields = [
+        $allowedFields = array(
             'full_name', 'email', 'phone_number', 'license_number', 
             'specialization', 'years_experience', 'bio', 'hourly_rate', 'profile_picture'
-        ];
+        );
 
         foreach ($allowedFields as $field) {
             if (isset($data[$field])) {
@@ -87,7 +87,7 @@ class Counselor
     public function emailExists($email, $excludeUserId = null)
     {
         $sql = "SELECT id FROM counselors WHERE email = ?";
-        $params = [$email];
+        $params = array($email);
 
         if ($excludeUserId) {
             $sql .= " AND user_id != ?";
@@ -105,7 +105,7 @@ class Counselor
     public function licenseExists($licenseNumber, $excludeUserId = null)
     {
         $sql = "SELECT id FROM counselors WHERE license_number = ?";
-        $params = [$licenseNumber];
+        $params = array($licenseNumber);
 
         if ($excludeUserId) {
             $sql .= " AND user_id != ?";
@@ -133,7 +133,7 @@ class Counselor
         if ($limit) {
             $sql .= " LIMIT ? OFFSET ?";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$limit, $offset]);
+            $stmt->execute(array($limit, $offset));
         } else {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
@@ -185,7 +185,7 @@ class Counselor
         if ($limit) {
             $sql .= " LIMIT ? OFFSET ?";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$limit, $offset]);
+            $stmt->execute(array($limit, $offset));
         } else {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
@@ -204,7 +204,7 @@ class Counselor
             SET is_approved = 1, approved_at = CURRENT_TIMESTAMP, approved_by = ?
             WHERE user_id = ?
         ");
-        return $stmt->execute([$approvedBy, $userId]);
+        return $stmt->execute(array($approvedBy, $userId));
     }
 
     /**
@@ -213,7 +213,7 @@ class Counselor
     public function deactivate($userId)
     {
         $stmt = $this->pdo->prepare("UPDATE counselors SET is_active = 0 WHERE user_id = ?");
-        return $stmt->execute([$userId]);
+        return $stmt->execute(array($userId));
     }
 
     /**
@@ -229,7 +229,7 @@ class Counselor
             AND c.specialization LIKE ?
             ORDER BY c.created_at DESC
         ");
-        $stmt->execute(["%$specialization%"]);
+        $stmt->execute(array("%$specialization%"));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     /**
@@ -241,7 +241,7 @@ class Counselor
             WHERE counselor_id = ?
             ORDER BY id ASC
         ");
-        $stmt->execute([$counselorId]);
+        $stmt->execute(array($counselorId));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -253,9 +253,12 @@ class Counselor
         try {
             // Get existing qualifications
             $existing = $this->getQualifications($counselorId);
-            $existingIds = array_column($existing, 'id');
+            $existingIds = array();
+            foreach ($existing as $row) {
+                $existingIds[] = $row['id'];
+            }
             
-            $incomingIds = [];
+            $incomingIds = array();
             foreach ($qualificationsList as $qual) {
                 if (!empty($qual['id'])) {
                     $incomingIds[] = $qual['id'];
@@ -284,22 +287,22 @@ class Counselor
             
             foreach ($qualificationsList as $qual) {
                 if (empty($qual['id'])) {
-                    $insertStmt->execute([
+                    $insertStmt->execute(array(
                         $counselorId,
                         $qual['title'],
                         $qual['institution'],
                         $qual['year'],
                         $qual['description']
-                    ]);
+                    ));
                 } else {
-                    $updateStmt->execute([
+                    $updateStmt->execute(array(
                         $qual['title'],
                         $qual['institution'],
                         $qual['year'],
                         $qual['description'],
                         $qual['id'],
                         $counselorId
-                    ]);
+                    ));
                 }
             }
             
