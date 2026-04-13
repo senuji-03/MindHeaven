@@ -171,6 +171,10 @@ $router->post('/api/appointments/hide', 'AppointmentApiControl@hide');
 $router->delete('/api/appointments/delete', 'AppointmentApiControl@delete');
 $router->get('/api/counselor/appointments', 'AppointmentApiControl@listForCounselor');
 $router->post('/api/appointments/status', 'AppointmentApiControl@updateStatus');
+$router->post('/api/appointments/start-session', 'AppointmentApiControl@startSession');
+$router->post('/api/appointments/notes', 'AppointmentApiControl@saveNotes');
+$router->get('/api/student/history', 'AppointmentApiControl@getStudentHistory');
+$router->get('/api/counselor/session-history', 'AppointmentApiControl@getSessionHistory');
 
 // Habits API
 $router->get('/api/habits', 'HabitApiControl@list');

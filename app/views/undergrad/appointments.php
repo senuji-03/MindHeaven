@@ -222,7 +222,11 @@ require BASE_PATH . '/app/views/layouts/header.php';
 		<div id="dailyIframePlaceholder" style="width:100%; height:100%;"></div>
 	</div>
 
+	<!-- Active Session Component (Populated by JS) -->
+	<div id="activeSessionContainer"></div>
+
 	<!-- Upcoming Appointments Table Card -->
+
 	<div class="mh-table-card" style="margin-bottom: 24px; border-top: 4px solid var(--apricot);">
 		<div class="mh-table-card__header">
 			<div>

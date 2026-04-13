@@ -67,7 +67,13 @@ class Appointment
 
         $sql = "
             UPDATE appointments 
-            SET date = ?, time = ?, reschedule_reason = ?, status = 'rescheduled', updated_at = CURRENT_TIMESTAMP
+            SET date = ?, 
+                time = ?, 
+                reschedule_reason = ?, 
+                status = 'rescheduled', 
+                updated_at = CURRENT_TIMESTAMP,
+                original_date = COALESCE(original_date, date),
+                original_time = COALESCE(original_time, time)
             WHERE id = ?
         ";
         $params = array($date, $time, $reason, $id);
@@ -97,6 +103,13 @@ class Appointment
         return $deleted;
     }
 
+    public function updateCounselorNotes($id, $notesJson)
+    {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("UPDATE appointments SET counselor_notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+        return $stmt->execute(array($notesJson, (int) $id));
+    }
+
     /**
      * Get upcoming appointments for a counselor (booked by undergrads).
      * Only appointments that have been accepted by the counselor are returned.
@@ -108,7 +121,9 @@ class Appointment
         $sql = "
             SELECT a.*,
                    COALESCE(us.full_name, u.full_name, u.username) AS student_name,
-                   a.rejection_reason
+                   a.rejection_reason,
+                   a.original_date,
+                   a.original_time
             FROM appointments a
             LEFT JOIN users u ON a.student_user_id = u.id
             LEFT JOIN undergraduate_students us ON a.student_user_id = us.user_id
@@ -121,6 +136,29 @@ class Appointment
               )
             ORDER BY a.date ASC, a.time ASC
             LIMIT " . (int) $limit;
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array(':counselor_user_id' => (int) $counselorUserId));
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get in-progress appointments for a counselor.
+     */
+    public function getInProgressByCounselorUserId($counselorUserId)
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "
+            SELECT a.*,
+                   COALESCE(us.full_name, u.full_name, u.username) AS student_name
+            FROM appointments a
+            LEFT JOIN users u ON a.student_user_id = u.id
+            LEFT JOIN undergraduate_students us ON a.student_user_id = us.user_id
+            WHERE a.counselor_user_id = :counselor_user_id
+              AND a.status = 'in_progress'
+            ORDER BY a.date ASC, a.time ASC
+        ";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array(':counselor_user_id' => (int) $counselorUserId));
@@ -185,6 +223,36 @@ class Appointment
         $stmt = $pdo->prepare("UPDATE appointments SET hidden_by_counselor = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
         $stmt->execute(array((int)$id));
         return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Get all previous session notes for a specific student.
+     * Includes notes from all counselors the student has visited.
+     */
+    public function getHistoryByStudentId($studentUserId)
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "
+            SELECT 
+                a.id,
+                a.date,
+                a.time,
+                a.title,
+                a.counselor_notes,
+                COALESCE(c.full_name, u.full_name, u.username) AS counselor_name
+            FROM appointments a
+            LEFT JOIN users u ON a.counselor_user_id = u.id
+            LEFT JOIN counselors c ON a.counselor_user_id = c.user_id
+            WHERE a.student_user_id = :student_user_id
+              AND a.counselor_notes IS NOT NULL
+              AND a.counselor_notes != ''
+            ORDER BY a.date DESC, a.time DESC
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array(':student_user_id' => (int) $studentUserId));
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -275,5 +343,128 @@ class Appointment
         $sql = "UPDATE appointments SET meeting_link = ? WHERE id = ?";
         $stmt = $pdo->prepare($sql);
         return $stmt->execute(array($url, (int)$id));
+    }
+
+    /**
+     * Get session history for a counselor.
+     * Covers: completed, cancelled, rejected (=cancelled), no_show, rescheduled.
+     * Optionally filter by logical status: completed | cancelled | no_show | rescheduled
+     *
+     * @param int    $counselorUserId
+     * @param string $statusFilter  One of the above logical values, or '' for all
+     * @return array
+     */
+    public function getSessionHistory($counselorUserId, $statusFilter = '')
+    {
+        $pdo = Database::getConnection();
+
+        $columns = "
+            a.id,
+            a.title,
+            a.type,
+            a.mode,
+            a.date,
+            a.time,
+            a.notes,
+            a.status,
+            a.rejection_reason,
+            a.reschedule_reason,
+            a.original_date,
+            a.original_time,
+            a.counselor_notes,
+            a.created_at,
+            a.updated_at,
+            a.student_user_id,
+            COALESCE(us.full_name, u.full_name, u.username) AS student_name
+        ";
+
+        $joins = "
+            FROM appointments a
+            LEFT JOIN users u ON a.student_user_id = u.id
+            LEFT JOIN undergraduate_students us ON a.student_user_id = us.user_id
+        ";
+
+        switch ($statusFilter) {
+            case 'completed':
+                $sql = "SELECT $columns $joins WHERE a.counselor_user_id = :cid AND a.status = 'completed' ORDER BY a.date DESC, a.time DESC";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute(array(':cid' => (int) $counselorUserId));
+                break;
+
+            case 'cancelled':
+                // Both 'cancelled' and 'rejected' are shown under Cancelled
+                $sql = "SELECT $columns $joins WHERE a.counselor_user_id = :cid AND a.status IN ('cancelled','rejected') ORDER BY a.date DESC, a.time DESC";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute(array(':cid' => (int) $counselorUserId));
+                break;
+
+            case 'no_show':
+                $sql = "SELECT $columns $joins WHERE a.counselor_user_id = :cid AND a.status IN ('no_show','no-show') ORDER BY a.date DESC, a.time DESC";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute(array(':cid' => (int) $counselorUserId));
+                break;
+
+            case 'rescheduled':
+                // Rescheduled is no longer in history, but we keep the case empty 
+                // or handle it if someone specifically requests it via API
+                $sql = "SELECT $columns $joins WHERE 1=0"; // Return nothing
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+                break;
+
+            default:
+                // All historical statuses (Except rescheduled)
+                $sql = "SELECT $columns $joins WHERE a.counselor_user_id = :cid AND a.status IN ('completed','cancelled','rejected','no_show','no-show') ORDER BY a.date DESC, a.time DESC";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute(array(':cid' => (int) $counselorUserId));
+                break;
+        }
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get aggregate session-history stats for a counselor.
+     * 'rejected' counts as cancelled for display purposes.
+     *
+     * @param int $counselorUserId
+     * @return array
+     */
+    public function getSessionHistoryStats($counselorUserId)
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "
+            SELECT
+                COUNT(*) AS total,
+                SUM(YEAR(date) = YEAR(CURDATE()) AND MONTH(date) = MONTH(CURDATE())) AS this_month,
+                SUM(status = 'completed')                                             AS completed,
+                SUM(status IN ('cancelled','rejected'))                               AS cancelled,
+                SUM(status IN ('no_show','no-show'))                                  AS no_show
+            FROM appointments
+            WHERE counselor_user_id = :counselor_user_id
+              AND status IN ('completed', 'cancelled', 'rejected', 'no_show', 'no-show')
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array(':counselor_user_id' => (int) $counselorUserId));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            return array(
+                'total'       => 0,
+                'this_month'  => 0,
+                'completed'   => 0,
+                'cancelled'   => 0,
+                'no_show'     => 0
+            );
+        }
+
+        return array(
+            'total'       => (int) $row['total'],
+            'this_month'  => (int) $row['this_month'],
+            'completed'   => (int) $row['completed'],
+            'cancelled'   => (int) $row['cancelled'],
+            'no_show'     => (int) $row['no_show']
+        );
     }
 }

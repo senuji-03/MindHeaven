@@ -66,7 +66,15 @@ function renderAppointments(appointmentsToRender = appointments) {
                         <div class="status-badge status-${appointment.status}">
                             ${appointment.status}
                         </div>
-                        <div class="initial-actions">
+                        <div class="initial-actions" style="display: flex; gap: 8px;">
+                            <button class="btn-history" onclick="viewStudentHistory(${appointment.studentUserId}, '${appointment.patientName.replace(/'/g, "\\'")}')">
+                                📋 History
+                            </button>
+                            ${!['completed', 'no_show','in_progress'].includes(appointment.status) ? `
+                                <button class="btn btn-edit" onclick="editAppointment(${appointment.id})">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                            ` : ''}
                             <button class="btn btn-view" onclick="toggleDetails(${appointment.id})">
                                 <span id="viewText-${appointment.id}">View</span>
                             </button>
@@ -97,6 +105,12 @@ function renderAppointments(appointmentsToRender = appointments) {
                                     <span class="detail-label">Session Type:</span>
                                     <span class="detail-value">${appointment.sessionType ? appointment.sessionType.charAt(0).toUpperCase() + appointment.sessionType.slice(1).replace('_', ' ') : 'Standard'}</span>
                                 </div>
+                                ${appointment.originalDate && (appointment.originalDate !== appointment.requestedDate || appointment.originalTime !== appointment.requestedTime) ? `
+                                <div class="detail-item" style="margin-top: 10px; padding: 10px; background: #fffbeb; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                                    <span class="detail-label" style="color: #92400e; font-weight: 600;">Original Undergrad Booking:</span>
+                                    <span class="detail-value" style="color: #92400e;">${formatDate(appointment.originalDate)} at ${formatTime(appointment.originalTime)}</span>
+                                </div>
+                                ` : ''}
                             </div>
                         </div>
                         ${appointment.notes ? `
@@ -113,9 +127,9 @@ function renderAppointments(appointmentsToRender = appointments) {
                                 ` : ''}
                                 ${appointment.status === 'rejected' || appointment.status === 'reject' ? `
                                     <button class="btn btn-reject" onclick="hideAppointment(${appointment.id})">Delete</button>
-                                ` : `
+                                ` : (!['completed', 'no_show','in_progress'].includes(appointment.status) ? `
                                     <button class="btn btn-reschedule" onclick="reschedule('${appointment.patientName}', '${appointment.reason}', ${appointment.id})">Reschedule</button>
-                                `}
+                                ` : '')}
                                 ${appointment.status === 'accept' || appointment.status === 'accepted' ? `
                                     <button class="btn btn-save" onclick="saveToCalendar(${appointment.id})">Save to Calendar</button>
                                     ${appointment.meeting_link ? `<a href="${appointment.meeting_link}" target="_blank" class="btn btn-accept" style="text-decoration:none;display:inline-flex;align-items:center;">🎥 Join Meeting</a>` : ''}
@@ -490,12 +504,59 @@ function hideAppointment(id) {
     });
 }
 
+// View Student History
+function viewStudentHistory(studentUserId, patientName) {
+    if (!studentUserId) {
+        alert('Missing student ID.');
+        return;
+    }
+
+    document.getElementById('historyStudentName').textContent = patientName;
+    const historyList = document.getElementById('historyList');
+    historyList.innerHTML = '<div class="history-empty">Loading history...</div>';
+    document.getElementById('studentHistoryModal').style.display = 'block';
+
+    fetch(BASE_URL + '/api/student/history?student_id=' + studentUserId)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const history = data.history || [];
+                if (history.length === 0) {
+                    historyList.innerHTML = '<div class="history-empty"><i>📝</i><br>No previous session notes found for this student.</div>';
+                } else {
+                    historyList.innerHTML = history.map(item => `
+                        <div class="history-item">
+                            <div class="history-item-header">
+                                <span class="history-date">${formatDate(item.date)} at ${formatTime(item.time)}</span>
+                                <span class="history-counselor">By ${item.counselor_name}</span>
+                            </div>
+                            <div class="history-topic">Session: ${item.title || 'N/A'}</div>
+                            <div class="history-content">${item.counselor_notes}</div>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                historyList.innerHTML = `<div class="history-empty" style="color: #ef4444;">Error: ${data.error || 'Failed to load history'}</div>`;
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching history:', err);
+            historyList.innerHTML = '<div class="history-empty" style="color: #ef4444;">A connection error occurred.</div>';
+        });
+}
+
 // Close modal when clicking outside of it
 window.onclick = function (event) {
     const rescheduleModal = document.getElementById('rescheduleModal');
+    const rejectModal = document.getElementById('rejectModal');
+    const historyModal = document.getElementById('studentHistoryModal');
 
     if (event.target === rescheduleModal) {
         closeModal('rescheduleModal');
+    } else if (event.target === rejectModal) {
+        closeModal('rejectModal');
+    } else if (event.target === historyModal) {
+        closeModal('studentHistoryModal');
     }
 }
 

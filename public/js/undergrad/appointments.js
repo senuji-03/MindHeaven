@@ -16,6 +16,7 @@ const STATUS_CLASS = {
     scheduled: 'scheduled',
     accepted: 'accepted',
     accept: 'accepted',
+    in_progress: 'in_progress',
     completed: 'completed',
     cancelled: 'cancelled',
     rejected: 'rejected',
@@ -371,14 +372,14 @@ function _generateRowsHtml(list) {
                         <button class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 8px;font-size:.75rem;" onclick="acceptReschedule(${a.id})" title="Accept New Time">
                             Accept
                         </button>
-                    ` : `
+                    ` : (['completed', 'no_show','in_progress'].includes(statusKey) ? '' : `
                         <button class="mh-action-btn" onclick="editAppointment(${a.id})" title="Edit">
                             <i class="fas fa-pen"></i>
                         </button>
-                    `}
-                    ${a.meeting_link && (statusKey === 'accepted' || statusKey === 'accept') ? `
-                        <button type="button" onclick="promptJoin('${escHtml(a.meeting_link)}')" class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 12px;font-size:.8rem;display:inline-flex;align-items:center;line-height:30px;border-radius:6px;" title="Join Video Call">
-                            <i class="fas fa-video" style="margin-right:6px;"></i> Join Call
+                    `)}
+                    ${a.meeting_link && (statusKey === 'accepted' || statusKey === 'accept' || statusKey === 'in_progress') ? `
+                        <button type="button" onclick="${a.mode === 'chat' ? `window.location.href='${escHtml(a.meeting_link)}'` : `promptJoin('${escHtml(a.meeting_link)}')`}" class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 12px;font-size:.8rem;display:inline-flex;align-items:center;line-height:30px;border-radius:6px;" title="Join ${a.mode === 'chat' ? 'Chat' : 'Call'}">
+                            <i class="fas ${a.mode === 'chat' ? 'fa-comment' : 'fa-video'}" style="margin-right:6px;"></i> Join ${a.mode === 'chat' ? 'Chat' : 'Call'}
                         </button>
                     ` : ''}
                     <button class="mh-action-btn mh-action-btn--danger" onclick="deleteAppointment(${a.id})" title="Cancel">
@@ -399,13 +400,23 @@ function _renderRows(list) {
         if (empty) empty.style.display = 'block';
         if (tbody) tbody.innerHTML = '';
         if (upcomingTbody) upcomingTbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading">No upcoming sessions right now. Let's book one!</td></tr>`;
+        _renderActiveSessions([]); // Clear active sessions
         return;
     }
     if (empty) empty.style.display = 'none';
 
     const todayVal = new Date().toISOString().split('T')[0];
-    const upcomingList = list.filter(a => ['accepted', 'accept'].includes((a.status || '').toLowerCase()) && a.date >= todayVal);
     
+    // Split into categories
+    const activeList = list.filter(a => (a.status || '').toLowerCase() === 'in_progress');
+    const upcomingList = list.filter(a => 
+        ['accepted', 'accept', 'scheduled', 'confirmed'].includes((a.status || '').toLowerCase()) && 
+        a.date >= todayVal
+    );
+    
+    // Render Active Sessions
+    _renderActiveSessions(activeList);
+
     if (upcomingTbody) {
         if (upcomingList.length) {
             upcomingTbody.innerHTML = _generateRowsHtml(upcomingList);
@@ -417,6 +428,65 @@ function _renderRows(list) {
     if (tbody) {
         tbody.innerHTML = _generateRowsHtml(list);
     }
+}
+
+function _renderActiveSessions(activeList) {
+    const container = document.getElementById('activeSessionContainer');
+    if (!container) return;
+
+    if (!activeList.length) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = activeList.map(a => {
+        const modeLabel = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_', ' ') : '—');
+        const typeLabel = a.type ? a.type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) : '—';
+        
+        return `<div class="mh-table-card" style="margin-bottom: 24px; border-top: 4px solid #10b981; background: #f0fdf4; box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 0 8px 10px -6px rgba(16, 185, 129, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 24px;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 50%; checkbox-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); animation: mh-pulse 1.5s infinite;"></span>
+                            <span style="font-weight: 700; color: #065f46; letter-spacing: 0.05em; font-size: 0.75rem; text-transform: uppercase;">Currently Live</span>
+                        </div>
+                        <h2 style="font-size: 1.5rem; font-weight: 800; color: #064e3b; margin-bottom: 4px;">Active Counseling Session</h2>
+                        <p style="color: #047857; margin-bottom: 16px;">Your session with ${escHtml(a.counselor_name)} is happening right now.</p>
+                        
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-tag" style="color: #10b981;"></i>
+                                <span style="font-size: 0.9rem; color: #065f46;">${escHtml(typeLabel)}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas ${a.mode === 'chat' ? 'fa-comment' : 'fa-video'}" style="color: #10b981;"></i>
+                                <span style="font-size: 0.9rem; color: #065f46;">${escHtml(modeLabel)}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-user-doctor" style="color: #10b981;"></i>
+                                <span style="font-size: 0.9rem; color: #065f46;">${escHtml(a.counselor_name)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; height: 100%; align-items: center;">
+                        <button type="button" onclick="${a.mode === 'chat' ? `window.location.href='${escHtml(a.meeting_link)}'` : `promptJoin('${escHtml(a.meeting_link)}')`}" 
+                            class="mh-btn mh-btn--primary" 
+                            style="background: #10b981; padding: 16px 32px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                            <i class="fas ${a.mode === 'chat' ? 'fa-comment' : 'fa-video'}" style="margin-right: 10px;"></i> Join Session
+                        </button>
+                    </div>
+                </div>
+                
+                <style>
+                    @keyframes mh-pulse {
+                        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+                        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+                        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+                    }
+                </style>
+            </div>`;
+    }).join('');
 }
 
 function _updateStats(list) {

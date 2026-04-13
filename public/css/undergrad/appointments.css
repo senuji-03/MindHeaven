@@ -299,7 +299,8 @@
 .mh-status-pill--pending    { background: #FEF3C7; color: #92400E; }
 .mh-status-pill--scheduled  { background: #DBEAFE; color: #1E40AF; }
 .mh-status-pill--accepted,
-.mh-status-pill--accept     { background: #D1FAE5; color: #065F46; }
+.mh-status-pill--accept,
+.mh-status-pill--in_progress { background: #D1FAE5; color: #065F46; }
 .mh-status-pill--completed  { background: #F3F4F6; color: #374151; }
 .mh-status-pill--cancelled,
 .mh-status-pill--rejected   { background: #FEE2E2; color: #991B1B; }
