@@ -222,6 +222,10 @@ $router->post('/Moderator/resource/update', 'ModeratorControl@updateResource');
 $router->post('/moderator/edit-reported-content', 'ModeratorControl@editReportedContent');
 $router->get('/Moderator/reported-resources', 'ModeratorControl@reportedResources');
 $router->post('/Moderator/resolve-report', 'ModeratorControl@resolveReport');
+$router->get('/Moderator/viewResource', 'ModeratorControl@viewResource');
+$router->post('/Moderator/likeResource', 'ModeratorControl@likeResource');
+$router->post('/Moderator/addComment', 'ModeratorControl@addComment');
+$router->post('/Moderator/reportResource', 'ModeratorControl@reportResource');
 
 
 $router->get('/UniversityRepresentative/dashboard', 'UniversityRepresentativeControl@index');

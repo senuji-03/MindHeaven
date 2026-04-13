@@ -121,7 +121,8 @@ require BASE_PATH . '/app/views/layouts/header.php';
   }
 
   function showCategoryResources(category) {
-    window.location.href = '<?= BASE_URL ?>/ug/category-resources?category=' + encodeURIComponent(category);
+    const baseUrl = '<?= $categoryBaseUrl ?? (BASE_URL . "/ug/category-resources") ?>';
+    window.location.href = baseUrl + '?category=' + encodeURIComponent(category);
   }
 
   document.addEventListener('DOMContentLoaded', function () {

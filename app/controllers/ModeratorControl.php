@@ -54,10 +54,10 @@ class ModeratorControl
             view('undergrad/resources', array(
                 'resources'           => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
-                'stats'               => $stats,
-                'lastUpdated'         => date('Y-m-d H:i:s'),
-                'categoryBaseUrl'     => BASE_URL . '/Moderator/category-resources'
-            ));
+                    'stats'               => $stats,
+                    'lastUpdated'         => date('Y-m-d H:i:s'),
+                    'categoryBaseUrl'     => BASE_URL . '/Moderator/category-resources'
+                ));
         } catch (Exception $e) {
             view('undergrad/resources', array(
                 'resources'           => array(),
@@ -110,7 +110,9 @@ class ModeratorControl
                 'allCategories'    => $allCategories,
                 'totalResources'   => count($categoryResources),
                 'categoryBaseUrl'  => BASE_URL . '/Moderator/category-resources',
-                'backUrl'          => BASE_URL . '/Moderator/resource-hub'
+                'backUrl'          => BASE_URL . '/Moderator/resource-hub',
+                'viewUrl'          => BASE_URL . '/Moderator/viewResource',
+                'likeUrl'          => BASE_URL . '/Moderator/likeResource'
             ));
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/Moderator/resource-hub?error=category_not_found');
@@ -458,6 +460,100 @@ class ModeratorControl
         }
 
         header('Location: ' . BASE_URL . '/Moderator/reported-resources?resolved=1');
+        exit;
+    }
+
+    public function likeResource()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (isset($input['resource_id'])) {
+                $resourceHub = new ResourceHub();
+                $result = $resourceHub->toggleLike($input['resource_id'], $_SESSION['user_id']);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'action' => $result['action']]);
+                exit;
+            }
+        }
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'error' => 'Invalid request']);
+        exit;
+    }
+
+    public function viewResource()
+    {
+        if (!isset($_GET['id'])) {
+            header('Location: ' . BASE_URL . '/Moderator/resource-hub');
+            exit;
+        }
+
+        try {
+            $resourceHub = new ResourceHub();
+            $resourceId = (int)$_GET['id'];
+            $resource = $resourceHub->getById($resourceId);
+            
+            if (!$resource) {
+                header('Location: ' . BASE_URL . '/Moderator/resource-hub');
+                exit;
+            }
+
+            $userLikes = [];
+            if (isset($_SESSION['user_id'])) {
+                $userLikes = $resourceHub->getUserLikes($_SESSION['user_id']);
+            }
+
+            $comments = $resourceHub->getComments($resourceId);
+
+            view('undergrad/resource-details', [
+                'resource' => $resource,
+                'userLikes' => $userLikes,
+                'comments' => $comments,
+                'categoryBaseUrl' => BASE_URL . '/Moderator/category-resources',
+                'likeUrl' => BASE_URL . '/Moderator/likeResource',
+                'addCommentUrl' => BASE_URL . '/Moderator/addComment',
+                'reportResourceUrl' => BASE_URL . '/Moderator/reportResource'
+            ]);
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/Moderator/resource-hub');
+            exit;
+        }
+    }
+
+    public function addComment()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resource_id'], $_POST['comment'])) {
+            $resourceHub = new ResourceHub();
+            $resourceId = (int)$_POST['resource_id'];
+            $userId = $_SESSION['user_id'];
+            $comment = trim($_POST['comment']);
+            if (!empty($comment)) {
+                $resourceHub->addComment($resourceId, $userId, $comment);
+            }
+            header('Location: ' . BASE_URL . '/Moderator/viewResource?id=' . $resourceId);
+            exit;
+        }
+        header('Location: ' . BASE_URL . '/Moderator/resource-hub');
+        exit;
+    }
+
+    public function reportResource()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (isset($input['resource_id'], $input['reason'])) {
+                $resourceHub = new ResourceHub();
+                $success = $resourceHub->reportResource($input['resource_id'], $_SESSION['user_id'], $input['reason'], $input['description'] ?? '');
+                header('Content-Type: application/json');
+                if ($success) {
+                    echo json_encode(['success' => true]);
+                } else {
+                    echo json_encode(['success' => false, 'error' => 'Rate limit exceeded or duplicate report.']);
+                }
+                exit;
+            }
+        }
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'error' => 'Invalid request']);
         exit;
     }
 }

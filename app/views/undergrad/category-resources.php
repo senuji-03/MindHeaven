@@ -15,7 +15,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
         <h1 class="hero-title"><?= htmlspecialchars($category) ?></h1>
         <p class="hero-subtitle"><?= htmlspecialchars($categoryInfo['description'] ?? 'Resources related to ' . $category) ?></p>
         <div class="hero-actions">
-          <a href="<?= BASE_URL ?>/ug/resources" class="btn btn-secondary" style="display:inline-flex; width: fit-content; margin-top:1rem; background:rgba(255,255,255,0.2); color:white; border:none;">&larr; Back to Categories</a>
+          <a href="<?= $backUrl ?? (BASE_URL . '/ug/resources') ?>" class="btn btn-secondary" style="display:inline-flex; width: fit-content; margin-top:1rem; background:rgba(255,255,255,0.2); color:white; border:none;">&larr; Back to Categories</a>
         </div>
       </div>
       <div class="hero-stats">
@@ -278,12 +278,14 @@ require BASE_PATH . '/app/views/layouts/header.php';
       if (resource.youtube_url) {
           window.open(resource.youtube_url, '_blank');
       } else {
-          window.location.href = '<?= BASE_URL ?>/ug/viewResource?id=' + resource.id;
+          const viewUrlBase = '<?= $viewUrl ?? (BASE_URL . "/ug/viewResource") ?>';
+          window.location.href = viewUrlBase + '?id=' + resource.id;
       }
   }
 
   function toggleLike(btn, resourceId) {
-      fetch('<?= BASE_URL ?>/ug/likeResource', {
+      const likeUrlBase = '<?= $likeUrl ?? (BASE_URL . "/ug/likeResource") ?>';
+      fetch(likeUrlBase, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ resource_id: resourceId })
