@@ -46,255 +46,158 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
+        <div class="alert-container">
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <span class="alert-message"><?= htmlspecialchars($_SESSION['success']) ?></span>
+                    <button class="alert-close">&times;</button>
+                </div>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-error">
+                    <span class="alert-icon">❌</span>
+                    <span class="alert-message"><?= htmlspecialchars($_SESSION['error']) ?></span>
+                    <button class="alert-close">&times;</button>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
         <!-- Top Bar -->
         <div class="topbar">
             <h1>Manage University Profile</h1>
             <div class="topbar-right">
-                <div class="notification-icon">
-                    🔔
-                    <span class="badge">2</span>
-                </div>
                 <div class="user-profile">
-                    <span>Rep Name</span>
-                    <div class="avatar">R</div>
+                    <span><?= htmlspecialchars($_SESSION['university_name'] ?? 'University') ?></span>
+                    <div class="avatar"><?= strtoupper(substr($_SESSION['university_name'] ?? 'U', 0, 1)) ?></div>
                 </div>
             </div>
         </div>
 
         <!-- Content -->
+        <!-- Content -->
         <div class="content-wrapper">
             <div class="page-header">
-                <h2>🏫 Your University's Public Page</h2>
-                <a href="<?= BASE_URL ?>/universities/preview" target="_blank" class="btn btn-secondary">
-                    👁️ Preview Public Page
-                </a>
+                <h2>🏫 Your University's Public Profile</h2>
+                <p>Manage the public face of your university and configure your receiving bank details.</p>
             </div>
 
             <!-- University Profile Form -->
-            <form method="POST" action="<?= BASE_URL ?>/university-rep/university-profile/update" enctype="multipart/form-data" class="event-form">
+            <form method="POST" action="<?= BASE_URL ?>/university-rep/university-profile/update" class="event-form">
                 
-                <!-- Section 1: Basic University Information -->
+                <!-- Section 1: Public Identity -->
                 <div class="form-section">
                     <div class="section-title">
-                        <span class="section-icon">🏫</span>
-                        <h3>Basic University Information</h3>
+                        <span class="section-icon">🏛️</span>
+                        <h3>Public Identity</h3>
                     </div>
 
                     <div class="form-row">
-                        <label for="university_name">University Name *</label>
-                        <input type="text" id="university_name" name="university_name" required 
-                               placeholder="e.g., University of Colombo" class="form-input" 
-                               value="University of Colombo">
+                        <label for="name">Official University Name *</label>
+                        <input type="text" id="name" name="name" required 
+                               class="form-input" autocomplete="organization"
+                               value="<?= htmlspecialchars($university['name'] ?? '') ?>">
                     </div>
 
                     <div class="form-row">
-                        <label for="university_description">About the University *</label>
-                        <textarea id="university_description" name="university_description" required rows="6" 
-                                  placeholder="Brief description of your university and mental health initiatives..." 
-                                  class="form-input">The University of Colombo is committed to student mental health and wellbeing. We provide comprehensive counseling services and support programs.</textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="university_website">University Website</label>
-                        <input type="url" id="university_website" name="university_website" 
-                               placeholder="https://university.edu.lk" class="form-input"
-                               value="https://cmb.ac.lk">
-                    </div>
-
-                    <div class="form-row-group">
-                        <div class="form-row">
-                            <label for="established_year">Established Year</label>
-                            <input type="number" id="established_year" name="established_year" 
-                                   placeholder="e.g., 1921" class="form-input" value="1921">
-                        </div>
-
-                        <div class="form-row">
-                            <label for="student_population">Student Population</label>
-                            <input type="number" id="student_population" name="student_population" 
-                                   placeholder="e.g., 15000" class="form-input" value="15000">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Section 2: Visual Branding -->
-                <div class="form-section">
-                    <div class="section-title">
-                        <span class="section-icon">🎨</span>
-                        <h3>Visual Branding</h3>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="university_logo">University Logo *</label>
-                        <input type="file" id="university_logo" name="university_logo" 
-                               accept="image/jpeg,image/png" class="form-input">
-                        <small>Upload your university logo (PNG/JPG, Max 2MB). This appears on the public page.</small>
-                        <div class="current-image" style="margin-top: 10px;">
-                            <img src="https://via.placeholder.com/150" alt="Current Logo" style="max-width: 150px; border-radius: 8px;">
-                            <p style="font-size: 12px; color: #64748b;">Current Logo</p>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="banner_image">Banner Image</label>
-                        <input type="file" id="banner_image" name="banner_image" 
-                               accept="image/jpeg,image/png" class="form-input">
-                        <small>Upload a banner image for your university page (1200x400px recommended)</small>
-                        <div class="current-image" style="margin-top: 10px;">
-                            <img src="https://via.placeholder.com/600x200" alt="Current Banner" style="max-width: 100%; border-radius: 8px;">
-                            <p style="font-size: 12px; color: #64748b;">Current Banner</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Section 3: Contact & Location -->
-                <div class="form-section">
-                    <div class="section-title">
-                        <span class="section-icon">📍</span>
-                        <h3>Contact & Location Information</h3>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="address">Campus Address *</label>
+                        <label for="address">Address *</label>
                         <textarea id="address" name="address" required rows="3" 
-                                  placeholder="Full campus address..." class="form-input">94, Cumaratunga Munidasa Mawatha, Colombo 00300</textarea>
+                                  class="form-input" autocomplete="street-address"><?= htmlspecialchars($university['address'] ?? '') ?></textarea>
                     </div>
 
                     <div class="form-row-group">
                         <div class="form-row">
-                            <label for="phone">Phone Number *</label>
-                            <input type="tel" id="phone" name="phone" required 
-                                   placeholder="+94 11 2581835" class="form-input" value="+94 11 2581835">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" required 
+                                   class="form-input" autocomplete="address-level2" value="<?= htmlspecialchars($university['city'] ?? '') ?>">
                         </div>
-
                         <div class="form-row">
-                            <label for="email">Email Address *</label>
+                            <label for="state">State</label>
+                            <input type="text" id="state" name="state" 
+                                   class="form-input" autocomplete="address-level1" value="<?= htmlspecialchars($university['state'] ?? '') ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="website">Official Website</label>
+                        <input type="url" id="website" name="website" 
+                               placeholder="https://youruniversity.ac.lk" class="form-input" autocomplete="url"
+                               value="<?= htmlspecialchars($university['website'] ?? '') ?>">
+                    </div>
+                </div>
+
+                <!-- Section 2: Verification & Contact -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">📞</span>
+                        <h3>Verification & Contact</h3>
+                        <small style="display:block; color:#64748b; margin-top:4px;">Crucial for trust and communication</small>
+                    </div>
+
+                    <div class="form-row-group">
+                        <div class="form-row">
+                            <label for="email">Official Email Address *</label>
                             <input type="email" id="email" name="email" required 
-                                   placeholder="contact@university.edu.lk" class="form-input" 
-                                   value="info@cmb.ac.lk">
+                                   class="form-input" autocomplete="email"
+                                   value="<?= htmlspecialchars($university['email'] ?? '') ?>">
                         </div>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="map_link">Google Maps Link</label>
-                        <input type="url" id="map_link" name="map_link" 
-                               placeholder="https://maps.google.com/..." class="form-input">
-                        <small>Paste your Google Maps location link for easy navigation</small>
+                        <div class="form-row">
+                            <label for="phone">Working Landline / Office Number *</label>
+                            <input type="tel" id="phone" name="phone" required 
+                                   class="form-input" autocomplete="tel" value="<?= htmlspecialchars($university['phone'] ?? '') ?>">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Section 4: Counseling Services -->
+                <!-- Section 3: Bank Details -->
                 <div class="form-section">
                     <div class="section-title">
-                        <span class="section-icon">💚</span>
-                        <h3>Counseling & Mental Health Services</h3>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="counseling_center_name">Counseling Center Name</label>
-                        <input type="text" id="counseling_center_name" name="counseling_center_name" 
-                               placeholder="e.g., Student Counseling Unit" class="form-input"
-                               value="Student Counseling & Welfare Unit">
-                    </div>
-
-                    <div class="form-row">
-                        <label for="counseling_description">Services Description</label>
-                        <textarea id="counseling_description" name="counseling_description" rows="4" 
-                                  placeholder="Describe the mental health services available..." 
-                                  class="form-input">Our counseling center provides free, confidential services including individual counseling, group therapy, crisis intervention, and wellness workshops.</textarea>
+                        <span class="section-icon">🏦</span>
+                        <h3>Bank Details</h3>
+                        <small style="display:block; color:#64748b; margin-top:4px;">Represents where the donation money goes</small>
                     </div>
 
                     <div class="form-row-group">
                         <div class="form-row">
-                            <label for="counseling_phone">Counseling Hotline</label>
-                            <input type="tel" id="counseling_phone" name="counseling_phone" 
-                                   placeholder="+94 XX XXX XXXX" class="form-input" value="+94 11 2584444">
+                            <label for="bank_name">Bank Name *</label>
+                            <input type="text" id="bank_name" name="bank_name" required 
+                                   class="form-input" autocomplete="off" value="<?= htmlspecialchars($university['bank_name'] ?? '') ?>">
                         </div>
-
                         <div class="form-row">
-                            <label for="counseling_email">Counseling Email</label>
-                            <input type="email" id="counseling_email" name="counseling_email" 
-                                   placeholder="counseling@university.edu.lk" class="form-input"
-                                   value="counseling@cmb.ac.lk">
+                            <label for="bank_branch">Bank Branch *</label>
+                            <input type="text" id="bank_branch" name="bank_branch" required 
+                                   class="form-input" autocomplete="off" value="<?= htmlspecialchars($university['bank_branch'] ?? '') ?>">
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <label for="operating_hours">Operating Hours</label>
-                        <input type="text" id="operating_hours" name="operating_hours" 
-                               placeholder="e.g., Monday - Friday, 9:00 AM - 5:00 PM" class="form-input"
-                               value="Monday - Friday, 8:30 AM - 4:30 PM">
+                        <label for="account_name">Account Name *</label>
+                        <input type="text" id="account_name" name="account_name" required 
+                               class="form-input" autocomplete="off" value="<?= htmlspecialchars($university['account_name'] ?? '') ?>">
+                        <small>Should ideally match the University name (e.g., "Kelaniya University - Mental Health Fund").</small>
                     </div>
 
-                    <div class="form-row">
-                        <label for="emergency_contact">24/7 Emergency Contact (If Available)</label>
-                        <input type="tel" id="emergency_contact" name="emergency_contact" 
-                               placeholder="+94 XX XXX XXXX" class="form-input">
-                    </div>
-                </div>
-
-                <!-- Section 5: Social Media & Links -->
-                <div class="form-section">
-                    <div class="section-title">
-                        <span class="section-icon">🔗</span>
-                        <h3>Social Media & Additional Links</h3>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="facebook">Facebook Page</label>
-                        <input type="url" id="facebook" name="facebook" 
-                               placeholder="https://facebook.com/university" class="form-input">
-                    </div>
-
-                    <div class="form-row">
-                        <label for="instagram">Instagram Handle</label>
-                        <input type="text" id="instagram" name="instagram" 
-                               placeholder="@universityofficial" class="form-input">
-                    </div>
-
-                    <div class="form-row">
-                        <label for="twitter">Twitter Handle</label>
-                        <input type="text" id="twitter" name="twitter" 
-                               placeholder="@university" class="form-input">
-                    </div>
-
-                    <div class="form-row">
-                        <label for="linkedin">LinkedIn Page</label>
-                        <input type="url" id="linkedin" name="linkedin" 
-                               placeholder="https://linkedin.com/company/university" class="form-input">
-                    </div>
-                </div>
-
-                <!-- Section 6: Visibility Settings -->
-                <div class="form-section">
-                    <div class="section-title">
-                        <span class="section-icon">👁️</span>
-                        <h3>Visibility Settings</h3>
-                    </div>
-
-                    <div class="form-row">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="is_published" value="1" checked>
-                            Publish this page on the public homepage
-                        </label>
-                        <small>Uncheck to hide your university from the public listing</small>
-                    </div>
-
-                    <div class="form-row">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="accept_donations" value="1" checked>
-                            Enable "Donate" button on public page
-                        </label>
-                        <small>Allow visitors to support your university's mental health programs</small>
-                    </div>
-
-                    <div class="info-box">
-                        <strong>ℹ️ Note:</strong> Changes to your university profile will be reviewed by admin before appearing publicly.
+                    <div class="form-row-group">
+                        <div class="form-row">
+                            <label for="account_number">Account Number *</label>
+                            <input type="text" id="account_number" name="account_number" required 
+                                   class="form-input" autocomplete="off" value="<?= htmlspecialchars($university['account_number'] ?? '') ?>">
+                        </div>
+                        <div class="form-row">
+                            <label for="bank_code">Bank Code</label>
+                            <input type="text" id="bank_code" name="bank_code" 
+                                   class="form-input" autocomplete="off" value="<?= htmlspecialchars($university['bank_code'] ?? '') ?>">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Form Actions -->
                 <div class="form-actions">
-                    <button type="button" onclick="history.back()" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
             </form>

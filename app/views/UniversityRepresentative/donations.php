@@ -11,8 +11,23 @@
 </head>
 <body>
     <div class="main-content">
-        <div class="content-wrapper" style="max-width: 1000px; margin: 40px auto; padding: 20px;">
-            <h2>📊 Donations for Your Events</h2>
+        <!-- Top Bar -->
+        <div class="topbar">
+            <h1>📊 Donations</h1>
+            <div class="topbar-right">
+                <div class="user-profile">
+                    <span><?= htmlspecialchars($_SESSION['university_name'] ?? 'University') ?></span>
+                    <div class="avatar"><?= strtoupper(substr($_SESSION['university_name'] ?? 'U', 0, 1)) ?></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="page-header" style="margin-bottom: 24px;">
+                <div class="header-content">
+                    <p style="margin: 0; color: #64748b;">Donations for Your Events</p>
+                </div>
+            </div>
             <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <?php if (empty($donations)): ?>
                     <p>No donations found for your events yet.</p>

@@ -47,17 +47,35 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
+        <div class="alert-container">
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <span class="alert-message"><?= htmlspecialchars($_SESSION['success']) ?></span>
+                    <button class="alert-close">&times;</button>
+                </div>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-error">
+                    <span class="alert-icon">❌</span>
+                    <span class="alert-message"><?= htmlspecialchars($_SESSION['error']) ?></span>
+                    <button class="alert-close">&times;</button>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
         <!-- Top Bar -->
         <div class="topbar">
             <h1>Manage Events</h1>
             <div class="topbar-right">
-                <div class="notification-icon">
-                    🔔
-                    <span class="badge">2</span>
-                </div>
                 <div class="user-profile">
-                    <span>Rep Name</span>
-                    <div class="avatar">R</div>
+                    <span><?= htmlspecialchars($_SESSION['university_name'] ?? 'University') ?></span>
+                    <div class="avatar"><?= strtoupper(substr($_SESSION['university_name'] ?? 'U', 0, 1)) ?></div>
                 </div>
             </div>
         </div>
@@ -73,19 +91,11 @@
             <div class="section-card">
                 <div class="filter-bar">
                     <input type="text" placeholder="Search events..." class="search-input" id="searchEvents">
-                    <select class="filter-select">
+                    <select class="filter-select" id="filterStatus">
                         <option value="">All Status</option>
-                        <option value="published">Published</option>
-                        <option value="draft">Draft</option>
-                        <option value="archived">Archived</option>
-                        <option value="pending_approval">Pending Approval</option>
-                    </select>
-                    <select class="filter-select">
-                        <option value="">All Types</option>
-                        <option value="workshop">Workshop</option>
-                        <option value="seminar">Seminar</option>
-                        <option value="campaign">Campaign</option>
-                        <option value="talk">Talk</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="approved">Approved</option>
+                        <option value="pending">Pending</option>
                     </select>
                 </div>
             </div>
@@ -229,20 +239,7 @@
             }
         }
 
-        // Search functionality
-        document.getElementById('searchEvents').addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase();
-            const eventCards = document.querySelectorAll('.event-card');
 
-            eventCards.forEach(card => {
-                const title = card.querySelector('h3').textContent.toLowerCase();
-                if (title.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
     </script>
 </body>
 

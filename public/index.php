@@ -290,6 +290,7 @@ $router->post('/university-rep/resources/delete', 'UniversityRepresentativeContr
 
 // University Profile
 $router->get('/university-rep/university-profile', 'UniversityRepresentativeControl@universityProfile');
+$router->get('/university-rep/bank-details', 'UniversityRepresentativeControl@bankDetails');
 $router->post('/university-rep/university-profile/update', 'UniversityRepresentativeControl@updateUniversityProfile');
 
 // Analytics

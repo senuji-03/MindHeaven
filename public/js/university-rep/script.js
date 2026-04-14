@@ -10,12 +10,66 @@ document.addEventListener('DOMContentLoaded', function() {
     
     navItems.forEach(item => {
         const href = item.getAttribute('href');
-        if (href && currentPath.includes(href.split('/').pop())) {
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
+        if (href) {
+            try {
+                const url = new URL(href, window.location.origin);
+                if (window.location.pathname === url.pathname) {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                }
+            } catch (e) {
+                // Ignore invalid URLs
+            }
         }
     });
+
+    // Initialize Event Filters if on the events page
+    if (document.getElementById('searchEvents') && document.getElementById('filterStatus')) {
+        initEventsFilter();
+    }
 });
+
+/**
+ * Combined filtering for University Representative Events
+ */
+function initEventsFilter() {
+    const searchInput = document.getElementById('searchEvents');
+    const statusSelect = document.getElementById('filterStatus');
+    const eventCards = document.querySelectorAll('.event-card');
+    const eventsGrid = document.querySelector('.events-grid');
+    const emptyState = document.querySelector('.empty-state');
+
+    function filterEvents() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedStatus = statusSelect.value.toLowerCase();
+        let visibleCount = 0;
+
+        eventCards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const organizedBy = card.querySelector('.event-stats span:last-child')?.textContent.toLowerCase() || '';
+            const statusBadge = card.querySelector('.event-status');
+            const cardStatus = statusBadge ? statusBadge.textContent.trim().toLowerCase() : '';
+
+            const matchesSearch = title.includes(searchTerm) || organizedBy.includes(searchTerm);
+            const matchesStatus = selectedStatus === '' || cardStatus === selectedStatus;
+
+            if (matchesSearch && matchesStatus) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Toggle empty state if no events match
+        if (emptyState) {
+            emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    }
+
+    searchInput.addEventListener('input', filterEvents);
+    statusSelect.addEventListener('change', filterEvents);
+}
 
 // Notification icon click
 const notificationIcon = document.querySelector('.notification-icon');
@@ -25,15 +79,25 @@ if (notificationIcon) {
     });
 }
 
-// Auto-hide alerts after 5 seconds
+// Auto-hide alerts after 4 seconds
 setTimeout(function() {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
-        alert.style.transition = 'opacity 0.5s';
-        alert.style.opacity = '0';
-        setTimeout(() => alert.remove(), 500);
+        alert.classList.add('alert-fade-out');
+        setTimeout(() => alert.remove(), 400);
     });
-}, 5000);
+}, 4000);
+
+// Manual alert close
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('alert-close') || e.target.closest('.alert-close')) {
+        const alert = e.target.closest('.alert');
+        if (alert) {
+            alert.classList.add('alert-fade-out');
+            setTimeout(() => alert.remove(), 400);
+        }
+    }
+});
 
 // Confirm delete actions
 document.addEventListener('click', function(e) {

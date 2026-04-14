@@ -8,6 +8,24 @@ class UniversityRepresentativeControl
 {
 
 
+    // Helper to ensure university name is in session
+    private function ensureUniversitySession($pdo, $userId)
+    {
+        if (!isset($_SESSION['university_name']) || $_SESSION['university_name'] === 'University') {
+            $stmt = $pdo->prepare("
+                SELECT uni.name 
+                FROM university_representatives ur 
+                JOIN universities uni ON ur.university_id = uni.id 
+                WHERE ur.user_id = ?
+            ");
+            $stmt->execute([$userId]);
+            $uniName = $stmt->fetchColumn();
+            if ($uniName) {
+                $_SESSION['university_name'] = $uniName;
+            }
+        }
+    }
+
     // Index method - redirects to dashboard
     public function index()
     {
@@ -17,7 +35,100 @@ class UniversityRepresentativeControl
     // Dashboard
     public function dashboard()
     {
-        view('UniversityRepresentative/dashboard');
+        try {
+            $pdo = Database::getConnection();
+            $universityRepId = $_SESSION['user_id'] ?? null;
+            if (!$universityRepId) {
+                header('Location: ' . BASE_URL . '/login');
+                exit;
+            }
+
+            // fetch user details & university name
+            $stmt = $pdo->prepare("
+                SELECT u.username, u.full_name, uni.name as university_name 
+                FROM users u 
+                LEFT JOIN university_representatives ur ON u.id = ur.user_id 
+                LEFT JOIN universities uni ON ur.university_id = uni.id 
+                WHERE u.id = ?
+            ");
+            $stmt->execute([$universityRepId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Sync session
+            if ($user && isset($user['university_name'])) {
+                $_SESSION['university_name'] = $user['university_name'];
+            }
+
+            // Fetch Total Funds Raised and Total Donors
+            $stmt = $pdo->prepare("
+                SELECT COALESCE(SUM(amount), 0) as total_raised, COUNT(DISTINCT COALESCE(donor_id, donor_email)) as total_donors
+                FROM donations
+                WHERE event_id IN (SELECT id FROM university_rep_events WHERE university_rep_id = ?)
+                AND payment_status = 'completed'
+            ");
+            $stmt->execute([$universityRepId]);
+            $donationsInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Fetch Event Counts
+            $stmt = $pdo->prepare("
+                SELECT 
+                    SUM(CASE WHEN status IN ('approved', 'published') THEN 1 ELSE 0 END) as active_events,
+                    SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_events,
+                    SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_events
+                FROM university_rep_events
+                WHERE university_rep_id = ?
+            ");
+            $stmt->execute([$universityRepId]);
+            $eventsInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $dashboardData = [
+                'user' => $user,
+                'total_raised' => $donationsInfo['total_raised'] ?: 0,
+                'total_donors' => $donationsInfo['total_donors'] ?: 0,
+                'active_events' => $eventsInfo['active_events'] ?: 0,
+                'pending_events' => $eventsInfo['pending_events'] ?: 0,
+                'rejected_events' => $eventsInfo['rejected_events'] ?: 0
+            ];
+
+            // Fetch Upcoming and Completed Events
+            $stmt = $pdo->prepare("
+                SELECT * FROM university_rep_events 
+                WHERE university_rep_id = ? 
+                AND status IN ('approved', 'published')
+                ORDER BY event_date ASC, start_time ASC
+            ");
+            $stmt->execute([$universityRepId]);
+            $allEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $upcoming = [];
+            $completed = [];
+            $currentDate = date('Y-m-d');
+            $currentTime = date('H:i:s');
+
+            foreach ($allEvents as $event) {
+                if ($event['event_date'] > $currentDate) {
+                    $upcoming[] = $event;
+                } elseif ($event['event_date'] < $currentDate) {
+                    $completed[] = $event;
+                } else {
+                    // Same day, check time
+                    if ($event['start_time'] > $currentTime) {
+                        $upcoming[] = $event;
+                    } else {
+                        $completed[] = $event;
+                    }
+                }
+            }
+
+            $dashboardData['upcoming_events_list'] = array_slice($upcoming, 0, 5);
+            $dashboardData['completed_events_list'] = array_slice($completed, 0, 5);
+
+            view('UniversityRepresentative/dashboard', $dashboardData);
+        } catch (Exception $e) {
+            error_log("University Representative Dashboard Error: " . $e->getMessage());
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
     }
 
     // ========================================
@@ -37,6 +148,8 @@ class UniversityRepresentativeControl
                 header('Location: ' . BASE_URL . '/login');
                 exit;
             }
+
+            $this->ensureUniversitySession($pdo, $universityRepId);
 
             // Fetch events created by this university representative
             $sql = "SELECT * FROM university_rep_events WHERE university_rep_id = ? ORDER BY event_date DESC, start_time DESC";
@@ -116,6 +229,8 @@ class UniversityRepresentativeControl
                     }
                 }
             }
+
+            $urgent = isset($_POST['urgent_fundraising']) ? 1 : 0;
 
             // Validate required fields
             $errors = [];
@@ -563,6 +678,8 @@ class UniversityRepresentativeControl
     // List all announcements
     public function announcements()
     {
+        $pdo = Database::getConnection();
+        $this->ensureUniversitySession($pdo, $_SESSION['user_id'] ?? null);
         view('UniversityRepresentative/announcements');
     }
 
@@ -609,6 +726,8 @@ class UniversityRepresentativeControl
     // List all resources
     public function resources()
     {
+        $pdo = Database::getConnection();
+        $this->ensureUniversitySession($pdo, $_SESSION['user_id'] ?? null);
         view('UniversityRepresentative/resources');
     }
 
@@ -655,7 +774,46 @@ class UniversityRepresentativeControl
 
     public function universityProfile()
     {
-        view('UniversityRepresentative/university-profile');
+        try {
+            $pdo = Database::getConnection();
+            $universityRepId = $_SESSION['user_id'] ?? null;
+            if (!$universityRepId) {
+                header('Location: ' . BASE_URL . '/login');
+                exit;
+            }
+
+            $this->ensureUniversitySession($pdo, $universityRepId);
+
+            $stmt = $pdo->prepare("SELECT u.id, u.name, u.address, u.city, u.state, u.phone, u.email, u.website, u.bank_name, u.bank_branch, u.account_name, u.account_number, u.bank_code FROM universities u JOIN university_representatives ur ON u.id = ur.university_id WHERE ur.user_id = ?");
+            $stmt->execute([$universityRepId]);
+            $university = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            view('UniversityRepresentative/university-profile', ['university' => $university]);
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/university-rep/dashboard');
+            exit;
+        }
+    }
+
+    public function bankDetails()
+    {
+        try {
+            $pdo = Database::getConnection();
+            $universityRepId = $_SESSION['user_id'] ?? null;
+            if (!$universityRepId) {
+                header('Location: ' . BASE_URL . '/login');
+                exit;
+            }
+
+            $stmt = $pdo->prepare("SELECT u.id, u.bank_name, u.bank_branch, u.account_name, u.account_number, u.bank_code, u.bank_details_notes FROM universities u JOIN university_representatives ur ON u.id = ur.university_id WHERE ur.user_id = ?");
+            $stmt->execute([$universityRepId]);
+            $university = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            view('UniversityRepresentative/bank-details', ['university' => $university]);
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/university-rep/dashboard');
+            exit;
+        }
     }
 
     public function updateUniversityProfile()
@@ -665,7 +823,56 @@ class UniversityRepresentativeControl
             exit;
         }
 
-        // TODO: Add database logic here
+        try {
+            $pdo = Database::getConnection();
+            $universityRepId = $_SESSION['user_id'] ?? null;
+
+            $stmt = $pdo->prepare("SELECT university_id FROM university_representatives WHERE user_id = ?");
+            $stmt->execute([$universityRepId]);
+            $university_id = $stmt->fetchColumn();
+
+            if ($university_id) {
+                $name = $_POST['name'] ?? null;
+                $address = $_POST['address'] ?? null;
+                $city = $_POST['city'] ?? null;
+                $state = $_POST['state'] ?? null;
+                $website = $_POST['website'] ?? null;
+                $email = $_POST['email'] ?? null;
+                $phone = $_POST['phone'] ?? null;
+                $bank_name = $_POST['bank_name'] ?? null;
+                $bank_branch = $_POST['bank_branch'] ?? null;
+                $account_name = $_POST['account_name'] ?? null;
+                $account_number = $_POST['account_number'] ?? null;
+                $bank_code = $_POST['bank_code'] ?? null;
+
+                $sql = "UPDATE universities SET 
+                        name = ?, address = ?, city = ?, state = ?, website = ?, 
+                        email = ?, phone = ?, bank_name = ?, bank_branch = ?, 
+                        account_name = ?, account_number = ?, bank_code = ? 
+                        WHERE id = ?";
+                $upd = $pdo->prepare($sql);
+                $upd->execute([
+                    $name,
+                    $address,
+                    $city,
+                    $state,
+                    $website,
+                    $email,
+                    $phone,
+                    $bank_name,
+                    $bank_branch,
+                    $account_name,
+                    $account_number,
+                    $bank_code,
+                    $university_id
+                ]);
+            }
+        } catch (Exception $e) {
+            error_log("University Profile Update Error: " . $e->getMessage());
+            $_SESSION['error'] = 'Failed to update university profile.';
+            header('Location: ' . BASE_URL . '/university-rep/university-profile');
+            exit;
+        }
 
         $_SESSION['success'] = 'University profile updated successfully!';
         header('Location: ' . BASE_URL . '/university-rep/university-profile');
@@ -687,7 +894,25 @@ class UniversityRepresentativeControl
 
     public function profile()
     {
-        view('UniversityRepresentative/profile');
+        try {
+            $pdo = Database::getConnection();
+            $userId = $_SESSION['user_id'] ?? null;
+            if (!$userId) {
+                header('Location: ' . BASE_URL . '/login');
+                exit;
+            }
+
+            $this->ensureUniversitySession($pdo, $userId);
+
+            $stmt = $pdo->prepare("SELECT u.id, u.username, u.full_name, u.email, ur.position, ur.department, ur.phone_number as office_phone, uni.name as university_name FROM users u JOIN university_representatives ur ON u.id = ur.user_id JOIN universities uni ON ur.university_id = uni.id WHERE u.id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            view('UniversityRepresentative/profile', ['user' => $user]);
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/university-rep/dashboard');
+            exit;
+        }
     }
 
     public function updateProfile()
@@ -697,7 +922,31 @@ class UniversityRepresentativeControl
             exit;
         }
 
-        // TODO: Add database logic here
+        try {
+            $pdo = Database::getConnection();
+            $userId = $_SESSION['user_id'] ?? null;
+
+            if ($userId) {
+                $full_name = $_POST['full_name'] ?? null;
+                $email = $_POST['email'] ?? null;
+                $position = $_POST['position'] ?? null;
+                $department = $_POST['department'] ?? null;
+                $office_phone = $_POST['office_phone'] ?? null;
+
+                // Update basic user info
+                $updUser = $pdo->prepare("UPDATE users SET full_name = ?, email = ? WHERE id = ?");
+                $updUser->execute([$full_name, $email, $userId]);
+
+                // Update professional info
+                $updRep = $pdo->prepare("UPDATE university_representatives SET full_name = ?, email = ?, position = ?, department = ?, phone_number = ? WHERE user_id = ?");
+                $updRep->execute([$full_name, $email, $position, $department, $office_phone, $userId]);
+            }
+        } catch (Exception $e) {
+            error_log("Personal Profile Update Error: " . $e->getMessage());
+            $_SESSION['error'] = 'Failed to update personal profile.';
+            header('Location: ' . BASE_URL . '/university-rep/profile');
+            exit;
+        }
 
         $_SESSION['success'] = 'Profile updated successfully!';
         header('Location: ' . BASE_URL . '/university-rep/profile');
@@ -715,6 +964,8 @@ class UniversityRepresentativeControl
             header('Location: ' . BASE_URL . '/login');
             exit;
         }
+        $pdo = Database::getConnection();
+        $this->ensureUniversitySession($pdo, $universityRepId);
         require_once BASE_PATH . '/app/models/Donation.php';
         $donations = Donation::getDonationsForUniversityRep($universityRepId);
         view('UniversityRepresentative/donations', ['donations' => $donations]);
