@@ -60,6 +60,7 @@ $router->get('/admin/resource-hub', 'AdminControl@resourceHub');
 $router->get('/admin/moderate-forum', 'AdminControl@moderateForum');
 $router->get('/admin/counselors', 'AdminControl@counselors');
 $router->get('/admin/appointments', 'AdminControl@appointments');
+$router->get('/admin/get-appointments', 'AdminControl@getAppointments');
 $router->get('/admin/approve-counselors', 'AdminControl@approveCounselors');
 $router->get('/admin/reports', 'AdminControl@reports');
 $router->post('/admin/update-report-status', 'AdminControl@updateReportStatus'); // Process report update

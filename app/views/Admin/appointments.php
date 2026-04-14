@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -210,13 +210,13 @@
             <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
                 <span class="icon">📈</span>
                 Reports
-                        </a>
+            </a>
             <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
                 <span class="icon">🏛️</span>
                 University Events
             </a>
             <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
-                <span class="icon"></span>
+                <span class="icon">💰</span>
                 Donation logs
             </a>
            
@@ -259,29 +259,36 @@
                 <div class="stat-card">
                     <div class="stat-icon blue">📋</div>
                     <div class="stat-details">
-                        <h3>Total Appointments</h3>
-                        <p class="stat-number">1,245</p>
+                        <h3>Total</h3>
+                        <p class="stat-number" id="total-appointments">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon green">✅</div>
                     <div class="stat-details">
                         <h3>Completed</h3>
-                        <p class="stat-number">1,089</p>
+                        <p class="stat-number" id="completed-appointments">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon orange">⏳</div>
                     <div class="stat-details">
                         <h3>Upcoming</h3>
-                        <p class="stat-number">45</p>
+                        <p class="stat-number" id="upcoming-appointments">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon purple">❌</div>
                     <div class="stat-details">
                         <h3>Cancelled</h3>
-                        <p class="stat-number">111</p>
+                        <p class="stat-number" id="cancelled-appointments">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red" style="background: #fee2e2; color: #b91c1c;">⚠️</div>
+                    <div class="stat-details">
+                        <h3>Overdue</h3>
+                        <p class="stat-number" id="overdue-appointments">0</p>
                     </div>
                 </div>
             </div>
@@ -292,12 +299,18 @@
                     <input type="text" placeholder="Search by student or counselor..." class="search-input">
                     <select class="filter-select">
                         <option value="">All Status</option>
+                        <option value="upcoming">Upcoming (Future)</option>
+                        <option value="overdue">Overdue (Past)</option>
                         <option value="completed">Completed</option>
-                        <option value="upcoming">Upcoming</option>
                         <option value="cancelled">Cancelled</option>
                         <option value="no_show">No Show</option>
+                        <option value="pending">Pending</option>
                     </select>
                     <input type="date" class="filter-select">
+                    <div style="margin-left: auto; display: flex; gap: 10px;">
+                        <button id="refreshAppointments" class="btn btn-secondary" title="Refresh Data">🔄 Refresh</button>
+                        <button id="exportAppointmentsCsv" class="btn btn-primary" title="Export to CSV">📊 Export</button>
+                    </div>
                 </div>
             </div>
 
@@ -312,71 +325,22 @@
                             <th>Date & Time</th>
                             <th>Type</th>
                             <th>Status</th>
+                            <th>Session Notes</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>#1245</td>
-                            <td>John Doe</td>
-                            <td>Dr. Sarah Johnson</td>
-                            <td>Jan 20, 2025 - 10:00 AM</td>
-                            <td><span class="badge role-counselor">In-Person</span></td>
-                            <td><span class="badge status-active">Completed</span></td>
-                            <td>
-                                <button class="btn-icon" title="View Details">👁️</button>
-                                <button class="btn-icon" title="Download Report">📄</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#1244</td>
-                            <td>Jane Smith</td>
-                            <td>Dr. Emily Chen</td>
-                            <td>Jan 22, 2025 - 2:00 PM</td>
-                            <td><span class="badge role-moderator">Online</span></td>
-                            <td><span class="badge status-suspended">Upcoming</span></td>
-                            <td>
-                                <button class="btn-icon" title="View Details">👁️</button>
-                                <button class="btn-icon" title="Reschedule">📅</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#1243</td>
-                            <td>Mike Johnson</td>
-                            <td>Mr. David Silva</td>
-                            <td>Jan 18, 2025 - 11:30 AM</td>
-                            <td><span class="badge role-counselor">In-Person</span></td>
-                            <td><span class="badge status-inactive">Cancelled</span></td>
-                            <td>
-                                <button class="btn-icon" title="View Details">👁️</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#1242</td>
-                            <td>Sarah Lee</td>
-                            <td>Dr. Sarah Johnson</td>
-                            <td>Jan 23, 2025 - 3:00 PM</td>
-                            <td><span class="badge role-moderator">Online</span></td>
-                            <td><span class="badge status-suspended">Upcoming</span></td>
-                            <td>
-                                <button class="btn-icon" title="View Details">👁️</button>
-                                <button class="btn-icon" title="Reschedule">📅</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#1241</td>
-                            <td>Alex Kumar</td>
-                            <td>Dr. Emily Chen</td>
-                            <td>Jan 19, 2025 - 9:00 AM</td>
-                            <td><span class="badge role-counselor">In-Person</span></td>
-                            <td><span class="badge status-active">Completed</span></td>
-                            <td>
-                                <button class="btn-icon" title="View Details">👁️</button>
-                                <button class="btn-icon" title="Download Report">📄</button>
-                            </td>
-                        </tr>
+                    <tbody id="appointmentsTableBody">
+                        <!-- Content will be populated by JavaScript -->
                     </tbody>
                 </table>
+
+                <div id="appointmentsEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-state-content">
+                        <div class="empty-state-icon">📅</div>
+                        <h3>No appointments found</h3>
+                        <p>Adjust your filters or try refreshing the data.</p>
+                    </div>
+                </div>
 
                 <div style="padding: 20px; text-align: center;">
                     <button class="btn btn-secondary">Load More Appointments</button>
@@ -402,13 +366,20 @@
     // ----------------------
     
     function formatDate(dateStr) {
-        const d = new Date(dateStr);
-        return d.toLocaleDateString();
+        if (!dateStr) return 'N/A';
+        // Parse YYYY-MM-DD as local date to avoid timezone shifts
+        const [year, month, day] = dateStr.split('-');
+        const date = new Date(year, month - 1, day);
+        return date.toLocaleDateString();
     }
     
     function formatTime(timeStr) {
-        const t = new Date('1970-01-01T' + timeStr + 'Z');
-        return t.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        if (!timeStr) return 'N/A';
+        // timeStr is HH:MM:SS, parse as local time
+        const [hours, minutes] = timeStr.split(':');
+        const d = new Date();
+        d.setHours(parseInt(hours), parseInt(minutes), 0);
+        return d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     }
     
     function getStatusBadgeClass(status) {
@@ -483,7 +454,13 @@
                 allAppointments = data.appointments || [];
                 filteredAppointments = [...allAppointments];
                 renderAppointments();
-                updateStats();
+                
+                // Use stats from server if provided, otherwise calculate
+                if (data.stats) {
+                    updateStats(data.stats);
+                } else {
+                    updateStats();
+                }
                 
                 // Show message if no appointments found
                 if (data.message) {
@@ -581,37 +558,81 @@
         }
         
         emptyState.style.display = 'none';
-        tbody.innerHTML = filteredAppointments.map(appointment => `
+        tbody.innerHTML = filteredAppointments.map(appointment => {
+            // Process session notes (might be JSON)
+            let sessionNotes = 'None';
+            if (appointment.counselor_notes) {
+                try {
+                    const notesObj = JSON.parse(appointment.counselor_notes);
+                    sessionNotes = notesObj.summary || notesObj.notes || 'Notes available';
+                } catch (e) {
+                    sessionNotes = appointment.counselor_notes;
+                }
+            } else if (appointment.notes) {
+                sessionNotes = appointment.notes; // fallback to student notes if no counselor notes
+            }
+            
+            // Truncate notes for display
+            const truncatedNotes = sessionNotes.length > 50 ? sessionNotes.substring(0, 47) + '...' : sessionNotes;
+            
+            return `
             <tr>
                 <td>#${appointment.id}</td>
                 <td>${appointment.student_name || 'N/A'}</td>
                 <td>${appointment.counselor_name || 'N/A'}</td>
-                <td>${appointment.title || 'N/A'}</td>
-                <td><span class="${getTypeBadgeClass(appointment.type)}">${appointment.type || 'N/A'}</span></td>
-                <td>${formatDate(appointment.date)}</td>
-                <td>${formatTime(appointment.time)}</td>
-                <td><span class="${getStatusBadgeClass(appointment.status)}">${appointment.status || 'N/A'}</span></td>
+                <td>${formatDate(appointment.date)}<br><small>${formatTime(appointment.time)}</small></td>
+                <td><span class="${getTypeBadgeClass(appointment.type || '')}">${appointment.type || 'N/A'}</span></td>
+                <td><span class="${getStatusBadgeClass(appointment.status || '')}">${appointment.status || 'N/A'}</span></td>
+                <td title="${sessionNotes}">${truncatedNotes}</td>
                 <td>
                     <button class="btn-icon" title="View Details" onclick="viewAppointmentDetails(${appointment.id})">👁️</button>
-                    <button class="btn-icon" title="Edit Appointment" onclick="editAppointment(${appointment.id})">✏️</button>
                     <button class="btn-icon" title="Download Report" onclick="downloadAppointmentReport(${appointment.id})">📄</button>
                 </td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
     }
     
-    function updateStats() {
-        const total = allAppointments.length;
-        const completed = allAppointments.filter(a => a.status === 'completed').length;
-        const upcoming = allAppointments.filter(a => a.status === 'scheduled').length;
-        const cancelled = allAppointments.filter(a => a.status === 'cancelled').length;
+    function updateStats(serverStats) {
+        let total, completed, upcoming, overdue, cancelled;
+        
+        if (serverStats) {
+            total = serverStats.total;
+            completed = serverStats.completed;
+            upcoming = serverStats.upcoming;
+            overdue = serverStats.overdue;
+            cancelled = serverStats.cancelled;
+        } else {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            const currentTimeStr = now.toTimeString().split(' ')[0];
+            
+            total = allAppointments.length;
+            completed = allAppointments.filter(a => a.status === 'completed').length;
+            
+            const activeSlots = allAppointments.filter(a => 
+                ['scheduled', 'confirmed', 'accept', 'accepted', 'pending', 'rescheduled'].includes(a.status)
+            );
+            
+            upcoming = activeSlots.filter(a => 
+                a.date > todayStr || (a.date === todayStr && a.time >= currentTimeStr)
+            ).length;
+            
+            overdue = activeSlots.filter(a => 
+                a.date < todayStr || (a.date === todayStr && a.time < currentTimeStr)
+            ).length;
+            
+            cancelled = allAppointments.filter(a => 
+                ['cancelled', 'reject', 'rejected'].includes(a.status)
+            ).length;
+        }
         
         // Update stat cards
-        const statCards = document.querySelectorAll('.stat-number');
-        if (statCards[0]) statCards[0].textContent = total;
-        if (statCards[1]) statCards[1].textContent = completed;
-        if (statCards[2]) statCards[2].textContent = upcoming;
-        if (statCards[3]) statCards[3].textContent = cancelled;
+        if (document.getElementById('total-appointments')) document.getElementById('total-appointments').textContent = total;
+        if (document.getElementById('completed-appointments')) document.getElementById('completed-appointments').textContent = completed;
+        if (document.getElementById('upcoming-appointments')) document.getElementById('upcoming-appointments').textContent = upcoming;
+        if (document.getElementById('overdue-appointments')) document.getElementById('overdue-appointments').textContent = overdue;
+        if (document.getElementById('cancelled-appointments')) document.getElementById('cancelled-appointments').textContent = cancelled;
     }
     
     // ----------------------
@@ -620,8 +641,12 @@
     
     function filterAppointments() {
         const searchTerm = document.querySelector('.search-input').value.toLowerCase();
-        const statusFilter = document.querySelector('.filter-select').value;
+        const filterVal = document.querySelector('.filter-select').value;
         const dateFilter = document.querySelector('input[type="date"]').value;
+        
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const currentTimeStr = now.toTimeString().split(' ')[0];
         
         filteredAppointments = allAppointments.filter(appointment => {
             const matchesSearch = !searchTerm || 
@@ -629,7 +654,21 @@
                 appointment.counselor_name?.toLowerCase().includes(searchTerm) ||
                 appointment.title?.toLowerCase().includes(searchTerm);
             
-            const matchesStatus = !statusFilter || appointment.status === statusFilter;
+            let matchesStatus = true;
+            if (filterVal) {
+                const isActive = ['scheduled', 'confirmed', 'accept', 'accepted', 'pending', 'rescheduled'].includes(appointment.status);
+                const isFuture = appointment.date > todayStr || (appointment.date === todayStr && appointment.time >= currentTimeStr);
+                
+                if (filterVal === 'upcoming') {
+                    matchesStatus = isActive && isFuture;
+                } else if (filterVal === 'overdue') {
+                    matchesStatus = isActive && !isFuture;
+                } else if (filterVal === 'cancelled') {
+                    matchesStatus = ['cancelled', 'reject', 'rejected'].includes(appointment.status);
+                } else {
+                    matchesStatus = appointment.status === filterVal;
+                }
+            }
             
             const matchesDate = !dateFilter || appointment.date === dateFilter;
             
@@ -647,17 +686,44 @@
         const appointment = allAppointments.find(a => a.id === appointmentId);
         if (!appointment) return;
         
+        // Check for rescheduled date
+        // Now showing separately whenever original_date is present (captured during a reschedule)
+        const hasRescheduled = !!appointment.original_date;
+        
+        let dateInfo = `Date: ${formatDate(appointment.date)}\n            Time: ${formatTime(appointment.time)}`;
+        
+        if (hasRescheduled) {
+            dateInfo = `Requested Date (Original): ${formatDate(appointment.original_date)} at ${formatTime(appointment.original_time)}
+            Rescheduled Date (Current): ${formatDate(appointment.date)} at ${formatTime(appointment.time)}`;
+        }
+        
+        let counselorNotes = 'None';
+        if (appointment.counselor_notes) {
+            try {
+                const notesObj = JSON.parse(appointment.counselor_notes);
+                counselorNotes = notesObj.notes || notesObj.summary || appointment.counselor_notes;
+            } catch (e) {
+                counselorNotes = appointment.counselor_notes;
+            }
+        }
+        
         const details = `
             Appointment Details:
+            -------------------
             ID: #${appointment.id}
             Student: ${appointment.student_name}
             Counselor: ${appointment.counselor_name}
-            Title: ${appointment.title}
-            Type: ${appointment.type}
-            Date: ${formatDate(appointment.date)}
-            Time: ${formatTime(appointment.time)}
+            Title: ${appointment.title || 'N/A'}
+            Type: ${appointment.type || 'N/A'}
+            ${dateInfo}
             Status: ${appointment.status}
-            Notes: ${appointment.notes || 'None'}
+            
+            ${hasRescheduled ? `Reschedule Reason: \n            ${appointment.reschedule_reason || 'N/A'}\n` : ''}
+            Student Notes (Booking): 
+            ${appointment.notes || 'None'}
+            
+            Counselor Session Notes:
+            ${counselorNotes}
         `;
         
         alert(details);

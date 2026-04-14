@@ -75,6 +75,16 @@
                         <div class="stat-icon">❌</div>
                     </div>
                 </div>
+                <!-- Overdue Card -->
+                <div class="stat-card overdue">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-title">Overdue</div>
+                            <div class="stat-value" id="overdueSessions">0</div>
+                        </div>
+                        <div class="stat-icon">⏰</div>
+                    </div>
+                </div>
             </div>
 
             <!-- Filter Section -->
@@ -99,6 +109,7 @@
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>
                             <option value="no-show">No Show</option>
+                            <option value="overdue">Overdue (Past Active)</option>
                             <option value="in-progress">In Progress</option>
                         </select>
                     </div>
