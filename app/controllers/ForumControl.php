@@ -87,7 +87,12 @@ class ForumControl
 
         if (empty($title) || empty($description) || empty($category)) {
             $_SESSION['error'] = "All fields are required.";
-            $this->view('forum/create', ['error' => 'All fields are required.', 'old' => $_POST]);
+            
+            require_once BASE_PATH . '/app/models/Thread.php';
+            $threadModel = new Thread();
+            $categories  = $threadModel->getCategories();
+            
+            $this->view('forum/create', ['error' => 'All fields are required.', 'old' => $_POST, 'categories' => $categories]);
             return;
         }
 
@@ -110,13 +115,19 @@ class ForumControl
             $this->checkKeywords($title . ' ' . $description, $threadId, 'thread');
 
             $_SESSION['success'] = "Thread created successfully! (ID: " . $threadId . ")";
-            header('Location: ' . BASE_URL . '/forum'); // Redirect to list or specific thread
+            $embedQuery = (isset($_GET['embed']) && $_GET['embed'] === 'true') ? '?embed=true' : '';
+            header('Location: ' . BASE_URL . '/forum' . $embedQuery); // Redirect to list or specific thread
             exit;
 
         } catch (Exception $e) {
             error_log("Thread Create Error: " . $e->getMessage());
             $_SESSION['error'] = "Failed to create thread. Error: " . $e->getMessage();
-            $this->view('forum/create', ['error' => 'Failed to create thread. ' . $e->getMessage(), 'old' => $_POST]);
+            
+            require_once BASE_PATH . '/app/models/Thread.php';
+            $threadModel = new Thread();
+            $categories  = $threadModel->getCategories();
+            
+            $this->view('forum/create', ['error' => 'Failed to create thread. ' . $e->getMessage(), 'old' => $_POST, 'categories' => $categories]);
         }
     }
 
@@ -164,9 +175,11 @@ class ForumControl
         $content = trim($_POST['content'] ?? '');
         $parentReplyId = !empty($_POST['parent_reply_id']) ? (int) $_POST['parent_reply_id'] : null;
 
+        $embedQuery = (isset($_GET['embed']) && $_GET['embed'] === 'true') ? '?embed=true' : '';
+
         if (!$threadId || empty($content)) {
             $_SESSION['error'] = "Reply cannot be empty.";
-            header('Location: ' . BASE_URL . '/forum/thread/' . $threadId);
+            header('Location: ' . BASE_URL . '/forum/thread/' . $threadId . $embedQuery);
             exit;
         }
 
@@ -176,14 +189,14 @@ class ForumControl
 
             if (!$parentPost) {
                 $_SESSION['error'] = "Parent reply not found.";
-                header('Location: ' . BASE_URL . '/forum/thread/' . $threadId);
+                header('Location: ' . BASE_URL . '/forum/thread/' . $threadId . $embedQuery);
                 exit;
             }
 
             // If parent already has a parent, BLOCK it (Strict 1-level)
             if (!empty($parentPost['parent_reply_id'])) {
                 $_SESSION['error'] = "You cannot reply to a nested reply.";
-                header('Location: ' . BASE_URL . '/forum/thread/' . $threadId);
+                header('Location: ' . BASE_URL . '/forum/thread/' . $threadId . $embedQuery);
                 exit;
             }
         }
@@ -214,7 +227,7 @@ class ForumControl
             $_SESSION['error'] = "Failed to post reply.";
         }
 
-        header('Location: ' . BASE_URL . '/forum/thread/' . $threadId);
+        header('Location: ' . BASE_URL . '/forum/thread/' . $threadId . $embedQuery);
         exit;
     }
 
@@ -270,9 +283,11 @@ class ForumControl
         $type = $_POST['type'] ?? ''; // 'thread' or 'post'
         $id = (int) ($_POST['id'] ?? 0);
 
+        $embedQuery = (isset($_GET['embed']) && $_GET['embed'] === 'true') ? '?embed=true' : '';
+
         if (!$id || !in_array($type, ['thread', 'post'])) {
             $_SESSION['error'] = "Invalid request.";
-            header('Location: ' . BASE_URL . '/forum');
+            header('Location: ' . BASE_URL . '/forum' . $embedQuery);
             exit;
         }
 
@@ -296,10 +311,10 @@ class ForumControl
 
             if ($threadModel->delete($id)) {
                 $_SESSION['success'] = "Thread deleted successfully.";
-                header('Location: ' . BASE_URL . '/forum');
+                header('Location: ' . BASE_URL . '/forum' . $embedQuery);
             } else {
                 $_SESSION['error'] = "Failed to delete thread.";
-                header('Location: ' . BASE_URL . '/forum/thread/' . $id);
+                header('Location: ' . BASE_URL . '/forum/thread/' . $id . $embedQuery);
             }
 
         } elseif ($type === 'post') {
@@ -322,7 +337,7 @@ class ForumControl
             } else {
                 $_SESSION['error'] = "Failed to delete reply.";
             }
-            header('Location: ' . BASE_URL . '/forum/thread/' . $post['thread_id']);
+            header('Location: ' . BASE_URL . '/forum/thread/' . $post['thread_id'] . $embedQuery);
         }
         exit;
     }
