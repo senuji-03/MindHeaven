@@ -867,13 +867,34 @@ ob_start();
             <p class="section-subtitle">Support mental health initiatives across different universities.</p>
         </div>
 
-        <?php foreach ($eventsByUniversity as $uniName => $events): ?>
-        <div style="margin-bottom: 48px;">
-            <div class="events-uni-label">
-                <i class="fas fa-university"></i>
-                <?= htmlspecialchars($uniName) ?>
+        <?php foreach ($eventsByUniversity as $uniName => $events): 
+            $uniInfo = $events[0];
+        ?>
+        <div style="margin-bottom: 56px;">
+            <div class="events-uni-label" style="display: block; border-bottom: none; margin-bottom: 24px;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                    <i class="fas fa-university" style="font-size: 1.4rem; color: var(--primary);"></i>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-dark); margin: 0;"><?= htmlspecialchars($uniName) ?></h3>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 24px; font-size: 0.88rem; color: var(--text-secondary); padding-left: 36px;">
+                    <?php if (!empty($uniInfo['university_email'])): ?>
+                        <span title="Official Email"><i class="fas fa-envelope" style="color: var(--primary); opacity: 0.8; margin-right: 6px;"></i><?= htmlspecialchars($uniInfo['university_email']) ?></span>
+                    <?php endif; ?>
+                    <?php if (!empty($uniInfo['university_phone'])): ?>
+                        <span title="Working Landline"><i class="fas fa-phone-alt" style="color: var(--primary); opacity: 0.8; margin-right: 6px;"></i><?= htmlspecialchars($uniInfo['university_phone']) ?></span>
+                    <?php endif; ?>
+                    <?php if (!empty($uniInfo['university_website'])): ?>
+                        <a href="<?= (strpos($uniInfo['university_website'], 'http') === 0) ? htmlspecialchars($uniInfo['university_website']) : 'https://' . htmlspecialchars($uniInfo['university_website']) ?>" 
+                           target="_blank" class="uni-link" style="color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">
+                            <i class="fas fa-external-link-alt" style="color: var(--primary); opacity: 0.8; margin-right: 6px;"></i><?= htmlspecialchars($uniInfo['university_website']) ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
-            <div class="features-grid">
+            <style>
+                .uni-link:hover { color: var(--primary) !important; text-decoration: underline !important; }
+            </style>
+            <div class="features-grid" style="border-top: 1px solid var(--border); padding-top: 24px;">
                 <?php foreach ($events as $event): ?>
                 <div class="event-card animate-on-scroll">
                     <div class="event-card-img">

@@ -50,13 +50,9 @@
         <div class="topbar">
             <h1>Edit Event</h1>
             <div class="topbar-right">
-                <div class="notification-icon">
-                    🔔
-                    <span class="badge">2</span>
-                </div>
                 <div class="user-profile">
-                    <span>Rep Name</span>
-                    <div class="avatar">R</div>
+                    <span><?= htmlspecialchars($_SESSION['university_name'] ?? 'University') ?></span>
+                    <div class="avatar"><?= strtoupper(substr($_SESSION['university_name'] ?? 'U', 0, 1)) ?></div>
                 </div>
             </div>
         </div>

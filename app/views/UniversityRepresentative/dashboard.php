@@ -46,136 +46,137 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
+        <div class="alert-container">
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <span class="alert-message"><?= htmlspecialchars($_SESSION['success']) ?></span>
+                    <button class="alert-close">&times;</button>
+                </div>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-error">
+                    <span class="alert-icon">❌</span>
+                    <span class="alert-message"><?= htmlspecialchars($_SESSION['error']) ?></span>
+                    <button class="alert-close">&times;</button>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
         <!-- Top Bar -->
         <div class="topbar">
-            <h1>Dashboard</h1>
+            <?php 
+                $greetingName = trim($user['full_name'] ?? '');
+                $greeting = $greetingName ? "Hello " . htmlspecialchars($greetingName) : "Hello";
+            ?>
+            <h1><?= $greeting ?></h1>
             <div class="topbar-right">
-                <div class="notification-icon">
-                    🔔
-                    <span class="badge">2</span>
-                </div>
                 <div class="user-profile">
-                    <span>Rep Name</span>
-                    <div class="avatar">R</div>
+                    <span><?= htmlspecialchars($_SESSION['university_name'] ?? 'University') ?></span>
+                    <div class="avatar"><?= strtoupper(substr($_SESSION['university_name'] ?? 'U', 0, 1)) ?></div>
                 </div>
             </div>
         </div>
 
         <!-- Dashboard Content -->
         <div class="content-wrapper">
-            <!-- Quick Action Buttons -->
-            <div class="quick-actions">
-                <a href="<?= BASE_URL ?>/university-rep/events/create" class="action-card blue">
-                    <div class="action-icon">📅</div>
-                    <div class="action-text">
-                        <h3>Add Event</h3>
-                        <p>Create new workshop or event</p>
-                    </div>
-                </a>
-                <a href="<?= BASE_URL ?>/university-rep/announcements/create" class="action-card green">
-                    <div class="action-icon">📰</div>
-                    <div class="action-text">
-                        <h3>Add Announcement</h3>
-                        <p>Post important updates</p>
-                    </div>
-                </a>
-                <a href="<?= BASE_URL ?>/university-rep/resources/create" class="action-card orange">
-                    <div class="action-icon">📚</div>
-                    <div class="action-text">
-                        <h3>Add Resource</h3>
-                        <p>Upload helpful materials</p>
-                    </div>
-                </a>
-            </div>
+            <!-- Quick Actions Removed -->
 
             <!-- Stats Cards -->
-            <div class="stats-grid">
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
                 <div class="stat-card">
-                    <div class="stat-icon blue">📅</div>
+                    <div class="stat-icon green" style="background: #dcfce7; color: #16a34a;">💰</div>
                     <div class="stat-details">
-                        <h3>Total Events</h3>
-                        <p class="stat-number">12</p>
+                        <h3>Total Funds Raised</h3>
+                        <p class="stat-number">Rs <?= number_format($total_raised ?? 0, 2) ?></p>
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-icon green">📰</div>
+                    <div class="stat-icon blue" style="background: #dbeafe; color: #1d4ed8;">✅</div>
                     <div class="stat-details">
-                        <h3>Total Announcements</h3>
-                        <p class="stat-number">8</p>
+                        <h3>Active Events</h3>
+                        <p class="stat-number"><?= htmlspecialchars($active_events ?? 0) ?></p>
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-icon orange">📚</div>
+                    <div class="stat-icon orange" style="background: #fed7aa; color: #ea580c;">⏳</div>
                     <div class="stat-details">
-                        <h3>Uploaded Resources</h3>
-                        <p class="stat-number">15</p>
+                        <h3>Pending Events</h3>
+                        <p class="stat-number"><?= htmlspecialchars($pending_events ?? 0) ?></p>
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-icon purple">👥</div>
+                    <div class="stat-icon purple" style="background: #fce7f3; color: #be185d;">❌</div>
                     <div class="stat-details">
-                        <h3>Total Engagement</h3>
-                        <p class="stat-number">254</p>
+                        <h3>Rejected Events</h3>
+                        <p class="stat-number"><?= htmlspecialchars($rejected_events ?? 0) ?></p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #e0e7ff; color: #4338ca;">👥</div>
+                    <div class="stat-details">
+                        <h3>Total Donors</h3>
+                        <p class="stat-number"><?= htmlspecialchars($total_donors ?? 0) ?></p>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Activities Section -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>📋 Recent Activities</h2>
-                    <a href="<?= BASE_URL ?>/university-rep/events" class="btn btn-sm btn-secondary">View All</a>
-                </div>
-                <div class="activity-list">
-                    <div class="activity-item">
-                        <div class="activity-icon">📅</div>
-                        <div class="activity-details">
-                            <h4>Stress Relief Workshop 2025</h4>
-                            <p>Workshop event published</p>
-                            <div class="activity-time">2 hours ago</div>
-                        </div>
+            <!-- Upcoming and Completed Events -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Upcoming Events -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>📅 Upcoming Events</h2>
+                        <a href="<?= BASE_URL ?>/university-rep/events" class="btn btn-sm btn-secondary">View All</a>
                     </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">📰</div>
-                        <div class="activity-details">
-                            <h4>Mental Health Awareness Week</h4>
-                            <p>Announcement posted</p>
-                            <div class="activity-time">1 day ago</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">📚</div>
-                        <div class="activity-details">
-                            <h4>Counseling Services Guide</h4>
-                            <p>Resource uploaded</p>
-                            <div class="activity-time">3 days ago</div>
-                        </div>
+                    <div class="activity-list">
+                        <?php if(!empty($upcoming_events_list)): ?>
+                            <?php foreach($upcoming_events_list as $event): ?>
+                                <div class="activity-item">
+                                    <div class="activity-icon">📅</div>
+                                    <div class="activity-details">
+                                        <h4><?= htmlspecialchars($event['event_title']) ?></h4>
+                                        <p><?= date('F j, Y', strtotime($event['event_date'])) ?> at <?= date('g:i A', strtotime($event['start_time'])) ?></p>
+                                        <div class="activity-time" style="color: #2563eb; font-weight: 600;">Upcoming</div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="padding: 20px; color: #64748b; text-align: center;">No upcoming events.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
-            </div>
 
-            <!-- Upcoming Events -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>📅 Upcoming Events</h2>
-                </div>
-                <div class="activity-list">
-                    <div class="activity-item">
-                        <div class="activity-icon">📅</div>
-                        <div class="activity-details">
-                            <h4>Mindfulness Meditation Session</h4>
-                            <p>March 25, 2025 at 10:00 AM</p>
-                        </div>
+                <!-- Completed Events -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>✅ Completed Events</h2>
+                        <a href="<?= BASE_URL ?>/university-rep/events" class="btn btn-sm btn-secondary">View All</a>
                     </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">📅</div>
-                        <div class="activity-details">
-                            <h4>Anxiety Management Talk</h4>
-                            <p>March 30, 2025 at 2:00 PM</p>
-                        </div>
+                    <div class="activity-list">
+                        <?php if(!empty($completed_events_list)): ?>
+                            <?php foreach($completed_events_list as $event): ?>
+                                <div class="activity-item">
+                                    <div class="activity-icon" style="background: #f1f5f9; color: #94a3b8;">✔</div>
+                                    <div class="activity-details">
+                                        <h4><?= htmlspecialchars($event['event_title']) ?></h4>
+                                        <p><?= date('F j, Y', strtotime($event['event_date'])) ?></p>
+                                        <div class="activity-time" style="color: #64748b;">Completed</div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="padding: 20px; color: #64748b; text-align: center;">No completed events.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

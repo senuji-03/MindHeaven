@@ -108,6 +108,19 @@ class LoginControl
                 }
                 $_SESSION['role'] = $assignedRole;
 
+                // Fetch university name for University Representatives
+                if ($_SESSION['role'] === 'university_representative') {
+                    $uniStmt = $pdo->prepare("
+                        SELECT u.name 
+                        FROM universities u 
+                        JOIN university_representatives ur ON u.id = ur.university_id 
+                        WHERE ur.user_id = ?
+                    ");
+                    $uniStmt->execute([$user['id']]);
+                    $uniName = $uniStmt->fetchColumn();
+                    $_SESSION['university_name'] = $uniName ?: 'University';
+                }
+
                 $this->redirectToDashboard($_SESSION['role']);
             } else {
                 $this->view('layouts/login', ['error' => 'Invalid username or password']);

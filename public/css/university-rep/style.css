@@ -458,7 +458,7 @@ body {
 
 .filter-bar {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 15px;
     padding: 20px;
 }
@@ -520,7 +520,8 @@ body {
     font-weight: 600;
 }
 
-.event-status.published {
+.event-status.published,
+.event-status.approved {
     background: #d1fae5;
     color: #065f46;
 }
@@ -530,9 +531,15 @@ body {
     color: #92400e;
 }
 
-.event-status.pending {
+.event-status.pending,
+.event-status.pending_approval {
     background: #fef3c7;
     color: #92400e;
+}
+
+.event-status.rejected {
+    background: #fee2e2;
+    color: #991b1b;
 }
 
 .event-status.archived {
@@ -1637,4 +1644,90 @@ body {
         width: 95%;
         margin: 20px;
     }
+}
+
+/* Alert/Toast Notifications */
+.alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alert {
+    padding: 16px 24px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 450px;
+    animation: alert-slide-in 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.4s ease;
+    border-left: 5px solid transparent;
+}
+
+.alert-success {
+    border-left-color: #10b981;
+}
+
+.alert-success .alert-icon {
+    color: #10b981;
+}
+
+.alert-error {
+    border-left-color: #ef4444;
+}
+
+.alert-error .alert-icon {
+    color: #ef4444;
+}
+
+.alert-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.alert-message {
+    flex: 1;
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.alert-close:hover {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+@keyframes alert-slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.alert-fade-out {
+    opacity: 0;
+    transform: translateX(100%);
 }

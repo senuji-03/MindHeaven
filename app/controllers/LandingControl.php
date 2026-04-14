@@ -23,7 +23,7 @@ class LandingControl
 
         try {
             $pdo = Database::getConnection();
-            $sql = "SELECT e.*, u.name as university_name 
+            $sql = "SELECT e.*, u.name as university_name, u.email as university_email, u.phone as university_phone, u.website as university_website
                     FROM university_rep_events e 
                     JOIN university_representatives ur ON e.university_rep_id = ur.user_id 
                     JOIN universities u ON ur.university_id = u.id 
