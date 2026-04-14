@@ -372,7 +372,7 @@ function _generateRowsHtml(list) {
                         <button class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 8px;font-size:.75rem;" onclick="acceptReschedule(${a.id})" title="Accept New Time">
                             Accept
                         </button>
-                    ` : (['completed', 'no_show','in_progress'].includes(statusKey) ? '' : `
+                    ` : (['completed', 'no_show', 'in_progress'].includes(statusKey) ? '' : `
                         <button class="mh-action-btn" onclick="editAppointment(${a.id})" title="Edit">
                             <i class="fas fa-pen"></i>
                         </button>
@@ -406,14 +406,14 @@ function _renderRows(list) {
     if (empty) empty.style.display = 'none';
 
     const todayVal = new Date().toISOString().split('T')[0];
-    
+
     // Split into categories
     const activeList = list.filter(a => (a.status || '').toLowerCase() === 'in_progress');
-    const upcomingList = list.filter(a => 
-        ['accepted', 'accept', 'scheduled', 'confirmed'].includes((a.status || '').toLowerCase()) && 
+    const upcomingList = list.filter(a =>
+        ['accepted', 'accept', 'scheduled', 'confirmed'].includes((a.status || '').toLowerCase()) &&
         a.date >= todayVal
     );
-    
+
     // Render Active Sessions
     _renderActiveSessions(activeList);
 
@@ -442,7 +442,7 @@ function _renderActiveSessions(activeList) {
     container.innerHTML = activeList.map(a => {
         const modeLabel = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_', ' ') : '—');
         const typeLabel = a.type ? a.type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) : '—';
-        
+
         return `<div class="mh-table-card" style="margin-bottom: 24px; border-top: 4px solid #10b981; background: #f0fdf4; box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 0 8px 10px -6px rgba(16, 185, 129, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 24px;">
                     <div style="flex: 1;">

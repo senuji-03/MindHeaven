@@ -7,38 +7,227 @@
 
 $TITLE        = 'MindHeaven — My Chats';
 $CURRENT_PAGE = 'chat';
-$PAGE_CSS     = [BASE_URL . '/css/chat/chat.css'];
-
+// Remove dark-mode distinct chat.css to adopt global theme via inline styles/classes
 require BASE_PATH . '/app/views/layouts/header.php';
 
 $sessions = isset($sessions) ? $sessions : [];
 ?>
 
-<main id="main" style="padding:2rem; max-width:860px; margin:0 auto;">
+<style>
+/* Local alignment to match Mood/Habits grids */
+.dashboard-main {
+    padding: 16px 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'DM Sans', system-ui, sans-serif;
+}
 
-    <div class="chat-page">
+.chat-hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+    border-radius: var(--radius-lg);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
 
-        <!-- Page Header -->
-        <div class="chat-list-header" style="margin-bottom:2rem;">
-            <h1 style="font-size:1.75rem; font-weight:700; background:linear-gradient(135deg,#6366f1,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0;">
-                💬 My Counselling Chats
-            </h1>
-            <span class="secure-badge">🔒 Private & Secure</span>
+.chat-hero::after {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(232,168,124,0.15);
+    bottom: -40px;
+    left: 15%;
+}
+
+.chat-hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.chat-hero-title {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+}
+
+.chat-hero-subtitle {
+    color: rgba(255,255,255,0.85);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.secure-badge {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.chat-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+}
+
+.chat-list-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.chat-list-title i { color: var(--primary); }
+
+.info-note {
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.info-note i { color: var(--accent-calm); font-size: 1.2rem; }
+
+.session-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+}
+
+.session-card:hover {
+    background: var(--bg-mid);
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.session-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-calm), var(--primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+.session-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.session-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.session-preview {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.session-meta {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.session-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.status-badge.active { background: var(--bg-mid); color: var(--success); border: 1px solid var(--border); }
+.status-badge.closed { background: #FEF2F2; color: var(--crisis); border: 1px solid #FECACA; }
+
+.empty-state {
+    text-align: center;
+    padding: 48px;
+}
+.empty-state i {
+    font-size: 3rem;
+    color: var(--border);
+    margin-bottom: 16px;
+}
+.empty-state h3 { font-size: 1.2rem; color: var(--text-primary); margin-bottom: 8px; }
+.empty-state p { color: var(--text-secondary); max-width: 400px; margin: 0 auto; line-height: 1.6; }
+</style>
+
+<main id="main" class="dashboard-main">
+
+    <!-- Hero Header -->
+    <div class="chat-hero">
+        <div class="chat-hero-content">
+            <h1 class="chat-hero-title">💬 Counselling Chats</h1>
+            <p class="chat-hero-subtitle">Secure, confidential messaging with your counselor.</p>
         </div>
+        <span class="secure-badge"><i class="fas fa-lock"></i> Private & Secure</span>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="chat-container">
 
         <!-- Info Note -->
-        <div style="background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.85rem;color:#94a3b8;">
-            ℹ️ Your counselor will open a chat with you. Only you and your counselor can see this conversation.
+        <div class="info-note">
+            <i class="fas fa-info-circle"></i>
+            <div>Your counselor will initiate a chat with you based on your appointments. These conversations are strictly confidential and encrypted.</div>
         </div>
 
-        <!-- Sessions List -->
-        <p class="sessions-label">Your conversations</p>
+        <h2 class="chat-list-title"><i class="fas fa-inbox"></i> Your Conversations</h2>
 
+        <!-- Sessions List -->
         <?php if (empty($sessions)): ?>
-            <div class="empty-chat-state">
-                <div class="empty-icon">💬</div>
-                <h3>No chats yet</h3>
-                <p>Your counselor will start a chat once your appointment is confirmed. Check back soon!</p>
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <h3>No active chats</h3>
+                <p>You don't have any open conversations yet. Your counselor will start a chat here when your session begins.</p>
             </div>
         <?php else: ?>
             <div class="sessions-list">
@@ -55,10 +244,10 @@ $sessions = isset($sessions) ? $sessions : [];
                                 : date('M j', $ts);
                         }
                         $statusClass = htmlspecialchars($s['status'] ?? 'active');
+                        $initials = strtoupper(substr($s['other_name'] ?? $s['other_username'] ?? 'C', 0, 1));
                     ?>
-                    <a class="session-card"
-                       href="<?php echo BASE_URL; ?>/chat/room?session_id=<?php echo (int)$s['id']; ?>">
-                        <div class="session-avatar">🧑‍💼</div>
+                    <a class="session-card" href="<?php echo BASE_URL; ?>/chat/room?session_id=<?php echo (int)$s['id']; ?>">
+                        <div class="session-avatar"><?php echo $initials; ?></div>
                         <div class="session-info">
                             <div class="session-name"><?php echo htmlspecialchars($s['other_name'] ?? $s['other_username']); ?></div>
                             <div class="session-preview"><?php echo $preview; ?></div>
@@ -67,14 +256,14 @@ $sessions = isset($sessions) ? $sessions : [];
                             <?php if ($timeLabel): ?>
                                 <div class="session-time"><?php echo $timeLabel; ?></div>
                             <?php endif; ?>
-                            <span class="session-status-badge <?php echo $statusClass; ?>"><?php echo $statusClass; ?></span>
+                            <span class="status-badge <?php echo $statusClass; ?>"><?php echo $statusClass; ?></span>
                         </div>
                     </a>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
 
-    </div><!-- /.chat-page -->
+    </div>
 </main>
 
 <?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

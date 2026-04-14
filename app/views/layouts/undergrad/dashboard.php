@@ -34,7 +34,7 @@ $PAGE_JS = [];
 
 /* ── Dashboard Layout ── */
 .dashboard-main {
-    padding: 28px;
+    padding: 16px 28px;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -43,9 +43,9 @@ $PAGE_JS = [];
 .dashboard-hero {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
     color: white;
-    padding: 36px 32px;
+    padding: 20px 28px;
     border-radius: var(--radius-lg);
-    margin-bottom: 28px;
+    margin-bottom: 16px;
     box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
@@ -212,18 +212,18 @@ $PAGE_JS = [];
 
 /* ── Stats Grid ── */
 .dashboard-stats {
-    margin-bottom: 28px;
+    margin-bottom: 16px;
 }
 
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 16px;
 }
 
 .stat-card {
     background: var(--surface);
-    padding: 24px;
+    padding: 16px 20px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
@@ -240,7 +240,7 @@ $PAGE_JS = [];
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .stat-icon-box {
@@ -274,14 +274,14 @@ $PAGE_JS = [];
 }
 
 .stat-content {
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 .stat-number {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-family: 'DM Sans', system-ui, sans-serif;
 }
 
@@ -355,13 +355,13 @@ $PAGE_JS = [];
 }
 
 .stat-actions {
-    padding-top: 12px;
+    padding-top: 10px;
     border-top: 1px solid var(--border);
 }
 
 /* ── Analytics Grid ── */
 .dashboard-analytics {
-    margin-bottom: 28px;
+    margin-bottom: 16px;
 }
 
 .section-label {
@@ -370,14 +370,14 @@ $PAGE_JS = [];
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: var(--primary);
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     display: block;
 }
 
 .analytics-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 16px;
 }
 
 .analytics-card {
@@ -389,7 +389,7 @@ $PAGE_JS = [];
 }
 
 .card-header {
-    padding: 20px 24px 0;
+    padding: 14px 20px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -403,12 +403,12 @@ $PAGE_JS = [];
 }
 
 .time-filter {
-    padding: 6px 12px;
+    padding: 4px 10px;
     border: 1.5px solid var(--border);
     border-radius: var(--radius-sm);
     background: var(--surface);
     font-family: inherit;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     cursor: pointer;
     outline: none;
@@ -420,12 +420,12 @@ $PAGE_JS = [];
 }
 
 .card-content {
-    padding: 20px 24px;
+    padding: 12px 20px;
 }
 
 /* ── Quick Actions ── */
 .dashboard-actions {
-    margin-bottom: 28px;
+    margin-bottom: 16px;
 }
 
 .actions-grid {
@@ -673,16 +673,16 @@ $PAGE_JS = [];
     <div class="hero-content">
       <div class="hero-text">
         <div class="hero-greeting">Good day 👋</div>
-        <h1 class="hero-title">Welcome back, Student!</h1>
+        <h1 class="hero-title">Welcome back, <?= htmlspecialchars($studentName ?? 'Student') ?>!</h1>
         <p class="hero-subtitle">Here's your mental health overview for today</p>
         <div class="hero-stats">
           <div class="hero-stat">
-            <span class="stat-number">7</span>
-            <span class="stat-label">Day Streak</span>
+            <span class="stat-number"><?= $habitStats['scheduled_today'] ?? 0 ?></span>
+            <span class="stat-label">Tasks Today</span>
           </div>
           <div class="hero-stat">
-            <span class="stat-number">85%</span>
-            <span class="stat-label">Wellness</span>
+            <span class="stat-number"><?= $habitStats['completion_rate'] ?? 0 ?>%</span>
+            <span class="stat-label">Completion Rate</span>
           </div>
         </div>
       </div>
@@ -711,11 +711,17 @@ $PAGE_JS = [];
           </div>
         </div>
         <div class="stat-content">
-          <div class="stat-number">3/5</div>
+          <?php
+            $habitsCompleted = $habitStats['completed_today'] ?? 0;
+            $habitsScheduled = $habitStats['scheduled_today'] ?? 0;
+            $habitRatio      = $habitsScheduled > 0 ? "{$habitsCompleted}/{$habitsScheduled}" : "0/0";
+            $habitPercent    = $habitsScheduled > 0 ? min(100, round(($habitsCompleted / $habitsScheduled) * 100)) : 0;
+          ?>
+          <div class="stat-number"><?= $habitRatio ?></div>
           <div class="progress-bar">
-            <div class="progress-fill" style="width: 60%"></div>
+            <div class="progress-fill" style="width: <?= $habitPercent ?>%"></div>
           </div>
-          <span class="progress-text">60% Complete</span>
+          <span class="progress-text"><?= $habitPercent ?>% Complete</span>
         </div>
         <div class="stat-actions">
           <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-small btn-outline">View All</a>
@@ -732,11 +738,36 @@ $PAGE_JS = [];
           </div>
         </div>
         <div class="stat-content">
+          <?php
+          $moodText = "Not logged today";
+          $moodEmoji = "😐";
+          $moodTime = "Never";
+          if (!empty($currentMood)) {
+              $moodTime = date('g:i A', strtotime($currentMood['created_at']));
+              $moodType = strtolower($currentMood['mood_type']);
+              $moodMap = [
+                  'happy'     => ['emoji' => '😄', 'text' => 'Happy'],
+                  'sad'       => ['emoji' => '😢', 'text' => 'Sad'],
+                  'anxious'   => ['emoji' => '😬', 'text' => 'Anxious'],
+                  'calm'      => ['emoji' => '😌', 'text' => 'Calm'],
+                  'angry'     => ['emoji' => '😠', 'text' => 'Angry'],
+                  'stressed'  => ['emoji' => '😫', 'text' => 'Stressed'],
+                  'tired'     => ['emoji' => '😴', 'text' => 'Tired'],
+                  'neutral'   => ['emoji' => '😐', 'text' => 'Neutral'],
+              ];
+              if (isset($moodMap[$moodType])) {
+                  $moodEmoji = $moodMap[$moodType]['emoji'];
+                  $moodText = $moodMap[$moodType]['text'];
+              } else {
+                  $moodText = ucfirst($moodType);
+              }
+          }
+          ?>
           <div class="mood-display">
-            <span class="mood-emoji" id="currentMoodEmoji"></span>
-            <span class="mood-text" id="currentMoodText">Not logged today</span>
+            <span class="mood-emoji" id="currentMoodEmoji"><?= $moodEmoji ?></span>
+            <span class="mood-text" id="currentMoodText"><?= htmlspecialchars($moodText) ?></span>
           </div>
-          <div class="mood-time" id="moodTime">Last logged: Never</div>
+          <div class="mood-time" id="moodTime">Last logged: <?= empty($currentMood) ? 'Never' : "Today at " . htmlspecialchars($moodTime) ?></div>
         </div>
         <div class="stat-actions">
           <a href="<?= BASE_URL ?>/ug/mood" class="btn btn-small btn-primary">Log Mood</a>
@@ -753,11 +784,37 @@ $PAGE_JS = [];
           </div>
         </div>
         <div class="stat-content">
+          <?php
+          if (!empty($nextAppointment)) {
+              $aptDate = '';
+              $dateObj = new DateTime($nextAppointment['date']);
+              $today = new DateTime('today');
+              $tomorrow = new DateTime('tomorrow');
+              if ($dateObj == $today) $aptDate = 'Today';
+              elseif ($dateObj == $tomorrow) $aptDate = 'Tomorrow';
+              else $aptDate = $dateObj->format('F j');
+              
+              $aptTime = date('g:i A', strtotime($nextAppointment['time']));
+              $aptType = htmlspecialchars($nextAppointment['type']);
+              $counselor = htmlspecialchars($nextAppointment['counselor_name'] ?? 'Counselor');
+              $aptMode = $nextAppointment['mode'] ?? 'audio_video';
+              
+              $modeText = 'Online Meeting';
+              if ($aptMode == 'in_person') $modeText = 'In-Person';
+              elseif ($aptMode == 'audio_video') $modeText = 'Online';
+          ?>
           <div class="appointment-info">
-            <div class="appointment-time"><i class="fas fa-clock"></i> Tomorrow, 3:00 PM</div>
-            <div class="appointment-type">Counseling Session</div>
-            <div class="appointment-location">Student Health Center</div>
+            <div class="appointment-time"><i class="fas fa-clock"></i> <?= $aptDate ?>, <?= $aptTime ?></div>
+            <div class="appointment-type"><?= $aptType ?> (<?= htmlspecialchars($modeText) ?>)</div>
+            <div class="appointment-location" style="color:var(--text-secondary);font-size:0.85rem;margin-top:4px;">with <?= $counselor ?></div>
           </div>
+          <?php } else { ?>
+          <div class="appointment-info">
+            <div class="appointment-time">No upcoming appointments</div>
+            <div class="appointment-type">Ready to talk?</div>
+            <div class="appointment-location" style="color:var(--text-secondary);font-size:0.85rem;margin-top:4px;">Book a session today</div>
+          </div>
+          <?php } ?>
         </div>
         <div class="stat-actions">
           <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-small btn-outline">Manage</a>
@@ -780,7 +837,7 @@ $PAGE_JS = [];
           </select>
         </div>
         <div class="card-content">
-          <canvas id="habitChart" width="400" height="200"></canvas>
+          <canvas id="habitChart" width="400" height="150"></canvas>
         </div>
       </div>
 
@@ -794,7 +851,7 @@ $PAGE_JS = [];
           </select>
         </div>
         <div class="card-content">
-          <canvas id="moodChart" width="400" height="200"></canvas>
+          <canvas id="moodChart" width="400" height="150"></canvas>
         </div>
       </div>
     </div>
@@ -808,7 +865,7 @@ $PAGE_JS = [];
         <div class="action-icon-box" style="background:var(--primary);">🎯</div>
         <h4 class="action-title">Set Goals</h4>
         <p class="action-description">Create new wellness goals for this week</p>
-        <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-small btn-outline">Get Started</a>
+        <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-small btn-outline">Get Started</a>
       </div>
 
       <div class="action-card">
@@ -821,8 +878,8 @@ $PAGE_JS = [];
       <div class="action-card">
         <div class="action-icon-box" style="background:var(--accent-warm);">🤝</div>
         <h4 class="action-title">Support</h4>
-        <p class="action-description">Connect with counselors and groups</p>
-        <a href="<?= BASE_URL ?>/ug/contact" class="btn btn-small btn-outline">Connect</a>
+        <p class="action-description">Connect with counselors and book sessions</p>
+        <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-small btn-outline">Connect</a>
       </div>
 
       <div class="action-card">
@@ -912,15 +969,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const gridColor = '#D6E4DD';
     const labelColor = '#6B8C7E';
 
-    // Dummy data
-    const habitData = {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        data: [4, 3, 5, 4, 6, 2, 5]
-    };
-    const moodData = {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        data: [7, 6, 8, 7, 9, 5, 8]
-    };
+    // Dynamic chart data passed from backend
+    const habitData = <?= json_encode($habitChartData ?? ['labels' => [], 'data' => []]) ?>;
+    const moodData = <?= json_encode($moodChartData ?? ['labels' => [], 'data' => []]) ?>;
 
     function drawChart(canvasId, data, color, fillColor) {
         const canvas = document.getElementById(canvasId);

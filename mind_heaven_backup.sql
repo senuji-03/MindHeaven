@@ -629,7 +629,7 @@ CREATE TABLE `mood_records` (
   `id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED NOT NULL,
   `mood_level` tinyint(4) NOT NULL CHECK (`mood_level` >= 1 and `mood_level` <= 10),
-  `mood_type` enum('happy','sad','anxious','angry','calm','excited','tired','stressed','confused','grateful') NOT NULL,
+  `mood_type` enum('happy','sad','anxious','angry','calm','excited','tired','stressed','confused','grateful','neutral') NOT NULL,
   `notes` text DEFAULT NULL,
   `triggers` text DEFAULT NULL,
   `coping_strategies` text DEFAULT NULL,

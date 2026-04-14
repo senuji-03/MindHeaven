@@ -24,34 +24,34 @@ function getNavigationItems($role)
   $navItems = [
     'undergrad' => [
       'main' => [
-        ['icon' => '🏠', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
-        ['icon' => '✅', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
-        ['icon' => '😊', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
-        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
-        ['icon' => '💬', 'text' => 'Chat', 'url' => '/ug/chat', 'slug' => 'chat'],
+        ['icon' => 'fas fa-home', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
+        ['icon' => 'fas fa-check-circle', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
+        ['icon' => 'fas fa-smile', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
+        ['icon' => 'fas fa-calendar-alt', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
+        ['icon' => 'fas fa-comments', 'text' => 'Chat', 'url' => '/ug/chat', 'slug' => 'chat'],
       ],
       'support' => [
-        ['icon' => '📚', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
-        ['icon' => '💬', 'text' => 'Forum', 'url' => '/forum', 'slug' => 'forum'],
-        ['icon' => '📞', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
-        ['icon' => 'ℹ️', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
+        ['icon' => 'fas fa-book', 'text' => 'Resources', 'url' => '/ug/resources', 'slug' => 'resources'],
+        ['icon' => 'fas fa-users', 'text' => 'Forum', 'url' => '/forum', 'slug' => 'forum'],
+        ['icon' => 'fas fa-envelope', 'text' => 'Contact', 'url' => '/ug/contact', 'slug' => 'contact'],
+        ['icon' => 'fas fa-info-circle', 'text' => 'About', 'url' => '/ug/about', 'slug' => 'about'],
       ],
       'feedback' => [
-        ['icon' => '💬', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
+        ['icon' => 'fas fa-comment-dots', 'text' => 'Feedback', 'url' => '/ug/feedback', 'slug' => 'feedback'],
       ]
     ],
     'admin' => [
       'main' => [
-        ['icon' => '📊', 'text' => 'Dashboard', 'url' => '/admin', 'slug' => 'dashboard'],
-        ['icon' => '👥', 'text' => 'Manage Users', 'url' => '/admin/manage-users', 'slug' => 'manage-users'],
-        ['icon' => '📚', 'text' => 'Resource Hub', 'url' => '/admin/resource-hub', 'slug' => 'resource-hub'],
-        ['icon' => '💬', 'text' => 'Moderate Forum', 'url' => '/admin/moderate-forum', 'slug' => 'moderate-forum'],
-        ['icon' => '👨‍⚕️', 'text' => 'Manage Counselors', 'url' => '/admin/counselors', 'slug' => 'counselors'],
-        ['icon' => '📅', 'text' => 'Appointments', 'url' => '/admin/appointments', 'slug' => 'appointments'],
-        ['icon' => '📈', 'text' => 'Reports', 'url' => '/admin/reports', 'slug' => 'reports'],
-        ['icon' => '🏛️', 'text' => 'University Events', 'url' => '/admin/university-events', 'slug' => 'university-events'],
-        ['icon' => '⚙️', 'text' => 'Settings', 'url' => '/admin/settings', 'slug' => 'settings'],
-        ['icon' => '💰', 'text' => 'Donation logs', 'url' => '/admin/donations', 'slug' => 'donations'],
+        ['icon' => 'fas fa-chart-line', 'text' => 'Dashboard', 'url' => '/admin', 'slug' => 'dashboard'],
+        ['icon' => 'fas fa-user-friends', 'text' => 'Manage Users', 'url' => '/admin/manage-users', 'slug' => 'manage-users'],
+        ['icon' => 'fas fa-book-open', 'text' => 'Resource Hub', 'url' => '/admin/resource-hub', 'slug' => 'resource-hub'],
+        ['icon' => 'fas fa-shield-alt', 'text' => 'Moderate Forum', 'url' => '/admin/moderate-forum', 'slug' => 'moderate-forum'],
+        ['icon' => 'fas fa-user-md', 'text' => 'Manage Counselors', 'url' => '/admin/counselors', 'slug' => 'counselors'],
+        ['icon' => 'fas fa-calendar-check', 'text' => 'Appointments', 'url' => '/admin/appointments', 'slug' => 'appointments'],
+        ['icon' => 'fas fa-chart-bar', 'text' => 'Reports', 'url' => '/admin/reports', 'slug' => 'reports'],
+        ['icon' => 'fas fa-university', 'text' => 'University Events', 'url' => '/admin/university-events', 'slug' => 'university-events'],
+        ['icon' => 'fas fa-cog', 'text' => 'Settings', 'url' => '/admin/settings', 'slug' => 'settings'],
+        ['icon' => 'fas fa-hand-holding-usd', 'text' => 'Donation logs', 'url' => '/admin/donations', 'slug' => 'donations'],
       ]
     ],
     'counselor' => [
@@ -112,320 +112,429 @@ $navigationItems = getNavigationItems($userRole);
   <?php endforeach; ?>
 
   <style>
-    /* Header Inline Styles */
+    :root {
+      /* MindHeaven Design System Tokens */
+      --primary: #3D8B6E;
+      --primary-dark: #2A6B52;
+      --primary-light: #6BB89A;
+      --accent-warm: #E8A87C;
+      --accent-calm: #A8C5DA;
+      --bg-deep: #1C2B2A;
+      --bg-soft: #F5F0E8;
+      --bg-mid: #EEF6F2;
+      --text-primary: #1E3A34;
+      --text-secondary: #6B8C7E;
+      --surface: #FFFFFF;
+      --border: #D6E4DD;
+      --crisis: #D64F4F;
+      --success: #4CAF82;
+      --shadow-sm: 0 1px 3px rgba(30, 58, 52, 0.06);
+      --shadow-md: 0 4px 12px rgba(30, 58, 52, 0.08);
+      --shadow-lg: 0 12px 32px rgba(30, 58, 52, 0.10);
+      --shadow-xl: 0 20px 48px rgba(30, 58, 52, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+    }
+
+    body {
+      font-family: 'DM Sans', 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      color: var(--text-primary);
+    }
+
+    /* ── Sidebar Redesign ── */
     .sidebar {
       position: fixed;
       left: 0;
       top: 0;
-      width: 240px;
+      width: 260px;
       height: 100vh;
-      background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-      color: white;
+      background: var(--bg-deep);
+      /* Dark Canopy */
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
       overflow-y: auto;
       transform: none !important;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* Hide scrollbar */
+      scrollbar-width: none;
+      /* Firefox */
+      -ms-overflow-style: none;
+      /* IE/Edge */
+    }
+
+    .sidebar::-webkit-scrollbar {
+      display: none;
+      /* Chrome/Safari */
     }
 
     .sidebar-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      height: 74px;
+      
+      padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 12px;
       text-decoration: none;
-      color: white;
-      font-weight: 700;
-      font-size: 1.2rem;
+      transition: opacity 0.2s;
+    }
+
+    .brand:hover {
+      opacity: 0.85;
     }
 
     .brand-logo {
-      width: 2.5rem;
-      height: 2.5rem;
-      background: transparent;
-      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      background: var(--primary);
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
-      overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .brand-logo-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
+      font-size: 1.1rem;
+      color: white;
+      box-shadow: 0 4px 12px rgba(61, 139, 110, 0.25);
     }
 
     .brand-name {
-      font-weight: bold;
-      font-size: 1.3rem;
-      color: #ffffff;
+      font-family: 'Georgia', serif;
+      font-weight: 700;
+      font-size: 1.55rem;
+      letter-spacing: 0;
+      color: var(--text-primary);
     }
 
-    .sidebar-toggle {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: white;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .sidebar-toggle:hover {
-      background: rgba(255, 255, 255, 0.2);
+    .brand-name-highlight {
+      color: #DDA700;
     }
 
     .sidebar-nav {
-      padding: 1rem 0;
+      padding: 10px 16px;
+      flex: 1;
     }
 
     .nav-section {
-      margin-bottom: 2rem;
+      margin-bottom: 24px;
     }
 
     .nav-section-title {
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.78rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #9ca3af;
-      margin: 0 0 1rem 0;
-      padding: 0 1.5rem;
+      letter-spacing: 1.5px;
+      color: rgba(255, 255, 255, 0.5);
+      /* Dimmed section title */
+      margin: 0 0 10px 0;
+      padding: 0 8px;
     }
 
     .nav-list {
       list-style: none;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .nav-link {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      padding: 0.75rem 1.5rem;
-      color: #d1d5db;
+      gap: 12px;
+      padding: 10px 14px;
+      color: rgba(255, 255, 255, 0.7);
+      /* Light translucent text */
       text-decoration: none;
-      transition: all 0.3s ease;
-      border-left: 3px solid transparent;
+      font-weight: 500;
+      font-size: 0.95rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.25s ease;
     }
 
     .nav-link:hover {
       background: rgba(255, 255, 255, 0.1);
       color: white;
+      transform: translateX(4px);
     }
 
     .nav-link.active {
-      background: rgba(79, 70, 229, 0.2);
+      background: var(--primary);
       color: white;
-      border-left-color: #4f46e5;
+      font-weight: 600;
+      border: 1px solid transparent;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .nav-link.active .nav-icon {
+      color: white;
     }
 
     .nav-icon {
-      font-size: 1.2rem;
-      width: 1.5rem;
+      font-size: 1.15rem;
+      width: 24px;
       text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: rgba(255, 255, 255, 0.5);
+      transition: color 0.25s ease;
+    }
+
+    .nav-link:hover .nav-icon {
+      color: white;
     }
 
     .nav-text {
-      /* Always visible */
+      flex: 1;
     }
 
     .crisis-link {
-      background: rgba(239, 68, 68, 0.1);
-      border-left-color: #ef4444 !important;
+      color: var(--accent-warm) !important;
+      background: rgba(232, 168, 124, 0.1);
+      font-weight: 600;
     }
 
     .crisis-link:hover {
-      background: rgba(239, 68, 68, 0.2);
+      background: var(--accent-warm) !important;
+      color: #1C2B2A !important;
+      transform: translateX(4px);
     }
 
-    .sidebar-footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    .crisis-link .nav-icon {
+      color: var(--accent-warm);
+    }
+
+    .crisis-link:hover .nav-icon {
+      color: #1C2B2A;
+    }
+
+    .profile-link {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+    }
+
+    .profile-link:hover .user-name {
+      color: var(--primary);
     }
 
     .user-info {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 12px;
+      padding-left: 16px;
+      border-left: 1px solid var(--border);
+      margin-left: 8px;
     }
 
     .user-avatar {
-      width: 2.5rem;
-      height: 2.5rem;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      background: var(--bg-mid);
+      color: var(--primary);
+      border-radius: var(--radius-full);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
+      transition: all 0.2s ease;
+    }
+
+    .profile-link:hover .user-avatar {
+      background: var(--primary);
+      color: white;
     }
 
     .user-details {
-      /* layout handled by flexbox parent */
+      flex: 1;
+      white-space: nowrap;
+      text-align: left;
     }
 
     .user-name {
-      font-weight: 600;
-      color: white;
-      margin-bottom: 0.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      margin-bottom: 0px;
+      transition: color 0.2s ease;
     }
 
     .user-role {
-      font-size: 0.875rem;
-      color: #9ca3af;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: capitalize;
     }
 
+    /* ── Main Top Header ── */
     .main-wrapper {
-      margin-left: 240px;
+      margin-left: 260px;
       min-height: 100vh;
-      background: #f9fafb;
+      background: var(--surface);
     }
 
     .top-header {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #e5e7eb;
-      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 74px;
       position: sticky;
       top: 0;
       z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .top-header.scrolled {
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: var(--shadow-sm);
     }
 
     .header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      max-width: 1200px;
+      height: 100%;
+      padding: 0 28px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
     .mobile-menu-toggle {
       display: none;
-      background: none;
-      border: none;
-      padding: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px;
       cursor: pointer;
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
+      border-radius: var(--radius-sm);
+      transition: all 0.25s ease;
+      color: var(--text-secondary);
     }
 
     .mobile-menu-toggle:hover {
-      background: #f3f4f6;
+      background: var(--bg-mid);
+      color: var(--primary-dark);
+      border-color: var(--primary-light);
     }
 
     .hamburger {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 5px;
     }
 
     .bar {
-      width: 1.5rem;
+      width: 20px;
       height: 2px;
-      background: #374151;
-      border-radius: 1px;
+      background: currentColor;
+      border-radius: var(--radius-full);
       transition: all 0.3s ease;
     }
 
     .header-title h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #1f2937;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
       margin: 0;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 12px;
     }
 
     .header-btn {
-      background: none;
-      border: none;
-      padding: 0.75rem;
-      border-radius: 0.5rem;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
       cursor: pointer;
       transition: all 0.3s ease;
-      color: #6b7280;
-      position: relative;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
     }
 
     .header-btn:hover {
-      background: #f3f4f6;
-      color: #374151;
+      border-color: var(--primary);
+      background: var(--bg-mid);
+      color: var(--primary-dark);
+      transform: translateY(-1px);
     }
 
-    /* Button Styles */
+    /* ── Action Buttons ── */
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      text-decoration: none;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius-full);
       font-weight: 600;
-      transition: all 0.3s ease;
-      border: none;
+      font-size: 0.88rem;
       cursor: pointer;
-      font-size: 0.875rem;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      text-decoration: none;
+      border: none;
+      font-family: inherit;
     }
 
     .btn-donate {
-      background: #10b981;
+      background: var(--primary);
       color: white;
-      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
     }
 
     .btn-donate:hover {
-      background: #059669;
-      color: white;
+      background: var(--primary-dark);
       transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 6px 20px rgba(61, 139, 110, 0.3);
     }
 
     .btn-crisis {
-      background: #ef4444;
+      background: var(--crisis);
       color: white;
-      box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
     }
 
     .btn-crisis:hover {
-      background: #dc2626;
-      color: white;
+      background: #C43D3D;
       transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+      box-shadow: 0 6px 20px rgba(214, 79, 79, 0.3);
     }
 
     .btn-icon {
       font-size: 1rem;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
       .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
+        transform: translateX(-100%) !important;
+        box-shadow: var(--shadow-xl);
       }
 
       .sidebar.open {
-        transform: translateX(0);
+        transform: translateX(0) !important;
       }
 
       .main-wrapper {
@@ -434,6 +543,32 @@ $navigationItems = getNavigationItems($userRole);
 
       .mobile-menu-toggle {
         display: block;
+      }
+
+      .header-content {
+        padding: 16px 20px;
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header-title h1 {
+        font-size: 1.25rem;
+      }
+
+      .header-actions .btn-donate,
+      .header-actions .btn-crisis,
+      .header-actions .header-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+
+      .header-actions {
+        gap: 8px;
+      }
+
+      span.btn-text-hide {
+        display: none;
       }
     }
   </style>
@@ -450,7 +585,7 @@ $navigationItems = getNavigationItems($userRole);
         <div class="brand-logo">
           <i class="fas fa-leaf"></i>
         </div>
-        <span class="brand-name">MindHeaven</span>
+        <span class="brand-name">Mind<span class="brand-name-highlight">Heaven</span></span>
       </a>
     </div>
 
@@ -479,25 +614,7 @@ $navigationItems = getNavigationItems($userRole);
       <?php endforeach; ?>
     </nav>
 
-    <div class="sidebar-footer">
-      <?php if (Auth::check()): ?>
-        <div class="user-info">
-          <div class="user-avatar"><i class="fas fa-user"></i></div>
-          <div class="user-details">
-            <div class="user-name"><?= htmlspecialchars($currentUser['username']) ?></div>
-            <div class="user-role"><?= ucfirst($currentUser['role']) ?></div>
-          </div>
-        </div>
-      <?php else: ?>
-        <div class="user-info">
-          <div class="user-avatar"><i class="fas fa-user"></i></div>
-          <div class="user-details">
-            <div class="user-name">Guest</div>
-            <div class="user-role">Not logged in</div>
-          </div>
-        </div>
-      <?php endif; ?>
-    </div>
+
   </aside>
 
   <!-- Main Content -->
@@ -514,32 +631,77 @@ $navigationItems = getNavigationItems($userRole);
         </button>
 
         <div class="header-title">
-          <h1><?= htmlspecialchars($TITLE) ?></h1>
+          <?php
+          $displayTitle = str_replace(
+            ['MindHeaven — ', ' — MindHeaven', 'MindHeaven - ', ' - MindHeaven', 'MindHeaven'],
+            '',
+            $TITLE
+          );
+          $displayTitle = trim($displayTitle);
+          if (empty($displayTitle))
+            $displayTitle = 'Dashboard';
+          ?>
+          <h1><?= htmlspecialchars($displayTitle) ?></h1>
         </div>
 
         <div class="header-actions">
-          <?php if (Auth::check()): ?>
-            <!-- Logged-in user: show Logout -->
+          <a href="<?= BASE_URL ?>/donation" class="btn btn-donate">
+            <i class="fas fa-heart"></i> <span class="btn-text-hide">Donate</span>
+          </a>
+          <a href="<?= BASE_URL ?>/ug/crisis" class="btn btn-crisis">
+            <i class="fas fa-phone-alt"></i> <span class="btn-text-hide">Crisis</span>
+          </a>
+
+          <?php if (Auth::check()):
+            $profileUrl = '#';
+            $role = $currentUser['role'] ?? '';
+            if ($role === 'undergraduate') {
+              $profileUrl = BASE_URL . '/ug/profile';
+            } elseif ($role === 'counselor') {
+              $profileUrl = BASE_URL . '/counselor/counselor_profile';
+            } elseif ($role === 'admin') {
+              $profileUrl = BASE_URL . '/admin/profile';
+            } elseif ($role === 'university_representative') {
+              $profileUrl = BASE_URL . '/university-rep/profile';
+            }
+            ?>
+            <a href="<?= $profileUrl ?>" class="profile-link">
+              <div class="user-info">
+                <div class="user-avatar"><i class="fas fa-user"></i></div>
+                <div class="user-details hide-on-mobile">
+                  <div class="user-name"><?= htmlspecialchars($currentUser['username']) ?></div>
+                  <div class="user-role"><?= ucfirst($currentUser['role']) ?></div>
+                </div>
+              </div>
+            </a>
             <a href="<?= BASE_URL ?>/logout">
               <button class="header-btn" type="button" aria-label="Logout">
-                <span class="btn-icon">🚪</span> Logout
+                <i class="fas fa-sign-out-alt"></i> <span class="btn-text-hide">Logout</span>
               </button>
             </a>
           <?php else: ?>
-            <!-- Not logged in: show Login -->
+            <div class="user-info">
+              <div class="user-avatar"><i class="fas fa-user"></i></div>
+              <div class="user-details hide-on-mobile">
+                <div class="user-name">Guest</div>
+                <div class="user-role">Not logged in</div>
+              </div>
+            </div>
             <a href="<?= BASE_URL ?>/login">
               <button class="header-btn" type="button" aria-label="Login">
-                <span class="btn-icon">🔑</span> Login
+                <i class="fas fa-sign-in-alt"></i> <span class="btn-text-hide">Login</span>
               </button>
             </a>
           <?php endif; ?>
-
-          <a href="<?= BASE_URL ?>/donation" class="btn btn-donate">
-            <i class="fas fa-heart"></i> Donate
-          </a>
-          <a href="<?= BASE_URL ?>/ug/crisis" class="btn btn-crisis">
-            <i class="fas fa-phone-alt"></i> Crisis
-          </a>
         </div>
       </div>
     </header>
+    <script>
+      document.addEventListener('scroll', function () {
+        const header = document.querySelector('.top-header');
+        if (header) {
+          if (window.scrollY > 40) header.classList.add('scrolled');
+          else header.classList.remove('scrolled');
+        }
+      });
+    </script>
