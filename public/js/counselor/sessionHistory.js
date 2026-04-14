@@ -80,6 +80,9 @@ function updateStatsFromServer(stats) {
     document.getElementById('monthSessions').textContent     = stats.this_month || 0;
     document.getElementById('completedSessions').textContent = stats.completed  || 0;
     document.getElementById('cancelledSessions').textContent = stats.cancelled  || 0;
+    if (document.getElementById('overdueSessions')) {
+        document.getElementById('overdueSessions').textContent = stats.overdue || 0;
+    }
 }
 
 function updateStats() {
@@ -89,10 +92,19 @@ function updateStats() {
         return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
     }).length;
 
+    var overdue = sessionHistory.filter(function (s) {
+        var isPendingStatus = ['scheduled', 'confirmed', 'accept', 'accepted', 'pending'].includes(s.status);
+        var sessionFullDate = new Date(s.date + ' ' + (s.rawTime || '00:00:00'));
+        return isPendingStatus && sessionFullDate < today;
+    }).length;
+
     document.getElementById('totalSessions').textContent     = sessionHistory.length;
     document.getElementById('monthSessions').textContent     = thisMonth;
     document.getElementById('completedSessions').textContent = sessionHistory.filter(function (s) { return s.status === 'completed'; }).length;
     document.getElementById('cancelledSessions').textContent = sessionHistory.filter(function (s) { return s.status === 'cancelled'; }).length;
+    if (document.getElementById('overdueSessions')) {
+        document.getElementById('overdueSessions').textContent = overdue;
+    }
 }
 
 // ── Client-side filters (patient name + date range) ──────────
@@ -160,6 +172,19 @@ function renderSessionHistory() {
               '<span id="toggle-text-' + sid + '">Show more</span></div>'
             : '';
 
+        var isPendingStatus = ['scheduled', 'confirmed', 'accept', 'accepted', 'pending'].includes(session.status);
+        var sessionFullDate = new Date(session.date + ' ' + (session.rawTime || '00:00:00'));
+        var now = new Date();
+        
+        var statusBadge = '';
+        if (isPendingStatus && sessionFullDate < now) {
+            statusBadge = '<span class="status-badge status-overdue">Overdue</span>';
+        } else {
+            statusBadge = '<span class="status-badge status-' + escHtml(session.status) + '">' +
+                session.status.replace('-', ' ') +
+                '</span>';
+        }
+
         return '<tr>' +
             '<td><div class="patient-info">' +
                 '<div class="patient-name">' + escHtml(session.patientName) + '</div>' +
@@ -170,9 +195,7 @@ function renderSessionHistory() {
                 '<div class="session-time">'     + escHtml(session.time)       + '</div>' +
                 '<div class="session-duration">' + escHtml(session.duration)   + '</div>' +
             '</div></td>' +
-            '<td><span class="status-badge status-' + escHtml(session.status) + '">' +
-                session.status.replace('-', ' ') +
-            '</span></td>' +
+            '<td>' + statusBadge + '</td>' +
             '<td><div class="session-notes">' +
                 '<div class="notes-preview" id="notes-preview-' + sid + '">' + notesHtml + '</div>' +
                 '<div class="notes-full"    id="notes-full-'    + sid + '">' + notesHtml + '</div>' +
@@ -259,7 +282,7 @@ function viewSessionDetail(sessionId) {
     var scheduleInfo = '<div class="detail-card"><div class="detail-label">Date &amp; Time</div>' +
         '<div class="detail-value">' + formatDate(session.date) + '<br>' + escHtml(session.time) + ' (' + escHtml(session.duration) + ')</div></div>';
 
-    if (session.originalDate && (session.originalDate !== session.date || session.originalTime !== session.time)) {
+    if (session.originalDate) {
         scheduleInfo = '<div class="detail-card" style="border-left-color: #f59e0b; background: #fffbeb;">' +
             '<div class="detail-label" style="color: #92400e;">Initial Undergrad Booking</div>' +
             '<div class="detail-value" style="color: #92400e; opacity: 0.8;">' + formatDate(session.originalDate) + '<br>' + formatTime(session.originalTime) + '</div>' +

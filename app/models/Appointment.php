@@ -65,18 +65,34 @@ class Appointment
     {
         $pdo = Database::getConnection();
 
+        // 1. Fetch current record to ensure we capture the CORRECT old values
+        $stmt = $pdo->prepare("SELECT date, time, original_date, original_time FROM appointments WHERE id = ?");
+        $stmt->execute(array($id));
+        $current = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$current) {
+            return false;
+        }
+
+        // 2. Determine what the 'original' values should be
+        // If they are already set (from a 2nd reschedule), keep them. 
+        // Otherwise, use the current (soon to be 'old') values.
+        $originalDate = $current['original_date'] ? $current['original_date'] : $current['date'];
+        $originalTime = $current['original_time'] ? $current['original_time'] : $current['time'];
+
+        // 3. Perform the update
         $sql = "
             UPDATE appointments 
-            SET date = ?, 
+            SET original_date = ?,
+                original_time = ?,
+                date = ?, 
                 time = ?, 
                 reschedule_reason = ?, 
                 status = 'rescheduled', 
-                updated_at = CURRENT_TIMESTAMP,
-                original_date = COALESCE(original_date, date),
-                original_time = COALESCE(original_time, time)
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ";
-        $params = array($date, $time, $reason, $id);
+        $params = array($originalDate, $originalTime, $date, $time, $reason, $id);
 
         // Optional ownership check for counselor
         if ($counselorUserId !== null) {
@@ -412,9 +428,32 @@ class Appointment
                 $stmt->execute();
                 break;
 
+            case 'overdue':
+                $sql = "
+                    SELECT $columns $joins 
+                    WHERE a.counselor_user_id = :cid 
+                    AND a.status IN ('scheduled', 'confirmed', 'accept', 'accepted', 'pending') 
+                    AND (a.date < CURDATE() OR (a.date = CURDATE() AND a.time < CURTIME()))
+                    ORDER BY a.date DESC, a.time DESC
+                ";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute(array(':cid' => (int) $counselorUserId));
+                break;
+
             default:
-                // All historical statuses (Except rescheduled)
-                $sql = "SELECT $columns $joins WHERE a.counselor_user_id = :cid AND a.status IN ('completed','cancelled','rejected','no_show','no-show') ORDER BY a.date DESC, a.time DESC";
+                // All historical statuses PLUS Overdue (Active but Past)
+                $sql = "
+                    SELECT $columns $joins 
+                    WHERE a.counselor_user_id = :cid 
+                    AND (
+                        a.status IN ('completed','cancelled','rejected','no_show','no-show')
+                        OR (
+                            a.status IN ('scheduled', 'confirmed', 'accept', 'accepted', 'pending') 
+                            AND (a.date < CURDATE() OR (a.date = CURDATE() AND a.time < CURTIME()))
+                        )
+                    )
+                    ORDER BY a.date DESC, a.time DESC
+                ";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute(array(':cid' => (int) $counselorUserId));
                 break;
@@ -440,10 +479,17 @@ class Appointment
                 SUM(YEAR(date) = YEAR(CURDATE()) AND MONTH(date) = MONTH(CURDATE())) AS this_month,
                 SUM(status = 'completed')                                             AS completed,
                 SUM(status IN ('cancelled','rejected'))                               AS cancelled,
-                SUM(status IN ('no_show','no-show'))                                  AS no_show
+                SUM(status IN ('no_show','no-show'))                                  AS no_show,
+                SUM(status IN ('scheduled', 'confirmed', 'accept', 'accepted', 'pending') AND (date < CURDATE() OR (date = CURDATE() AND time < CURTIME()))) AS overdue
             FROM appointments
             WHERE counselor_user_id = :counselor_user_id
-              AND status IN ('completed', 'cancelled', 'rejected', 'no_show', 'no-show')
+              AND (
+                status IN ('completed', 'cancelled', 'rejected', 'no_show', 'no-show')
+                OR (
+                    status IN ('scheduled', 'confirmed', 'accept', 'accepted', 'pending')
+                    AND (date < CURDATE() OR (date = CURDATE() AND time < CURTIME()))
+                )
+              )
         ";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array(':counselor_user_id' => (int) $counselorUserId));
@@ -455,7 +501,8 @@ class Appointment
                 'this_month'  => 0,
                 'completed'   => 0,
                 'cancelled'   => 0,
-                'no_show'     => 0
+                'no_show'     => 0,
+                'overdue'     => 0
             );
         }
 
@@ -464,7 +511,63 @@ class Appointment
             'this_month'  => (int) $row['this_month'],
             'completed'   => (int) $row['completed'],
             'cancelled'   => (int) $row['cancelled'],
-            'no_show'     => (int) $row['no_show']
+            'no_show'     => (int) $row['no_show'],
+            'overdue'     => (int) $row['overdue']
+        );
+    }
+    /**
+     * Get all appointments for admin view.
+     * Includes student and counselor names.
+     */
+    public function getAllForAdmin()
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "
+            SELECT 
+                a.*,
+                COALESCE(us.full_name, u1.username, 'N/A') AS student_name,
+                COALESCE(c.full_name, u2.username, 'N/A') AS counselor_name
+            FROM appointments a
+            LEFT JOIN undergraduate_students us ON a.student_user_id = us.user_id
+            LEFT JOIN users u1 ON a.student_user_id = u1.id
+            LEFT JOIN counselors c ON a.counselor_user_id = c.user_id
+            LEFT JOIN users u2 ON a.counselor_user_id = u2.id
+            ORDER BY a.date DESC, a.time DESC
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get global appointment statistics for admin.
+     */
+    public function getAdminStats()
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "
+            SELECT
+                COUNT(*) AS total,
+                SUM(status IN ('completed')) AS completed,
+                SUM(status IN ('scheduled', 'confirmed', 'accept', 'accepted', 'pending') AND (date > CURDATE() OR (date = CURDATE() AND time >= CURTIME()))) AS upcoming,
+                SUM(status IN ('scheduled', 'confirmed', 'accept', 'accepted', 'pending') AND (date < CURDATE() OR (date = CURDATE() AND time < CURTIME()))) AS overdue,
+                SUM(status IN ('cancelled', 'reject', 'rejected')) AS cancelled
+            FROM appointments
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return array(
+            'total'     => (int) ($row['total'] ?? 0),
+            'completed' => (int) ($row['completed'] ?? 0),
+            'upcoming'  => (int) ($row['upcoming'] ?? 0),
+            'overdue'   => (int) ($row['overdue'] ?? 0),
+            'cancelled' => (int) ($row['cancelled'] ?? 0)
         );
     }
 }

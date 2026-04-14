@@ -706,7 +706,7 @@ class AppointmentApiControl
         $counselorUserId = (int) $_SESSION['user_id'];
 
         // Optional single-status filter from query string
-        $allowedFilters = array('completed', 'cancelled', 'no_show', 'rescheduled');
+        $allowedFilters = array('completed', 'cancelled', 'no_show', 'rescheduled', 'overdue');
         $statusFilter = isset($_GET['status']) ? trim($_GET['status']) : '';
 
         // Normalise "no-show" -> "no_show" for consistency
@@ -768,6 +768,7 @@ class AppointmentApiControl
                     'rescheduleReason' => $rescheduleReason,
                     'originalDate'     => isset($row['original_date']) ? $row['original_date'] : null,
                     'originalTime'     => isset($row['original_time']) ? $row['original_time'] : null,
+                    'rawTime'          => $row['time'],
                     'nextAppointment'  => 'TBD',
                 );
             }, $rows);

@@ -1341,4 +1341,31 @@ class AdminControl
             exit;
         }
     }
+    /**
+     * API: Get all appointments for Admin dashboard
+     */
+    public function getAppointments()
+    {
+        header('Content-Type: application/json');
+
+        try {
+            require_once BASE_PATH . '/app/models/Appointment.php';
+            $appointmentModel = new Appointment();
+
+            $appointments = $appointmentModel->getAllForAdmin();
+            $stats = $appointmentModel->getAdminStats();
+
+            echo json_encode([
+                'success' => true,
+                'appointments' => $appointments,
+                'stats' => $stats
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to fetch appointments: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
 }
