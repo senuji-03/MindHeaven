@@ -1,7 +1,25 @@
 <?php
+$isEmbedded = isset($_GET['embed']) && $_GET['embed'] === 'true';
 $TITLE = 'Create New Thread - MindHeaven';
 $CURRENT_PAGE = 'forum';
-include BASE_PATH . '/app/views/layouts/header.php';
+
+if (!$isEmbedded) {
+    include BASE_PATH . '/app/views/layouts/header.php';
+} else {
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><?= htmlspecialchars($TITLE) ?></title>
+        <link rel="stylesheet" href="<?= BASE_URL ?>/css/undergrad/style.css">
+        <link rel="stylesheet" href="<?= BASE_URL ?>/css/forum.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </head>
+    <body class="is-embedded">
+    <?php
+}
 
 $userRole = $_SESSION['role'] ?? 'guest';
 $oldInput = $old ?? [];
@@ -19,7 +37,7 @@ $oldInput = $old ?? [];
         <div class="create-thread-form">
             <div class="form-container">
                 <h3>Create New Discussion Thread</h3>
-                <form id="threadForm" action="<?php echo BASE_URL; ?>/forum/create" method="POST">
+                <form id="threadForm" action="<?php echo BASE_URL; ?>/forum/create<?= $isEmbedded ? '?embed=true' : '' ?>" method="POST">
                     <div class="form-group">
                         <label for="threadTitle">Thread Title <span style="color:var(--crisis)">*</span></label>
                         <input type="text" id="threadTitle" name="title"
@@ -75,7 +93,7 @@ $oldInput = $old ?? [];
                     <?php endif; ?>
 
                     <div class="form-actions">
-                        <a href="<?php echo BASE_URL; ?>/forum" class="btn-secondary"
+                        <a href="<?php echo BASE_URL; ?>/forum<?= $isEmbedded ? '?embed=true' : '' ?>" class="btn-secondary"
                             style="text-decoration: none; text-align: center;">Cancel</a>
                         <button type="submit" class="btn-primary">Create Thread</button>
                     </div>
@@ -278,4 +296,10 @@ $oldInput = $old ?? [];
 </style>
 
 
-<?php include BASE_PATH . '/app/views/layouts/footer.php'; ?>
+<?php
+if (!$isEmbedded) {
+    include BASE_PATH . '/app/views/layouts/footer.php';
+} else {
+    echo '</body></html>';
+}
+?>

@@ -50,7 +50,7 @@ if (!$isEmbedded) {
 
                 <!-- Create New Thread Button -->
                 <?php if ($userRole !== 'guest' && $userRole !== 'university_representative'): ?>
-                    <a href="<?php echo BASE_URL; ?>/forum/create" class="btn-create-thread">
+                    <a href="<?php echo BASE_URL; ?>/forum/create<?= $isEmbedded ? '?embed=true' : '' ?>" class="btn-create-thread">
                         <i class="fas fa-plus"></i> Create New Thread
                     </a>
                 <?php elseif ($userRole === 'guest'): ?>

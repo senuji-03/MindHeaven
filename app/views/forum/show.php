@@ -125,7 +125,7 @@ if (!$isEmbedded) {
                             </div>
                             <div class="actions-right">
                                 <?php if (isset($_SESSION['user_id']) && ($_SESSION['user_id'] == $thread_data['user_id'] || $_SESSION['role'] === 'admin' || $_SESSION['role'] === 'moderator')): ?>
-                                    <form action="<?= BASE_URL ?>/forum/delete" method="POST" style="display:inline;"
+                                    <form action="<?= BASE_URL ?>/forum/delete<?= $isEmbedded ? '?embed=true' : '' ?>" method="POST" style="display:inline;"
                                         onsubmit="return confirm('Are you sure you want to delete this thread? This action cannot be undone.');">
                                         <input type="hidden" name="type" value="thread">
                                         <input type="hidden" name="id" value="<?= $thread_data['id'] ?>">
@@ -215,7 +215,7 @@ if (!$isEmbedded) {
 
                                         <div class="right-actions">
                                             <?php if (isset($_SESSION['user_id']) && ($_SESSION['user_id'] == $post['user_id'] || $_SESSION['role'] === 'admin' || $_SESSION['role'] === 'moderator')): ?>
-                                                <form action="<?= BASE_URL ?>/forum/delete" method="POST" style="display:inline;"
+                                                <form action="<?= BASE_URL ?>/forum/delete<?= $isEmbedded ? '?embed=true' : '' ?>" method="POST" style="display:inline;"
                                                     onsubmit="return confirm('Are you sure you want to delete this reply?');">
                                                     <input type="hidden" name="type" value="post">
                                                     <input type="hidden" name="id" value="<?= $post['id'] ?>">
@@ -240,7 +240,7 @@ if (!$isEmbedded) {
                     <div class="reply-form-card" id="reply-form">
                         <?php if (isset($_SESSION['user_id'])): ?>
                             <h3 id="reply-title">Leave a Reply</h3>
-                            <form action="<?= BASE_URL ?>/forum/reply" method="POST">
+                            <form action="<?= BASE_URL ?>/forum/reply<?= $isEmbedded ? '?embed=true' : '' ?>" method="POST">
                                 <input type="hidden" name="thread_id" value="<?= $thread_data['id'] ?>">
                                 <input type="hidden" name="parent_reply_id" id="parent_reply_id" value="">
 

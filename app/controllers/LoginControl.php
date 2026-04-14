@@ -164,7 +164,10 @@ class LoginControl
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
         if (empty($password) || strlen($password) < 6) {
-            $this->view('layouts/force-password-change', ['error' => 'Password must be at least 6 characters']);
+            $this->view('layouts/force-password-change', ['error' => 'Password must be at least 6 characters long']);
+            return;
+        } elseif (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+            $this->view('layouts/force-password-change', ['error' => 'Password must contain at least one letter and one number']);
             return;
         }
 
@@ -230,16 +233,11 @@ class LoginControl
                 $errors[] = 'Email address is required';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors[] = 'Please enter a valid email address';
-            } elseif (!preg_match('/^[a-zA-Z0-9._%+-]+@gmail\.com$/', $email)) {
-                $errors[] = 'Email must be a Gmail address (e.g., yourname@gmail.com)';
             }
 
             if (empty($errors)) {
                 try {
                     $pdo = Database::getConnection();
-
-                    // Check if user exists with this email in counselors or undergraduate_students tables
-                    $user = null;
 
                     // Check users table for email
                     $stmt = $pdo->prepare("SELECT id as user_id, username FROM users WHERE email = ? AND is_deleted = 0");
@@ -247,24 +245,35 @@ class LoginControl
                     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
                     if ($user) {
-                        // Generate reset token
-                        $token = bin2hex(random_bytes(32));
-                        $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
+                        // Generate secure 8-character temporary password
+                        $tempPassword = bin2hex(random_bytes(4));
+                        $hashedPassword = password_hash($tempPassword, PASSWORD_DEFAULT);
 
-                        // Store token in database
-                        $stmt = $pdo->prepare("INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)");
-                        $stmt->execute([$user['user_id'], $token, $expiresAt]);
+                        // Update users.password and set password_reset_required = 1
+                        $stmt = $pdo->prepare("UPDATE users SET password = ?, password_reset_required = 1 WHERE id = ?");
+                        $stmt->execute([$hashedPassword, $user['user_id']]);
 
-                        // In a real application, you would send an email here
-                        // For now, we'll just show the reset link
-                        $resetLink = BASE_URL . '/login/reset-password?token=' . $token;
-                        $data['success'] = 'Password reset link has been generated.';
-                        $data['reset_link'] = $resetLink;
+                        // Send email via MailHelper::sendMail()
+                        require_once BASE_PATH . '/app/helpers/MailHelper.php';
+                        $subject = "Temporary Password for MindHeaven";
+                        $body = "
+                            <h2>Hello " . htmlspecialchars($user['username']) . ",</h2>
+                            <p>You have requested a password reset. Your temporary password is:</p>
+                            <h3 style='background-color:#e0f2fe; color:#0369a1; padding:10px; display:inline-block; border-radius:6px; letter-spacing:2px;'>" . htmlspecialchars($tempPassword) . "</h3>
+                            <p>Please log in using this temporary password. You will be prompted to change it immediately after logging in.</p>
+                            <br>
+                            <p>Best regards,<br>The MindHeaven Team</p>
+                        ";
+                        
+                        MailHelper::sendMail($email, $user['username'], $subject, $body);
+                        $data['success'] = 'A temporary password has been sent to this email.';
                     } else {
-                        $data['error'] = 'No account found with this email address';
+                        $data['error'] = 'No account found with this email address.';
                     }
+
                 } catch (Exception $e) {
-                    $data['error'] = 'An error occurred. Please try again.';
+                    $data['error'] = 'An error occurred while processing your request. Please try again.';
+                    error_log('Forgot Password error: ' . $e->getMessage());
                 }
             } else {
                 $data['error'] = implode('<br>', $errors);
@@ -274,77 +283,6 @@ class LoginControl
         $this->view('layouts/forgot-password', $data);
     }
 
-    public function resetPassword()
-    {
-        // If user is already logged in, redirect to their dashboard
-        if (isset($_SESSION['user_id'])) {
-            $this->redirectToDashboard($_SESSION['role']);
-            return;
-        }
-
-        $token = $_GET['token'] ?? $_POST['token'] ?? '';
-        $data = ['token' => $token];
-
-        if (empty($token)) {
-            $data['error'] = 'Invalid or missing reset token';
-            $this->view('layouts/reset-password', $data);
-            return;
-        }
-
-        // Handle form submission
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $password = $_POST['password'] ?? '';
-            $confirmPassword = $_POST['confirm_password'] ?? '';
-            $errors = [];
-
-            if (empty($password)) {
-                $errors[] = 'Password is required';
-            } elseif (strlen($password) < 6) {
-                $errors[] = 'Password must be at least 6 characters long';
-            }
-
-            if ($password !== $confirmPassword) {
-                $errors[] = 'Passwords do not match';
-            }
-
-            if (empty($errors)) {
-                try {
-                    $pdo = Database::getConnection();
-
-                    // Verify token
-                    $stmt = $pdo->prepare("
-                        SELECT prt.user_id, u.username 
-                        FROM password_reset_tokens prt 
-                        JOIN users u ON prt.user_id = u.id 
-                        WHERE prt.token = ? AND prt.expires_at > NOW() AND prt.used = 0
-                    ");
-                    $stmt->execute([$token]);
-                    $tokenData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                    if ($tokenData) {
-                        // Update password
-                        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                        $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
-                        $stmt->execute([$hashedPassword, $tokenData['user_id']]);
-
-                        // Mark token as used
-                        $stmt = $pdo->prepare("UPDATE password_reset_tokens SET used = 1 WHERE token = ?");
-                        $stmt->execute([$token]);
-
-                        $data['success'] = 'Password has been reset successfully. You can now login with your new password.';
-                    } else {
-                        $data['error'] = 'Invalid or expired reset token';
-                    }
-                } catch (Exception $e) {
-                    $data['error'] = 'An error occurred. Please try again.';
-                }
-            } else {
-                $data['error'] = implode('<br>', $errors);
-            }
-        }
-
-        $this->view('layouts/reset-password', $data);
-    }
 
     public function logout()
     {
