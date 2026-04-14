@@ -78,8 +78,7 @@ function getNavigationItems($role)
     ],
     'donor' => [
       'main' => [
-        ['icon' => 'fas fa-heart', 'text' => 'Donation Form', 'url' => '/DonationForm', 'slug' => 'donation-form'],
-        ['icon' => 'fas fa-check-circle', 'text' => 'Donation Success', 'url' => '/DonationSuccess', 'slug' => 'donation-success'],
+        ['icon' => 'fas fa-hand-holding-heart', 'text' => 'Donate', 'url' => '/donation', 'slug' => 'donation'],
       ]
     ]
   ];
@@ -105,10 +104,11 @@ $navigationItems = getNavigationItems($userRole);
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="/MindHeaven/public/css/undergrad/style.css">
+  <?php $cacheBuster = time(); ?>
+  <link rel="stylesheet" href="/MindHeaven/public/css/undergrad/style.css?v=<?= $cacheBuster ?>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <?php foreach ($PAGE_CSS as $css): ?>
-    <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>">
+    <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>?v=<?= $cacheBuster ?>">
   <?php endforeach; ?>
 
   <style>

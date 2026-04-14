@@ -536,7 +536,11 @@
         <span class="icon">⚙️</span>
         Settings
       </a>
-    </nav>
+                <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
+                <span class="icon">✏️</span>
+                Edit Resources
+            </a>
+        </nav>
 
     <div class="sidebar-footer">
       <a href="<?= BASE_URL ?>/logout" class="logout-btn">

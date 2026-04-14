@@ -267,19 +267,27 @@
         
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
-                <!-- <span class="icon">📊</span> -->
+                <span class="icon">📊</span>
                 Dashboard
             </a>
+            <a href="<?= BASE_URL ?>/AddResource" class="nav-item">
+                <span class="icon">➕</span>
+                Add Resource
+            </a>
             <a href="<?= BASE_URL ?>/EditPosts" class="nav-item active">
-                <!-- <span class="icon">✏️</span> -->
+                <span class="icon">✏️</span>
                 Edit Resources
             </a>
+            <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
+                <span class="icon">🚨</span>
+                Reported Resources
+            </a>
             <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
-                <!-- <span class="icon">🚩</span> -->
+                <span class="icon">🚩</span>
                 Flagged Users
             </a>
             <a href="<?= BASE_URL ?>/WarnForm" class="nav-item">
-                <!-- <span class="icon">⚠️</span> -->
+                <span class="icon">⚠️</span>
                 Warn Users
             </a>
         </nav>
@@ -313,15 +321,11 @@
                             <label for="category">Category</label>
                             <select id="category" name="category" required>
                                 <option value="">Select a category</option>
-                                <option value="Mental Health Basics" <?= $resource['category'] === 'Mental Health Basics' ? 'selected' : '' ?>>Mental Health Basics</option>
-                                <option value="Anxiety & Stress" <?= $resource['category'] === 'Anxiety & Stress' ? 'selected' : '' ?>>Anxiety & Stress</option>
-                                <option value="Depression Support" <?= $resource['category'] === 'Depression Support' ? 'selected' : '' ?>>Depression Support</option>
-                                <option value="Mindfulness & Meditation" <?= $resource['category'] === 'Mindfulness & Meditation' ? 'selected' : '' ?>>Mindfulness & Meditation</option>
-                                <option value="Sleep & Wellness" <?= $resource['category'] === 'Sleep & Wellness' ? 'selected' : '' ?>>Sleep & Wellness</option>
-                                <option value="Relationships & Social" <?= $resource['category'] === 'Relationships & Social' ? 'selected' : '' ?>>Relationships & Social</option>
-                                <option value="Crisis Support" <?= $resource['category'] === 'Crisis Support' ? 'selected' : '' ?>>Crisis Support</option>
-                                <option value="Self-Help Tools" <?= $resource['category'] === 'Self-Help Tools' ? 'selected' : '' ?>>Self-Help Tools</option>
-                                <option value="Professional Development" <?= $resource['category'] === 'Professional Development' ? 'selected' : '' ?>>Professional Development</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= htmlspecialchars($cat['name']) ?>" <?= $resource['category'] === $cat['name'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($cat['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         
@@ -358,7 +362,10 @@
                     <!-- Current File Display -->
                     <?php if (!empty($resource['file_path']) && !empty($resource['file_name'])): ?>
                         <div class="current-file">
-                            <?php if ($resource['content_type'] === 'article' && in_array(strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp'])): ?>
+                            <?php 
+                            $fileExt = strtolower(pathinfo($resource['file_name'], PATHINFO_EXTENSION));
+                            if ($resource['content_type'] === 'article' && in_array($fileExt, array('jpg', 'jpeg', 'png', 'gif', 'webp'))): 
+                            ?>
                                 <img src="<?= BASE_URL . '/' . $resource['file_path']; ?>" alt="Current image" />
                             <?php else: ?>
                                 <div style="width: 100px; height: 100px; background: #e5e7eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
@@ -404,7 +411,7 @@
                         </div>
                         <div class="form-group">
                             <label for="youtubeUrl">🔗 YouTube Link (optional)</label>
-                            <input id="youtubeUrl" type="url" name="youtube_url" value="<?= htmlspecialchars($resource['youtube_url'] ?? '') ?>" placeholder="https://www.youtube.com/watch?v=..." />
+                            <input id="youtubeUrl" type="url" name="youtube_url" value="<?= htmlspecialchars(isset($resource['youtube_url']) ? $resource['youtube_url'] : '') ?>" placeholder="https://www.youtube.com/watch?v=..." />
                             <small style="color:#6b7280;">If provided, clicking the resource card will open YouTube directly.</small>
                         </div>
                         <div class="form-group">

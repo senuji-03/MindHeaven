@@ -1,28 +1,40 @@
 <?php
 
-class CallResponderControl{
-    
-    public function __construct() {
-        // Session is already started in index.php, no need to start again
-        // Protect all call responder routes
-        if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'call_responder') {
-            header("Location: " . BASE_URL . "/login");
+class CallResponderControl {
+
+    public function index() {
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['call_responder', 'admin'])) {
+            header('Location: ' . BASE_URL . '/login');
             exit;
         }
-        
-        // Add security headers to prevent caching and back-button access
-        Auth::setSecurityHeaders();
-    }
-    
-    public function index() {
-        view('crisis/call_dashboard');
+
+        require BASE_PATH . '/app/views/CallResponder/CallPage.php';
     }
 
     public function dashboard() {
-        view('crisis/call_dashboard');
+        $this->index();
     }
 
     public function success() {
-        view('CallResponder/CallSuccess');
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['call_responder', 'admin'])) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        try {
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT c.*, COALESCE(u.full_name, u.username, 'Anonymous') AS caller_name 
+                                   FROM crisis_calls c 
+                                   LEFT JOIN users u ON c.caller_user_id = u.id 
+                                   WHERE c.status IN ('completed', 'escalated') AND c.responder_user_id = ?
+                                   ORDER BY c.updated_at DESC");
+            $stmt->execute([$_SESSION['user_id']]);
+            $callLogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $callLogs = [];
+        }
+
+        require BASE_PATH . '/app/views/CallResponder/CallSuccess.php';
     }
+
 }

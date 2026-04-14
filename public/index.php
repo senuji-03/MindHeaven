@@ -93,6 +93,15 @@ $router->post('/admin/forum-categories/delete', 'AdminControl@deleteForumCategor
 $router->post('/admin/forum-categories/activate', 'AdminControl@activateForumCategory');
 
 
+// Resource Hub Categories Management
+$router->get('/resource-categories', 'ResourceCategoryControl@index');
+$router->post('/resource-categories/create', 'ResourceCategoryControl@create');
+$router->post('/resource-categories/update', 'ResourceCategoryControl@update');
+$router->post('/resource-categories/delete', 'ResourceCategoryControl@delete');
+$router->post('/resource-categories/activate', 'ResourceCategoryControl@activate');
+
+
+
 // Report API Routes (for frontend)
 $router->get('/report/categories', 'ReportControl@getCategories');
 $router->post('/report/submit', 'ReportControl@submit');
@@ -122,8 +131,13 @@ $router->post('/counselor/updateProfile', 'COControl@updateProfile');
 $router->post('/counselor/uploadProfilePhoto', 'COControl@uploadProfilePhoto');
 $router->post('/api/counselor/qualifications/sync', 'COControl@syncQualifications');
 $router->get('/counselor/forum', 'COControl@forum');
-$router->get('/counselor/Cresource_hub', 'UGControl@Cresource_hub');
-$router->get('/counselor/resources', 'UGControl@resources');
+$router->get('/counselor/Cresource_hub', 'COControl@Cresource_hub');
+$router->get('/counselor/category-resources', 'COControl@CcategoryResources');
+$router->get('/counselor/resources', 'COControl@Cresource_hub'); // Alias
+$router->get('/counselor/viewResource', 'COControl@CviewResource');
+$router->post('/counselor/likeResource', 'COControl@ClikeResource');
+$router->post('/counselor/addComment', 'COControl@CaddComment');
+$router->post('/counselor/reportResource', 'COControl@CreportResource');
 
 $router->get('/counselor/timeslots', 'COControl@timeslots');
 
@@ -157,6 +171,10 @@ $router->post('/api/appointments/hide', 'AppointmentApiControl@hide');
 $router->delete('/api/appointments/delete', 'AppointmentApiControl@delete');
 $router->get('/api/counselor/appointments', 'AppointmentApiControl@listForCounselor');
 $router->post('/api/appointments/status', 'AppointmentApiControl@updateStatus');
+$router->post('/api/appointments/start-session', 'AppointmentApiControl@startSession');
+$router->post('/api/appointments/notes', 'AppointmentApiControl@saveNotes');
+$router->get('/api/student/history', 'AppointmentApiControl@getStudentHistory');
+$router->get('/api/counselor/session-history', 'AppointmentApiControl@getSessionHistory');
 
 // Habits API
 $router->get('/api/habits', 'HabitApiControl@list');
@@ -172,6 +190,12 @@ $router->get('/api/habits/calendar', 'HabitApiControl@calendarData');
 $router->get('/api/habits/for-date', 'HabitApiControl@listByDate');
 $router->post('/api/habits/log-date', 'HabitApiControl@logForDate');
 $router->post('/api/habits/unlog-date', 'HabitApiControl@unlogForDate');
+
+// Mood API
+$router->get('/api/mood/list',   'MoodApiControl@list');
+$router->post('/api/mood/create','MoodApiControl@create');
+$router->put('/api/mood/update', 'MoodApiControl@update');
+$router->delete('/api/mood/delete','MoodApiControl@delete');
 
 $router->get('/CallResponder', 'CallResponderControl@index');
 $router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');
@@ -190,10 +214,10 @@ $router->get('/donation/request-confirmation/{id}', 'DonationControl@requestConf
 $router->get('/university-rep/donations', 'UniversityRepresentativeControl@donations');
 $router->post('/university-rep/university-bank/update', 'UniversityRepresentativeControl@updateBankDetails');
 
-$router->get('/DonationForm', 'DonorControl@DonationForm');
-$router->get('/DonationSuccess', 'DonorControl@DonationSuccess');
+
 
 $router->get('/EditPosts', 'ModeratorControl@edit');
+$router->get('/AddResource', 'ModeratorControl@addResource');
 $router->get('/FlaggedUsers', 'ModeratorControl@flagged');
 $router->get('/ModeratorDashboard', 'ModeratorControl@ModeratorDashboard');
 $router->get('/WarnForm', 'ModeratorControl@warn');
@@ -208,6 +232,10 @@ $router->post('/Moderator/resource/update', 'ModeratorControl@updateResource');
 $router->post('/moderator/edit-reported-content', 'ModeratorControl@editReportedContent');
 $router->get('/Moderator/reported-resources', 'ModeratorControl@reportedResources');
 $router->post('/Moderator/resolve-report', 'ModeratorControl@resolveReport');
+$router->get('/Moderator/viewResource', 'ModeratorControl@viewResource');
+$router->post('/Moderator/likeResource', 'ModeratorControl@likeResource');
+$router->post('/Moderator/addComment', 'ModeratorControl@addComment');
+$router->post('/Moderator/reportResource', 'ModeratorControl@reportResource');
 
 
 $router->get('/UniversityRepresentative/dashboard', 'UniversityRepresentativeControl@index');
@@ -284,5 +312,16 @@ $router->get('/api/chat/messages', 'ChatControl@getMessages');    // READ:   fet
 $router->post('/api/chat/send', 'ChatControl@sendMessage');       // CREATE: send a message
 $router->post('/api/chat/edit', 'ChatControl@editMessage');       // UPDATE: edit a message
 $router->post('/api/chat/delete', 'ChatControl@deleteMessage');   // DELETE: soft-delete a message
+
+// ========================================
+// CRISIS HOTLINE & RESPONDER ROUTES
+// ========================================
+$router->post('/api/crisis/connect', 'CrisisApiControl@connect');
+$router->get('/api/crisis/waiting', 'CrisisApiControl@getWaitingCalls');
+$router->post('/api/crisis/answer', 'CrisisApiControl@answerCall');
+$router->post('/api/crisis/update', 'CrisisApiControl@updateCall');
+
+$router->get('/responder/dashboard', 'CallResponderControl@dashboard');
+$router->get('/CallResponder', 'CallResponderControl@dashboard');
 
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

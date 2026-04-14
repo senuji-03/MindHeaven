@@ -64,7 +64,8 @@ class UGControl
                 'resources' => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
                 'stats' => $stats,
-                'lastUpdated' => $lastUpdated
+                'lastUpdated' => $lastUpdated,
+                'categoryBaseUrl' => BASE_URL . '/ug/category-resources'
             ]);
         } catch (Exception $e) {
             // Log the error for debugging
@@ -76,7 +77,8 @@ class UGControl
                 'resourcesByCategory' => [],
                 'stats' => ['total_resources' => 0, 'published' => 0],
                 'error' => 'Unable to load resources. Please try again later.',
-                'lastUpdated' => date('Y-m-d H:i:s')
+                'lastUpdated' => date('Y-m-d H:i:s'),
+                'categoryBaseUrl' => BASE_URL . '/ug/category-resources'
             ]);
         }
     }
@@ -121,20 +123,13 @@ class UGControl
                 }
             }
 
-            // Define category info
-            $categoryInfo = [
-                'Mental Health Basics' => ['icon' => '🧠', 'description' => 'Understanding mental health, common conditions, and when to seek help'],
-                'Anxiety & Stress' => ['icon' => '😰', 'description' => 'Coping strategies and techniques for managing anxiety and stress'],
-                'Depression Support' => ['icon' => '😢', 'description' => 'Resources and support for dealing with depression'],
-                'Mindfulness & Meditation' => ['icon' => '🧘‍♀️', 'description' => 'Guided practices for mindfulness and meditation'],
-                'Sleep & Wellness' => ['icon' => '💤', 'description' => 'Tips for better sleep and overall wellness'],
-                'Relationships & Social' => ['icon' => '👥', 'description' => 'Building healthy relationships and social connections'],
-                'Crisis Support' => ['icon' => '🆘', 'description' => 'Emergency resources and crisis intervention'],
-                'Self-Help Tools' => ['icon' => '🛠️', 'description' => 'Interactive tools and exercises for mental wellness'],
-                'Professional Development' => ['icon' => '🎓', 'description' => 'Resources for academic and career success']
-            ];
-
-            $currentCategoryInfo = $categoryInfo[$category] ?? ['icon' => '📚', 'description' => 'Resources for ' . $category];
+            $categoriesList = $resourceHub->getCategories();
+            $categoryInfo = [];
+            foreach ($categoriesList as $cat) {
+                $categoryInfo[$cat['name']] = ['description' => $cat['description']];
+            }
+            // Use a default description if category is not found in the list
+            $currentCategoryInfo = $categoryInfo[$category] ?? ['description' => 'Resources for ' . $category];
             
             // Group resources by content type for better organization
             $resourcesByType = [
@@ -158,7 +153,11 @@ class UGControl
                 'resourcesByType' => $resourcesByType,
                 'allCategories' => $allCategories,
                 'totalResources' => count($categoryResources),
-                'userLikes' => $userLikes
+                'userLikes' => $userLikes,
+                'categoryBaseUrl' => BASE_URL . '/ug/category-resources',
+                'backUrl' => BASE_URL . '/ug/resources',
+                'viewUrl' => BASE_URL . '/ug/viewResource',
+                'likeUrl' => BASE_URL . '/ug/likeResource'
             ]);
 
         } catch (Exception $e) {
@@ -213,7 +212,11 @@ class UGControl
             view('undergrad/resource-details', [
                 'resource' => $resource,
                 'userLikes' => $userLikes,
-                'comments' => $comments
+                'comments' => $comments,
+                'categoryBaseUrl' => BASE_URL . '/ug/category-resources',
+                'likeUrl' => BASE_URL . '/ug/likeResource',
+                'addCommentUrl' => BASE_URL . '/ug/addComment',
+                'reportResourceUrl' => BASE_URL . '/ug/reportResource'
             ]);
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/ug/resources');
@@ -509,7 +512,14 @@ class UGControl
             exit;
         }
 
-        view('undergrad/profile', ['student' => $student]);
+        // Fetch donation history
+        require_once BASE_PATH . '/app/models/Donation.php';
+        $donations = Donation::getDonationsByDonor($_SESSION['user_id']);
+
+        view('undergrad/profile', [
+            'student' => $student,
+            'donations' => $donations
+        ]);
     }
 
     public function completeProfile()

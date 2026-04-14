@@ -1,13 +1,13 @@
 <?php
 spl_autoload_register(function ($className) {
-    $paths = [
+    $paths = array(
         __DIR__ . '/../app/controllers/',
         __DIR__ . '/../app/controllers/api/',
         __DIR__ . '/../app/models/',
         __DIR__ . '/../core/'
-    ];
+    );
 
-    $triedPaths = [];
+    $triedPaths = array();
     $foundFile = null;
 
     foreach ($paths as $path) {

@@ -19,12 +19,12 @@ class SignupControl
             exit;
         }
 
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $confirmPassword = $_POST['confirm_password'] ?? '';
-        $role = $_POST['role'] ?? '';
+        $username = trim(isset($_POST['username']) ? $_POST['username'] : '');
+        $password = isset($_POST['password']) ? $_POST['password'] : '';
+        $confirmPassword = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+        $role = isset($_POST['role']) ? $_POST['role'] : '';
 
-        $errors = [];
+        $errors = array();
 
         if (empty($username)) {
             $errors[] = 'Username is required';
@@ -55,9 +55,9 @@ class SignupControl
         }
 
         if ($role === 'undergraduate') {
-            $fullName = trim($_POST['full_name'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $phoneNumber = trim($_POST['phone_number'] ?? '');
+            $fullName = trim(isset($_POST['full_name']) ? $_POST['full_name'] : '');
+            $email = trim(isset($_POST['email']) ? $_POST['email'] : '');
+            $phoneNumber = trim(isset($_POST['phone_number']) ? $_POST['phone_number'] : '');
 
             if (empty($fullName)) {
                 $errors[] = 'Full name is required for undergraduate students';
@@ -79,11 +79,11 @@ class SignupControl
         }
 
         if ($role === 'counselor') {
-            $fullName = trim($_POST['counselor_full_name'] ?? '');
-            $email = trim($_POST['counselor_email'] ?? '');
-            $phoneNumber = trim($_POST['counselor_phone'] ?? '');
-            $licenseNumber = trim($_POST['license_number'] ?? '');
-            $specialization = trim($_POST['specialization'] ?? '');
+            $fullName = trim(isset($_POST['counselor_full_name']) ? $_POST['counselor_full_name'] : '');
+            $email = trim(isset($_POST['counselor_email']) ? $_POST['counselor_email'] : '');
+            $phoneNumber = trim(isset($_POST['counselor_phone']) ? $_POST['counselor_phone'] : '');
+            $licenseNumber = trim(isset($_POST['license_number']) ? $_POST['license_number'] : '');
+            $specialization = trim(isset($_POST['specialization']) ? $_POST['specialization'] : '');
 
             if (empty($fullName)) {
                 $errors[] = 'Full name is required for counselors';
@@ -159,7 +159,7 @@ class SignupControl
         }
 
         if (!empty($errors)) {
-            $this->view('layouts/signup', ['errors' => $errors, 'form_data' => $_POST]);
+            $this->view('layouts/signup', array('errors' => $errors, 'form_data' => $_POST));
             return;
         }
 
@@ -175,30 +175,30 @@ class SignupControl
 
             if ($role === 'undergraduate') {
                 $undergraduateModel = new Undergraduate();
-                $undergradData = [
+                $undergradData = array(
                     'full_name' => trim($_POST['full_name']),
                     'email' => trim($_POST['email']),
                     'phone_number' => trim($_POST['phone_number']),
-                    'date_of_birth' => $_POST['date_of_birth'] ?? null,
-                    'gender' => $_POST['gender'] ?? null,
-                    'preferred_language' => trim($_POST['preferred_language'] ?? 'en'),
+                    'date_of_birth' => isset($_POST['date_of_birth']) ? $_POST['date_of_birth'] : null,
+                    'gender' => isset($_POST['gender']) ? $_POST['gender'] : null,
+                    'preferred_language' => trim(isset($_POST['preferred_language']) ? $_POST['preferred_language'] : 'en'),
                     'university_id' => 1
-                ];
+                );
 
                 $undergraduateModel->create($userId, $undergradData);
             }
 
             if ($role === 'counselor') {
                 $counselorModel = new Counselor();
-                $counselorData = [
+                $counselorData = array(
                     'full_name' => trim($_POST['counselor_full_name']),
                     'email' => trim($_POST['counselor_email']),
                     'phone_number' => trim($_POST['counselor_phone']),
                     'license_number' => trim($_POST['license_number']),
                     'specialization' => trim($_POST['specialization']),
                     'years_experience' => !empty($_POST['years_experience']) ? (int) $_POST['years_experience'] : null,
-                    'bio' => trim($_POST['bio'] ?? '')
-                ];
+                    'bio' => trim(isset($_POST['bio']) ? $_POST['bio'] : '')
+                );
 
                 $counselorModel->create($userId, $counselorData);
             }
@@ -221,22 +221,22 @@ class SignupControl
 
     private function redirectToDashboard($role)
     {
-        $dashboardUrls = [
+        $dashboardUrls = array(
             'admin' => BASE_URL . '/admin',
             'call_responder' => BASE_URL . '/CallResponder',
             'counselor' => BASE_URL . '/counselor',
-            'donor' => BASE_URL . '/DonationForm',
+            'donor' => BASE_URL . '/donation',
             'moderator' => BASE_URL . '/ModeratorDashboard',
             'undergrad' => BASE_URL . '/ug',
             'undergraduate' => BASE_URL . '/ug'
-        ];
+        );
 
-        $url = $dashboardUrls[$role] ?? BASE_URL . '/ug';
+        $url = isset($dashboardUrls[$role]) ? $dashboardUrls[$role] : BASE_URL . '/ug';
         header('Location: ' . $url);
         exit;
     }
 
-    private function view($view, $data = [])
+    private function view($view, $data = array())
     {
         extract($data);
 

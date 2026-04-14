@@ -66,6 +66,9 @@ class AppointmentApiControl
                     'rejectionReason' => isset($row['rejection_reason']) ? $row['rejection_reason'] : '',
                     'urgency' => 'medium',
                     'bookedDate' => isset($row['created_at']) ? $row['created_at'] : '',
+                    'studentUserId' => isset($row['student_user_id']) ? (int)$row['student_user_id'] : null,
+                    'originalDate' => isset($row['original_date']) ? $row['original_date'] : null,
+                    'originalTime' => isset($row['original_time']) ? $row['original_time'] : null,
                 );
             }, $rows);
 
@@ -155,6 +158,14 @@ class AppointmentApiControl
             if (empty($cols)) {
                 $pdo->exec("ALTER TABLE appointments ADD COLUMN `mode` VARCHAR(20) NOT NULL DEFAULT 'audio_video' AFTER `type`");
                 error_log('AppointmentApiControl: auto-added mode column to appointments table');
+            }
+
+            // Auto-migrate: reschedule_reason column and modify status enum if missing
+            $cols = $pdo->query("SHOW COLUMNS FROM appointments LIKE 'reschedule_reason'")->fetchAll();
+            if (empty($cols)) {
+                $pdo->exec("ALTER TABLE appointments ADD COLUMN `reschedule_reason` text DEFAULT NULL AFTER `rejection_reason`");
+                $pdo->exec("ALTER TABLE appointments MODIFY COLUMN status ENUM('scheduled','confirmed','in_progress','completed','cancelled','no_show','pending','accept','accepted','reject','rejected','rescheduled') NOT NULL DEFAULT 'scheduled'");
+                error_log('AppointmentApiControl: auto-added reschedule_reason and modified status enum');
             }
 
             // ── Validate that the slot exists in counselor_timeslots ──
@@ -553,7 +564,7 @@ class AppointmentApiControl
             return $this->json(array('error' => 'Status is required'), 400);
         }
 
-        $allowedStatuses = array('pending', 'accept', 'accepted', 'rejected', 'scheduled', 'confirmed', 'rescheduled');
+        $allowedStatuses = array('pending', 'accept', 'accepted', 'rejected', 'cancelled', 'scheduled', 'confirmed', 'rescheduled', 'completed', 'no_show');
         if (!in_array($data['status'], $allowedStatuses, true)) {
             return $this->json(array('error' => 'Invalid status value'), 400);
         }
@@ -573,7 +584,48 @@ class AppointmentApiControl
                             $appointment['date'],
                             $appointment['time']
                         );
-                    } elseif ($status === 'rejected') {
+
+                        // Integrate Daily.co for audio/video appointments
+                        if (
+                            isset($appointment['mode']) &&
+                            $appointment['mode'] === 'audio_video' &&
+                            empty($appointment['meeting_link']) &&
+                            defined('DAILY_API_KEY')
+                        ) {
+                            $dailyRoomName = 'mindheaven-session-' . $appointment['id'] . '-' . time();
+                            $postData = array(
+                                'name' => $dailyRoomName,
+                                'properties' => array(
+                                    'exp' => strtotime($appointment['date'] . ' ' . $appointment['time'] . ' +3 hours'),
+                                    'enable_chat' => true
+                                )
+                            );
+
+                            $ch = curl_init('https://api.daily.co/v1/rooms');
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch, CURLOPT_POST, true);
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+                            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                'Authorization: Bearer ' . DAILY_API_KEY,
+                                'Content-Type: application/json'
+                            ));
+
+                            $response = curl_exec($ch);
+                            if (!curl_errno($ch)) {
+                                $result = json_decode($response, true);
+                                if (!empty($result['url'])) {
+                                    $this->appointmentModel->updateMeetingLink((int)$appointment['id'], $result['url']);
+                                    error_log("Daily.co room created successfully for appointment ID: " . $appointment['id']);
+                                } else {
+                                    error_log("Daily.co error: " . print_r($result, true));
+                                }
+                            } else {
+                                error_log("Failed to connect to Daily.co API for appointment ID: " . $appointment['id']);
+                            }
+                            curl_close($ch);
+                        }
+                    } elseif ($status === 'rejected' || $status === 'cancelled' || $status === 'completed' || $status === 'no_show') {
+                        // All terminal statuses free the slot
                         $this->timeslotModel->markFree(
                             (int)$appointment['counselor_user_id'],
                             $appointment['date'],
@@ -589,6 +641,205 @@ class AppointmentApiControl
         } catch (Exception $e) {
             error_log("AppointmentApiControl updateStatus error: " . $e->getMessage());
             $this->json(array('error' => 'Failed to update appointment status', 'detail' => $e->getMessage()), 500);
+        }
+    }
+
+    /**
+     * POST /api/appointments/start-session
+     * Counselor signals they are starting the session. Sets meeting_link and status to in_progress.
+     */
+    public function startSession()
+    {
+        $data = $this->getJsonInput();
+        $userId = (int) (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0);
+        $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
+
+        if (!$userId || $role !== 'counselor') {
+            return $this->json(array('error' => 'Unauthorized'), 401);
+        }
+
+        if (empty($data['id']) || empty($data['meeting_link'])) {
+            return $this->json(array('error' => 'Missing required fields (id, meeting_link)'), 400);
+        }
+
+        try {
+            $appointment = $this->appointmentModel->getById((int) $data['id']);
+            if (!$appointment) {
+                return $this->json(array('error' => 'Appointment not found'), 404);
+            }
+
+            // Authorization: counselor must own this appointment
+            if ((int)$appointment['counselor_user_id'] !== $userId) {
+                return $this->json(array('error' => 'Unauthorized'), 403);
+            }
+
+            // Update meeting link (shared URL for chat room)
+            $this->appointmentModel->updateMeetingLink((int)$data['id'], $data['meeting_link']);
+
+            // Transition status to in_progress if it was accepted/confirmed
+            $status = strtolower($appointment['status']);
+            if (in_array($status, array('accept', 'accepted', 'scheduled', 'confirmed'))) {
+                $this->appointmentModel->updateStatus((int)$data['id'], 'in_progress');
+            }
+
+            $this->json(array('success' => true, 'message' => 'Session started successfully.'));
+        } catch (Exception $e) {
+            error_log("AppointmentApiControl startSession error: " . $e->getMessage());
+            $this->json(array('error' => 'Failed to start session: ' . $e->getMessage()), 500);
+        }
+    }
+
+    /**
+     * GET /api/counselor/session-history[?status=completed|cancelled|no_show|rescheduled]
+     * Returns completed/cancelled/no_show/rescheduled sessions for the logged-in counselor.
+     */
+    public function getSessionHistory()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['user_id']) || (isset($_SESSION['role']) && $_SESSION['role'] !== 'counselor')) {
+            return $this->json(array('error' => 'Unauthorized'), 401);
+        }
+
+        $counselorUserId = (int) $_SESSION['user_id'];
+
+        // Optional single-status filter from query string
+        $allowedFilters = array('completed', 'cancelled', 'no_show', 'rescheduled');
+        $statusFilter = isset($_GET['status']) ? trim($_GET['status']) : '';
+
+        // Normalise "no-show" -> "no_show" for consistency
+        if ($statusFilter === 'no-show') {
+            $statusFilter = 'no_show';
+        }
+        if (!in_array($statusFilter, $allowedFilters, true)) {
+            $statusFilter = '';
+        }
+
+        try {
+            $rows  = $this->appointmentModel->getSessionHistory($counselorUserId, $statusFilter);
+            $stats = $this->appointmentModel->getSessionHistoryStats($counselorUserId);
+
+            // Map DB rows to the structure expected by the frontend
+            $sessions = array_map(function ($row) {
+                // Format time as h:i A
+                $timeFormatted = !empty($row['time'])
+                    ? date('g:i A', strtotime($row['time']))
+                    : '';
+
+                // --- Normalise display status ---
+                $rawStatus     = $row['status'];
+                $displayStatus = $rawStatus;
+                if ($rawStatus === 'no_show') {
+                    $displayStatus = 'no-show';
+                } elseif ($rawStatus === 'rejected') {
+                    // Rejected appointments are shown as Cancelled in session history
+                    $displayStatus = 'cancelled';
+                }
+
+                // --- Build notes field ---
+                // Base notes
+                $notes = $row['notes'] ?: '';
+
+                // Append rejection reason (Cancelled/Rejected) into notes for display
+                $rejectionReason = $row['rejection_reason'] ?: '';
+                $rescheduleReason = isset($row['reschedule_reason']) ? $row['reschedule_reason'] : '';
+
+                if ($displayStatus === 'cancelled' && !empty($rejectionReason)) {
+                    $notes = ($notes ? $notes . "\n\n" : '') . 'Cancellation Reason: ' . $rejectionReason;
+                } elseif ($displayStatus === 'rescheduled' && !empty($rescheduleReason)) {
+                    $notes = ($notes ? $notes . "\n\n" : '') . 'Reschedule Reason: ' . $rescheduleReason;
+                }
+
+                return array(
+                    'id'               => $row['id'],
+                    'userId'           => 'U' . str_pad($row['student_user_id'], 5, '0', STR_PAD_LEFT),
+                    'patientName'      => $row['student_name'] ?: 'Unknown',
+                    'date'             => $row['date'],
+                    'time'             => $timeFormatted,
+                    'duration'         => '60 mins',
+                    'status'           => $displayStatus,
+                    'sessionType'      => ucfirst(str_replace('_', ' ', $row['type'] ?: 'individual')),
+                    'notes'            => $notes,
+                    'counselorNotes'   => $row['counselor_notes'] ?: '',
+                    'reason'           => $row['title'] ?: '',
+                    'rejectionReason'  => $rejectionReason,
+                    'rescheduleReason' => $rescheduleReason,
+                    'originalDate'     => isset($row['original_date']) ? $row['original_date'] : null,
+                    'originalTime'     => isset($row['original_time']) ? $row['original_time'] : null,
+                    'nextAppointment'  => 'TBD',
+                );
+            }, $rows);
+
+            $this->json(array(
+                'success'  => true,
+                'sessions' => $sessions,
+                'stats'    => $stats,
+            ));
+        } catch (Exception $e) {
+            error_log('AppointmentApiControl getSessionHistory error: ' . $e->getMessage());
+            $this->json(array('error' => 'Failed to fetch session history', 'detail' => $e->getMessage()), 500);
+        }
+    }
+
+    public function saveNotes()
+    {
+        $data = $this->getJsonInput();
+        $userId = (int) (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0);
+        $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
+
+        if (!$userId || $role !== 'counselor') {
+            return $this->json(array('error' => 'Unauthorized'), 401);
+        }
+
+        if (empty($data['id'])) {
+            return $this->json(array('error' => 'Appointment ID is required'), 400);
+        }
+
+        try {
+            // Verify appointment belongs to this counselor
+            $appointment = $this->appointmentModel->getById((int) $data['id']);
+            if (!$appointment || (int)$appointment['counselor_user_id'] !== $userId) {
+                return $this->json(array('error' => 'Appointment not found or access denied'), 403);
+            }
+
+            // Store the notes directly as text
+            $notesText = isset($data['feedback_message']) ? $data['feedback_message'] : '';
+
+            $result = $this->appointmentModel->updateCounselorNotes((int) $data['id'], $notesText);
+
+            if ($result) {
+                $this->json(array('success' => true, 'message' => 'Session notes saved successfully'));
+            } else {
+                $this->json(array('error' => 'Failed to save notes'), 500);
+            }
+        } catch (Exception $e) {
+            error_log('AppointmentApiControl saveNotes error: ' . $e->getMessage());
+            $this->json(array('error' => 'Failed to save session notes'), 500);
+        }
+    }
+
+    public function getStudentHistory()
+    {
+        $userId = (int) (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0);
+        $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
+
+        if (!$userId || $role !== 'counselor') {
+            return $this->json(array('error' => 'Unauthorized'), 401);
+        }
+
+        $studentId = isset($_GET['student_id']) ? (int)$_GET['student_id'] : 0;
+        if (!$studentId) {
+            return $this->json(array('error' => 'Student ID is required'), 400);
+        }
+
+        try {
+            $history = $this->appointmentModel->getHistoryByStudentId($studentId);
+            $this->json(array('success' => true, 'history' => $history));
+        } catch (Exception $e) {
+            error_log('AppointmentApiControl getStudentHistory error: ' . $e->getMessage());
+            $this->json(array('error' => 'Failed to fetch student history'), 500);
         }
     }
 

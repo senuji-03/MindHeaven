@@ -8,11 +8,11 @@ class Auth {
     
     public static function user() {
         if (self::check()) {
-            return [
+            return array(
                 'id' => $_SESSION['user_id'],
                 'username' => $_SESSION['username'],
                 'role' => $_SESSION['role']
-            ];
+            );
         }
         return null;
     }

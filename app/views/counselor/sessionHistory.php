@@ -43,7 +43,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Total Sessions</div>
-                            <div class="stat-value" id="totalSessions">248</div>
+                            <div class="stat-value" id="totalSessions">0</div>
                         </div>
                         <div class="stat-icon">📊</div>
                     </div>
@@ -52,7 +52,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">This Month</div>
-                            <div class="stat-value" id="monthSessions">32</div>
+                            <div class="stat-value" id="monthSessions">0</div>
                         </div>
                         <div class="stat-icon">📅</div>
                     </div>
@@ -61,7 +61,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Completed</div>
-                            <div class="stat-value" id="completedSessions">198</div>
+                            <div class="stat-value" id="completedSessions">0</div>
                         </div>
                         <div class="stat-icon">✅</div>
                     </div>
@@ -70,7 +70,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Cancelled</div>
-                            <div class="stat-value" id="cancelledSessions">12</div>
+                            <div class="stat-value" id="cancelledSessions">0</div>
                         </div>
                         <div class="stat-icon">❌</div>
                     </div>
@@ -99,7 +99,6 @@
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>
                             <option value="no-show">No Show</option>
-                            <option value="rescheduled">Rescheduled</option>
                             <option value="in-progress">In Progress</option>
                         </select>
                     </div>

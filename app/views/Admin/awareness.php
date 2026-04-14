@@ -26,7 +26,11 @@
         <li><a href="<?= BASE_URL ?>/admin/profile">Profile</a></li>
       </ul>
     </aside>
-</nav>
+            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
+                <span class="icon">✏️</span>
+                Edit Resources
+            </a>
+        </nav>
   <header class="topbar">
     <h1>Awareness Programs</h1>
     <div class="icons">
