@@ -314,6 +314,18 @@
             padding-left: 40px;
         }
 
+        .form-input-icon .toggle-password {
+            left: auto;
+            right: 14px;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+
         .form-row {
             display: flex;
             justify-content: space-between;
@@ -565,7 +577,8 @@
                             <i class="fas fa-lock"></i>
                             <input class="form-input" type="password" id="password" name="password"
                                 placeholder="Enter your password"
-                                required autocomplete="current-password">
+                                required autocomplete="current-password" style="padding-right: 40px;">
+                            <i class="fas fa-eye toggle-password"></i>
                         </div>
                     </div>
 
@@ -596,6 +609,23 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.classList.remove('fa-eye');
+                    this.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    this.classList.remove('fa-eye-slash');
+                    this.classList.add('fa-eye');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
