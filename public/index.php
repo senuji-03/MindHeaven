@@ -198,6 +198,11 @@ $router->post('/api/mood/create','MoodApiControl@create');
 $router->put('/api/mood/update', 'MoodApiControl@update');
 $router->delete('/api/mood/delete','MoodApiControl@delete');
 
+// Notification API Routes
+$router->get('/api/notifications', 'NotificationControl@list');
+$router->get('/api/notifications/unread-count', 'NotificationControl@unreadCount');
+$router->post('/api/notifications/mark-read', 'NotificationControl@markRead');
+
 $router->get('/CallResponder', 'CallResponderControl@index');
 $router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');
 $router->get('/CallSuccess', 'CallResponderControl@success');

@@ -7,6 +7,7 @@
     <meta name="description" content="Set your availability by selecting or creating timeslots for counseling sessions.">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/appoinmentmgt.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/timeslots.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/notifications.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -190,6 +191,7 @@
     window.BASE_URL = '<?php echo BASE_URL; ?>';
 </script>
 <script src="<?php echo BASE_URL; ?>/js/counselor/timeslots.js"></script>
+<script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 
 </body>
 </html>

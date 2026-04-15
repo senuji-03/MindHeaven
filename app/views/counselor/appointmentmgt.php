@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Appointment Management</title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/appoinmentmgt.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/notifications.css">
 </head>
 
 <body>
@@ -286,6 +287,7 @@
         }
     </script>
     <script src="<?php echo BASE_URL; ?>/js/counselor/appoinmentmgt.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 
 </html>

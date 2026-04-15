@@ -106,6 +106,7 @@ $navigationItems = getNavigationItems($userRole);
     rel="stylesheet">
   <?php $cacheBuster = time(); ?>
   <link rel="stylesheet" href="/MindHeaven/public/css/undergrad/style.css?v=<?= $cacheBuster ?>">
+  <link rel="stylesheet" href="/MindHeaven/public/css/notifications.css?v=<?= $cacheBuster ?>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <?php foreach ($PAGE_CSS as $css): ?>
     <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>?v=<?= $cacheBuster ?>">
@@ -436,8 +437,13 @@ $navigationItems = getNavigationItems($userRole);
         display: block;
       }
     }
+      }
+    }
+
+
   </style>
   <script src="/MindHeaven/public/js/undergrad/main.js" defer></script>
+  <script src="/MindHeaven/public/js/notifications.js" defer></script>
 </head>
 
 <body>
@@ -519,6 +525,25 @@ $navigationItems = getNavigationItems($userRole);
 
         <div class="header-actions">
           <?php if (Auth::check()): ?>
+            <!-- Notifications -->
+            <div class="notification-wrapper">
+              <button class="header-btn" type="button" id="notificationBtn" aria-label="Notifications">
+                <span class="btn-icon">🔔</span>
+                <span class="notification-badge" id="notificationBadge">0</span>
+              </button>
+              <div class="notification-dropdown" id="notificationDropdown">
+                <div class="notification-header">
+                  <h3>Notifications</h3>
+                </div>
+                <div class="notification-list" id="notificationList">
+                  <!-- JS populated -->
+                </div>
+                <div class="notification-footer">
+                  <button type="button" id="markAllReadBtn">Mark all as read</button>
+                </div>
+              </div>
+            </div>
+
             <!-- Logged-in user: show Logout -->
             <a href="<?= BASE_URL ?>/logout">
               <button class="header-btn" type="button" aria-label="Logout">

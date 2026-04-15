@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Session History</title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\sessionHistory.css">
+    <link rel="stylesheet" href="/MindHeaven/public/css/counselor/sessionHistory.css">
+    <link rel="stylesheet" href="/MindHeaven/public/css/notifications.css">
 </head>
 
 <body>
@@ -159,7 +160,8 @@
         </div>
     </div>
 
-    <script src="\MindHeaven\public\js\counselor\sessionHistory.js"></script>
+    <script src="/MindHeaven/public/js/counselor/sessionHistory.js"></script>
+    <script src="/MindHeaven/public/js/notifications.js"></script>
 </body>
 
 </html>

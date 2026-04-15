@@ -6,12 +6,14 @@ class AppointmentApiControl
     private $appointmentModel;
     private $timeslotModel;
     private $eventModel;
+    private $notificationModel;
 
     public function __construct()
     {
         $this->appointmentModel = new Appointment();
         $this->timeslotModel    = new Timeslot();
         $this->eventModel       = new Event();
+        $this->notificationModel = new Notification();
     }
 
     /**
@@ -197,6 +199,15 @@ class AppointmentApiControl
             if ($id) {
                 // Mark the timeslot as frozen
                 $this->timeslotModel->markFrozen((int) $data['counselor_user_id'], $data['date'], $dbTime);
+
+                // Notify Counselor
+                $this->notificationModel->create(
+                    (int) $data['counselor_user_id'],
+                    "New appointment booked: " . trim((string)$data['title']) . " for " . $data['date'],
+                    'appointment_booked',
+                    $id,
+                    $userId
+                );
 
                 $this->json(array('message' => 'Appointment created', 'id' => $id), 201);
             } else {
@@ -484,6 +495,15 @@ class AppointmentApiControl
             );
 
             if ($updated) {
+                // Notify Undergrad
+                $this->notificationModel->create(
+                    (int) $appointment['student_user_id'],
+                    "Your appointment '" . $appointment['title'] . "' has been rescheduled by the counselor to " . $data['date'] . " at " . $dbTime . ".",
+                    'appointment_rescheduled',
+                    (int) $data['id'],
+                    $userId
+                );
+
                 $this->json(array('message' => 'Appointment rescheduled and awaiting student acceptance.'));
             } else {
                 $this->json(array('error' => 'Failed to update appointment record'), 500);
@@ -571,13 +591,53 @@ class AppointmentApiControl
 
         try {
             $rejectionReason = isset($data['rejectionReason']) ? $data['rejectionReason'] : null;
+            
+            // Capture status before update for notification logic
+            $appointmentBefore = $this->appointmentModel->getById((int) $data['id']);
+            $oldStatus = $appointmentBefore ? strtolower($appointmentBefore['status']) : null;
+
             $result = $this->appointmentModel->updateStatus((int) $data['id'], $data['status'], $rejectionReason);
 
             if ($result) {
-                // Fetch appointment details to update corresponding timeslot
+                // Fetch appointment details to update corresponding timeslot AND notify
                 $appointment = $this->appointmentModel->getById((int) $data['id']);
                 if ($appointment) {
                     $status = strtolower($data['status']);
+
+                    // Notify relevant party
+                    if ($status === 'accepted' || $status === 'reject' || $status === 'rejected') {
+                        if ($status === 'accepted') {
+                            // If it was rescheduled, notify counselor that student accepted
+                            if ($oldStatus === 'rescheduled') {
+                                $this->notificationModel->create(
+                                    (int)$appointment['counselor_user_id'],
+                                    "Student accepted your rescheduled time for: " . $appointment['title'],
+                                    'reschedule_accepted',
+                                    (int)$data['id'],
+                                    $appointment['student_user_id']
+                                );
+                            } else {
+                                // Counselor accepted student's booking
+                                $this->notificationModel->create(
+                                    (int)$appointment['student_user_id'],
+                                    "Your appointment '" . $appointment['title'] . "' has been accepted.",
+                                    'appointment_accepted',
+                                    (int)$data['id'],
+                                    $appointment['counselor_user_id']
+                                );
+                            }
+                        } else {
+                            // Rejected
+                            $this->notificationModel->create(
+                                (int)$appointment['student_user_id'],
+                                "Your appointment '" . $appointment['title'] . "' was rejected. Reason: " . ($rejectionReason ?: 'No reason provided'),
+                                'appointment_rejected',
+                                (int)$data['id'],
+                                (int)$_SESSION['user_id']
+                            );
+                        }
+                    }
+
                     if ($status === 'accept' || $status === 'accepted') {
                         $this->timeslotModel->markBooked(
                             (int)$appointment['counselor_user_id'],
@@ -682,7 +742,20 @@ class AppointmentApiControl
                 $this->appointmentModel->updateStatus((int)$data['id'], 'in_progress');
             }
 
-            $this->json(array('success' => true, 'message' => 'Session started successfully.'));
+            // Get Chat Session ID to link the notification directly to the room
+            $chatModel = new Chat();
+            $chatSessionId = $chatModel->findOrCreateSession((int)$appointment['counselor_user_id'], (int)$appointment['student_user_id']);
+
+            // Notify Undergrad
+            $this->notificationModel->create(
+                (int)$appointment['student_user_id'],
+                "Your counseling session for '" . $appointment['title'] . "' has started! Click here to join.",
+                'session_started',
+                (int)$chatSessionId,
+                $userId
+            );
+
+            $this->json(array('success' => true, 'message' => 'Session started successfully.', 'session_id' => $chatSessionId));
         } catch (Exception $e) {
             error_log("AppointmentApiControl startSession error: " . $e->getMessage());
             $this->json(array('error' => 'Failed to start session: ' . $e->getMessage()), 500);
