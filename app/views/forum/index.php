@@ -50,7 +50,7 @@ if (!$isEmbedded) {
 
                 <!-- Create New Thread Button -->
                 <?php if ($userRole !== 'guest' && $userRole !== 'university_representative'): ?>
-                    <a href="<?php echo BASE_URL; ?>/forum/create" class="btn-create-thread">
+                    <a href="<?php echo BASE_URL; ?>/forum/create<?= $isEmbedded ? '?embed=true' : '' ?>" class="btn-create-thread">
                         <i class="fas fa-plus"></i> Create New Thread
                     </a>
                 <?php elseif ($userRole === 'guest'): ?>
@@ -82,7 +82,7 @@ if (!$isEmbedded) {
             <!-- Threads List -->
             <div class="threads-list" id="threadsList">
                 <?php if (empty($threads)): ?>
-                    <div style="padding: 2rem; text-align: center; color: #6b7280;">
+                    <div style="padding: 24px; text-align: center; color: var(--text-secondary);">
                         No threads found. Be the first to start a discussion!
                     </div>
                 <?php else: ?>
@@ -99,8 +99,7 @@ if (!$isEmbedded) {
                                         <?php echo htmlspecialchars($thread['role'] ?? 'Student'); ?>
                                     </span>
                                     <!-- Category Badge (if separate style needed, handled by CSS or inline) -->
-                                    <span class="category-badge"
-                                        style="background:#eee; padding:2px 6px; border-radius:4px; font-size:0.8em; margin-left:8px;">
+                                    <span class="category-badge category-badge-<?php echo strtolower(htmlspecialchars($thread['category'])); ?>">
                                         <?php echo htmlspecialchars($thread['category']); ?>
                                     </span>
                                 </div>

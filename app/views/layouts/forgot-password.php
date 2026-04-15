@@ -143,7 +143,7 @@
         <h2>Forgot Password</h2>
         
         <div class="info-text">
-            Enter your Gmail address and we'll send you a link to reset your password.
+            Enter your email address and we'll send you a temporary password.
         </div>
 
         <?php if(isset($error)): ?>
@@ -155,25 +155,16 @@
         <?php if(isset($success)): ?>
             <div class="success">
                 <?= htmlspecialchars($success) ?>
-                <?php if(isset($reset_link)): ?>
-                    <br><br>
-                    <strong>Reset Link:</strong><br>
-                    <a href="<?= htmlspecialchars($reset_link) ?>" style="color: #4f46e5; text-decoration: none; font-weight: 600; word-break: break-all;">
-                        <?= htmlspecialchars($reset_link) ?>
-                    </a>
-                    <br><br>
-                    <small style="color: #6b7280;">Click the link above to reset your password. This link will expire in 1 hour.</small>
-                <?php endif; ?>
             </div>
         <?php endif; ?>
 
         <form method="POST" action="<?= BASE_URL ?>/login/forgot-password" id="forgotPasswordForm">
             <div class="form-group">
-                <label for="email">Gmail Address</label>
+                <label for="email">Email Address</label>
                 <input type="email" 
                        id="email" 
                        name="email" 
-                       placeholder="your.email@gmail.com"
+                       placeholder="your.email@example.com"
                        value="<?= htmlspecialchars($form_data['email'] ?? '') ?>"
                        required>
             </div>
@@ -190,19 +181,18 @@
         document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
             const email = document.getElementById('email').value;
             
-            // Validate Gmail format
-            if (email && !isValidGmail(email)) {
+            if (email && !isValidEmail(email)) {
                 e.preventDefault();
                 document.getElementById('email').style.borderColor = '#dc2626';
-                alert('Please enter a valid Gmail address (e.g., yourname@gmail.com)');
+                alert('Please enter a valid email address (e.g., yourname@example.com)');
             } else {
                 document.getElementById('email').style.borderColor = '#d1d5db';
             }
         });
 
-        function isValidGmail(email) {
-            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-            return gmailRegex.test(email);
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
         }
     </script>
 </body>

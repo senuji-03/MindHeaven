@@ -6,26 +6,30 @@ include BASE_PATH . '/app/views/layouts/header.php';
 
 <main id="main" class="main-content">
     <div class="container">
-        <div class="page-header">
-            <h1>About MindHeaven</h1>
-            <p class="page-subtitle">Your Mental Health Companion</p>
+        <div class="about-hero">
+            <div class="hero-content">
+                <h1>About MindHeaven</h1>
+                <p class="hero-subtitle">Your Mental Health Companion</p>
+            </div>
         </div>
 
-        <div class="content-grid">
+        <div class="mission-vision-row">
             <!-- Mission Section -->
-            <section class="content-card">
+            <section class="content-card text-center">
                 <div class="card-icon">🎯</div>
                 <h2>Our Mission</h2>
                 <p>MindHeaven is dedicated to providing comprehensive mental health support for students and the community. We believe that mental wellness is fundamental to academic success and personal growth.</p>
             </section>
 
             <!-- Vision Section -->
-            <section class="content-card">
+            <section class="content-card text-center">
                 <div class="card-icon">🌟</div>
                 <h2>Our Vision</h2>
                 <p>To create a safe, supportive environment where every individual has access to quality mental health resources, professional counseling, and peer support networks.</p>
             </section>
+        </div>
 
+        <div class="content-grid">
             <!-- Services Section -->
             <section class="content-card full-width">
                 <div class="card-icon">🛠️</div>
@@ -104,8 +108,12 @@ include BASE_PATH . '/app/views/layouts/header.php';
                 </div>
             </section>
 
-            <!-- Contact Section -->
-            <section class="content-card">
+            </section>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-row">
+            <section class="content-card text-center">
                 <div class="card-icon">📞</div>
                 <h2>Get in Touch</h2>
                 <p>Have questions or need support? We're here to help.</p>
@@ -121,42 +129,88 @@ include BASE_PATH . '/app/views/layouts/header.php';
 
 <style>
 .main-content {
-    padding: 2rem;
-    max-width: 1200px;
+    padding: 16px 28px !important;
+    max-width: 1200px !important;
     margin: 0 auto;
+    box-sizing: border-box;
+    width: 100%;
 }
 
-.page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    padding: 2rem 0;
+.about-hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+    color: white;
+    text-align: left;
+    padding: 20px 28px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
 }
 
-.page-header h1 {
-    font-size: 2.5rem;
-    color: #1f2937;
-    margin-bottom: 0.5rem;
+.about-hero::after {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(232,168,124,0.15);
+    bottom: -40px;
+    left: 15%;
+    z-index: 0;
 }
 
-.page-subtitle {
-    font-size: 1.2rem;
-    color: #6b7280;
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.about-hero h1 {
+    font-size: 2.1rem;
+    margin-bottom: 6px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.about-hero .hero-subtitle {
+    font-size: 0.95rem;
+    opacity: 0.95;
+    font-weight: 500;
     margin: 0;
+    color: rgba(255,255,255,0.85);
+}
+
+.mission-vision-row,
+.contact-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.mission-vision-row .content-card,
+.contact-row .content-card {
+    flex: 1 1 350px;
+    max-width: 500px;
 }
 
 .content-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
+    gap: 24px;
+    margin-bottom: 32px;
 }
 
 .content-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
 }
 
 .content-card.full-width {
@@ -165,44 +219,57 @@ include BASE_PATH . '/app/views/layouts/header.php';
 
 .card-icon {
     font-size: 2.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
     display: block;
 }
 
 .content-card h2 {
-    color: #1f2937;
-    margin-bottom: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 16px;
     font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .content-card p {
-    color: #6b7280;
+    color: var(--text-secondary);
     line-height: 1.6;
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
+}
+
+.text-center {
+    text-align: center;
 }
 
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+    gap: 24px;
+    margin-top: 24px;
 }
 
 .service-item {
-    padding: 1.5rem;
-    background: #f9fafb;
-    border-radius: 8px;
-    border-left: 4px solid #4f46e5;
+    padding: 24px;
+    background: var(--bg-mid);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--primary);
+    transition: all 0.2s ease;
+}
+
+.service-item:hover {
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--primary-light);
 }
 
 .service-item h3 {
-    color: #1f2937;
-    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
     font-size: 1.1rem;
+    font-weight: 700;
 }
 
 .service-item p {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     margin: 0;
 }
@@ -210,69 +277,71 @@ include BASE_PATH . '/app/views/layouts/header.php';
 .team-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    margin-top: 1.5rem;
+    gap: 32px;
+    margin-top: 24px;
 }
 
 .team-member {
     text-align: center;
-    padding: 1.5rem;
-    background: #f9fafb;
-    border-radius: 8px;
+    padding: 24px;
+    background: var(--bg-mid);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
 }
 
 .member-avatar {
     font-size: 3rem;
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
 }
 
 .team-member h3 {
-    color: #1f2937;
-    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
     font-size: 1.1rem;
+    font-weight: 700;
 }
 
 .team-member p {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     margin: 0;
 }
 
 .values-list {
-    margin-top: 1.5rem;
+    margin-top: 24px;
 }
 
 .value-item {
-    padding: 1rem;
-    background: #f9fafb;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    border-left: 4px solid #10b981;
+    padding: 16px;
+    background: var(--bg-mid);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    border-left: 4px solid var(--success);
 }
 
 .value-item strong {
-    color: #1f2937;
+    color: var(--text-primary);
 }
 
 .contact-info {
-    margin-top: 1.5rem;
+    margin-top: 24px;
 }
 
 .contact-info p {
-    margin-bottom: 0.5rem;
-    color: #374151;
+    margin-bottom: 8px;
+    color: var(--text-primary);
 }
 
 @media (max-width: 768px) {
     .main-content {
-        padding: 1rem;
+        padding: 16px;
     }
     
     .content-grid {
         grid-template-columns: 1fr;
     }
     
-    .page-header h1 {
+    .about-hero h1 {
         font-size: 2rem;
     }
 }

@@ -1,7 +1,25 @@
 <?php
+$isEmbedded = isset($_GET['embed']) && $_GET['embed'] === 'true';
 $TITLE = 'Create New Thread - MindHeaven';
 $CURRENT_PAGE = 'forum';
-include BASE_PATH . '/app/views/layouts/header.php';
+
+if (!$isEmbedded) {
+    include BASE_PATH . '/app/views/layouts/header.php';
+} else {
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><?= htmlspecialchars($TITLE) ?></title>
+        <link rel="stylesheet" href="<?= BASE_URL ?>/css/undergrad/style.css">
+        <link rel="stylesheet" href="<?= BASE_URL ?>/css/forum.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </head>
+    <body class="is-embedded">
+    <?php
+}
 
 $userRole = $_SESSION['role'] ?? 'guest';
 $oldInput = $old ?? [];
@@ -16,19 +34,19 @@ $oldInput = $old ?? [];
             </div>
         <?php endif; ?>
 
-        <div class="create-thread-form" style="display: block; max-width: 800px; margin: 2rem auto;">
+        <div class="create-thread-form">
             <div class="form-container">
                 <h3>Create New Discussion Thread</h3>
-                <form id="threadForm" action="<?php echo BASE_URL; ?>/forum/create" method="POST">
+                <form id="threadForm" action="<?php echo BASE_URL; ?>/forum/create<?= $isEmbedded ? '?embed=true' : '' ?>" method="POST">
                     <div class="form-group">
-                        <label for="threadTitle">Thread Title <span style="color:red">*</span></label>
+                        <label for="threadTitle">Thread Title <span style="color:var(--crisis)">*</span></label>
                         <input type="text" id="threadTitle" name="title"
                             value="<?php echo htmlspecialchars($oldInput['title'] ?? ''); ?>"
                             placeholder="Enter a descriptive title..." required>
                     </div>
 
                     <div class="form-group">
-                        <label for="threadCategory">Category <span style="color:red">*</span></label>
+                        <label for="threadCategory">Category <span style="color:var(--crisis)">*</span></label>
                         <select id="threadCategory" name="category" required 
                                 onchange="this.title = this.options[this.selectedIndex].getAttribute('title') || ''">
                             <option value="">Select a category...</option>
@@ -43,18 +61,17 @@ $oldInput = $old ?? [];
                     </div>
 
                     <div class="form-group">
-                        <label for="threadContent">Thread Description <span style="color:red">*</span></label>
+                        <label for="threadContent">Thread Description <span style="color:var(--crisis)">*</span></label>
                         <textarea id="threadContent" name="content" rows="6"
                             placeholder="Share your thoughts, ask questions, or offer support..."
                             required><?php echo htmlspecialchars($oldInput['content'] ?? ''); ?></textarea>
                     </div>
 
                     <?php if ($userRole === 'undergraduate'): ?>
-                        <div class="options-group"
-                            style="background: #f9fafb; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                            <h4 style="margin-top:0; font-size:1rem; color:#4b5563;">Privacy Options</h4>
+                        <div class="options-group">
+                            <h4>Privacy Options</h4>
 
-                            <div class="form-group" style="margin-bottom: 0.5rem;">
+                            <div class="form-group" style="margin-bottom: 8px;">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="anonymousPost" name="anonymous" <?php echo (isset($oldInput['anonymous'])) ? 'checked' : ''; ?>>
                                     <span class="checkmark"></span>
@@ -76,7 +93,7 @@ $oldInput = $old ?? [];
                     <?php endif; ?>
 
                     <div class="form-actions">
-                        <a href="<?php echo BASE_URL; ?>/forum" class="btn-secondary"
+                        <a href="<?php echo BASE_URL; ?>/forum<?= $isEmbedded ? '?embed=true' : '' ?>" class="btn-secondary"
                             style="text-decoration: none; text-align: center;">Cancel</a>
                         <button type="submit" class="btn-primary">Create Thread</button>
                     </div>
@@ -88,7 +105,7 @@ $oldInput = $old ?? [];
 
 <style>
     .main-content {
-        padding: 2.5rem 1.5rem;
+        padding: 16px 28px !important;
         max-width: 1200px;
         margin: 0 auto;
     }
@@ -97,44 +114,38 @@ $oldInput = $old ?? [];
     .create-thread-form {
         display: block;
         max-width: 760px;
-        margin: 2rem auto;
+        margin: 32px auto;
     }
 
     .form-container {
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        box-shadow: 0 4px 24px rgba(0,0,0,.07);
-        padding: 2.4rem 2.8rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 32px 40px;
     }
 
     .form-container h3 {
-        margin: 0 0 1.8rem;
+        margin: 0 0 24px;
         font-size: 1.4rem;
         font-weight: 700;
-        color: #111827;
-        border-bottom: 2px solid #f3f4f6;
-        padding-bottom: 1rem;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 16px;
     }
 
     /* ── Form groups ── */
     .form-group {
         display: flex;
         flex-direction: column;
-        margin-bottom: 1.4rem;
+        margin-bottom: 24px;
     }
 
     .form-group label {
-        font-size: 0.875rem;
+        font-size: 0.85rem;
         font-weight: 600;
-        color: #374151;
-        margin-bottom: 0.45rem;
-    }
-
-    .form-group label span[style*="color:red"],
-    .form-group label span[style*="color: red"] {
-        color: #ef4444 !important;
-        margin-left: 2px;
+        color: var(--text-primary);
+        margin-bottom: 8px;
     }
 
     /* ── Inputs, select, textarea ── */
@@ -143,12 +154,12 @@ $oldInput = $old ?? [];
     .form-group textarea {
         width: 100%;
         box-sizing: border-box;
-        padding: 0.65rem 0.9rem;
+        padding: 12px 16px;
         font-size: 0.95rem;
-        color: #1f2937;
-        background: #f9fafb;
-        border: 1.5px solid #d1d5db;
-        border-radius: 8px;
+        color: var(--text-primary);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
         outline: none;
         transition: border-color .18s, box-shadow .18s, background .18s;
         font-family: inherit;
@@ -157,9 +168,9 @@ $oldInput = $old ?? [];
     .form-group input[type="text"]:focus,
     .form-group select:focus,
     .form-group textarea:focus {
-        border-color: #6366f1;
-        background: #fff;
-        box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+        border-color: var(--primary);
+        background: var(--surface);
+        box-shadow: 0 0 0 3px rgba(61, 139, 110, 0.12);
     }
 
     .form-group select {
@@ -175,49 +186,45 @@ $oldInput = $old ?? [];
 
     /* ── Privacy options card ── */
     .options-group {
-        background: #f8faff !important;
-        border: 1.5px solid #e0e7ff;
-        border-radius: 10px !important;
-        padding: 1.1rem 1.3rem !important;
-        margin-bottom: 1.6rem !important;
+        background: var(--bg-mid);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-bottom: 24px;
     }
 
     .options-group h4 {
-        margin-top: 0 !important;
-        font-size: 0.9rem !important;
+        margin: 0 0 16px 0 !important;
+        font-size: 0.95rem !important;
         font-weight: 700 !important;
-        color: #4338ca !important;
+        color: var(--text-primary) !important;
         text-transform: uppercase;
         letter-spacing: .04em;
-    }
-
-    .options-group .form-group {
-        margin-bottom: 0.6rem !important;
     }
 
     .checkbox-label {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 8px;
         font-size: 0.9rem;
         font-weight: 500;
-        color: #374151;
+        color: var(--text-primary);
         cursor: pointer;
     }
 
     .checkbox-label input[type="checkbox"] {
         width: 16px;
         height: 16px;
-        accent-color: #6366f1;
+        accent-color: var(--primary);
         cursor: pointer;
     }
 
     .help-text {
         display: block;
-        font-size: 0.78rem;
-        color: #6b7280;
-        margin-top: 0.25rem;
-        margin-left: 1.6rem;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-top: 4px;
+        margin-left: 24px;
     }
 
     /* ── Action buttons ── */
@@ -225,66 +232,74 @@ $oldInput = $old ?? [];
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        gap: 0.75rem;
-        margin-top: 1.8rem;
-        padding-top: 1.2rem;
-        border-top: 1px solid #f3f4f6;
+        gap: 12px;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
     }
 
     .btn-primary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0.6rem 1.6rem;
-        background: #6366f1;
+        padding: 10px 24px;
+        background: var(--primary);
         color: #fff;
         font-size: 0.92rem;
         font-weight: 600;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-full);
         cursor: pointer;
-        transition: background .18s, transform .12s;
+        transition: background .18s, transform .12s, box-shadow .18s;
+        box-shadow: 0 4px 12px rgba(61,139,110,0.25);
     }
 
     .btn-primary:hover {
-        background: #4f46e5;
-        transform: translateY(-1px);
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(61,139,110,0.35);
     }
 
     .btn-secondary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0.6rem 1.3rem;
-        background: #f3f4f6;
-        color: #374151;
+        padding: 10px 24px;
+        background: var(--bg-mid);
+        color: var(--text-primary);
         font-size: 0.92rem;
         font-weight: 600;
-        border: 1.5px solid #d1d5db;
-        border-radius: 8px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-full);
         text-decoration: none !important;
         transition: background .18s;
         cursor: pointer;
     }
 
     .btn-secondary:hover {
-        background: #e5e7eb;
+        background: var(--border);
     }
 
     /* ── Alert ── */
     .alert {
-        padding: 0.9rem 1.1rem;
-        margin-bottom: 1.2rem;
-        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 24px;
+        border-radius: var(--radius-md);
         font-size: 0.9rem;
     }
 
     .alert-error {
-        background-color: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
+        background-color: #FEE2E2;
+        color: var(--crisis);
+        border: 1px solid #FCA5A5;
     }
 </style>
 
 
-<?php include BASE_PATH . '/app/views/layouts/footer.php'; ?>
+<?php
+if (!$isEmbedded) {
+    include BASE_PATH . '/app/views/layouts/footer.php';
+} else {
+    echo '</body></html>';
+}
+?>

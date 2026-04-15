@@ -17,7 +17,71 @@ class UGControl
     }
     public function index()
     {
-        view('undergrad/home');
+        $userId = $_SESSION['user_id'] ?? 0;
+
+        // Fetch Habit Stats
+        require_once BASE_PATH . '/app/models/Habit.php';
+        $habitDb = new Habit();
+        $habitStats = $habitDb->getStats($userId);
+
+        $pdo = Database::getConnection();
+
+        // Fetch Today's Current Mood
+        $stmt = $pdo->prepare("SELECT mood_type, mood_level, created_at FROM mood_records WHERE user_id = ? AND DATE(created_at) = CURDATE() ORDER BY created_at DESC LIMIT 1");
+        $stmt->execute([$userId]);
+        $currentMood = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Fetch Next Appointment
+        $stmt = $pdo->prepare("
+            SELECT a.*, COALESCE(c.full_name, u.username) as counselor_name 
+            FROM appointments a 
+            LEFT JOIN counselors c ON a.counselor_user_id = c.user_id 
+            LEFT JOIN users u ON a.counselor_user_id = u.id
+            WHERE a.student_user_id = ? 
+              AND a.status IN ('scheduled', 'confirmed', 'accept', 'accepted') 
+              AND (a.date > CURDATE() OR (a.date = CURDATE() AND a.time >= CURTIME())) 
+            ORDER BY a.date ASC, a.time ASC LIMIT 1
+        ");
+        $stmt->execute([$userId]);
+        $nextAppointment = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Fetch user name
+        $stmt = $pdo->prepare("SELECT COALESCE(us.full_name, u.username) as student_name FROM users u LEFT JOIN undergraduate_students us ON u.id = us.user_id WHERE u.id = ?");
+        $stmt->execute([$userId]);
+        $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+        $studentName = $userData['student_name'] ?? 'Student';
+
+        // Fetch Analytics Chart Data (Last 7 Days)
+        $habitChartData = ['labels' => [], 'data' => []];
+        $moodChartData = ['labels' => [], 'data' => []];
+        
+        for ($i = 6; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $dayLabel = date('D', strtotime($date));
+            $habitChartData['labels'][] = $dayLabel;
+            $moodChartData['labels'][] = $dayLabel;
+            
+            // Mood query
+            $stmt = $pdo->prepare("SELECT AVG(mood_level) FROM mood_records WHERE user_id = ? AND DATE(created_at) = ?");
+            $stmt->execute([$userId, $date]);
+            $avgMood = $stmt->fetchColumn();
+            $moodChartData['data'][] = $avgMood ? round((float)$avgMood, 1) : 0;
+            
+            // Habit query
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM habit_completions WHERE user_id = ? AND completion_date = ?");
+            $stmt->execute([$userId, $date]);
+            $completedCount = $stmt->fetchColumn();
+            $habitChartData['data'][] = (int)$completedCount;
+        }
+
+        view('undergrad/home', [
+            'habitStats' => $habitStats,
+            'currentMood' => $currentMood,
+            'nextAppointment' => $nextAppointment,
+            'studentName' => $studentName,
+            'habitChartData' => $habitChartData,
+            'moodChartData' => $moodChartData
+        ]);
     }
     public function appointment()
     {
@@ -520,6 +584,80 @@ class UGControl
             'student' => $student,
             'donations' => $donations
         ]);
+    }
+
+    public function editProfile()
+    {
+        $undergraduateModel = new Undergraduate();
+        $student = $undergraduateModel->getByUserId($_SESSION['user_id']);
+
+        if (!$student) {
+            header('Location: ' . BASE_URL . '/ug/profile/complete');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $errors = [];
+            $fullName = trim($_POST['full_name'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $phoneNumber = trim($_POST['phone_number'] ?? '');
+
+            if (empty($fullName)) {
+                $errors[] = 'Full name is required';
+            }
+
+            if (empty($email)) {
+                $errors[] = 'Email address is required';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = 'Please enter a valid email address';
+            }
+
+            if (empty($phoneNumber)) {
+                $errors[] = 'Phone number is required';
+            }
+
+            if (empty($errors) && $undergraduateModel->emailExists($email, $_SESSION['user_id'])) {
+                $errors[] = 'Email address already exists. Please use a different email.';
+            }
+
+            if (empty($errors)) {
+                try {
+                    $undergradData = [
+                        'full_name' => $fullName,
+                        'email' => $email,
+                        'phone_number' => $phoneNumber,
+                        'date_of_birth' => $_POST['date_of_birth'] ?? null,
+                        'gender' => $_POST['gender'] ?? null,
+                        'preferred_language' => trim($_POST['preferred_language'] ?? 'en')
+                    ];
+
+                    $undergraduateModel->update($_SESSION['user_id'], $undergradData);
+
+                    header('Location: ' . BASE_URL . '/ug/profile');
+                    exit;
+
+                } catch (Exception $e) {
+                    $errors[] = 'Failed to update profile. Please try again.';
+                }
+            }
+
+            if (!empty($errors)) {
+                view('undergrad/edit-profile', ['errors' => $errors, 'form_data' => $_POST]);
+                return;
+            }
+        }
+
+        // Pass existing student data as form_data initially
+        $form_data = [
+            'full_name' => $student['full_name'],
+            'email' => $student['email'],
+            'phone_number' => $student['phone_number'],
+            'date_of_birth' => $student['date_of_birth'],
+            'gender' => $student['gender'],
+            'preferred_language' => $student['preferred_language']
+        ];
+
+        view('undergrad/edit-profile', ['form_data' => $form_data]);
     }
 
     public function completeProfile()
