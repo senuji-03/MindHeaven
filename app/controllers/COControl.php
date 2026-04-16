@@ -53,11 +53,21 @@ class COControl
             
             $stats['totalPatients'] = $appointmentModel->getTotalPatients((int)$_SESSION['user_id']);
             $stats['todaysSessions'] = $appointmentModel->getTodaysSessionsCount((int)$_SESSION['user_id']);
+            
+            // Fetch escalated crisis calls
+            $pdo = Database::getConnection();
+            $stmt = $pdo->query("SELECT c.*, COALESCE(u.full_name, u.username, 'Anonymous') AS caller_name 
+                                 FROM crisis_calls c 
+                                 LEFT JOIN users u ON c.caller_user_id = u.id 
+                                 WHERE c.status = 'escalated' 
+                                 ORDER BY c.created_at DESC LIMIT 5");
+            $escalatedCalls = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         view('/counselor/Cdashboard', array(
             'counselorFeedback' => $counselorFeedback,
             'inProgressAppointments' => $inProgressAppointments,
             'upcomingAppointments' => $upcomingAppointments,
+            'escalatedCalls' => isset($escalatedCalls) ? $escalatedCalls : array(),
             'stats' => $stats
         ));
 

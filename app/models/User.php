@@ -135,4 +135,10 @@ class User
         $stmt = $this->pdo->query("SELECT COUNT(*) FROM users");
         return $stmt->fetchColumn();
     }
+
+    public function getRoleCounts()
+    {
+        $stmt = $this->pdo->query("SELECT role, COUNT(*) as count FROM users GROUP BY role");
+        return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
 }

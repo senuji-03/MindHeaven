@@ -56,10 +56,21 @@ function getNavigationItems($role)
     ],
     'counselor' => [
       'main' => [
-        ['icon' => 'fas fa-th-large', 'text' => 'Dashboard', 'url' => '/counselor', 'slug' => 'dashboard'],
-        ['icon' => 'fas fa-calendar-check', 'text' => 'Appointments', 'url' => '/counselor/appointments', 'slug' => 'appointments'],
-        ['icon' => 'fas fa-calendar', 'text' => 'Calendar', 'url' => '/counselor/calender', 'slug' => 'calendar'],
-        ['icon' => 'fas fa-history', 'text' => 'Session History', 'url' => '/counselor/session-history', 'slug' => 'session-history'],
+        ['icon' => 'fas fa-th-large', 'text' => 'Dashboard', 'url' => '/counselor/dashboard', 'slug' => 'dashboard'],
+        ['icon' => 'fas fa-calendar', 'text' => 'Calendar', 'url' => '/counselor/calender', 'slug' => 'calender'],
+        ['icon' => 'fas fa-calendar-check', 'text' => 'Appointments', 'url' => '/counselor/appointmentmgt', 'slug' => 'appointmentmgt'],
+        ['icon' => 'fas fa-clock', 'text' => 'Timeslots', 'url' => '/counselor/timeslots', 'slug' => 'timeslots'],
+        ['icon' => 'fas fa-history', 'text' => 'Session History', 'url' => '/counselor/sessionHistory', 'slug' => 'sessionHistory'],
+        ['icon' => 'fas fa-comments', 'text' => 'Chat', 'url' => '/chat', 'slug' => 'chat'],
+      ],
+      'support' => [
+        ['icon' => 'fas fa-users', 'text' => 'Forum', 'url' => '/counselor/forum', 'slug' => 'forum'],
+        ['icon' => 'fas fa-book', 'text' => 'Resource Hub', 'url' => '/counselor/Cresource_hub', 'slug' => 'Cresource_hub'],
+        ['icon' => 'fas fa-edit', 'text' => 'Edit Resources', 'url' => '/EditPosts', 'slug' => 'EditPosts'],
+        ['icon' => 'fas fa-layer-group', 'text' => 'Resource Categories', 'url' => '/resource-categories', 'slug' => 'resource-categories'],
+      ],
+      'other' => [
+        ['icon' => 'fas fa-hand-holding-usd', 'text' => 'Donate', 'url' => '/donation', 'slug' => 'donation'],
       ]
     ],
     'moderator' => [

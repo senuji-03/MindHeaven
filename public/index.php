@@ -57,6 +57,7 @@ $router->post('/ug/feedback/delete', 'UGControl@deleteFeedback');
 $router->get('/ug/feedback/get', 'UGControl@getFeedbackById');
 
 $router->get('/admin', 'AdminControl@index'); // Admin dashboard
+$router->get('/admin/profile', 'AdminControl@profile');
 $router->get('/admin/manage-users', 'AdminControl@manageUsers');
 $router->get('/admin/suspended-users', 'AdminControl@suspendedUsers');
 $router->get('/admin/resource-hub', 'AdminControl@resourceHub');
@@ -73,6 +74,7 @@ $router->post('/admin/update-system-flag-status', 'AdminControl@updateSystemFlag
 $router->get('/admin/university-events', 'AdminControl@universityEvents');
 $router->post('/admin/university-events/approve', 'AdminControl@approveUniversityEvent');
 $router->post('/admin/university-events/reject', 'AdminControl@rejectUniversityEvent');
+$router->post('/admin/university-events/remove', 'AdminControl@removeUniversityEvent');
 $router->get('/admin/donations', 'AdminControl@donations');
 $router->get('/admin/awareness', 'AdminControl@awareness');
 $router->get('/admin/monitoring', 'AdminControl@monitoring');
@@ -83,18 +85,20 @@ $router->get('/admin/profile', 'AdminControl@profile');
 $router->get('/admin/report-categories', 'AdminControl@manageReportCategories');
 $router->post('/admin/report-categories/create', 'AdminControl@createReportCategory');
 $router->post('/admin/report-categories/update', 'AdminControl@updateReportCategory');
-$router->post('/admin/report-categories/create', 'AdminControl@createReportCategory');
-$router->post('/admin/report-categories/update', 'AdminControl@updateReportCategory');
-$router->post('/admin/report-categories/update', 'AdminControl@updateReportCategory');
 $router->post('/admin/report-categories/delete', 'AdminControl@deleteReportCategory');
 $router->post('/admin/report-categories/activate', 'AdminControl@activateReportCategory');
 
-// Forum Thread Category Management (forum_categories — NOT report_categories)
+// Forum Thread Category Management
 $router->get('/admin/forum-categories', 'AdminControl@forumCategories');
 $router->post('/admin/forum-categories/create', 'AdminControl@createForumCategory');
 $router->post('/admin/forum-categories/update', 'AdminControl@updateForumCategory');
 $router->post('/admin/forum-categories/delete', 'AdminControl@deleteForumCategory');
 $router->post('/admin/forum-categories/activate', 'AdminControl@activateForumCategory');
+
+// Moderator/Admin Unified Aliases
+$router->get('/Moderator/moderate-forum', 'AdminControl@moderateForum');
+$router->get('/Moderator/forum-categories', 'AdminControl@forumCategories');
+$router->get('/Moderator/keywords', 'AdminKeywordControl@index');
 
 
 // Resource Hub Categories Management
@@ -142,6 +146,9 @@ $router->get('/counselor/viewResource', 'COControl@CviewResource');
 $router->post('/counselor/likeResource', 'COControl@ClikeResource');
 $router->post('/counselor/addComment', 'COControl@CaddComment');
 $router->post('/counselor/reportResource', 'COControl@CreportResource');
+
+// Counselor routes
+
 
 $router->get('/counselor/timeslots', 'COControl@timeslots');
 
@@ -196,10 +203,10 @@ $router->post('/api/habits/log-date', 'HabitApiControl@logForDate');
 $router->post('/api/habits/unlog-date', 'HabitApiControl@unlogForDate');
 
 // Mood API
-$router->get('/api/mood/list',   'MoodApiControl@list');
-$router->post('/api/mood/create','MoodApiControl@create');
+$router->get('/api/mood/list', 'MoodApiControl@list');
+$router->post('/api/mood/create', 'MoodApiControl@create');
 $router->put('/api/mood/update', 'MoodApiControl@update');
-$router->delete('/api/mood/delete','MoodApiControl@delete');
+$router->delete('/api/mood/delete', 'MoodApiControl@delete');
 
 // Notification API Routes
 $router->get('/api/notifications', 'NotificationControl@list');
@@ -329,6 +336,7 @@ $router->post('/api/crisis/connect', 'CrisisApiControl@connect');
 $router->get('/api/crisis/waiting', 'CrisisApiControl@getWaitingCalls');
 $router->post('/api/crisis/answer', 'CrisisApiControl@answerCall');
 $router->post('/api/crisis/update', 'CrisisApiControl@updateCall');
+$router->post('/api/crisis/notes', 'CrisisApiControl@saveInterventionNotes');
 
 $router->get('/responder/dashboard', 'CallResponderControl@dashboard');
 $router->get('/CallResponder', 'CallResponderControl@dashboard');

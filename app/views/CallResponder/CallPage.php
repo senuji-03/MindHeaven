@@ -40,7 +40,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 .responder-page-header p {
 	font-size: 0.9rem;
-	color: var(--text-secondary);
+	color: #2c3e50; /* Darker than ash */
 	margin: 0;
 }
 
@@ -137,7 +137,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 .call-item__info .wait-time {
 	font-size: 0.78rem;
-	color: var(--text-secondary);
+	color: #333;
 }
 
 .btn-answer {
@@ -174,7 +174,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	color: var(--text-secondary);
+	color: #222;
 	background: var(--bg-soft);
 	border-radius: var(--radius-md);
 	border: 2px dashed var(--border);
@@ -271,7 +271,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 	border: 1.5px solid var(--border);
 	border-radius: var(--radius-md);
 	background: var(--bg-mid);
-	color: var(--text-primary);
+	color: #000;
 	font-family: inherit;
 	font-size: 0.88rem;
 	resize: vertical;
@@ -369,12 +369,17 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 				<!-- Actions row -->
 				<div class="rp-actions">
-					<p style="font-size:0.78rem;color:var(--text-secondary);margin:0;">
+					<p style="font-size:0.78rem;color:#000;margin:0;">
 						<i class="fas fa-lock"></i> Notes are private and never shared with the caller
 					</p>
-					<button class="mh-btn mh-btn--primary" onclick="saveNotes()">
-						<i class="fas fa-floppy-disk"></i> Save & Close Record
-					</button>
+					<div style="display:flex; gap:12px;">
+						<button class="mh-btn mh-btn--danger" style="background:#D64F4F; color:#fff;" onclick="escalateCall()">
+							<i class="fas fa-arrow-up"></i> Escalate to Counselor
+						</button>
+						<button class="mh-btn mh-btn--primary" onclick="saveNotes()">
+							<i class="fas fa-floppy-disk"></i> Save & Close Record
+						</button>
+					</div>
 				</div>
 
 			</div>
@@ -594,6 +599,46 @@ async function saveNotes() {
 			showToast('Call record saved successfully.', 'success');
 		} else {
 			alert(data.error || 'Failed to save record.');
+		}
+	} catch (err) {
+		alert('Network error while saving. Please try again.');
+	}
+}
+
+// ── ESCALATE CALL ─────────────────────────────────────────────
+async function escalateCall() {
+	if (!currentCallId) {
+		alert('No active call record to escalate.');
+		return;
+	}
+
+	const notes = document.getElementById('callNotes').value.trim();
+
+	if (!confirm("Are you sure you want to escalate this call to an available counselor?")) {
+		return;
+	}
+
+	try {
+        // We set status to escalated. The back-end handles placing it in the Counselor queue.
+		const res  = await fetch('/MindHeaven/public/api/crisis/update', {
+			method:  'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body:    JSON.stringify({ call_id: currentCallId, status: 'escalated', notes })
+		});
+		const data = await res.json();
+
+		if (data.success) {
+			// Reset workspace
+			document.getElementById('callNotes').value = '';
+			document.getElementById('activeCallContainer').style.display = 'none';
+			document.getElementById('noCallState').style.display          = 'flex';
+			currentCallId = null;
+			fetchWaitingCalls();
+
+			// Success toast
+			showToast('Call escalated to an available counselor successfully!', 'success');
+		} else {
+			alert(data.error || 'Failed to escalate record.');
 		}
 	} catch (err) {
 		alert('Network error while saving. Please try again.');

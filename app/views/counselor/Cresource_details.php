@@ -1,54 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$TITLE = 'MindHeaven — ' . htmlspecialchars($resource['title'] ?? '');
+$CURRENT_PAGE = 'Cresource_details';
+$PAGE_CSS = ['/MindHeaven/public/css/counselor/Cdashboard.css', '/MindHeaven/public/css/undergrad/resources.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindHeaven — <?= htmlspecialchars($resource['title']) ?></title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\Cdashboard.css">
-    <link rel="stylesheet" href="/MindHeaven/public/css/undergrad/resources.css">
-    <style>
-        .resources-main {
-            padding: 2rem;
-            max-width: 100%;
-            margin: 0;
-        }
-
-        .resource-detail-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .like-button.liked svg {
-            fill: #ff385c !important;
-            stroke: #ff385c !important;
-        }
-
-        .like-button:hover {
-            transform: scale(1.1);
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                Mindheaven
-            </div>
-            <div class="nav-icons">
-                <div class="nav-icon">🔔<span class="badge">3</span></div>
-                <div class="nav-icon">💬<span class="badge">7</span></div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Container -->
-    <div class="main-container">
+<div class="main-container">
         <!-- Sidebar -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
+        
 
         <!-- Main Content -->
         <main class="main-content resources-main">
@@ -184,6 +143,5 @@
             });
         }
     </script>
-</body>
 
-</html>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

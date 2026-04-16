@@ -256,6 +256,43 @@
                 gap: 5px;
             }
         }
+        
+        /* Tab Navigation Styles */
+        .tab-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 12px;
+        }
+
+        .tab-btn {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4b5563;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-btn:hover {
+            color: #1f2937;
+            background-color: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .tab-btn.active {
+            color: #4f46e5;
+            background-color: #e0e7ff;
+            border-color: #c7d2fe;
+            font-weight: 600;
+            box-shadow: inset 0 0 0 1px #c7d2fe;
+        }
     </style>
 </head>
 
@@ -288,15 +325,15 @@
             </a>
             <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
                 <span class="icon">📈</span>
-                Reports
+                System Reports
                         </a>
             <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
                 <span class="icon">🏛️</span>
                 University Events
             </a>
             <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
-                <span class="icon"></span>
-                Donation logs
+                <span class="icon">💰</span>
+                Donation Logs
             </a>
             
                     <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
@@ -319,10 +356,12 @@
         <div class="topbar">
             <h1>Manage Users</h1>
             <div class="topbar-right">
-                <div class="admin-profile">
-                    <span>Admin User</span>
-                    <div class="avatar">A</div>
-                </div>
+                <a href="<?= BASE_URL ?>/admin/profile" style="text-decoration: none; color: inherit;">
+                    <div class="admin-profile" style="cursor: pointer;">
+                        <span>Admin User</span>
+                        <div class="avatar">A</div>
+                    </div>
+                </a>
             </div>
         </div>
 

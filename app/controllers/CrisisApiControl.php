@@ -1,12 +1,14 @@
 <?php
 
-class CrisisApiControl {
+class CrisisApiControl
+{
 
     /**
      * POST /api/crisis/connect
      * Caller (Student) requests an emergency crisis audio room via Daily.co.
      */
-    public function connect() {
+    public function connect()
+    {
         header('Content-Type: application/json');
 
         if (!isset($_SESSION['user_id'])) {
@@ -15,7 +17,7 @@ class CrisisApiControl {
             return;
         }
 
-        $userId = (int)$_SESSION['user_id'];
+        $userId = (int) $_SESSION['user_id'];
 
         if (!defined('DAILY_API_KEY') || empty(DAILY_API_KEY)) {
             // If no Daily API key, return a mock URL for testing
@@ -27,10 +29,10 @@ class CrisisApiControl {
 
         $dailyRoomName = 'mh-crisis-' . time() . '-' . $userId;
         $postData = [
-            'name'       => $dailyRoomName,
+            'name' => $dailyRoomName,
             'properties' => [
-                'exp'             => time() + 7200, // 2 hours max
-                'enable_chat'     => false,
+                'exp' => time() + 7200, // 2 hours max
+                'enable_chat' => false,
                 'start_audio_off' => false,
                 'start_video_off' => true  // Audio Only
             ]
@@ -46,7 +48,7 @@ class CrisisApiControl {
         ]);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
-        $response  = curl_exec($ch);
+        $response = curl_exec($ch);
         $curlError = curl_errno($ch);
         curl_close($ch);
 
@@ -67,14 +69,14 @@ class CrisisApiControl {
 
         // Record the crisis call in DB
         try {
-            $pdo  = Database::getConnection();
+            $pdo = Database::getConnection();
             $stmt = $pdo->prepare(
                 "INSERT INTO crisis_calls 
                     (caller_user_id, caller_name, caller_phone, crisis_type, severity_level, description, daily_room_url, status) 
                  VALUES (?, ?, ?, 'other', 'high', 'Emergency audio hotline request', ?, 'waiting')"
             );
-            $callerName  = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Anonymous Student';
-            $callerPhone = $_SESSION['phone']      ?? '000-000-0000';
+            $callerName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Anonymous Student';
+            $callerPhone = $_SESSION['phone'] ?? '000-000-0000';
             $stmt->execute([$userId, $callerName, $callerPhone, $result['url']]);
             $callId = $pdo->lastInsertId();
         } catch (Exception $e) {
@@ -84,7 +86,7 @@ class CrisisApiControl {
         }
 
         echo json_encode([
-            'url'     => $result['url'],
+            'url' => $result['url'],
             'call_id' => $callId
         ]);
     }
@@ -93,7 +95,8 @@ class CrisisApiControl {
      * GET /api/crisis/waiting
      * Responder polls for waiting calls
      */
-    public function getWaitingCalls() {
+    public function getWaitingCalls()
+    {
         header('Content-Type: application/json');
 
         $role = $_SESSION['role'] ?? '';
@@ -128,7 +131,8 @@ class CrisisApiControl {
      * POST /api/crisis/answer
      * Responder answers a waiting call — marks it in_progress and returns the room URL
      */
-    public function answerCall() {
+    public function answerCall()
+    {
         header('Content-Type: application/json');
 
         $role = $_SESSION['role'] ?? '';
@@ -138,8 +142,8 @@ class CrisisApiControl {
             return;
         }
 
-        $data   = json_decode(file_get_contents('php://input'), true);
-        $callId = (int)($data['call_id'] ?? 0);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $callId = (int) ($data['call_id'] ?? 0);
 
         if (!$callId) {
             http_response_code(400);
@@ -187,13 +191,14 @@ class CrisisApiControl {
      * POST /api/crisis/update
      * Responder saves notes and marks call complete
      */
-    public function updateCall() {
+    public function updateCall()
+    {
         header('Content-Type: application/json');
 
-        $data   = json_decode(file_get_contents('php://input'), true);
-        $callId = (int)($data['call_id'] ?? 0);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $callId = (int) ($data['call_id'] ?? 0);
         $status = in_array($data['status'] ?? '', ['completed', 'escalated']) ? $data['status'] : 'completed';
-        $notes  = trim($data['notes'] ?? '');
+        $notes = trim($data['notes'] ?? '');
 
         if (!$callId) {
             http_response_code(400);
@@ -202,7 +207,7 @@ class CrisisApiControl {
         }
 
         try {
-            $pdo  = Database::getConnection();
+            $pdo = Database::getConnection();
             $stmt = $pdo->prepare(
                 "UPDATE crisis_calls SET status = ?, notes = ?, response_notes = ? WHERE id = ?"
             );
@@ -210,6 +215,47 @@ class CrisisApiControl {
             echo json_encode(['success' => true]);
         } catch (Exception $e) {
             error_log("Crisis update error: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => 'Database error']);
+        }
+    }
+
+    /**
+     * POST /api/crisis/notes
+     * Counselor saves intervention notes for an escalated call
+     */
+    public function saveInterventionNotes()
+    {
+        header('Content-Type: application/json');
+
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'counselor') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        $callId = (int) ($data['call_id'] ?? 0);
+        $notes = trim($data['notes'] ?? '');
+
+        if (!$callId || empty($notes)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Missing call ID or notes']);
+            return;
+        }
+
+        try {
+            require_once BASE_PATH . '/app/models/CrisisIntervention.php';
+            $interventionModel = new CrisisIntervention();
+            $success = $interventionModel->save($callId, $_SESSION['user_id'], $notes);
+
+            if ($success) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['error' => 'Failed to save notes']);
+            }
+        } catch (Exception $e) {
+            error_log("Crisis intervention notes error: " . $e->getMessage());
             http_response_code(500);
             echo json_encode(['error' => 'Database error']);
         }

@@ -6,8 +6,8 @@ class AdminKeywordControl
 
     public function __construct()
     {
-        // Enforce Admin Access
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        // Enforce Access (Admin or Moderator)
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'moderator')) {
             header('Location: ' . BASE_URL . '/login');
             exit;
         }

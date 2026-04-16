@@ -1,8 +1,10 @@
 <?php
 
-class CallResponderControl {
+class CallResponderControl
+{
 
-    public function index() {
+    public function index()
+    {
         if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['call_responder', 'admin'])) {
             header('Location: ' . BASE_URL . '/login');
             exit;
@@ -11,11 +13,13 @@ class CallResponderControl {
         require BASE_PATH . '/app/views/CallResponder/CallPage.php';
     }
 
-    public function dashboard() {
+    public function dashboard()
+    {
         $this->index();
     }
 
-    public function success() {
+    public function success()
+    {
         if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['call_responder', 'admin'])) {
             header('Location: ' . BASE_URL . '/login');
             exit;
@@ -23,9 +27,12 @@ class CallResponderControl {
 
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare("SELECT c.*, COALESCE(u.full_name, u.username, 'Anonymous') AS caller_name 
+            $stmt = $pdo->prepare("SELECT c.*, 
+                                   COALESCE(u.full_name, u.username, 'Anonymous') AS caller_name,
+                                   cin.notes as counselor_followup_notes 
                                    FROM crisis_calls c 
                                    LEFT JOIN users u ON c.caller_user_id = u.id 
+                                   LEFT JOIN crisis_intervention_notes cin ON c.id = cin.crisis_call_id
                                    WHERE c.status IN ('completed', 'escalated') AND c.responder_user_id = ?
                                    ORDER BY c.updated_at DESC");
             $stmt->execute([$_SESSION['user_id']]);

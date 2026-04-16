@@ -204,6 +204,6 @@
         </div>
     </div>
 
-    <script src="<?= BASE_URL ?>/js/university-rep/script.js"></script>
+    <script src="<?= BASE_URL ?>/js/university-rep/script.js?v=<?= time() ?>"></script>
 </body>
 </html>

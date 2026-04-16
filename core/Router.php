@@ -44,7 +44,7 @@ class Router
 
         $basePath = '/MindHeaven/public';
 
-        if (str_starts_with($requestedUri, $basePath)) {
+        if (stripos($requestedUri, $basePath) === 0) {
             $requestedUri = substr($requestedUri, strlen($basePath));
         }
 
