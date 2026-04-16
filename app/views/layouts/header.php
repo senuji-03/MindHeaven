@@ -539,6 +539,11 @@ $navigationItems = getNavigationItems($userRole);
       font-size: 1rem;
     }
 
+    /* ── Guest (no sidebar) layout ── */
+    .guest-no-sidebar {
+      margin-left: 0 !important;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .sidebar {
@@ -594,10 +599,11 @@ $navigationItems = getNavigationItems($userRole);
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Sidebar -->
+  <!-- Sidebar — only shown to authenticated users -->
+  <?php if (Auth::check()): ?>
   <aside id="sidebar" class="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sidebar-header">
-      <a class="brand" href="<?= BASE_URL ?>/" aria-label="MindHeaven Home">
+      <a class="brand" href="<?= BASE_URL ?>" aria-label="MindHeaven Home">
         <div class="brand-logo">
           <i class="fas fa-leaf"></i>
         </div>
@@ -632,9 +638,10 @@ $navigationItems = getNavigationItems($userRole);
 
 
   </aside>
+  <?php endif; ?>
 
   <!-- Main Content -->
-  <div class="main-wrapper">
+  <div class="main-wrapper<?= !Auth::check() ? ' guest-no-sidebar' : '' ?>">
     <header class="top-header" role="banner">
       <div class="header-content">
         <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-controls="sidebar" aria-expanded="false">

@@ -9,6 +9,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
+        :root {
+            --primary:#3D8B6E; --primary-light:#6BB89A; --primary-dark:#2A6B52;
+            --bg-deep:#1C2B2A; --bg-soft:#F5F0E8; --bg-mid:#EEF6F2;
+            --text-primary:#1E3A34; --text-secondary:#6B8C7E;
+            --surface:#FFFFFF; --border:#D6E4DD;
+            --radius-sm:8px; --radius-lg:20px; --radius-full:9999px;
+            --shadow-sm:0 1px 3px rgba(30,58,52,.06);
+        }
         * {
             margin: 0;
             padding: 0;
@@ -23,81 +31,32 @@
         }
 
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            background: #1C2B2A; /* --bg-deep */
-            color: white;
-            z-index: 1000;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            width:280px; height:100vh; background:var(--bg-deep);
+            position:fixed; left:0; top:0;
+            display:flex; flex-direction:column; z-index:1000;
         }
-
-        .sidebar-header {
-            padding: 2rem 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: white;
-        }
-
-        .sidebar-header p {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        .sidebar-nav {
-            padding: 1rem 0;
-        }
-
+        .sidebar-header { padding:36px 28px 28px; border-bottom:1px solid rgba(255,255,255,.08); }
+        .sidebar-header h2 { font-size:1.4rem; font-weight:700; color:var(--primary-light); margin-bottom:6px; }
+        .sidebar-header p  { font-size:.75rem; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:1.5px; }
+        .sidebar-nav { flex:1; padding:24px 16px; overflow-y:auto; }
         .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
+            display:flex; align-items:center; gap:12px;
+            padding:12px 16px; color:rgba(255,255,255,.65);
+            text-decoration:none; border-radius:var(--radius-sm);
+            margin-bottom:4px; font-weight:500; font-size:.95rem;
+            transition:all .25s ease;
         }
-
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border-left-color: #3D8B6E; /* --primary */
-        }
-
-        .nav-item.active {
-            background: rgba(61, 139, 110, 0.15);
-            color: white; /* Changed to white for better contrast */
-            border-left-color: #3D8B6E; /* --primary */
-        }
-
-        .nav-item .icon {
-            margin-right: 0.75rem;
-            font-size: 1.1rem;
-        }
-
-        .sidebar-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            padding: 1rem;
-        }
-
+        .nav-item i { width:20px; text-align:center; font-size:1rem; }
+        .nav-item:hover { background:rgba(255,255,255,.07); color:white; transform:translateX(3px); }
+        .nav-item.active { background:var(--primary); color:white; box-shadow:0 4px 12px rgba(61,139,110,.3); }
+        .sidebar-footer { padding:20px 16px; border-top:1px solid rgba(255,255,255,.08); }
         .logout-btn {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            text-decoration: none;
-            border-radius: 8px;
+            display:flex; align-items:center; gap:12px;
+            padding:12px 16px; color:#FFB3B3;
+            text-decoration:none; border-radius:var(--radius-sm);
+            font-weight:600; font-size:.9rem; transition:all .25s;
+        }
+        .logout-btn:hover { background:rgba(214,79,79,.1); }
             transition: all 0.3s ease;
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
@@ -107,98 +66,7 @@
             color: #fca5a5;
         }
 
-        .main-content {
-            margin-left: 280px;
-            min-height: 100vh;
-            background: #F5F0E8;
-        }
-
-        .topbar {
-            background: white;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .topbar h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 1rem;
-            background: #f1f5f9;
-            border-radius: 50px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        .content-wrapper {
-            padding: 2rem;
-        }
-
-        .toolbar {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            background: #f1f5f9;
-            color: #64748b;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .tab:hover:not(.active) {
-            background: #e2e8f0;
-            color: #475569;
-        }
+        <?php include '_forum_styles.php'; ?>
 
         .btn {
             padding: 0.75rem 1.5rem;
@@ -494,69 +362,31 @@
 
 <body>
   <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <h2>🧠 Mind Haven</h2>
-      <p><?= (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? 'Admin Panel' : 'Moderator Panel' ?></p>
-    </div>
-
-    <nav class="sidebar-nav">
-        <?php if ($_SESSION['role'] === 'admin'): ?>
-            <a href="<?= BASE_URL ?>/admin" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item">
-                <span class="icon">👥</span>
-                Manage Users
-            </a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
-                <span class="icon">💬</span>
-                Moderate Forum
-            </a>
-            <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
-                <span class="icon">📅</span>
-                Appointments
-            </a>
-            <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
-                <span class="icon">📈</span>
-                System Reports
-            </a>
-            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
-                <span class="icon">🏛️</span>
-                University Events
-            </a>
-            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
-                <span class="icon">💰</span>
-                Donation Logs
-            </a>
-            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
-        <?php else: ?>
-            <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="nav-item">
-                <span class="icon">📚</span>
-                Resource Hub
-            </a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
-                <span class="icon">💬</span>
-                Moderate Forum
-            </a>
-        <?php endif; ?>
-    </nav>
-
-    <div class="sidebar-footer">
-      <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-        <span class="icon">🚪</span>
-        Logout
-      </a>
-    </div>
-  </div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>🧠 Mind Haven</h2>
+            <p><?= (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? 'Admin Panel' : 'Moderator Panel' ?></p>
+        </div>
+        <nav class="sidebar-nav">
+            <?php if ($_SESSION['role'] === 'admin'): ?>
+                <a href="<?= BASE_URL ?>/admin" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item"><i class="fas fa-users"></i> Manage Users</a>
+                <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active"><i class="fas fa-comments"></i> Moderate Forum</a>
+                <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item"><i class="fas fa-calendar-check"></i> Appointments</a>
+                <a href="<?= BASE_URL ?>/admin/reports" class="nav-item"><i class="fas fa-chart-bar"></i> System Reports</a>
+                <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item"><i class="fas fa-university"></i> University Events</a>
+                <a href="<?= BASE_URL ?>/admin/donations" class="nav-item"><i class="fas fa-hand-holding-usd"></i> Donation Logs</a>
+                <a href="<?= BASE_URL ?>/EditPosts" class="nav-item"><i class="fas fa-edit"></i> Edit Resources</a>
+            <?php else: ?>
+                <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="nav-item"><i class="fas fa-book"></i> Resource Hub</a>
+                <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active"><i class="fas fa-comments"></i> Moderate Forum</a>
+            <?php endif; ?>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="<?= BASE_URL ?>/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
 
   <!-- Main Content -->
   <div class="main-content">
@@ -597,24 +427,11 @@
         </div>
       <?php endif; ?>
 
-      <div class="toolbar">
-        <div class="tabs">
-          <button class="tab active" data-tab="preview">Preview</button>
-          <button class="tab" data-tab="queue">Flagged Queue</button>
-          <button class="tab" data-tab="auto-flags">Automated Flags</button>
-          <a href="<?= BASE_URL ?>/admin/forum-categories" class="tab-link"
-            style="text-decoration:none; display:flex; align-items:center;">
-            Manage Thread Categories
-          </a>
-          <a href="<?= BASE_URL ?>/admin/keywords" class="tab-link"
-            style="text-decoration:none; display:flex; align-items:center; margin-left:10px;">
-            Manage Keywords
-          </a>
-        </div>
-        <div>
-          <a href="<?= BASE_URL ?>/admin/report-categories" class="btn">Categories</a>
-        </div>
-      </div>
+      <?php 
+      // Set active tab based on query param for the partial
+      $activeTab = $_GET['tab'] ?? 'preview';
+      include '_forum_tabs.php'; 
+      ?>
 
 
       <!-- Embed/preview the UG forum page -->
@@ -819,21 +636,28 @@
     </div>
   </div>
 
-  <script>
-        // Tabs functionality
-    document.querySelectorAll('.tab').forEach(btn => {
-      btn.addEventListener('click', function (e) {
-        // Remove active class from all tabs
-        document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-
-        // Add active class to clicked tab
+  <script>    // Tab Switching Logic
+    document.querySelectorAll('.tab[data-tab]').forEach(tabBtn => {
+      tabBtn.addEventListener('click', function (e) {
+        // Since we are now using <a> tags in the shared partial, 
+        // we prevent default only for on-page tabs
+        e.preventDefault();
+        
+        // Update active class
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         this.classList.add('active');
 
         const tab = this.dataset.tab;
         if (tab) {
+          // Update visual sections
           document.getElementById('forumPreview').style.display = tab === 'preview' ? 'block' : 'none';
           document.getElementById('queueList').style.display = tab === 'queue' ? 'block' : 'none';
           document.getElementById('autoFlagsList').style.display = tab === 'auto-flags' ? 'block' : 'none';
+          
+          // Update URL without reload to preserve state
+          const newUrl = new URL(window.location);
+          newUrl.searchParams.set('tab', tab);
+          window.history.pushState({}, '', newUrl);
         }
       });
     });
