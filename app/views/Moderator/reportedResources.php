@@ -158,7 +158,11 @@
         border-left: 4px solid;
     }
 
-    .alert-success { background: var(--bg-mid); color: #1e3a34; border-left-color: var(--success); }
+    .alert-success {
+        background: var(--bg-mid);
+        color: #1e3a34;
+        border-left-color: var(--success);
+    }
 
     /* Responsive Empty State */
     .empty-reports {
@@ -178,14 +182,15 @@
     <div class="report-page-header">
         <div class="report-page-header-text">
             <h1>Reported Resources</h1>
-            <p>Review community flags and maintain the quality of the Resource Hub. Ensure content aligns with safe-usage guidelines.</p>
+            <p>Review community flags and maintain the quality of the Resource Hub. Ensure content aligns with
+                safe-usage guidelines.</p>
         </div>
     </div>
 
     <!-- Resolution Alerts -->
     <?php if (isset($_GET['resolved'])): ?>
         <div class="alert-box alert-success">
-            <i class="fas fa-check-circle"></i> 
+            <i class="fas fa-check-circle"></i>
             Report successfully resolved. Action has been recorded in the moderation logs.
         </div>
     <?php endif; ?>
@@ -213,8 +218,8 @@
                     <?php foreach ($reports as $report): ?>
                         <tr>
                             <td>
-                                <a href="<?= BASE_URL ?>/ug/viewResource?id=<?= $report['resource_id'] ?>" 
-                                   target="_blank" class="resource-link">
+                                <a href="<?= BASE_URL ?>/ug/viewResource?id=<?= $report['resource_id'] ?>" target="_blank"
+                                    class="resource-link">
                                     <i class="fas fa-arrow-up-right-from-square" style="font-size: 0.8rem;"></i>
                                     <?= htmlspecialchars($report['resource_title'] ?: 'View Content') ?>
                                 </a>
@@ -240,23 +245,25 @@
                             <td>
                                 <div class="report-meta">
                                     <?= date('M j, Y', strtotime($report['created_at'])) ?><br>
-                                    <span style="font-size: 0.75rem;"><?= date('H:i', strtotime($report['created_at'])) ?></span>
+                                    <span
+                                        style="font-size: 0.75rem;"><?= date('H:i', strtotime($report['created_at'])) ?></span>
                                 </div>
                             </td>
                             <td>
                                 <form action="<?= BASE_URL ?>/Moderator/resolve-report" method="POST">
                                     <input type="hidden" name="report_id" value="<?= $report['id'] ?>">
                                     <div class="action-group">
-                                        <button type="submit" name="action" value="removed" class="btn-res btn-res-danger" 
-                                                title="Remove & Archive" onclick="return confirm('Archive this resource and notify the creator?')">
+                                        <button type="submit" name="action" value="removed" class="btn-res btn-res-danger"
+                                            title="Remove & Archive"
+                                            onclick="return confirm('Archive this resource and notify the creator?')">
                                             <i class="fas fa-trash-can"></i>
                                         </button>
-                                        <button type="submit" name="action" value="warning issued" class="btn-res btn-res-warn" 
-                                                title="Issue Warning">
+                                        <button type="submit" name="action" value="warning issued" class="btn-res btn-res-warn"
+                                            title="Issue Warning">
                                             <i class="fas fa-triangle-exclamation"></i>
                                         </button>
-                                        <button type="submit" name="action" value="ignored" class="btn-res btn-res-dim" 
-                                                title="Dismiss Report">
+                                        <button type="submit" name="action" value="ignored" class="btn-res btn-res-dim"
+                                            title="Dismiss Report">
                                             <i class="fas fa-eye-slash"></i>
                                         </button>
                                     </div>

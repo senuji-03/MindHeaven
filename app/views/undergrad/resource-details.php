@@ -114,11 +114,8 @@ if (!empty($resource['file_path'])) {
                 </div>
 
                 <div style="display: flex; gap: 12px;">
-                    <button class="btn btn-outline" onclick="copyResourceLink()" title="Share Link">
-                        <i class="fas fa-share-alt"></i> Share
-                    </button>
-                    <div style="position: relative;">
-                        <button onclick="toggleDropdown(event, 'actionDropdown<?= $resource['id'] ?>')" class="btn btn-outline" style="width: 42px; padding: 0;">
+                     <div style="position: relative;">
+                         <button onclick="toggleDropdown(event, 'actionDropdown<?= $resource['id'] ?>')" class="btn btn-outline" style="width: 42px; padding: 0;">
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <div id="actionDropdown<?= $resource['id'] ?>" class="dropdown-menu-modern"
