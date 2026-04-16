@@ -637,7 +637,7 @@ class COControl
             $stats = $resourceHub->getStats();
             $categories = $resourceHub->getCategories();
 
-            view('/counselor/Cresource_hub', array(
+            view('/undergrad/resources', array(
                 'resources' => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
                 'categories' => $categories,
@@ -692,13 +692,17 @@ class COControl
             }
             $currentCategoryInfo = isset($categoryInfo[$category]) ? $categoryInfo[$category] : array('description' => 'Resources for ' . $category);
 
-            view('/counselor/Ccategory_resources', array(
+            view('/undergrad/category-resources', array(
                 'category' => $category,
                 'categoryInfo' => $currentCategoryInfo,
                 'resources' => $categoryResources,
                 'allCategories' => $allCategories,
                 'totalResources' => count($categoryResources),
-                'userLikes' => $userLikes
+                'userLikes' => $userLikes,
+                'categoryBaseUrl' => BASE_URL . '/counselor/category-resources',
+                'backUrl' => BASE_URL . '/counselor/Cresource_hub',
+                'viewUrl' => BASE_URL . '/counselor/viewResource',
+                'likeUrl' => BASE_URL . '/counselor/likeResource'
             ));
 
         } catch (Exception $e) {
@@ -733,10 +737,14 @@ class COControl
 
             $comments = $resourceHub->getComments($resourceId);
 
-            view('/counselor/Cresource_details', array(
+            view('/undergrad/resource-details', array(
                 'resource' => $resource,
                 'userLikes' => $userLikes,
-                'comments' => $comments
+                'comments' => $comments,
+                'categoryBaseUrl' => BASE_URL . '/counselor/category-resources',
+                'likeUrl' => BASE_URL . '/counselor/likeResource',
+                'addCommentUrl' => BASE_URL . '/counselor/addComment',
+                'reportResourceUrl' => BASE_URL . '/counselor/reportResource'
             ));
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
