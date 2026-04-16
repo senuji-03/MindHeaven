@@ -12,13 +12,13 @@ function showSection(section) {
     // Remove active class from all items
     const items = document.querySelectorAll('.sidebar-item');
     items.forEach(item => item.classList.remove('active'));
-    
+
     // Add active class to clicked item
     event.target.classList.add('active');
-    
+
     // Here you would typically show/hide different sections
     // For now, we'll just show an alert
-    switch(section) {
+    switch (section) {
         case 'dashboard':
             // Already visible
             break;
@@ -57,40 +57,40 @@ function startMeeting(appointmentId, studentName, studentUserId, mode) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ undergrad_user_id: studentUserId })
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && data.session_id) {
-                const sessionUrl = window.BASE_URL + '/chat/room?session_id=' + data.session_id;
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.session_id) {
+                    const sessionUrl = window.BASE_URL + '/chat/room?session_id=' + data.session_id;
 
-                // 2. Link this chat URL to the appointment so the undergrad can join
-                return fetch(window.BASE_URL + '/api/appointments/start-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: appointmentId, meeting_link: sessionUrl })
-                })
-                .then(res => res.json())
-                .then(linkData => {
-                    if (linkData.success) {
-                        // 3. Redirect counselor to the chat room
-                        window.location.href = sessionUrl;
-                    } else {
-                        alert('Could not start session link: ' + (linkData.error || 'Unknown error'));
-                        btn.disabled = false;
-                        btn.textContent = originalText;
-                    }
-                });
-            } else {
-                alert('Could not start chat: ' + (data.message || 'Unknown error'));
+                    // 2. Link this chat URL to the appointment so the undergrad can join
+                    return fetch(window.BASE_URL + '/api/appointments/start-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: appointmentId, meeting_link: sessionUrl })
+                    })
+                        .then(res => res.json())
+                        .then(linkData => {
+                            if (linkData.success) {
+                                // 3. Redirect counselor to the chat room
+                                window.location.href = sessionUrl;
+                            } else {
+                                alert('Could not start session link: ' + (linkData.error || 'Unknown error'));
+                                btn.disabled = false;
+                                btn.textContent = originalText;
+                            }
+                        });
+                } else {
+                    alert('Could not start chat: ' + (data.message || 'Unknown error'));
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            })
+            .catch(err => {
+                console.error('Error starting session:', err);
+                alert('A network error occurred while starting the session.');
                 btn.disabled = false;
                 btn.textContent = originalText;
-            }
-        })
-        .catch(err => {
-            console.error('Error starting session:', err);
-            alert('A network error occurred while starting the session.');
-            btn.disabled = false;
-            btn.textContent = originalText;
-        });
+            });
     } else {
         alert(`No meeting link found for this session. Please ensure the appointment is correctly scheduled.`);
     }
@@ -103,16 +103,33 @@ function joinMeeting(appointmentId, url) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: appointmentId, meeting_link: url })
     })
-    .finally(() => {
-        // Open the meeting link in a new tab
-        window.open(url, '_blank');
-        // Reload to update dashboard (e.g., move to Active Sessions)
-        setTimeout(() => window.location.reload(), 500);
-    });
+        .finally(() => {
+            // Open the meeting link in a new tab
+            window.open(url, '_blank');
+            // Reload to update dashboard (e.g., move to Active Sessions)
+            setTimeout(() => window.location.reload(), 500);
+        });
 }
 
 
 let currentRescheduleId = null;
+let currentInterventionType = 'appointment'; // 'appointment' or 'crisis'
+
+function sendCrisisFeedback(callId, callerName) {
+    currentInterventionType = 'crisis';
+    // Use the same ID input field but we'll know it's a call_id
+    document.getElementById('feedbackAppointmentId').value = callId;
+
+    // Populate patient info with emergency styling
+    const patientInfoDiv = document.getElementById('feedbackPatientInfo');
+    patientInfoDiv.innerHTML = `
+        <h4 style="color:#D64F4F;">${callerName}</h4>
+        <p style="color:#D64F4F; font-weight:600;">Emergency Crisis Intervention Note</p>
+    `;
+
+    // Show modal
+    document.getElementById('feedbackModal').style.display = 'block';
+}
 
 function reschedule(appointmentId, patientName, reason) {
     currentRescheduleId = appointmentId;
@@ -122,17 +139,18 @@ function reschedule(appointmentId, patientName, reason) {
         <h4>${patientName}</h4>
         <p>Current reason: ${reason}</p>
     `;
-    
+
     // Set minimum date to today
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('newDate').min = today;
     document.getElementById('newDate').value = today;
-    
+
     // Show modal
     document.getElementById('rescheduleModal').style.display = 'block';
 }
 
 function sendFeedback(appointmentId, patientName, reason) {
+    currentInterventionType = 'appointment';
     // Populate appointment ID
     document.getElementById('feedbackAppointmentId').value = appointmentId;
 
@@ -162,12 +180,12 @@ function submitReschedule() {
     const newDate = document.getElementById('newDate').value;
     const newTime = document.getElementById('newTime').value;
     const reason = document.getElementById('rescheduleReason').value;
-    
+
     if (!newDate || !newTime || !reason) {
         alert('Please fill in all required fields.');
         return;
     }
-    
+
     if (!currentRescheduleId) {
         alert('Missing appointment ID.');
         return;
@@ -187,20 +205,20 @@ function submitReschedule() {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert('Error: ' + data.error);
-        } else {
-            alert(`Appointment rescheduled successfully!\nNew Date: ${newDate}\nNew Time: ${newTime}\nReason: ${reason}`);
-            closeModal('rescheduleModal');
-            window.location.reload(); // refresh page to see updated appointment
-        }
-    })
-    .catch(error => {
-        console.error('Failed to reschedule:', error);
-        alert('Failed to reschedule. Please try again.');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                alert(`Appointment rescheduled successfully!\nNew Date: ${newDate}\nNew Time: ${newTime}\nReason: ${reason}`);
+                closeModal('rescheduleModal');
+                window.location.reload(); // refresh page to see updated appointment
+            }
+        })
+        .catch(error => {
+            console.error('Failed to reschedule:', error);
+            alert('Failed to reschedule. Please try again.');
+        });
 }
 
 function submitFeedback() {
@@ -217,34 +235,37 @@ function submitFeedback() {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Saving...';
 
-    const payload = {
-        id: appointmentId,
-        feedback_message: feedbackMessage
-    };
+    const payload = currentInterventionType === 'crisis'
+        ? { call_id: appointmentId, notes: feedbackMessage }
+        : { id: appointmentId, feedback_message: feedbackMessage };
 
-    fetch(window.BASE_URL + '/api/appointments/notes', {
+    const endpoint = currentInterventionType === 'crisis'
+        ? window.BASE_URL + '/api/crisis/notes'
+        : window.BASE_URL + '/api/appointments/notes';
+
+    fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            alert('Session notes saved successfully!');
-            closeModal('feedbackModal');
-        } else {
-            alert('Error: ' + (data.error || 'Could not save notes'));
-        }
-    })
-    .catch(err => {
-        console.error('Error saving session notes:', err);
-        alert('A network error occurred.');
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-    });
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Session notes saved successfully!');
+                closeModal('feedbackModal');
+            } else {
+                alert('Error: ' + (data.error || 'Could not save notes'));
+            }
+        })
+        .catch(err => {
+            console.error('Error saving session notes:', err);
+            alert('A network error occurred.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        });
 }
 
 
@@ -323,7 +344,7 @@ function formatTime(timeString) {
 
 // ── Session status: Completed / No Show ──────────────────────
 var _pendingStatusAppointmentId = null;
-var _pendingStatus              = null;
+var _pendingStatus = null;
 
 /**
  * Open a confirmation modal before sending the status update.
@@ -333,9 +354,9 @@ var _pendingStatus              = null;
  */
 function markSessionStatus(appointmentId, status, patientName) {
     _pendingStatusAppointmentId = appointmentId;
-    _pendingStatus              = status;
+    _pendingStatus = status;
 
-    var label     = status === 'completed' ? 'Completed' : 'No Show';
+    var label = status === 'completed' ? 'Completed' : 'No Show';
     var colorClass = status === 'completed' ? '#10b981' : '#f59e0b';
 
     document.getElementById('sessionStatusModalTitle').textContent = 'Mark as ' + label;
@@ -345,7 +366,7 @@ function markSessionStatus(appointmentId, status, patientName) {
 
     var confirmBtn = document.getElementById('sessionStatusConfirmBtn');
     confirmBtn.style.background = colorClass;
-    confirmBtn.textContent      = 'Yes, Mark as ' + label;
+    confirmBtn.textContent = 'Yes, Mark as ' + label;
 
     document.getElementById('sessionStatusModal').style.display = 'block';
 }
@@ -353,19 +374,19 @@ function markSessionStatus(appointmentId, status, patientName) {
 function closeSessionStatusModal() {
     document.getElementById('sessionStatusModal').style.display = 'none';
     _pendingStatusAppointmentId = null;
-    _pendingStatus              = null;
+    _pendingStatus = null;
 }
 
 function confirmSessionStatus() {
     if (!_pendingStatusAppointmentId || !_pendingStatus) return;
 
     var appointmentId = _pendingStatusAppointmentId;
-    var status        = _pendingStatus;
+    var status = _pendingStatus;
 
     // Disable button to prevent double-click
     var confirmBtn = document.getElementById('sessionStatusConfirmBtn');
-    confirmBtn.disabled     = true;
-    confirmBtn.textContent  = 'Saving…';
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Saving…';
 
     fetch(window.BASE_URL + '/api/appointments/status', {
         method: 'POST',
@@ -373,30 +394,30 @@ function confirmSessionStatus() {
         credentials: 'same-origin',
         body: JSON.stringify({ id: appointmentId, status: status })
     })
-    .then(function (res) { return res.json(); })
-    .then(function (data) {
-        if (data.error) {
-            alert('Error: ' + data.error);
-            confirmBtn.disabled    = false;
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.error) {
+                alert('Error: ' + data.error);
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Confirm';
+            } else {
+                closeSessionStatusModal();
+                // Reload page so the appointment disappears from Upcoming and shows in Session History
+                window.location.reload();
+            }
+        })
+        .catch(function (err) {
+            console.error('Failed to update session status:', err);
+            alert('Failed to update session status. Please try again.');
+            confirmBtn.disabled = false;
             confirmBtn.textContent = 'Confirm';
-        } else {
-            closeSessionStatusModal();
-            // Reload page so the appointment disappears from Upcoming and shows in Session History
-            window.location.reload();
-        }
-    })
-    .catch(function (err) {
-        console.error('Failed to update session status:', err);
-        alert('Failed to update session status. Please try again.');
-        confirmBtn.disabled    = false;
-        confirmBtn.textContent = 'Confirm';
-    });
+        });
 }
 
 // Close modal when clicking outside of it
-window.onclick = function(event) {
-    var rescheduleModal    = document.getElementById('rescheduleModal');
-    var feedbackModal      = document.getElementById('feedbackModal');
+window.onclick = function (event) {
+    var rescheduleModal = document.getElementById('rescheduleModal');
+    var feedbackModal = document.getElementById('feedbackModal');
     var sessionStatusModal = document.getElementById('sessionStatusModal');
     var studentHistoryModal = document.getElementById('studentHistoryModal');
 
@@ -424,7 +445,7 @@ function updateStats() {
 }
 
 // Initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     updateStats();
     console.log('Mindheaven Counselor Dashboard loaded successfully!');
 });

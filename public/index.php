@@ -200,10 +200,10 @@ $router->post('/api/habits/log-date', 'HabitApiControl@logForDate');
 $router->post('/api/habits/unlog-date', 'HabitApiControl@unlogForDate');
 
 // Mood API
-$router->get('/api/mood/list',   'MoodApiControl@list');
-$router->post('/api/mood/create','MoodApiControl@create');
+$router->get('/api/mood/list', 'MoodApiControl@list');
+$router->post('/api/mood/create', 'MoodApiControl@create');
 $router->put('/api/mood/update', 'MoodApiControl@update');
-$router->delete('/api/mood/delete','MoodApiControl@delete');
+$router->delete('/api/mood/delete', 'MoodApiControl@delete');
 
 // Notification API Routes
 $router->get('/api/notifications', 'NotificationControl@list');
@@ -333,6 +333,7 @@ $router->post('/api/crisis/connect', 'CrisisApiControl@connect');
 $router->get('/api/crisis/waiting', 'CrisisApiControl@getWaitingCalls');
 $router->post('/api/crisis/answer', 'CrisisApiControl@answerCall');
 $router->post('/api/crisis/update', 'CrisisApiControl@updateCall');
+$router->post('/api/crisis/notes', 'CrisisApiControl@saveInterventionNotes');
 
 $router->get('/responder/dashboard', 'CallResponderControl@dashboard');
 $router->get('/CallResponder', 'CallResponderControl@dashboard');
