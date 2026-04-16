@@ -9,6 +9,18 @@ class Report
         $this->pdo = Database::getConnection();
     }
 
+    public function getTotalCount($status = null)
+    {
+        if ($status) {
+            $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM reports WHERE status = ?");
+            $stmt->execute([$status]);
+            return $stmt->fetchColumn();
+        }
+        
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM reports");
+        return $stmt->fetchColumn();
+    }
+
     /**
      * Create a new report
      */

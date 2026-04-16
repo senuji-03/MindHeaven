@@ -141,6 +141,16 @@ class ResourceHub {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getCountByCategory() {
+        $stmt = $this->pdo->prepare("
+            SELECT category, COUNT(*) as count 
+            FROM resource_hub 
+            GROUP BY category
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
+
     public function toggleLike($resourceId, $userId) {
         $stmt = $this->pdo->prepare("SELECT 1 FROM resource_likes WHERE resource_id = ? AND user_id = ?");
         $stmt->execute(array($resourceId, $userId));

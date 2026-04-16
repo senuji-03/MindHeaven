@@ -508,33 +508,26 @@
         <span class="icon">👥</span>
         Manage Users
       </a>
-      <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
-        <span class="icon">📚</span>
-        Resource Hub
-      </a>
       <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
         <span class="icon">💬</span>
         Moderate Forum
       </a>
-      <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item">
-        <span class="icon">👨‍⚕️</span>
-        Manage Counselors
-      </a>
+
       <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
         <span class="icon">📅</span>
         Appointments
       </a>
       <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
         <span class="icon">📈</span>
-        Reports
+        System Reports
       </a>
-      <!-- Keywords and Automated Flags removed and moved to Moderate Forum -->            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
-                <span class="icon">???</span>
-                University Events
-            </a>
-      <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
-        <span class="icon">⚙️</span>
-        Settings
+      <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
+        <span class="icon">🏛️</span>
+        University Events
+      </a>
+      <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
+        <span class="icon">💰</span>
+        Donation Logs
       </a>
                 <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
                 <span class="icon">✏️</span>
@@ -556,10 +549,12 @@
     <div class="topbar">
       <h1>Moderate Forum</h1>
       <div class="topbar-right">
-        <div class="admin-profile">
-          <span>Admin User</span>
-          <div class="avatar">A</div>
-        </div>
+        <a href="<?= BASE_URL ?>/admin/profile" style="text-decoration: none; color: inherit;">
+            <div class="admin-profile" style="cursor: pointer;">
+              <span>Admin User</span>
+              <div class="avatar">A</div>
+            </div>
+        </a>
       </div>
     </div>
 

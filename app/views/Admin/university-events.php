@@ -25,33 +25,27 @@
                 <span class="icon">👥</span>
                 Manage Users
             </a>
-            <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
-                <span class="icon">📚</span>
-                Resource Hub
-            </a>
+
             <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
                 <span class="icon">💬</span>
                 Moderate Forum
             </a>
-            <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item">
-                <span class="icon">👨‍⚕️</span>
-                Manage Counselors
-            </a>
+
             <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
                 <span class="icon">📅</span>
                 Appointments
             </a>
             <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
                 <span class="icon">📈</span>
-                Reports
+                System Reports
             </a>
             <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item active">
                 <span class="icon">🏛️</span>
                 University Events
             </a>
-            <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
-                <span class="icon">⚙️</span>
-                Settings
+            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
+                <span class="icon">💰</span>
+                Donation Logs
             </a>
                     <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
                 <span class="icon">✏️</span>
@@ -73,10 +67,12 @@
         <div class="topbar">
             <h1>Pending University Events</h1>
             <div class="topbar-right">
-                <div class="admin-profile">
-                    <span>Admin User</span>
-                    <div class="avatar">A</div>
-                </div>
+                <a href="<?= BASE_URL ?>/admin/profile" style="text-decoration: none; color: inherit;">
+                    <div class="admin-profile" style="cursor: pointer;">
+                        <span>Admin User</span>
+                        <div class="avatar">A</div>
+                    </div>
+                </a>
             </div>
         </div>
 
@@ -177,6 +173,15 @@
                                                                 <input type="hidden" name="event_id" value="<?= $evt['id'] ?>">
                                                                 <button type="submit" class="btn-danger"
                                                                     style="padding: 0.25rem 0.75rem; border-radius: 4px; border: none; background: #ef4444; color: white; cursor: pointer; font-size: 0.875rem; font-weight: 500;">Reject</button>
+                                                            </form>
+                                                        <?php endif; ?>
+                                                        <?php if ($evt['status'] === 'approved'): ?>
+                                                            <form action="<?= BASE_URL ?>/admin/university-events/remove" method="POST"
+                                                                style="margin: 0; display: inline-block;"
+                                                                onsubmit="return confirm('Are you sure you want to remove this approved event? This will change its status to cancelled.');">
+                                                                <input type="hidden" name="event_id" value="<?= $evt['id'] ?>">
+                                                                <button type="submit" class="btn-danger"
+                                                                    style="padding: 0.25rem 0.75rem; border-radius: 4px; border: none; background: #dc2626; color: white; cursor: pointer; font-size: 0.875rem; font-weight: 500;">Remove</button>
                                                             </form>
                                                         <?php endif; ?>
                                                     </td>

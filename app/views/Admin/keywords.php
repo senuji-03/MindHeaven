@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -16,6 +16,7 @@
             <p>Admin Panel</p>
         </div>
 
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/admin" class="nav-item">
                 <span class="icon">📊</span>
@@ -25,17 +26,9 @@
                 <span class="icon">👥</span>
                 Manage Users
             </a>
-            <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
-                <span class="icon">📚</span>
-                Resource Hub
-            </a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
+            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
                 <span class="icon">💬</span>
                 Moderate Forum
-            </a>
-            <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item">
-                <span class="icon">👨‍⚕️</span>
-                Manage Counselors
             </a>
             <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
                 <span class="icon">📅</span>
@@ -43,29 +36,49 @@
             </a>
             <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
                 <span class="icon">📈</span>
-                Reports
+                System Reports
             </a>
-            <a href="<?= BASE_URL ?>/admin/keywords" class="nav-item active">
-                <span class="icon">🔑</span>
-                Keywords
-            </a>
-            <a href="<?= BASE_URL ?>/admin/system-flags" class="nav-item">
-                <span class="icon">🚩</span>
-                Automated Flags
-                        </a>
             <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
                 <span class="icon">🏛️</span>
                 University Events
             </a>
-            <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
-                <span class="icon">⚙️</span>
-                Settings
+            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
+                <span class="icon">💰</span>
+                Donation Logs
             </a>
-                    <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
+            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
                 <span class="icon">✏️</span>
                 Edit Resources
             </a>
         </nav>
+        <?php else: ?>
+        <nav class="sidebar-nav">
+            <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
+                <span class="icon">📊</span>
+                Dashboard
+            </a>
+            <a href="<?= BASE_URL ?>/AddResource" class="nav-item">
+                <span class="icon">➕</span>
+                Add Resource
+            </a>
+            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item active">
+                <span class="icon">✏️</span>
+                Edit Resources
+            </a>
+            <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
+                <span class="icon">🚨</span>
+                Reported Resources
+            </a>
+            <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
+                <span class="icon">🚩</span>
+                Flagged Users
+            </a>
+            <a href="<?= BASE_URL ?>/WarnForm" class="nav-item">
+                <span class="icon">⚠️</span>
+                Warn Users
+            </a>
+        </nav>
+        <?php endif; ?>
 
         <div class="sidebar-footer">
             <a href="<?= BASE_URL ?>/logout" class="logout-btn">
@@ -80,17 +93,34 @@
         <div class="topbar">
             <h1>Manage Keywords</h1>
             <div class="topbar-right">
-                <a href="<?= BASE_URL ?>/admin/moderate-forum" class="tab-link">
-                    ← Back to Moderation
+                <a href="<?= BASE_URL ?>/admin/profile" style="text-decoration: none; color: inherit;">
+                    <div class="admin-profile" style="cursor: pointer;">
+                        <span>Admin User</span>
+                        <div class="avatar">A</div>
+                    </div>
                 </a>
-                <div class="admin-profile">
-                    <span>Admin User</span>
-                    <div class="avatar">A</div>
-                </div>
             </div>
         </div>
 
         <div class="content-wrapper">
+            <div class="toolbar">
+                <div class="tabs">
+                    <a href="<?= BASE_URL ?>/admin/moderate-forum" class="tab-link" style="text-decoration:none; display:flex; align-items:center;">Preview</a>
+                    <a href="<?= BASE_URL ?>/admin/moderate-forum" class="tab-link" style="text-decoration:none; display:flex; align-items:center; margin-left:10px;">Flagged Queue</a>
+                    <a href="<?= BASE_URL ?>/admin/moderate-forum" class="tab-link" style="text-decoration:none; display:flex; align-items:center; margin-left:10px;">Automated Flags</a>
+                    <a href="<?= BASE_URL ?>/admin/forum-categories" class="tab-link"
+                        style="text-decoration:none; display:flex; align-items:center; margin-left:10px;">
+                        Manage Thread Categories
+                    </a>
+                    <a href="<?= BASE_URL ?>/admin/keywords" class="tab active"
+                        style="text-decoration:none; display:flex; align-items:center; margin-left:10px;">
+                        Manage Keywords
+                    </a>
+                </div>
+                <div>
+                    <a href="<?= BASE_URL ?>/admin/report-categories" class="btn" style="margin-left: 10px;">Categories</a>
+                </div>
+            </div>
             <?php if (isset($_SESSION['success'])): ?>
                 <div class="alert alert-success">
                     <?= $_SESSION['success'];

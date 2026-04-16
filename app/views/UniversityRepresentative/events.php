@@ -93,9 +93,11 @@
                     <input type="text" placeholder="Search events..." class="search-input" id="searchEvents">
                     <select class="filter-select" id="filterStatus">
                         <option value="">All Status</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="approved">Approved</option>
                         <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="closed">Closed</option>
+                        <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
             </div>
@@ -209,7 +211,7 @@
         }
     </style>
 
-    <script src="<?= BASE_URL ?>/js/university-rep/script.js"></script>
+    <script src="<?= BASE_URL ?>/js/university-rep/script.js?v=<?= time() ?>"></script>
     <script>
         function viewEvent(eventId) {
             // Redirect to view event page (you can create this later)

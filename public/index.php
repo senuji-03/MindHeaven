@@ -56,6 +56,7 @@ $router->post('/ug/feedback/delete', 'UGControl@deleteFeedback');
 $router->get('/ug/feedback/get', 'UGControl@getFeedbackById');
 
 $router->get('/admin', 'AdminControl@index'); // Admin dashboard
+$router->get('/admin/profile', 'AdminControl@profile');
 $router->get('/admin/manage-users', 'AdminControl@manageUsers');
 $router->get('/admin/suspended-users', 'AdminControl@suspendedUsers');
 $router->get('/admin/resource-hub', 'AdminControl@resourceHub');
@@ -72,6 +73,7 @@ $router->post('/admin/update-system-flag-status', 'AdminControl@updateSystemFlag
 $router->get('/admin/university-events', 'AdminControl@universityEvents');
 $router->post('/admin/university-events/approve', 'AdminControl@approveUniversityEvent');
 $router->post('/admin/university-events/reject', 'AdminControl@rejectUniversityEvent');
+$router->post('/admin/university-events/remove', 'AdminControl@removeUniversityEvent');
 $router->get('/admin/donations', 'AdminControl@donations');
 $router->get('/admin/awareness', 'AdminControl@awareness');
 $router->get('/admin/monitoring', 'AdminControl@monitoring');

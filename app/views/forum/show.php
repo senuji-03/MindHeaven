@@ -72,40 +72,33 @@ if (!$isEmbedded) {
                 <div class="thread-content-col">
                     <!-- Thread Header -->
                     <div class="thread-card main-thread">
-                        <div class="thread-header-row">
-                            <div class="category-tag <?= htmlspecialchars($thread_data['category']) ?>">
+                        <div class="thread-title" style="margin-bottom: 20px;">
+                            <h1 style="font-size: 1.8rem; margin: 0; color: var(--text-primary);">
+                                <?= htmlspecialchars($thread_data['title']) ?>
+                            </h1>
+                            <span class="role-badge <?= 'role-' . strtolower($thread_data['role'] ?? 'student') ?>">
+                                <?= htmlspecialchars(ucfirst($thread_data['role'] ?? 'Student')) ?>
+                            </span>
+                            <span class="category-badge category-badge-<?= strtolower(htmlspecialchars($thread_data['category'])) ?>">
                                 <?= htmlspecialchars(ucfirst($thread_data['category'])) ?>
-                            </div>
-                            <div class="thread-status">
-                                <?php if (!empty($thread_data['is_locked'])): ?>
-                                    <span class="status-badge locked"><i class="fas fa-lock"></i> Locked</span>
-                                <?php endif; ?>
-                            </div>
+                            </span>
+                            <?php if (!empty($thread_data['is_locked'])): ?>
+                                <span class="status-badge locked"><i class="fas fa-lock"></i> Locked</span>
+                            <?php endif; ?>
                         </div>
 
-                        <h1 class="thread-heading">
-                            <?= htmlspecialchars($thread_data['title']) ?>
-                        </h1>
-
-                        <div class="author-meta">
-                            <div class="avatar-circle">
+                        <div class="thread-meta" style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+                            <div class="author-avatar <?= strtolower($thread_data['role'] ?? 'student') === 'counselor' ? 'counselor-avatar' : '' ?>" style="width: 42px; height: 42px; font-size: 1.1rem; flex-shrink: 0;">
                                 <?= strtoupper(substr($thread_data['is_anonymous'] ? 'A' : $thread_data['username'], 0, 1)) ?>
                             </div>
-                            <div class="meta-details">
-                                <span class="author-name">
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <span class="author-name" style="font-size: 1.05rem; font-weight: 600; line-height: 1;">
                                     <?= $thread_data['is_anonymous']
                                         ? 'Anonymous' . str_pad($thread_data['user_id'], 3, '0', STR_PAD_LEFT)
                                         : htmlspecialchars($thread_data['username']) ?>
-                                    <?php if (!$thread_data['is_anonymous'] && in_array($thread_data['role'] ?? '', ['admin', 'moderator', 'counselor'])): ?>
-                                        <span
-                                            style="font-size: 0.7em; padding: 2px 6px; border-radius: 4px; margin-left: 5px; vertical-align: middle; background: <?= $thread_data['role'] === 'admin' ? '#ef4444' : ($thread_data['role'] === 'counselor' ? '#10b981' : '#f59e0b') ?>; color: white; display: inline-block; line-height: 1;">
-                                            <?= ucfirst(htmlspecialchars($thread_data['role'])) ?>
-                                        </span>
-                                    <?php endif; ?>
                                 </span>
-                                <span class="post-date">
-                                    Posted on
-                                    <?= date('M j, Y \a\t g:i a', strtotime($thread_data['created_at'])) ?>
+                                <span class="timestamp" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1;">
+                                    Posted on <?= date('M j, Y \a\t g:i a', strtotime($thread_data['created_at'])) ?>
                                 </span>
                             </div>
                         </div>
@@ -282,14 +275,7 @@ if (!$isEmbedded) {
                     </div>
                 </div>
 
-                <!-- Right Column: Sidebar (Optional) -->
-                <div class="sidebar-col">
-                    <div class="support-card">
-                        <h3>Need Immediate Help?</h3>
-                        <p>If you or someone you know is in crisis, please contact emergency services immediately.</p>
-                        <a href="<?= BASE_URL ?>/ug/crisis" class="btn-danger-outline">Get Crisis Support</a>
-                    </div>
-                </div>
+
             </div>
         </div>
     </main>

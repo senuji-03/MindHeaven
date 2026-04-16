@@ -13,13 +13,86 @@ class AdminControl
     public function index()
     {
         require_once BASE_PATH . '/app/models/User.php';
+        require_once BASE_PATH . '/app/models/Thread.php';
+        require_once BASE_PATH . '/app/models/Report.php';
+        require_once BASE_PATH . '/app/models/ResourceHub.php';
+        
         $userModel = new User();
+        $threadModel = new Thread();
+        $reportModel = new Report();
+        $resourceModel = new ResourceHub();
+        
         $totalUsers = $userModel->getTotalCount();
+        $roleCounts = $userModel->getRoleCounts();
+        $totalThreads = $threadModel->getTotalCount();
+        $totalReports = $reportModel->getTotalCount('pending');
+        
+        $resourceStats = $resourceModel->getStats();
+        $totalResources = $resourceStats['total_resources'] ?? 0;
 
         // This will load the main admin dashboard
         view('Admin/index', [
-            'totalUsers' => $totalUsers
+            'totalUsers' => $totalUsers,
+            'roleCounts' => $roleCounts,
+            'totalThreads' => $totalThreads,
+            'totalReports' => $totalReports,
+            'totalResources' => $totalResources
         ]);
+    }
+
+    public function reports()
+    {
+        require_once BASE_PATH . '/app/models/Thread.php';
+        require_once BASE_PATH . '/app/models/ResourceHub.php';
+        
+        $threadModel = new Thread();
+        $resourceModel = new ResourceHub();
+        
+        // 💬 Forum Section
+        $totalPosts = $threadModel->getForumPostsCount();
+        $postsThisMonth = $threadModel->getPostsThisMonthCount();
+        $postsByMonth = $threadModel->getPostsByMonthForCurrentYear(); // [1 => count, 2 => count, ...]
+
+        // 📚 Resource Hub Section
+        $resourceStats = $resourceModel->getStats();
+        $totalResources = $resourceStats['total_resources'] ?? 0;
+        $resourcesByCategory = $resourceModel->getCountByCategory();
+
+        view('Admin/reports', [
+            'totalPosts' => $totalPosts,
+            'postsThisMonth' => $postsThisMonth,
+            'postsByMonth' => $postsByMonth,
+            'totalResources' => $totalResources,
+            'resourcesByCategory' => $resourcesByCategory
+        ]);
+    }
+
+    public function profile()
+    {
+        try {
+            $pdo = Database::getConnection();
+            
+            // Admins might just be in the users table, but let's fetch carefully
+            $stmt = $pdo->prepare("SELECT id, username, email, full_name, role FROM users WHERE id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$user) {
+                // Absolute fallback if some test data doesn't map correctly
+                $user = [
+                    'username' => $_SESSION['username'] ?? 'Admin',
+                    'full_name' => 'Admin User',
+                    'email' => 'admin@mindhaven.com',
+                    'role' => $_SESSION['role'] ?? 'admin'
+                ];
+            }
+
+            view('Admin/profile', ['user' => $user]);
+        } catch (Exception $e) {
+            error_log("Admin Profile Error: " . $e->getMessage());
+            header('Location: ' . BASE_URL . '/admin');
+            exit;
+        }
     }
 
     public function manageUsers()
@@ -40,7 +113,11 @@ class AdminControl
                            WHEN u.role = 'undergraduate' THEN us.full_name
                            ELSE u.username
                        END as full_name,
-                       u.email as email,
+                       CASE 
+                           WHEN u.role = 'counselor' THEN c.email
+                           WHEN u.role = 'undergraduate' THEN us.email
+                           ELSE u.email
+                       END as email,
                        CASE 
                            WHEN u.role = 'counselor' THEN c.phone_number
                            WHEN u.role = 'undergraduate' THEN us.phone_number
@@ -67,7 +144,7 @@ class AdminControl
 
             // Fetch undergraduate students separately
             $stmt = $pdo->prepare("
-                SELECT u.*, us.*, us.full_name as display_name, u.email, us.phone_number, us.created_at
+                SELECT u.*, us.*, us.full_name as display_name, us.email as email, us.phone_number, us.created_at
                 FROM users u
                 JOIN undergraduate_students us ON u.id = us.user_id
                 WHERE u.role = 'undergraduate' AND u.is_deleted = 0
@@ -78,7 +155,7 @@ class AdminControl
 
             // Fetch counselors separately
             $stmt = $pdo->prepare("
-                SELECT u.*, c.*, c.full_name as display_name, u.email, c.phone_number, c.created_at
+                SELECT u.*, c.*, c.full_name as display_name, c.email as email, c.phone_number, c.created_at
                 FROM users u
                 JOIN counselors c ON u.id = c.user_id
                 WHERE u.role = 'counselor' AND u.is_deleted = 0
@@ -703,21 +780,6 @@ class AdminControl
         view('Admin/approve-counselors');
     }
 
-    public function reports()
-    {
-        require_once BASE_PATH . '/app/models/Report.php';
-        $reportModel = new Report();
-
-        $status = $_GET['status'] ?? 'pending';
-        $reports = $reportModel->getAll($status);
-        $categories = $reportModel->getCategories();
-
-        view('Admin/reports', [
-            'reports' => $reports,
-            'categories' => $categories,
-            'currentStatus' => $status
-        ]);
-    }
 
     public function updateReportStatus()
     {
@@ -920,11 +982,6 @@ class AdminControl
         view('Admin/settings');
     }
 
-    public function profile()
-    {
-        view('Admin/profile');
-    }
-
     // Report Categories Management
     public function manageReportCategories()
     {
@@ -1124,6 +1181,33 @@ class AdminControl
                 $_SESSION['success'] = 'Event rejected successfully.';
             } catch (Exception $e) {
                 $_SESSION['error'] = 'Failed to reject event: ' . $e->getMessage();
+            }
+        }
+
+        header('Location: ' . BASE_URL . '/admin/university-events');
+        exit;
+    }
+
+    public function removeUniversityEvent()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/university-events');
+            exit;
+        }
+
+        $eventId = $_POST['event_id'] ?? null;
+
+        if ($eventId) {
+            try {
+                $pdo = Database::getConnection();
+                $stmt = $pdo->prepare("UPDATE university_rep_events SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND status = 'approved'");
+                if ($stmt->execute([$eventId])) {
+                    $_SESSION['success'] = 'Approved event cancelled successfully.';
+                } else {
+                    $_SESSION['error'] = 'Failed to cancel the approved event.';
+                }
+            } catch (Exception $e) {
+                $_SESSION['error'] = 'Failed to remove event: ' . $e->getMessage();
             }
         }
 

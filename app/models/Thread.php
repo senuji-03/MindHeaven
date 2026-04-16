@@ -9,6 +9,36 @@ class Thread
         $this->pdo = Database::getConnection();
     }
 
+    public function getTotalCount()
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM forum_threads");
+        return $stmt->fetchColumn();
+    }
+
+    public function getForumPostsCount()
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM forum_posts");
+        return $stmt->fetchColumn();
+    }
+
+    public function getPostsThisMonthCount()
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM forum_posts WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())");
+        return $stmt->fetchColumn();
+    }
+
+    public function getPostsByMonthForCurrentYear()
+    {
+        $stmt = $this->pdo->query("
+            SELECT MONTH(created_at) as month, COUNT(*) as count 
+            FROM forum_posts 
+            WHERE YEAR(created_at) = YEAR(CURRENT_DATE()) 
+            GROUP BY MONTH(created_at)
+            ORDER BY month ASC
+        ");
+        return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
+
     /**
      * Create a new thread
      */
@@ -52,7 +82,7 @@ class Thread
                 (SELECT COUNT(*) FROM forum_posts WHERE thread_id = t.id) as reply_count 
                 FROM forum_threads t
                 JOIN users u ON t.user_id = u.id
-                ORDER BY t.created_at DESC
+                ORDER BY reply_count DESC, t.created_at DESC
                 LIMIT ? OFFSET ?";
 
         $stmt = $this->pdo->prepare($sql);

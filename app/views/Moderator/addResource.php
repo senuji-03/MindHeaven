@@ -103,9 +103,45 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <h2>🧠 Mind Haven</h2>
-            <p>Moderator Panel</p>
+            <p><?= (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? 'Admin Panel' : 'Moderator Panel' ?></p>
         </div>
         
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <nav class="sidebar-nav">
+            <a href="<?= BASE_URL ?>/admin" class="nav-item">
+                <span class="icon">📊</span>
+                Dashboard
+            </a>
+            <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item">
+                <span class="icon">👥</span>
+                Manage Users
+            </a>
+            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
+                <span class="icon">💬</span>
+                Moderate Forum
+            </a>
+            <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
+                <span class="icon">📅</span>
+                Appointments
+            </a>
+            <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
+                <span class="icon">📈</span>
+                System Reports
+            </a>
+            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
+                <span class="icon">🏛️</span>
+                University Events
+            </a>
+            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
+                <span class="icon">💰</span>
+                Donation Logs
+            </a>
+            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
+                <span class="icon">✏️</span>
+                Edit Resources
+            </a>
+        </nav>
+        <?php else: ?>
         <nav class="sidebar-nav">
             <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
                 <span class="icon">📊</span>
@@ -132,9 +168,13 @@
                 Warn Users
             </a>
         </nav>
+        <?php endif; ?>
 
         <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">Logout</a>
+            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
+                <span class="icon">🚪</span>
+                Logout
+            </a>
         </div>
     </div>
 

@@ -662,10 +662,58 @@ class UniversityRepresentativeControl
 
             header('Location: ' . BASE_URL . '/university-rep/events');
             exit;
-
         } catch (Exception $e) {
             error_log("University Representative Event Delete Error: " . $e->getMessage());
             $_SESSION['error'] = 'Failed to delete event. Please try again.';
+            header('Location: ' . BASE_URL . '/university-rep/events');
+            exit;
+        }
+    }
+
+    // Close event
+    public function closeEvent()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/university-rep/events');
+            exit;
+        }
+
+        try {
+            $pdo = Database::getConnection();
+
+            // Get the university representative user ID from session
+            $universityRepId = $_SESSION['user_id'] ?? null;
+            if (!$universityRepId) {
+                $_SESSION['error'] = 'User not authenticated';
+                header('Location: ' . BASE_URL . '/login');
+                exit;
+            }
+
+            // Get event ID
+            $eventId = $_POST['event_id'] ?? null;
+            if (!$eventId) {
+                $_SESSION['error'] = 'Event ID is required';
+                header('Location: ' . BASE_URL . '/university-rep/events');
+                exit;
+            }
+
+            // Verify the event belongs to this user and close it
+            $sql = "UPDATE university_rep_events SET status = 'closed', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND university_rep_id = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$eventId, $universityRepId]);
+
+            if ($stmt->rowCount() === 0) {
+                $_SESSION['error'] = 'Event not found or you do not have permission to close it.';
+            } else {
+                $_SESSION['success'] = 'Event marked as closed successfully! It will no longer receive donations.';
+            }
+
+            header('Location: ' . BASE_URL . '/university-rep/events/view/' . $eventId);
+            exit;
+
+        } catch (Exception $e) {
+            error_log("University Representative Event Close Error: " . $e->getMessage());
+            $_SESSION['error'] = 'Failed to close event. Please try again.';
             header('Location: ' . BASE_URL . '/university-rep/events');
             exit;
         }

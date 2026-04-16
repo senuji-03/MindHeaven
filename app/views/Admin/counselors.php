@@ -40,7 +40,7 @@
             </a>
             <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
                 <span class="icon">📈</span>
-                Reports
+                System Reports
                         </a>
             <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
                 <span class="icon">🏛️</span>

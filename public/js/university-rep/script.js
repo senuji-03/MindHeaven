@@ -8,20 +8,35 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentPath = window.location.pathname;
     const navItems = document.querySelectorAll('.nav-item');
     
+    let bestMatch = null;
+    let longestMatchLen = -1;
+
     navItems.forEach(item => {
         const href = item.getAttribute('href');
         if (href) {
             try {
                 const url = new URL(href, window.location.origin);
-                if (window.location.pathname === url.pathname) {
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
+                // Normalize trailing slashes for safer matching
+                const urlPath = url.pathname.replace(/\/$/, "");
+                const windowPath = window.location.pathname.replace(/\/$/, "");
+
+                // Check for exact match or deeper path match
+                if (windowPath === urlPath || windowPath.startsWith(urlPath + '/')) {
+                    if (urlPath.length > longestMatchLen) {
+                        longestMatchLen = urlPath.length;
+                        bestMatch = item;
+                    }
                 }
             } catch (e) {
                 // Ignore invalid URLs
             }
         }
     });
+
+    if (bestMatch) {
+        navItems.forEach(nav => nav.classList.remove('active'));
+        bestMatch.classList.add('active');
+    }
 
     // Initialize Event Filters if on the events page
     if (document.getElementById('searchEvents') && document.getElementById('filterStatus')) {
@@ -45,16 +60,15 @@ function initEventsFilter() {
         let visibleCount = 0;
 
         eventCards.forEach(card => {
-            const title = card.querySelector('h3').textContent.toLowerCase();
-            const organizedBy = card.querySelector('.event-stats span:last-child')?.textContent.toLowerCase() || '';
+            const cardText = card.textContent.toLowerCase();
             const statusBadge = card.querySelector('.event-status');
             const cardStatus = statusBadge ? statusBadge.textContent.trim().toLowerCase() : '';
 
-            const matchesSearch = title.includes(searchTerm) || organizedBy.includes(searchTerm);
+            const matchesSearch = cardText.includes(searchTerm);
             const matchesStatus = selectedStatus === '' || cardStatus === selectedStatus;
 
             if (matchesSearch && matchesStatus) {
-                card.style.display = 'block';
+                card.style.display = '';
                 visibleCount++;
             } else {
                 card.style.display = 'none';
