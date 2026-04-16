@@ -205,7 +205,7 @@ $sessions = isset($sessions) ? $sessions : [];
     <!-- Hero Header -->
     <div class="chat-hero">
         <div class="chat-hero-content">
-            <h1 class="chat-hero-title">💬 Counselling Chats</h1>
+            <h1 class="chat-hero-title"><i class="fa-regular fa-comments"></i> Counselling Chats</h1>
             <p class="chat-hero-subtitle">Secure, confidential messaging with your counselor.</p>
         </div>
         <span class="secure-badge"><i class="fas fa-lock"></i> Private & Secure</span>

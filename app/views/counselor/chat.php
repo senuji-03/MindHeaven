@@ -1,52 +1,23 @@
 <?php
-/**
- * Counselor Chat Inbox
- * Lists all active chat sessions and lets the counselor start a new one
- * with any undergrad they've had an appointment with.
- */
-
-// Ensure variables are set
-$sessions   = isset($sessions)   ? $sessions   : [];
-$undergrads = isset($undergrads) ? $undergrads : [];
+$TITLE = 'MindHeaven — Counselor Chat';
+$CURRENT_PAGE = 'chat';
+$PAGE_CSS = [BASE_URL . '/css/counselor/Cdashboard.css', BASE_URL . '/css/chat/chat.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindHeaven — Counselor Chat</title>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/Cdashboard.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/chat/chat.css">
-</head>
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                Mindheaven
-            </div>
-        </div>
-    </nav>
 
-    <div class="main-container">
-        <!-- Sidebar -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
-
-        <!-- Main Content -->
-        <div class="main-content" style="background:#0f172a; min-height:100vh; color:#e2e8f0;">
-            <div class="chat-page chat-page-wrapper" style="padding:2rem; max-width:860px; margin:0 auto;">
+<div class="main-content">
+            <div class="chat-page chat-page-wrapper" style="max-width:900px;">
 
                 <!-- Page Header -->
                 <div class="chat-list-header">
-                    <h1>💬 Counselling Chat</h1>
-                    <span class="secure-badge">🔒 End-to-end secure</span>
+                    <h1><i class="fa-regular fa-comments"></i> Counselling Chat</h1>
+                    <span class="secure-badge"><i class="fa-solid fa-lock"></i> End-to-end secure</span>
                 </div>
 
                 <!-- Start New Chat Card (only shown if undergrads exist) -->
                 <?php if (!empty($undergrads)): ?>
                 <div class="new-chat-card">
-                    <h2>➕ Start a new chat</h2>
+                    <h2><i class="fa-solid fa-plus"></i> Start a new chat</h2>
                     <form class="new-chat-form" id="newChatForm">
                         <select id="undergradSelect" class="new-chat-select" required>
                             <option value="">— Select an undergraduate —</option>
@@ -57,10 +28,10 @@ $undergrads = isset($undergrads) ? $undergrads : [];
                             <?php endforeach; ?>
                         </select>
                         <button type="submit" class="btn-start-chat">
-                            💬 Open Chat
+                            <i class="fa-regular fa-paper-plane"></i> Open Chat
                         </button>
                     </form>
-                    <p id="newChatError" style="color:#fca5a5; font-size:0.82rem; margin:0.5rem 0 0 0; display:none;"></p>
+                    <p id="newChatError" style="color:var(--chat-danger); font-size:0.82rem; margin:0.5rem 0 0 0; display:none;"></p>
                 </div>
                 <?php endif; ?>
 
@@ -69,7 +40,7 @@ $undergrads = isset($undergrads) ? $undergrads : [];
 
                 <?php if (empty($sessions)): ?>
                     <div class="empty-chat-state">
-                        <div class="empty-icon">💬</div>
+                        <div class="empty-icon"><i class="fa-regular fa-comments"></i></div>
                         <h3>No chats yet</h3>
                         <p>Use the form above to start a private counselling chat with one of your students.</p>
                     </div>
@@ -91,7 +62,7 @@ $undergrads = isset($undergrads) ? $undergrads : [];
                             ?>
                             <a class="session-card"
                                href="<?php echo BASE_URL; ?>/chat/room?session_id=<?php echo (int)$s['id']; ?>">
-                                <div class="session-avatar">🎓</div>
+                                <div class="session-avatar"><i class="fa-solid fa-graduation-cap"></i></div>
                                 <div class="session-info">
                                     <div class="session-name"><?php echo htmlspecialchars($s['other_name'] ?? $s['other_username']); ?></div>
                                     <div class="session-preview"><?php echo $preview; ?></div>
@@ -130,7 +101,7 @@ $undergrads = isset($undergrads) ? $undergrads : [];
 
         var btn = form.querySelector('.btn-start-chat');
         btn.disabled = true;
-        btn.textContent = 'Opening…';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening…';
 
         fetch('<?php echo BASE_URL; ?>/api/chat/start', {
             method: 'POST',
@@ -145,13 +116,13 @@ $undergrads = isset($undergrads) ? $undergrads : [];
             } else {
                 showError(data.message || 'Could not start chat. Please try again.');
                 btn.disabled = false;
-                btn.textContent = '💬 Open Chat';
+                btn.innerHTML = '<i class="fa-regular fa-paper-plane"></i> Open Chat';
             }
         })
         .catch(function () {
             showError('Network error. Please check your connection.');
             btn.disabled = false;
-            btn.textContent = '💬 Open Chat';
+            btn.innerHTML = '<i class="fa-regular fa-paper-plane"></i> Open Chat';
         });
     });
 
@@ -161,5 +132,5 @@ $undergrads = isset($undergrads) ? $undergrads : [];
     }
 })();
 </script>
-</body>
-</html>
+
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

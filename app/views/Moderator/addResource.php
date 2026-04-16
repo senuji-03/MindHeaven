@@ -147,25 +147,13 @@
                 <span class="icon">📊</span>
                 Dashboard
             </a>
-            <a href="<?= BASE_URL ?>/AddResource" class="nav-item active">
-                <span class="icon">➕</span>
-                Add Resource
+            <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="nav-item">
+                <span class="icon">📚</span>
+                Resource Hub
             </a>
-            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
-            <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
-                <span class="icon">🚨</span>
-                Reported Resources
-            </a>
-            <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
-                <span class="icon">🚩</span>
-                Flagged Users
-            </a>
-            <a href="<?= BASE_URL ?>/WarnForm" class="nav-item">
-                <span class="icon">⚠️</span>
-                Warn Users
+            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
+                <span class="icon">💬</span>
+                Moderate Forum
             </a>
         </nav>
         <?php endif; ?>

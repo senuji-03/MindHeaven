@@ -53,7 +53,7 @@ class Appointment
         // Optional ownership check: only the booking student can edit
         if ($studentUserId !== null) {
             $sql .= " AND student_user_id = ?";
-            $params[] = (int)$studentUserId;
+            $params[] = (int) $studentUserId;
         }
 
         $stmt = $pdo->prepare($sql);
@@ -97,7 +97,7 @@ class Appointment
         // Optional ownership check for counselor
         if ($counselorUserId !== null) {
             $sql .= " AND counselor_user_id = ?";
-            $params[] = (int)$counselorUserId;
+            $params[] = (int) $counselorUserId;
         }
 
         $stmt = $pdo->prepare($sql);
@@ -237,7 +237,7 @@ class Appointment
     {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("UPDATE appointments SET hidden_by_counselor = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
-        $stmt->execute(array((int)$id));
+        $stmt->execute(array((int) $id));
         return $stmt->rowCount() > 0;
     }
 
@@ -256,14 +256,32 @@ class Appointment
                 a.time,
                 a.title,
                 a.counselor_notes,
-                COALESCE(c.full_name, u.full_name, u.username) AS counselor_name
+                COALESCE(c.full_name, u.full_name, u.username) AS counselor_name,
+                'appointment' AS type
             FROM appointments a
             LEFT JOIN users u ON a.counselor_user_id = u.id
             LEFT JOIN counselors c ON a.counselor_user_id = c.user_id
             WHERE a.student_user_id = :student_user_id
               AND a.counselor_notes IS NOT NULL
               AND a.counselor_notes != ''
-            ORDER BY a.date DESC, a.time DESC
+
+            UNION ALL
+
+            SELECT 
+                n.id,
+                DATE(n.created_at) as date,
+                TIME(n.created_at) as time,
+                'Emergency Crisis Intervention' as title,
+                n.notes as counselor_notes,
+                COALESCE(c.full_name, u.full_name, u.username) as counselor_name,
+                'crisis' AS type
+            FROM crisis_intervention_notes n
+            JOIN crisis_calls cc ON n.crisis_call_id = cc.id
+            LEFT JOIN users u ON n.counselor_user_id = u.id
+            LEFT JOIN counselors c ON n.counselor_user_id = c.user_id
+            WHERE cc.caller_user_id = :student_user_id
+
+            ORDER BY date DESC, time DESC
         ";
 
         $stmt = $pdo->prepare($sql);
@@ -314,7 +332,7 @@ class Appointment
             ORDER BY a.date DESC, a.time DESC
         ";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(array(':student_user_id' => (int)$studentUserId));
+        $stmt->execute(array(':student_user_id' => (int) $studentUserId));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -325,9 +343,9 @@ class Appointment
     {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("SELECT COUNT(DISTINCT student_user_id) as total FROM appointments WHERE counselor_user_id = ? AND status NOT IN ('reject', 'rejected')");
-        $stmt->execute(array((int)$counselorUserId));
+        $stmt->execute(array((int) $counselorUserId));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ? (int)$row['total'] : 0;
+        return $row ? (int) $row['total'] : 0;
     }
 
     /**
@@ -337,16 +355,16 @@ class Appointment
     {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM appointments WHERE counselor_user_id = ? AND date = CURDATE() AND status IN ('accept', 'accepted', 'scheduled', 'confirmed')");
-        $stmt->execute(array((int)$counselorUserId));
+        $stmt->execute(array((int) $counselorUserId));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ? (int)$row['count'] : 0;
+        return $row ? (int) $row['count'] : 0;
     }
 
     public function getById($id)
     {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("SELECT * FROM appointments WHERE id = ?");
-        $stmt->execute(array((int)$id));
+        $stmt->execute(array((int) $id));
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -358,7 +376,7 @@ class Appointment
         $pdo = Database::getConnection();
         $sql = "UPDATE appointments SET meeting_link = ? WHERE id = ?";
         $stmt = $pdo->prepare($sql);
-        return $stmt->execute(array($url, (int)$id));
+        return $stmt->execute(array($url, (int) $id));
     }
 
     /**
@@ -497,22 +515,22 @@ class Appointment
 
         if (!$row) {
             return array(
-                'total'       => 0,
-                'this_month'  => 0,
-                'completed'   => 0,
-                'cancelled'   => 0,
-                'no_show'     => 0,
-                'overdue'     => 0
+                'total' => 0,
+                'this_month' => 0,
+                'completed' => 0,
+                'cancelled' => 0,
+                'no_show' => 0,
+                'overdue' => 0
             );
         }
 
         return array(
-            'total'       => (int) $row['total'],
-            'this_month'  => (int) $row['this_month'],
-            'completed'   => (int) $row['completed'],
-            'cancelled'   => (int) $row['cancelled'],
-            'no_show'     => (int) $row['no_show'],
-            'overdue'     => (int) $row['overdue']
+            'total' => (int) $row['total'],
+            'this_month' => (int) $row['this_month'],
+            'completed' => (int) $row['completed'],
+            'cancelled' => (int) $row['cancelled'],
+            'no_show' => (int) $row['no_show'],
+            'overdue' => (int) $row['overdue']
         );
     }
     /**
@@ -563,10 +581,10 @@ class Appointment
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return array(
-            'total'     => (int) ($row['total'] ?? 0),
+            'total' => (int) ($row['total'] ?? 0),
             'completed' => (int) ($row['completed'] ?? 0),
-            'upcoming'  => (int) ($row['upcoming'] ?? 0),
-            'overdue'   => (int) ($row['overdue'] ?? 0),
+            'upcoming' => (int) ($row['upcoming'] ?? 0),
+            'overdue' => (int) ($row['overdue'] ?? 0),
             'cancelled' => (int) ($row['cancelled'] ?? 0)
         );
     }

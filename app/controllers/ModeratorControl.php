@@ -4,6 +4,14 @@ require_once BASE_PATH . '/app/models/ResourceHub.php';
 
 class ModeratorControl
 {
+    public function __construct()
+    {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'moderator') {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+    }
+
     public function edit()
     {
         try {
@@ -422,6 +430,7 @@ class ModeratorControl
     public function reportedResources()
     {
         try {
+            $resourceHub = new ResourceHub();
             $reports = $resourceHub->getPendingReports();
             view('Moderator/reportedResources', array('reports' => $reports));
         } catch (Exception $e) {
@@ -556,4 +565,6 @@ class ModeratorControl
         echo json_encode(['success' => false, 'error' => 'Invalid request']);
         exit;
     }
+
 }
+

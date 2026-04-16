@@ -1,59 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$TITLE = 'Mindheaven - Counselor Profile';
+$CURRENT_PAGE = 'counselor_profile';
+$PAGE_CSS = ['/MindHeaven/public/css/counselor/counselor_profile.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindheaven - Counselor Profile</title>
-    <link rel="stylesheet" href="/MindHeaven/public/css/counselor/counselor_profile.css">
-    <link rel="stylesheet" href="/MindHeaven/public/css/notifications.css">
-</head>
+$counselor = isset($counselor) && is_array($counselor) ? $counselor : array();
+$c_full_name = isset($counselor['full_name']) ? $counselor['full_name'] : 'Counselor';
+$c_email = isset($counselor['email']) ? $counselor['email'] : '';
+$c_phone = isset($counselor['phone_number']) ? $counselor['phone_number'] : '';
+$c_license = isset($counselor['license_number']) ? $counselor['license_number'] : '';
+$c_spec = isset($counselor['specialization']) ? $counselor['specialization'] : '';
+$c_exp = isset($counselor['years_experience']) ? $counselor['years_experience'] : '';
+$c_bio = isset($counselor['bio']) ? $counselor['bio'] : '';
+$c_profile_pic = isset($counselor['profile_picture']) && !empty($counselor['profile_picture'])
+    ? $counselor['profile_picture']
+    : 'https://via.placeholder.com/150';
+$qualifications = isset($qualifications) && is_array($qualifications) ? $qualifications : array();
+?>
 
-<body>
-    <?php
-    $counselor = isset($counselor) && is_array($counselor) ? $counselor : array();
-    $c_full_name = isset($counselor['full_name']) ? $counselor['full_name'] : 'Counselor';
-    $c_email = isset($counselor['email']) ? $counselor['email'] : '';
-    $c_phone = isset($counselor['phone_number']) ? $counselor['phone_number'] : '';
-    $c_license = isset($counselor['license_number']) ? $counselor['license_number'] : '';
-    $c_spec = isset($counselor['specialization']) ? $counselor['specialization'] : '';
-    $c_exp = isset($counselor['years_experience']) ? $counselor['years_experience'] : '';
-    $c_bio = isset($counselor['bio']) ? $counselor['bio'] : '';
-    $c_profile_pic = isset($counselor['profile_picture']) && !empty($counselor['profile_picture'])
-        ? $counselor['profile_picture']
-        : 'https://via.placeholder.com/150';
-    $qualifications = isset($qualifications) && is_array($qualifications) ? $qualifications : array();
-    ?>
-
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                Mindheaven
-            </div>
-            <div class="nav-icons">
-                <div class="nav-icon" onclick="showNotifications()">
-                    🔔
-                    <span class="badge">3</span>
-                </div>
-                <div class="nav-icon" onclick="showMessages()">
-                    💬
-                    <span class="badge">7</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="main-container">
-        <!-- Sidebar -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
-
-        <div class="main-content">
+<div class="main-content">
             <div class="profile-header">
                 <div class="profile-picture-container">
-                    <img id="profilePic" src="<?php echo htmlspecialchars($c_profile_pic); ?>" alt="Profile Picture"
-                        class="profile-picture">
-                    <button class="change-photo-btn" onclick="openPhotoModal()">📷</button>
+                    <img id="profilePic" src="<?php echo htmlspecialchars($c_profile_pic); ?>" alt="Profile Picture" class="profile-picture">
+                    <button class="change-photo-btn" onclick="openPhotoModal()" title="Change Photo"><i class="fa-solid fa-camera"></i></button>
                 </div>
                 <div class="profile-info">
                     <h1 class="profile-name" id="profileName"><?php echo htmlspecialchars($c_full_name); ?></h1>
@@ -73,7 +42,7 @@
             <div class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Personal Details</h2>
-                    <button class="edit-btn" onclick="editSection('personal')">✏️ Edit</button>
+                    <button class="edit-btn" onclick="editSection('personal')"><i class="fa-solid fa-pen"></i> Edit</button>
                 </div>
                 <div class="section-content">
                     <div class="info-grid" id="personalDetails">
@@ -104,7 +73,7 @@
             <div class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Professional Details</h2>
-                    <button class="edit-btn" onclick="editSection('professional')">✏️ Edit</button>
+                    <button class="edit-btn" onclick="editSection('professional')"><i class="fa-solid fa-pen"></i> Edit</button>
                 </div>
                 <div class="section-content">
                     <div class="info-grid">
@@ -131,15 +100,16 @@
             <div class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Qualifications & Experience</h2>
-                    <div>
-                        <button class="edit-btn" onclick="addQualification()" style="margin-right: 10px;">➕ Add</button>
-                        <button class="edit-btn" onclick="editSection('qualification')">✏️ Edit</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="edit-btn" onclick="addQualification()"><i class="fa-solid fa-plus"></i> Add</button>
+                        <button class="edit-btn" onclick="editSection('qualification')"><i class="fa-solid fa-pen"></i> Edit</button>
                     </div>
                 </div>
                 <div class="section-content">
                     <div class="qualification-list" id="qualificationList">
                         <?php if (empty($qualifications)): ?>
-                            <div class="qualification-item empty-state" style="text-align: center; color: #888;">
+                            <div class="qualification-item empty-state" style="text-align: center; color: var(--text-secondary); border: 1px dashed var(--border-strong);">
+                                <i class="fa-solid fa-graduation-cap" style="font-size:2rem;margin-bottom:10px;display:block;"></i>
                                 No qualifications added yet. Click Add to create one.
                             </div>
                         <?php else: ?>
@@ -175,45 +145,48 @@
             <div class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Donation History</h2>
-                    <button class="edit-btn" onclick="toggleDonationHistory()">View History</button>
+                    <button class="edit-btn" onclick="toggleDonationHistory()"><i class="fa-regular fa-eye"></i> <span id="dh-btn-text">View History</span></button>
                 </div>
-                <div class="section-content" id="donation-history-content" style="display: none;">
+                <div class="section-content" id="donation-history-content" style="display: none; padding:0;">
                     <?php if (empty($donations)): ?>
-                        <p style="color: #888; text-align: center; padding: 20px;">No donations yet.</p>
+                        <div style="padding: 2.5rem; text-align: center; color: var(--text-secondary);">
+                            <i class="fa-solid fa-hand-holding-heart" style="font-size:2rem; margin-bottom:12px; display:block;"></i>
+                            No donations yet.
+                        </div>
                     <?php else: ?>
-                        <div style="overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <div class="donations-table-wrapper">
+                            <table class="donations-table">
                                 <thead>
-                                    <tr style="border-bottom: 2px solid #eee; text-align: left;">
-                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Event</th>
-                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">University</th>
-                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Bank Info</th>
-                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Amount</th>
-                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Status</th>
-                                        <th style="padding: 12px 8px; font-size: 14px; color: #666;">Date</th>
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>University</th>
+                                        <th>Bank Info</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($donations as $donation): ?>
-                                        <tr style="border-bottom: 1px solid #f9f9f9;">
-                                            <td style="padding: 12px 8px; font-size: 14px; color: #333;"><?php echo htmlspecialchars($donation['event_title'] ?? 'General Donation'); ?></td>
-                                            <td style="padding: 12px 8px; font-size: 14px; color: #333;"><?php echo htmlspecialchars($donation['university_name'] ?? 'N/A'); ?></td>
-                                            <td style="padding: 12px 8px; font-size: 12px; color: #555;">
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($donation['event_title'] ?? 'General Donation'); ?></td>
+                                            <td><?php echo htmlspecialchars($donation['university_name'] ?? 'N/A'); ?></td>
+                                            <td>
                                                 <?php if (!empty($donation['bank_name'])): ?>
                                                     <div><strong>Bank:</strong> <?php echo htmlspecialchars($donation['bank_name']); ?></div>
                                                     <div><strong>Branch:</strong> <?php echo htmlspecialchars($donation['bank_branch'] ?? 'N/A'); ?></div>
                                                     <div><strong>Acc:</strong> <?php echo htmlspecialchars($donation['account_number'] ?? 'N/A'); ?></div>
                                                 <?php else: ?>
-                                                    <span style="font-style: italic; color: #999;">No bank details</span>
+                                                    <span style="font-style: italic; color: var(--text-secondary);">No bank details</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td style="padding: 12px 8px; font-size: 14px; color: #333;"><?php echo htmlspecialchars($donation['currency'] ?? 'LKR'); ?> <?php echo htmlspecialchars($donation['amount']); ?></td>
-                                            <td style="padding: 12px 8px;">
-                                                <span style="padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; background: <?php echo $donation['payment_status'] === 'success' ? '#e6f4ea; color: #1e7e34;' : ($donation['payment_status'] === 'pending' ? '#fff3cd; color: #856404;' : '#f8d7da; color: #721c24;'); ?>">
+                                            <td><strong><?php echo htmlspecialchars($donation['currency'] ?? 'LKR'); ?> <?php echo htmlspecialchars($donation['amount']); ?></strong></td>
+                                            <td>
+                                                <span class="session-status-badge <?php echo $donation['payment_status'] === 'success' ? 'active' : ($donation['payment_status'] === 'pending' ? 'archived' : 'closed'); ?>">
                                                     <?php echo htmlspecialchars(ucfirst($donation['payment_status'])); ?>
                                                 </span>
                                             </td>
-                                            <td style="padding: 12px 8px; font-size: 14px; color: #777;"><?php echo date('M j, Y', strtotime($donation['created_at'])); ?></td>
+                                            <td><?php echo date('M j, Y', strtotime($donation['created_at'])); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -228,13 +201,13 @@
     <script>
         function toggleDonationHistory() {
             const content = document.getElementById('donation-history-content');
-            const btn = event.target;
+            const btnText = document.getElementById('dh-btn-text');
             if (content.style.display === 'none') {
                 content.style.display = 'block';
-                btn.textContent = 'Hide History';
+                btnText.textContent = 'Hide History';
             } else {
                 content.style.display = 'none';
-                btn.textContent = 'View History';
+                btnText.textContent = 'View History';
             }
         }
     </script>
@@ -246,7 +219,7 @@
             </div>
             <div class="modal-body">
                 <label for="photoUpload" class="upload-label">
-                    📁 Choose Photo
+                    <i class="fa-solid fa-folder-open"></i> Choose Photo
                 </label>
                 <input type="file" id="photoUpload" accept="image/*" onchange="previewPhoto(event)">
             </div>
@@ -258,7 +231,6 @@
     </div>
 
     <script src="/MindHeaven/public/js/counselor/counselor_profile.js"></script>
-    <script src="/MindHeaven/public/js/notifications.js"></script>
-</body>
+    
 
-</html>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

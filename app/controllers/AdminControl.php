@@ -3,15 +3,24 @@ class AdminControl
 {
     public function __construct()
     {
-        // Enforce Admin Access
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        // Enforce Access (Admin or Moderator)
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'moderator')) {
             header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+    }
+
+    private function requireAdmin()
+    {
+        if ($_SESSION['role'] !== 'admin') {
+            header('Location: ' . BASE_URL . '/ModeratorDashboard');
             exit;
         }
     }
 
     public function index()
     {
+        $this->requireAdmin();
         require_once BASE_PATH . '/app/models/User.php';
         require_once BASE_PATH . '/app/models/Thread.php';
         require_once BASE_PATH . '/app/models/Report.php';
@@ -97,6 +106,7 @@ class AdminControl
 
     public function manageUsers()
     {
+        $this->requireAdmin();
         try {
             $pdo = Database::getConnection();
 
@@ -188,6 +198,7 @@ class AdminControl
 
     public function suspendedUsers()
     {
+        $this->requireAdmin();
         try {
             $pdo = Database::getConnection();
 
@@ -220,6 +231,7 @@ class AdminControl
 
     public function createUser()
     {
+        $this->requireAdmin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/admin/manage-users');
             exit;
@@ -447,6 +459,7 @@ class AdminControl
 
     public function updateUser()
     {
+        $this->requireAdmin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/admin/manage-users');
             exit;
@@ -576,6 +589,7 @@ class AdminControl
 
     public function deleteUser()
     {
+        $this->requireAdmin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/admin/manage-users');
             exit;
@@ -670,6 +684,7 @@ class AdminControl
 
     public function resourceHub()
     {
+        $this->requireAdmin();
         view('Admin/resource-hub');
     }
 
@@ -767,18 +782,22 @@ class AdminControl
 
     public function counselors()
     {
+        $this->requireAdmin();
         view('Admin/counselors');
     }
 
     public function appointments()
     {
+        $this->requireAdmin();
         view('Admin/appointments');
     }
 
     public function approveCounselors()
     {
+        $this->requireAdmin();
         view('Admin/approve-counselors');
     }
+
 
 
     public function updateReportStatus()
@@ -964,21 +983,25 @@ class AdminControl
 
     public function donations()
     {
+        $this->requireAdmin();
         view('Admin/donations');
     }
 
     public function awareness()
     {
+        $this->requireAdmin();
         view('Admin/awareness');
     }
 
     public function monitoring()
     {
+        $this->requireAdmin();
         view('Admin/monitoring');
     }
 
     public function settings()
     {
+        $this->requireAdmin();
         view('Admin/settings');
     }
 
@@ -1097,6 +1120,7 @@ class AdminControl
 
     public function universityEvents()
     {
+        $this->requireAdmin();
         try {
             $pdo = Database::getConnection();
             $stmt = $pdo->prepare("
@@ -1334,6 +1358,7 @@ class AdminControl
      */
     public function approveCounselor()
     {
+        $this->requireAdmin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/admin/manage-users');
             exit;
@@ -1389,6 +1414,7 @@ class AdminControl
      */
     public function rejectCounselor()
     {
+        $this->requireAdmin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/admin/manage-users');
             exit;
