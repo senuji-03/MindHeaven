@@ -36,86 +36,103 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 /* ── Base ─────────────────────────────────── */
 .mp {
-  font-family: 'DM Sans','Inter',system-ui,sans-serif;
+  font-family: inherit;
   color: var(--text-primary);
-  background: #F8FBFA;
+  background: transparent;
+  padding: 16px 28px;
+  max-width: 1200px;
+  margin: 0 auto;
   min-height: 100vh;
-  padding-bottom: 80px;
 }
 
 /* ── Page header ─────────────────────────── */
 .mp-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 32px 0 28px;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+  border-radius: var(--radius-lg);
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.mp-header::after {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(232,168,124,0.1);
+  bottom: -30px;
+  left: 20%;
 }
 .mp-header__inner {
-  max-width: 940px;
-  margin: 0 auto;
-  padding: 0 28px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
+  z-index: 1;
+  position: relative;
 }
 .mp-header__eyebrow {
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--primary);
-  display: block;
-  margin-bottom: 6px;
+  display: none;
 }
 .mp-header__title {
+  color: #fff;
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -.5px;
-  line-height: 1.2;
-  margin: 0 0 4px;
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
 }
 .mp-header__sub {
-  font-size: .88rem;
-  color: var(--text-secondary);
+  color: rgba(255,255,255,.85);
+  font-size: .92rem;
   margin: 0;
-  line-height: 1.6;
 }
 
 /* ── Stats row ───────────────────────────── */
 .mp-body {
-  max-width: 940px;
-  margin: 0 auto;
-  padding: 28px 28px 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 .mp-stats {
   display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 12px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
 }
 .mp-stat {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 18px 20px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow .2s, transform .2s;
+  transition: all 0.3s ease;
 }
-.mp-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.mp-stat:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
 .mp-stat__label {
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
+  font-size: .78rem;
   color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
   margin-bottom: 8px;
 }
 .mp-stat__val {
-  font-size: 1.55rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1;
+  font-family: 'DM Sans', system-ui, sans-serif;
 }
 .mp-stat__dot {
   display: inline-block;
@@ -542,17 +559,21 @@ textarea.finput { resize: vertical; min-height: 72px; }
 
 /* ── Log-btn in header ───────────────────── */
 .btn-log {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: var(--primary); color: #fff;
-  border: none; border-radius: var(--radius-full);
-  padding: 10px 22px; font-size: .85rem; font-weight: 700;
-  cursor: pointer; white-space: nowrap;
-  box-shadow: 0 2px 10px rgba(61,139,110,.20);
-  transition: all .22s ease;
-  font-family: inherit;
+  background: #fff;
+  color: var(--primary-dark);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 10px 22px;
+  font-weight: 700;
+  font-size: .88rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform .2s, box-shadow .2s;
+  z-index: 1;
+  position: relative;
 }
-.btn-log:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 5px 18px rgba(61,139,110,.28); }
-.btn-log.active { background:var(--text-secondary); box-shadow:none; }
+.btn-log:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+.btn-log.active { background: #f0f0f0; box-shadow: none; }
 
 /* ── Responsive ──────────────────────────── */
 @media (max-width: 900px) {

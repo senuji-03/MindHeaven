@@ -25,81 +25,99 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
   /* ── Page wrapper ──────────────────────────────────────────────── */
   .habits-page {
-    padding: 28px 32px;
-    max-width: 1050px;
+    padding: 16px 28px;
+    max-width: 1200px;
     margin: 0 auto;
-    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-family: inherit;
   }
 
   /* ── Hero bar ──────────────────────────────────────────────────── */
   .habits-hero {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
     border-radius: var(--radius-lg);
-    padding: 32px 36px;
+    padding: 20px 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: var(--shadow-md);
-    margin-bottom: 28px;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 16px;
     gap: 16px;
+    position: relative;
+    overflow: hidden;
   }
-  .hero-title { color: #fff; font-size: 1.8rem; font-weight: 700; margin: 0 0 6px; }
-  .hero-sub   { color: rgba(255,255,255,.85); font-size: .95rem; margin: 0; }
+  .habits-hero::after {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(232,168,124,0.1);
+    bottom: -30px;
+    left: 20%;
+  }
+
+  .hero-title { color: #fff; font-size: 1.8rem; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.5px; position: relative; z-index: 1;}
+  .hero-sub   { color: rgba(255,255,255,.85); font-size: .92rem; margin: 0; position: relative; z-index: 1;}
   .btn-hero {
     background: #fff;
     color: var(--primary-dark);
     border: none;
-    border-radius: 50px;
-    padding: 12px 26px;
+    border-radius: var(--radius-full);
+    padding: 10px 22px;
     font-weight: 700;
-    font-size: .95rem;
+    font-size: .88rem;
     cursor: pointer;
     white-space: nowrap;
     transition: transform .2s, box-shadow .2s;
+    position: relative;
+    z-index: 1;
   }
-  .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+  .btn-hero:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
 
   /* ── Stats strip ───────────────────────────────────────────────── */
   .stats-strip {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
-    margin-bottom: 28px;
+    margin-bottom: 16px;
   }
   .stat-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 18px 20px;
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
     display: flex;
     align-items: center;
     gap: 14px;
     box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
   }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
   .stat-icon {
     width: 44px; height: 44px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     background: var(--bg-mid);
+    color: var(--primary);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.3rem; flex-shrink: 0;
   }
-  .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
+  .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); line-height: 1; font-family: 'DM Sans', system-ui, sans-serif; margin-bottom: 2px;}
   .stat-label { font-size: .78rem; color: var(--text-secondary); margin-top: 2px; }
 
   /* ── Calendar card ─────────────────────────────────────────────── */
   .calendar-card {
     background: var(--surface);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
     border: 1px solid var(--border);
   }
   .cal-nav {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 28px;
+    padding: 16px 24px;
   }
   .cal-nav-btn {
     background: rgba(255,255,255,.18);

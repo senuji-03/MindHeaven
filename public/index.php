@@ -45,6 +45,8 @@ $router->post('/ug/likeResource', 'UGControl@likeResource');
 $router->post('/ug/reportResource', 'UGControl@reportResource');
 $router->get('/ug/quiz', 'UGControl@quiz');
 $router->get('/ug/profile', 'UGControl@profile');
+$router->get('/ug/profile/edit', 'UGControl@editProfile');
+$router->post('/ug/profile/edit', 'UGControl@editProfile');
 $router->get('/ug/profile/complete', 'UGControl@completeProfile');
 $router->post('/ug/profile/complete', 'UGControl@completeProfile');
 $router->get('/ug/feedback', 'UGControl@feedback');
@@ -60,6 +62,7 @@ $router->get('/admin/resource-hub', 'AdminControl@resourceHub');
 $router->get('/admin/moderate-forum', 'AdminControl@moderateForum');
 $router->get('/admin/counselors', 'AdminControl@counselors');
 $router->get('/admin/appointments', 'AdminControl@appointments');
+$router->get('/admin/get-appointments', 'AdminControl@getAppointments');
 $router->get('/admin/approve-counselors', 'AdminControl@approveCounselors');
 $router->get('/admin/reports', 'AdminControl@reports');
 $router->post('/admin/update-report-status', 'AdminControl@updateReportStatus'); // Process report update
@@ -176,6 +179,10 @@ $router->post('/api/appointments/hide', 'AppointmentApiControl@hide');
 $router->delete('/api/appointments/delete', 'AppointmentApiControl@delete');
 $router->get('/api/counselor/appointments', 'AppointmentApiControl@listForCounselor');
 $router->post('/api/appointments/status', 'AppointmentApiControl@updateStatus');
+$router->post('/api/appointments/start-session', 'AppointmentApiControl@startSession');
+$router->post('/api/appointments/notes', 'AppointmentApiControl@saveNotes');
+$router->get('/api/student/history', 'AppointmentApiControl@getStudentHistory');
+$router->get('/api/counselor/session-history', 'AppointmentApiControl@getSessionHistory');
 
 // Habits API
 $router->get('/api/habits', 'HabitApiControl@list');
@@ -197,6 +204,11 @@ $router->get('/api/mood/list',   'MoodApiControl@list');
 $router->post('/api/mood/create','MoodApiControl@create');
 $router->put('/api/mood/update', 'MoodApiControl@update');
 $router->delete('/api/mood/delete','MoodApiControl@delete');
+
+// Notification API Routes
+$router->get('/api/notifications', 'NotificationControl@list');
+$router->get('/api/notifications/unread-count', 'NotificationControl@unreadCount');
+$router->post('/api/notifications/mark-read', 'NotificationControl@markRead');
 
 $router->get('/CallResponder', 'CallResponderControl@index');
 $router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');
@@ -290,6 +302,7 @@ $router->post('/university-rep/resources/delete', 'UniversityRepresentativeContr
 
 // University Profile
 $router->get('/university-rep/university-profile', 'UniversityRepresentativeControl@universityProfile');
+$router->get('/university-rep/bank-details', 'UniversityRepresentativeControl@bankDetails');
 $router->post('/university-rep/university-profile/update', 'UniversityRepresentativeControl@updateUniversityProfile');
 
 // Analytics

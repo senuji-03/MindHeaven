@@ -406,10 +406,64 @@
             padding-left: 40px;
         }
 
+        .form-input-icon .toggle-password {
+            left: auto;
+            right: 14px;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
+        }
+
+        .role-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .role-card {
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: var(--surface);
+        }
+
+        .role-card:hover {
+            border-color: var(--primary-light);
+            background: var(--bg-mid);
+        }
+
+        .role-card.active {
+            border-color: var(--primary);
+            background: rgba(61, 139, 110, 0.05);
+            box-shadow: 0 4px 12px rgba(61, 139, 110, 0.1);
+        }
+
+        .role-card i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .role-card span {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
         }
 
         .role-section {
@@ -629,7 +683,8 @@
                             <div class="form-input-icon">
                                 <i class="fas fa-lock"></i>
                                 <input class="form-input" type="password" id="password" name="password"
-                                    placeholder="Create a password" required autocomplete="new-password">
+                                    placeholder="Create a password" required autocomplete="new-password" style="padding-right: 40px;">
+                                <i class="fas fa-eye toggle-password"></i>
                             </div>
                         </div>
 
@@ -639,23 +694,27 @@
                             <div class="form-input-icon">
                                 <i class="fas fa-lock"></i>
                                 <input class="form-input" type="password" id="confirm_password" name="confirm_password"
-                                    placeholder="Confirm your password" required autocomplete="new-password">
+                                    placeholder="Confirm your password" required autocomplete="new-password" style="padding-right: 40px;">
+                                <i class="fas fa-eye toggle-password"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="role">Select Your Role <span class="required">*</span></label>
-                        <select class="form-select" id="role" name="role" required>
-                            <option value="">Choose your role...</option>
-                            <option value="undergraduate" <?= ($form_data['role'] ?? '') === 'undergraduate' ? 'selected' : '' ?>>
-                                Undergraduate Student
-                            </option>
-                            <option value="counselor" <?= ($form_data['role'] ?? '') === 'counselor' ? 'selected' : '' ?>>
-                                Counselor
-                            </option>
-                        </select>
-                        <div class="role-description">
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label class="form-label" style="text-align: center; font-size: 1.05rem; margin-bottom: 16px;">Join us as <span class="required">*</span></label>
+                        <input type="hidden" id="role" name="role" value="<?= htmlspecialchars($form_data['role'] ?? '') ?>" required>
+                        
+                        <div class="role-selection">
+                            <div class="role-card <?= ($form_data['role'] ?? '') === 'undergraduate' ? 'active' : '' ?>" data-role="undergraduate">
+                                <i class="fas fa-user-graduate"></i>
+                                <span>Undergraduate Student</span>
+                            </div>
+                            <div class="role-card <?= ($form_data['role'] ?? '') === 'counselor' ? 'active' : '' ?>" data-role="counselor">
+                                <i class="fas fa-stethoscope"></i>
+                                <span>Counselor</span>
+                            </div>
+                        </div>
+                        <div class="role-description" style="text-align: center;">
                             Choose the role that best describes your position in the MindHeaven platform.
                         </div>
                     </div>
@@ -841,6 +900,21 @@
     </div>
 
     <script>
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.classList.remove('fa-eye');
+                    this.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    this.classList.remove('fa-eye-slash');
+                    this.classList.add('fa-eye');
+                }
+            });
+        });
+
         function setRequired(ids, required) {
             ids.forEach(function (id) {
                 const field = document.getElementById(id);
@@ -871,6 +945,7 @@
         const roleDescription = document.querySelector('.role-description');
         const undergradFields = document.getElementById('undergradFields');
         const counselorFields = document.getElementById('counselorFields');
+        const roleCards = document.querySelectorAll('.role-card');
 
         function updateRoleFields() {
             const selectedRole = roleSelect.value;
@@ -896,7 +971,14 @@
             }
         }
 
-        roleSelect.addEventListener('change', updateRoleFields);
+        roleCards.forEach(card => {
+            card.addEventListener('click', function() {
+                roleCards.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                roleSelect.value = this.dataset.role;
+                updateRoleFields();
+            });
+        });
 
         const confirmPasswordField = document.getElementById('confirm_password');
         confirmPasswordField.addEventListener('input', function () {

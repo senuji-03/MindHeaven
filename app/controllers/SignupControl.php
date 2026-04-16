@@ -38,6 +38,8 @@ class SignupControl
             $errors[] = 'Password is required';
         } elseif (strlen($password) < 6) {
             $errors[] = 'Password must be at least 6 characters long';
+        } elseif (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+            $errors[] = 'Password must contain at least one letter and one number';
         }
 
         if ($password !== $confirmPassword) {

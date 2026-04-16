@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Appointment Management</title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/appoinmentmgt.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/notifications.css">
 </head>
 
 <body>
@@ -55,6 +56,10 @@
                             <option value="all">All Requests</option>
                             <option value="pending">Pending</option>
                             <option value="accepted">Accepted</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="no_show">No Show</option>
+                            <option value="rescheduled">Rescheduled</option>
                             <option value="rejected">Rejected</option>
                         </select>
                     </div>
@@ -172,6 +177,103 @@
         </div>
     </div>
 
+    <!-- Student Note History Modal -->
+    <div id="studentHistoryModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white;">
+                <h3 class="modal-title" id="historyModalTitle">Student Session History</h3>
+                <button class="close" onclick="closeModal('studentHistoryModal')" style="color: white;">&times;</button>
+            </div>
+            <div class="modal-body" style="background: #f8fafc; padding: 20px;">
+                <div id="historyStudentInfo" style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 12px; border-left: 5px solid #4f46e5; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <h4 id="historyStudentName" style="color: #1e293b; margin: 0; font-size: 1.2rem;">Patient Name</h4>
+                    <p style="color: #64748b; margin: 5px 0 0; font-size: 0.9rem;">Complete chronological history of session notes.</p>
+                </div>
+                
+                <div id="historyList" style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
+                    <!-- History items will be populated here -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal('studentHistoryModal')">Close History</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .history-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .history-date {
+            font-weight: 600;
+            color: #4f46e5;
+            font-size: 0.95rem;
+        }
+        .history-counselor {
+            font-size: 0.85rem;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .history-topic {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .history-content {
+            color: #475569;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+        .history-empty {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+        .history-empty i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+        .btn-history {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-history:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+    </style>
+
     <script>
         // Expose BASE_URL to JavaScript so we can call APIs reliably
         window.BASE_URL = '<?php echo BASE_URL; ?>';
@@ -185,6 +287,7 @@
         }
     </script>
     <script src="<?php echo BASE_URL; ?>/js/counselor/appoinmentmgt.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 
 </html>

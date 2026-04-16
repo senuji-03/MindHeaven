@@ -185,10 +185,14 @@ class AdminControl
             $errors[] = 'Username must be at least 3 characters long';
         }
 
-        if (empty($password)) {
-            $errors[] = 'Password is required';
-        } elseif (strlen($password) < 6) {
-            $errors[] = 'Password must be at least 6 characters long';
+        if ($role !== 'university_representative') {
+            if (empty($password)) {
+                $errors[] = 'Password is required';
+            } elseif (strlen($password) < 6) {
+                $errors[] = 'Password must be at least 6 characters long';
+            } elseif (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+                $errors[] = 'Password must contain at least one letter and one number';
+            }
         }
 
         if ($password !== $confirmPassword) {
@@ -418,6 +422,14 @@ class AdminControl
             $errors[] = 'Phone number is required';
         } elseif (!preg_match('/^0[0-9]{9}$/', $phoneNumber)) {
             $errors[] = 'Phone number must be in format 0718580160 (10 digits starting with 0)';
+        }
+
+        if (!empty($password)) {
+            if (strlen($password) < 6) {
+                $errors[] = 'Password must be at least 6 characters long';
+            } elseif (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+                $errors[] = 'Password must contain at least one letter and one number';
+            }
         }
 
         if (!empty($errors)) {
@@ -1355,5 +1367,32 @@ class AdminControl
             header('Location: ' . BASE_URL . '/admin/manage-users?error=Failed to reject counselor');
             exit;
         }
+    }
+    /**
+     * API: Get all appointments for Admin dashboard
+     */
+    public function getAppointments()
+    {
+        header('Content-Type: application/json');
+
+        try {
+            require_once BASE_PATH . '/app/models/Appointment.php';
+            $appointmentModel = new Appointment();
+
+            $appointments = $appointmentModel->getAllForAdmin();
+            $stats = $appointmentModel->getAdminStats();
+
+            echo json_encode([
+                'success' => true,
+                'appointments' => $appointments,
+                'stats' => $stats
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to fetch appointments: ' . $e->getMessage()
+            ]);
+        }
+        exit;
     }
 }

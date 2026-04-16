@@ -68,7 +68,7 @@ class MoodApiControl {
             return;
         }
 
-        $allowed = ['happy','sad','anxious','angry','calm','excited','tired','stressed','confused','grateful'];
+        $allowed = ['happy','sad','anxious','angry','calm','excited','tired','stressed','confused','grateful','neutral'];
         if (!in_array($moodType, $allowed)) {
             $this->json(['error' => 'Invalid mood_type'], 400);
             return;
@@ -111,6 +111,12 @@ class MoodApiControl {
         $moodLevel = max(1, min(10, (int)($d['mood_level'] ?? 5)));
 
         if (!$moodType) { $this->json(['error' => 'mood_type is required'], 400); return; }
+
+        $allowed = ['happy','sad','anxious','angry','calm','excited','tired','stressed','confused','grateful','neutral'];
+        if (!in_array($moodType, $allowed)) {
+            $this->json(['error' => 'Invalid mood_type'], 400);
+            return;
+        }
 
         try {
             $stmt = $this->pdo->prepare("

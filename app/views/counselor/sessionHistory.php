@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Session History</title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\sessionHistory.css">
+    <link rel="stylesheet" href="/MindHeaven/public/css/counselor/sessionHistory.css">
+    <link rel="stylesheet" href="/MindHeaven/public/css/notifications.css">
 </head>
 
 <body>
@@ -43,7 +44,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Total Sessions</div>
-                            <div class="stat-value" id="totalSessions">248</div>
+                            <div class="stat-value" id="totalSessions">0</div>
                         </div>
                         <div class="stat-icon">📊</div>
                     </div>
@@ -52,7 +53,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">This Month</div>
-                            <div class="stat-value" id="monthSessions">32</div>
+                            <div class="stat-value" id="monthSessions">0</div>
                         </div>
                         <div class="stat-icon">📅</div>
                     </div>
@@ -61,7 +62,7 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Completed</div>
-                            <div class="stat-value" id="completedSessions">198</div>
+                            <div class="stat-value" id="completedSessions">0</div>
                         </div>
                         <div class="stat-icon">✅</div>
                     </div>
@@ -70,9 +71,19 @@
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Cancelled</div>
-                            <div class="stat-value" id="cancelledSessions">12</div>
+                            <div class="stat-value" id="cancelledSessions">0</div>
                         </div>
                         <div class="stat-icon">❌</div>
+                    </div>
+                </div>
+                <!-- Overdue Card -->
+                <div class="stat-card overdue">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-title">Overdue</div>
+                            <div class="stat-value" id="overdueSessions">0</div>
+                        </div>
+                        <div class="stat-icon">⏰</div>
                     </div>
                 </div>
             </div>
@@ -99,7 +110,7 @@
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>
                             <option value="no-show">No Show</option>
-                            <option value="rescheduled">Rescheduled</option>
+                            <option value="overdue">Overdue (Past Active)</option>
                             <option value="in-progress">In Progress</option>
                         </select>
                     </div>
@@ -149,7 +160,8 @@
         </div>
     </div>
 
-    <script src="\MindHeaven\public\js\counselor\sessionHistory.js"></script>
+    <script src="/MindHeaven/public/js/counselor/sessionHistory.js"></script>
+    <script src="/MindHeaven/public/js/notifications.js"></script>
 </body>
 
 </html>

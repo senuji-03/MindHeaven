@@ -1,548 +1,503 @@
 <?php 
-$TITLE = 'Feedback System';
+$TITLE = 'MindHeaven — Feedback System';
 $CURRENT_PAGE = 'feedback';
 $PAGE_CSS = array('/MindHeaven/public/css/undergrad/style.css');
 $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
+require BASE_PATH . '/app/views/layouts/header.php';
 ?>
 
 <style>
-/* Feedback System Styles */
-.feedback-main {
-  padding: 2rem;
+/* ══════════════════════════════════════════════
+   Design tokens
+   ══════════════════════════════════════════════ */
+:root {
+  --primary:        #3D8B6E;
+  --primary-dark:   #2A6B52;
+  --primary-light:  #6BB89A;
+  --accent-warm:    #E8A87C;
+  --accent-calm:    #A8C5DA;
+  --bg-deep:        #1C2B2A;
+  --bg-soft:        #F5F0E8;
+  --bg-mid:         #EEF6F2;
+  --text-primary:   #1E3A34;
+  --text-secondary: #6B8C7E;
+  --surface:        #FFFFFF;
+  --border:         #D6E4DD;
+  --crisis:         #D64F4F;
+  --success:        #4CAF82;
+  --shadow-sm:      0 1px 3px rgba(30,58,52,.06);
+  --shadow-md:      0 4px 12px rgba(30,58,52,.08);
+  --shadow-lg:      0 12px 32px rgba(30,58,52,.10);
+  --shadow-xl:      0 20px 48px rgba(30,58,52,.12);
+  --radius-sm:      8px;
+  --radius-md:      14px;
+  --radius-lg:      20px;
+  --radius-xl:      28px;
+  --radius-full:    9999px;
+}
+
+/* ── Base Layout ──────────────────────────────── */
+.mp {
+  font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
+  color: var(--text-primary);
+  background: transparent;
+  padding: 16px 28px;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: 100vh;
 }
 
-.feedback-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 3rem 2rem;
-  border-radius: 1rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  text-align: center;
+/* ── Page header ─────────────────────────── */
+.mp-header {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+  border-radius: var(--radius-lg);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
 }
 
-.feedback-hero h1 {
-  font-size: 2.5rem;
-  margin: 0 0 1rem 0;
+.mp-header::after {
+  content: '';
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(232,168,124,0.15);
+  bottom: -40px;
+  left: 15%;
+  z-index: 0;
+}
+
+.mp-header__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.mp-header__title {
+  color: #fff;
+  font-size: 2.1rem;
   font-weight: 700;
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
 }
 
-.feedback-hero p {
-  font-size: 1.1rem;
-  opacity: 0.9;
+.mp-header__sub {
+  color: rgba(255,255,255,.9);
+  font-size: .95rem;
   margin: 0;
 }
 
-.feedback-stats {
+/* ── Stats Row ───────────────────────────── */
+.mp-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .stat-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
   text-align: center;
+  transition: transform .2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .stat-number {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
+  color: var(--primary-dark);
 }
 
 .stat-label {
-  color: #6b7280;
-  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-top: 4px;
+  font-weight: 500;
 }
 
-.feedback-content {
+/* ── Content Grid ────────────────────────── */
+.mp-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
-.feedback-form-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
+.mp-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
 }
 
 .section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 10px;
 }
 
+/* ── Form Styles ─────────────────────────── */
 .feedback-type-selector {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .feedback-type-btn {
   flex: 1;
-  padding: 1rem;
-  border: 2px solid #e5e7eb;
-  background: #f9fafb;
-  border-radius: 0.75rem;
+  padding: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-mid);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
+  transition: all 0.2s ease;
   font-weight: 600;
-  color: #374151;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .feedback-type-btn:hover {
-  border-color: #4f46e5;
-  background: #f0f9ff;
+  border-color: var(--primary-light);
+  color: var(--primary);
 }
 
 .feedback-type-btn.active {
-  border-color: #4f46e5;
-  background: #eef2ff;
-  color: #4f46e5;
+  border-color: var(--primary);
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 18px;
 }
 
 .form-label {
   display: block;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-size: 0.9rem;
 }
 
 .form-input, .form-textarea, .form-select {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-family: inherit;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  background: var(--bg-mid);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
 }
 
 .form-input:focus, .form-textarea:focus, .form-select:focus {
   outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(61, 139, 110, 0.1);
 }
 
-.form-textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.rating-group {
+.rating-stars {
   display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  gap: 6px;
+  font-size: 1.5rem;
+  color: var(--border);
 }
 
 .rating-star {
-  font-size: 1.5rem;
-  color: #d1d5db;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: color 0.1s ease;
 }
 
 .rating-star.active {
-  color: #fbbf24;
+  color: var(--accent-warm);
 }
 
 .checkbox-group {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.checkbox-group input[type="checkbox"] {
-  width: auto;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 12px 24px;
   border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  border-radius: var(--radius-full);
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95rem;
 }
 
 .btn-primary {
-  background: #4f46e5;
+  background: var(--primary);
   color: white;
+  box-shadow: 0 4px 12px rgba(61, 139, 110, 0.2);
 }
 
 .btn-primary:hover {
-  background: #4338ca;
-  transform: translateY(-2px);
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(61, 139, 110, 0.3);
 }
 
 .btn-secondary {
-  background: #6b7280;
-  color: white;
+  background: var(--bg-mid);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
 }
 
 .btn-secondary:hover {
-  background: #4b5563;
+  background: var(--border);
 }
 
 .btn-danger {
-  background: #ef4444;
+  background: var(--crisis);
   color: white;
 }
 
 .btn-danger:hover {
-  background: #dc2626;
+  background: #a84040;
 }
 
-.btn-small {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-}
-
-.feedback-list-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
-}
-
+/* ── Feedback List ───────────────────────── */
 .feedback-filters {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 .filter-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  background: white;
-  border-radius: 0.5rem;
+  white-space: nowrap;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-mid);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
 }
 
 .filter-btn:hover {
-  border-color: #4f46e5;
-  color: #4f46e5;
+  border-color: var(--primary-light);
+  color: var(--primary);
 }
 
 .filter-btn.active {
-  background: #4f46e5;
+  background: var(--primary);
   color: white;
-  border-color: #4f46e5;
+  border-color: var(--primary);
 }
 
 .feedback-item {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+  background: var(--bg-mid);
+  transition: all 0.2s ease;
 }
 
 .feedback-item:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
 }
 
 .feedback-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: 12px;
 }
 
 .feedback-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .feedback-type-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .feedback-type-badge.general {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--accent-calm);
+  color: #2b4c65;
 }
 
 .feedback-type-badge.counselor {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--success);
+  color: white;
 }
 
 .feedback-meta {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  color: #6b7280;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
+.feedback-author { font-weight: 700; color: var(--text-primary); }
+
 .feedback-content-text {
-  color: #374151;
+  color: var(--text-primary);
   line-height: 1.6;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
 }
 
 .feedback-rating {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .feedback-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   justify-content: flex-end;
 }
 
-.feedback-author {
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.feedback-date {
-  color: #6b7280;
-}
-
-.counselor-name {
-  color: #4f46e5;
-  font-weight: 600;
-}
-
-/* Modal Styles */
+/* ── Modals ──────────────────────────────── */
 .modal {
-  display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
+  background: rgba(30, 58, 52, 0.4);
+  backdrop-filter: blur(4px);
+  display: none;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
-.modal.show {
-  display: flex;
-}
+.modal.show { display: flex; }
 
 .modal-content {
-  background: white;
-  border-radius: 1rem;
-  max-width: 600px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  max-width: 550px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border);
 }
 
 .modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.modal-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-}
+.modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0; }
 
 .modal-close {
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #6b7280;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-}
-
-.modal-close:hover {
-  background: #f3f4f6;
-  color: #1f2937;
-}
-
-.modal-body {
-  padding: 1.5rem;
-}
-
-.modal-footer {
-  padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Alert Messages */
-.alert {
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-}
+.modal-close:hover { background: var(--bg-mid); color: var(--text-primary); }
 
-.alert-success {
-  background: #d1fae5;
-  color: #065f46;
-  border-color: #a7f3d0;
-}
+.modal-body { padding: 24px; }
+.modal-footer { padding: 24px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: flex-end; }
 
-.alert-error {
-  background: #fee2e2;
-  color: #991b1b;
-  border-color: #fca5a5;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .feedback-main {
-    padding: 1rem;
-  }
-  
-  .feedback-content {
-    grid-template-columns: 1fr;
-  }
-  
-  .feedback-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .feedback-type-selector {
-    flex-direction: column;
-  }
-  
-  .feedback-filters {
-    flex-direction: column;
-  }
-  
-  .feedback-header {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .feedback-actions {
-    justify-content: flex-start;
-  }
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #6b7280;
-}
-
-.empty-state-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
-.empty-state-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #374151;
-}
-
-.empty-state-text {
-  margin-bottom: 2rem;
-}
-
-/* Back Button Styles */
-.back-button-container {
-  margin-bottom: 2rem;
-}
-
+/* ── Back Button ────────────────────────── */
 .back-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: #f8fafc;
-  color: #475569;
+  gap: 8px;
+  color: #fff;
   text-decoration: none;
-  border-radius: 0.5rem;
-  border: 1px solid #e2e8f0;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.9rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+  opacity: 0.85;
+  transition: opacity 0.2s;
 }
 
-.back-button:hover {
-  background: #e2e8f0;
-  color: #334155;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  text-decoration: none;
-}
+.back-button:hover { opacity: 1; }
 
-.back-icon {
-  font-size: 1.1rem;
-  font-weight: bold;
+@media (max-width: 768px) {
+  .mp { padding: 16px; }
+  .mp-grid { grid-template-columns: 1fr; }
+  .mp-stats { grid-template-columns: repeat(2, 1fr); }
+  .mp-header { flex-direction: column; text-align: center; }
 }
 </style>
 
-<main class="feedback-main">
-  <!-- Back to Home Button -->
-  <div class="back-button-container">
-    <a href="<?= BASE_URL ?>/ug/" class="back-button">
-      <span class="back-icon">←</span>
-      Back to Home
-    </a>
-  </div>
-
+<main class="mp">
   <!-- Hero Section -->
-  <section class="feedback-hero">
-    <h1>💬 Feedback System</h1>
-    <p>Share your thoughts about the system and counselors to help us improve</p>
-  </section>
+  <header class="mp-header">
+    <div class="mp-header__inner">
+      <a href="<?= BASE_URL ?>/ug/" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+      <h1 class="mp-header__title">Feedback System</h1>
+      <p class="mp-header__sub">Share your experience to help us grow together.</p>
+    </div>
+  </header>
 
   <!-- Statistics -->
-  <section class="feedback-stats">
+  <section class="mp-stats">
     <div class="stat-card">
       <div class="stat-number"><?php echo isset($stats['total_feedback']) ? $stats['total_feedback'] : 0; ?></div>
       <div class="stat-label">Total Feedback</div>
@@ -563,42 +518,41 @@ $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
 
   <!-- Alert Messages -->
   <?php if (isset($_SESSION['success'])): ?>
-    <div class="alert alert-success">
+    <div style="background: var(--bg-mid); border-left: 4px solid var(--success); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 24px; color: var(--text-primary); font-weight: 500;">
+      <i class="fas fa-check-circle" style="color: var(--success); margin-right: 8px;"></i>
       <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
     </div>
   <?php endif; ?>
 
   <?php if (isset($_SESSION['error'])): ?>
-    <div class="alert alert-error">
+    <div style="background: #fee2e2; border-left: 4px solid var(--crisis); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 24px; color: #991b1b; font-weight: 500;">
+      <i class="fas fa-exclamation-circle" style="color: var(--crisis); margin-right: 8px;"></i>
       <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
     </div>
   <?php endif; ?>
 
-  <!-- Main Content -->
-  <div class="feedback-content">
+  <div class="mp-grid">
     <!-- Feedback Form Section -->
-    <div class="feedback-form-section">
+    <div class="mp-card">
       <h2 class="section-title">
-        <span>✍️</span>
+        <i class="fas fa-pen-fancy" style="color: var(--primary);"></i>
         Submit Feedback
       </h2>
 
       <form id="feedbackForm" method="POST" action="<?php echo BASE_URL; ?>/ug/feedback/create">
-        <!-- Feedback Type Selection -->
         <div class="form-group">
-          <label class="form-label">Feedback Type</label>
+          <label class="form-label">Type of Feedback</label>
           <div class="feedback-type-selector">
             <button type="button" class="feedback-type-btn active" data-type="general">
-              🏢 General Feedback
+              <i class="fas fa-desktop"></i> Platform
             </button>
             <button type="button" class="feedback-type-btn" data-type="counselor">
-              👨‍⚕️ Counselor Feedback
+              <i class="fas fa-user-md"></i> Counselor
             </button>
           </div>
           <input type="hidden" name="feedback_type" value="general" id="feedbackTypeInput">
         </div>
 
-        <!-- Counselor Selection (hidden by default) -->
         <div class="form-group" id="counselorGroup" style="display: none;">
           <label for="counselor_id" class="form-label">Select Counselor</label>
           <select name="counselor_id" id="counselor_id" class="form-select">
@@ -614,75 +568,60 @@ $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
           </select>
         </div>
 
-        <!-- Title -->
         <div class="form-group">
           <label for="title" class="form-label">Title</label>
           <input type="text" name="title" id="title" class="form-input" required 
-                 placeholder="Brief title for your feedback">
+                 placeholder="Short summary of your feedback">
         </div>
 
-        <!-- Content -->
         <div class="form-group">
-          <label for="content" class="form-label">Feedback Content</label>
+          <label for="content" class="form-label">Details</label>
           <textarea name="content" id="content" class="form-textarea" required 
-                    placeholder="Share your detailed feedback here..."></textarea>
+                    placeholder="Share your experience or suggestions..."></textarea>
         </div>
 
-        <!-- Rating -->
         <div class="form-group">
-          <label class="form-label">Rating (Optional)</label>
-          <div class="rating-group">
-            <span>Poor</span>
-            <div class="rating-stars">
-              <span class="rating-star" data-rating="1">★</span>
-              <span class="rating-star" data-rating="2">★</span>
-              <span class="rating-star" data-rating="3">★</span>
-              <span class="rating-star" data-rating="4">★</span>
-              <span class="rating-star" data-rating="5">★</span>
-            </div>
-            <span>Excellent</span>
+          <label class="form-label">Overall Rating</label>
+          <div class="rating-stars">
+            <?php for($i=1; $i<=5; $i++): ?>
+              <span class="rating-star" data-rating="<?= $i ?>">★</span>
+            <?php endfor; ?>
           </div>
           <input type="hidden" name="rating" id="ratingInput">
         </div>
 
-        <!-- Anonymous Option -->
         <div class="form-group">
           <div class="checkbox-group">
-            <input type="checkbox" name="is_anonymous" id="is_anonymous" value="1">
-            <label for="is_anonymous">Submit anonymously</label>
+            <input type="checkbox" name="is_anonymous" id="is_anonymous" value="1" style="width: 18px; height: 18px; accent-color: var(--primary);">
+            <label for="is_anonymous">Submit this anonymously</label>
           </div>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">
-          <span>📤</span>
-          Submit Feedback
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          Submit My Feedback
         </button>
       </form>
     </div>
 
     <!-- Feedback List Section -->
-    <div class="feedback-list-section">
+    <div class="mp-card">
       <h2 class="section-title">
-        <span>📋</span>
-        All Feedback
+        <i class="fas fa-list-ul" style="color: var(--primary);"></i>
+        Recent Feedback
       </h2>
 
-      <!-- Filters -->
       <div class="feedback-filters">
         <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="general">General</button>
+        <button class="filter-btn" data-filter="general">Platform</button>
         <button class="filter-btn" data-filter="counselor">Counselor</button>
-        <button class="filter-btn" data-filter="my">My Feedback</button>
+        <button class="filter-btn" data-filter="my">My Submissions</button>
       </div>
 
-      <!-- Feedback List -->
       <div id="feedbackList">
         <?php if (empty($allFeedback)): ?>
-          <div class="empty-state">
-            <div class="empty-state-icon">💭</div>
-            <h3 class="empty-state-title">No feedback yet</h3>
-            <p class="empty-state-text">Be the first to share your thoughts!</p>
+          <div style="text-align: center; padding: 48px 0; color: var(--text-secondary);">
+            <i class="fas fa-comment-slash" style="font-size: 3rem; opacity: 0.2; margin-bottom: 16px; display: block;"></i>
+            <p>No feedback entries found yet.</p>
           </div>
         <?php else: ?>
           <?php foreach ($allFeedback as $feedback): ?>
@@ -691,34 +630,28 @@ $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
               <div class="feedback-header">
                 <h3 class="feedback-title"><?php echo htmlspecialchars($feedback['title']); ?></h3>
                 <span class="feedback-type-badge <?php echo $feedback['feedback_type']; ?>">
-                  <?php echo ucfirst($feedback['feedback_type']); ?>
+                  <?php echo $feedback['feedback_type'] === 'general' ? 'Platform' : 'Counselor'; ?>
                 </span>
               </div>
 
               <div class="feedback-meta">
                 <span class="feedback-author">
-                  <?php if ($feedback['is_anonymous']): ?>
-                    Anonymous User
-                  <?php else: ?>
-                    <?php echo htmlspecialchars($feedback['user_name']); ?>
-                  <?php endif; ?>
+                  <i class="fas fa-user-circle"></i>
+                  <?php echo $feedback['is_anonymous'] ? 'Anonymous' : htmlspecialchars($feedback['user_name']); ?>
                 </span>
                 <span class="feedback-date">
+                  <i class="far fa-calendar-alt"></i>
                   <?php echo date('M j, Y', strtotime($feedback['created_at'])); ?>
                 </span>
-                <?php if ($feedback['counselor_name']): ?>
-                  <span class="counselor-name">
-                    for <?php echo htmlspecialchars($feedback['counselor_name']); ?>
-                  </span>
-                <?php endif; ?>
               </div>
 
               <?php if ($feedback['rating']): ?>
                 <div class="feedback-rating">
-                  <span>Rating:</span>
-                  <?php for ($i = 1; $i <= 5; $i++): ?>
-                    <span class="rating-star <?php echo $i <= $feedback['rating'] ? 'active' : ''; ?>">★</span>
-                  <?php endfor; ?>
+                  <div class="rating-stars" style="font-size: 1rem; color: var(--accent-warm);">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                      <span><?php echo $i <= $feedback['rating'] ? '★' : '☆'; ?></span>
+                    <?php endfor; ?>
+                  </div>
                   <span>(<?php echo $feedback['rating']; ?>/5)</span>
                 </div>
               <?php endif; ?>
@@ -727,17 +660,21 @@ $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
                 <?php echo nl2br(htmlspecialchars($feedback['content'])); ?>
               </div>
 
+              <?php if ($feedback['counselor_name']): ?>
+                <div style="font-size: 0.85rem; padding: 8px 12px; background: var(--bg-soft); border-radius: var(--radius-sm); margin-bottom: 16px; color: var(--primary-dark); font-weight: 500;">
+                  <i class="fas fa-user-md"></i> Recipient: <?php echo htmlspecialchars($feedback['counselor_name']); ?>
+                </div>
+              <?php endif; ?>
+
               <?php if ($feedback['user_id'] == $_SESSION['user_id']): ?>
                 <div class="feedback-actions">
-                  <button class="btn btn-small btn-secondary edit-feedback" 
+                  <button class="btn btn-secondary edit-feedback" style="padding: 6px 12px; font-size: 0.8rem;"
                           data-id="<?php echo $feedback['id']; ?>">
-                    <span>✏️</span>
-                    Edit
+                    <i class="fas fa-edit"></i> Edit
                   </button>
-                  <button class="btn btn-small btn-danger delete-feedback" 
+                  <button class="btn btn-danger delete-feedback" style="padding: 6px 12px; font-size: 0.8rem;"
                           data-id="<?php echo $feedback['id']; ?>">
-                    <span>🗑️</span>
-                    Delete
+                    <i class="fas fa-trash"></i> Delete
                   </button>
                 </div>
               <?php endif; ?>
@@ -753,7 +690,7 @@ $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
 <div id="editModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="modal-title">Edit Feedback</h3>
+      <h3 class="modal-title">Edit Your Feedback</h3>
       <button class="modal-close" id="closeEditModal">&times;</button>
     </div>
     <form id="editForm" method="POST" action="<?php echo BASE_URL; ?>/ug/feedback/edit">
@@ -766,35 +703,29 @@ $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
         </div>
 
         <div class="form-group">
-          <label for="editContent" class="form-label">Content</label>
+          <label for="editContent" class="form-label">Your Message</label>
           <textarea name="content" id="editContent" class="form-textarea" required></textarea>
         </div>
 
         <div class="form-group">
           <label class="form-label">Rating</label>
-          <div class="rating-group">
-            <span>Poor</span>
-            <div class="rating-stars" id="editRatingStars">
-              <span class="rating-star" data-rating="1">★</span>
-              <span class="rating-star" data-rating="2">★</span>
-              <span class="rating-star" data-rating="3">★</span>
-              <span class="rating-star" data-rating="4">★</span>
-              <span class="rating-star" data-rating="5">★</span>
-            </div>
-            <span>Excellent</span>
+          <div class="rating-stars" id="editRatingStars">
+            <?php for ($i = 1; $i <= 5; $i++): ?>
+              <span class="rating-star" data-rating="<?= $i ?>">★</span>
+            <?php endfor; ?>
           </div>
           <input type="hidden" name="rating" id="editRatingInput">
         </div>
 
         <div class="form-group">
           <div class="checkbox-group">
-            <input type="checkbox" name="is_anonymous" id="editIsAnonymous" value="1">
-            <label for="editIsAnonymous">Submit anonymously</label>
+            <input type="checkbox" name="is_anonymous" id="editIsAnonymous" value="1" style="width: 18px; height: 18px; accent-color: var(--primary);">
+            <label for="editIsAnonymous">Keep this anonymous</label>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+        <button type="button" class="btn btn-secondary" id="cancelEdit">Discard</button>
         <button type="submit" class="btn btn-primary">Update Feedback</button>
       </div>
     </form>
@@ -805,17 +736,17 @@ $PAGE_JS = array('/MindHeaven/public/js/undergrad/main.js');
 <div id="deleteModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="modal-title">Delete Feedback</h3>
+      <h3 class="modal-title">Delete Entry</h3>
       <button class="modal-close" id="closeDeleteModal">&times;</button>
     </div>
     <div class="modal-body">
-      <p>Are you sure you want to delete this feedback? This action cannot be undone.</p>
+      <p style="color: var(--text-primary); margin: 0;">Are you sure you want to permanently delete this feedback? This action cannot be undone.</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" id="cancelDelete">Cancel</button>
+      <button type="button" class="btn btn-secondary" id="cancelDelete">No, Keep it</button>
       <form id="deleteForm" method="POST" action="<?php echo BASE_URL; ?>/ug/feedback/delete" style="display: inline;">
         <input type="hidden" name="feedback_id" id="deleteFeedbackId">
-        <button type="submit" class="btn btn-danger">Delete</button>
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
       </form>
     </div>
   </div>
@@ -849,70 +780,49 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Rating system
-  const ratingStars = document.querySelectorAll('.rating-star');
-  const ratingInput = document.getElementById('ratingInput');
-  let currentRating = 0;
+  function setupRatingSystem(containerSelector, inputSelector) {
+    const stars = document.querySelectorAll(containerSelector + ' .rating-star');
+    const input = document.querySelector(inputSelector);
+    let rating = 0;
 
-  ratingStars.forEach((star, index) => {
-    star.addEventListener('click', function() {
-      currentRating = index + 1;
-      updateRatingDisplay();
+    stars.forEach((star, index) => {
+      star.addEventListener('click', () => {
+        rating = index + 1;
+        updateStars();
+      });
+
+      star.addEventListener('mouseenter', () => {
+        highlightStars(index + 1);
+      });
     });
 
-    star.addEventListener('mouseenter', function() {
-      highlightStars(index + 1);
+    document.querySelector(containerSelector).addEventListener('mouseleave', () => {
+      updateStars();
     });
-  });
 
-  document.querySelector('.rating-group').addEventListener('mouseleave', function() {
-    updateRatingDisplay();
-  });
+    function highlightStars(count) {
+      stars.forEach((s, i) => {
+        s.classList.toggle('active', i < count);
+      });
+    }
 
-  function updateRatingDisplay() {
-    ratingStars.forEach((star, index) => {
-      star.classList.toggle('active', index < currentRating);
-    });
-    ratingInput.value = currentRating;
+    function updateStars() {
+      stars.forEach((s, i) => {
+        s.classList.toggle('active', i < rating);
+      });
+      input.value = rating;
+    }
+
+    return {
+      setRating: (r) => {
+        rating = r;
+        updateStars();
+      }
+    };
   }
 
-  function highlightStars(rating) {
-    ratingStars.forEach((star, index) => {
-      star.classList.toggle('active', index < rating);
-    });
-  }
-
-  // Edit rating system
-  const editRatingStars = document.querySelectorAll('#editRatingStars .rating-star');
-  const editRatingInput = document.getElementById('editRatingInput');
-  let editCurrentRating = 0;
-
-  editRatingStars.forEach((star, index) => {
-    star.addEventListener('click', function() {
-      editCurrentRating = index + 1;
-      updateEditRatingDisplay();
-    });
-
-    star.addEventListener('mouseenter', function() {
-      highlightEditStars(index + 1);
-    });
-  });
-
-  document.getElementById('editRatingStars').addEventListener('mouseleave', function() {
-    updateEditRatingDisplay();
-  });
-
-  function updateEditRatingDisplay() {
-    editRatingStars.forEach((star, index) => {
-      star.classList.toggle('active', index < editCurrentRating);
-    });
-    editRatingInput.value = editCurrentRating;
-  }
-
-  function highlightEditStars(rating) {
-    editRatingStars.forEach((star, index) => {
-      star.classList.toggle('active', index < rating);
-    });
-  }
+  const mainRating = setupRatingSystem('.mp-card .rating-stars', '#ratingInput');
+  const editRating = setupRatingSystem('#editRatingStars', '#editRatingInput');
 
   // Filter system
   const filterButtons = document.querySelectorAll('.filter-btn');
@@ -948,7 +858,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Edit feedback
   const editButtons = document.querySelectorAll('.edit-feedback');
   const editModal = document.getElementById('editModal');
-  const editForm = document.getElementById('editForm');
   const editFeedbackId = document.getElementById('editFeedbackId');
   const editTitle = document.getElementById('editTitle');
   const editContent = document.getElementById('editContent');
@@ -956,34 +865,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
   editButtons.forEach(button => {
     button.addEventListener('click', function() {
-      const feedbackId = this.dataset.id;
-      console.log('Edit button clicked for feedback ID:', feedbackId);
+      const id = this.dataset.id;
       
-      // Fetch feedback data
-      fetch(`<?php echo BASE_URL; ?>/ug/feedback/get?id=${feedbackId}`)
+      fetch(`<?php echo BASE_URL; ?>/ug/feedback/get?id=${id}`)
         .then(response => response.json())
         .then(data => {
-          console.log('Feedback data received:', data);
           if (data.success) {
-            const feedback = data.feedback;
-            editFeedbackId.value = feedback.id;
-            editTitle.value = feedback.title;
-            editContent.value = feedback.content;
-            editIsAnonymous.checked = feedback.is_anonymous == 1;
-            
-            // Set rating
-            editCurrentRating = feedback.rating || 0;
-            updateEditRatingDisplay();
+            const f = data.feedback;
+            editFeedbackId.value = f.id;
+            editTitle.value = f.title;
+            editContent.value = f.content;
+            editIsAnonymous.checked = f.is_anonymous == 1;
+            editRating.setRating(f.rating || 0);
             
             editModal.classList.add('show');
-            console.log('Edit modal opened');
-          } else {
-            alert('Error loading feedback: ' + data.error);
           }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error loading feedback');
         });
     });
   });
@@ -991,53 +887,24 @@ document.addEventListener('DOMContentLoaded', function() {
   // Delete feedback
   const deleteButtons = document.querySelectorAll('.delete-feedback');
   const deleteModal = document.getElementById('deleteModal');
-  const deleteForm = document.getElementById('deleteForm');
   const deleteFeedbackId = document.getElementById('deleteFeedbackId');
 
   deleteButtons.forEach(button => {
     button.addEventListener('click', function() {
-      const feedbackId = this.dataset.id;
-      console.log('Delete button clicked for feedback ID:', feedbackId);
-      deleteFeedbackId.value = feedbackId;
+      deleteFeedbackId.value = this.dataset.id;
       deleteModal.classList.add('show');
-      console.log('Delete modal opened');
     });
   });
 
-  // Modal controls
-  const closeEditModal = document.getElementById('closeEditModal');
-  const cancelEdit = document.getElementById('cancelEdit');
-  const closeDeleteModal = document.getElementById('closeDeleteModal');
-  const cancelDelete = document.getElementById('cancelDelete');
-
-  closeEditModal.addEventListener('click', () => {
-    console.log('Edit modal closed');
-    editModal.classList.remove('show');
-  });
-  cancelEdit.addEventListener('click', () => {
-    console.log('Edit modal cancelled');
-    editModal.classList.remove('show');
-  });
-  closeDeleteModal.addEventListener('click', () => {
-    console.log('Delete modal closed');
-    deleteModal.classList.remove('show');
-  });
-  cancelDelete.addEventListener('click', () => {
-    console.log('Delete modal cancelled');
-    deleteModal.classList.remove('show');
-  });
-
-  // Close modals when clicking outside
-  editModal.addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.classList.remove('show');
-    }
-  });
-
-  deleteModal.addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.classList.remove('show');
-    }
+  // Close modals
+  document.querySelectorAll('.modal-close, .modal .btn-secondary, .modal').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target === el || el.classList.contains('modal-close') || el.id.startsWith('cancel')) {
+        document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+      }
+    });
   });
 });
 </script>
+
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

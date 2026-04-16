@@ -48,6 +48,7 @@ class COControl
 
             // Upcoming appointments booked by undergrads (appointments table)
             $appointmentModel = new Appointment();
+            $inProgressAppointments = $appointmentModel->getInProgressByCounselorUserId((int)$_SESSION['user_id']);
             $upcomingAppointments = $appointmentModel->getUpcomingByCounselorUserId((int)$_SESSION['user_id'], 10);
             
             $stats['totalPatients'] = $appointmentModel->getTotalPatients((int)$_SESSION['user_id']);
@@ -64,10 +65,12 @@ class COControl
         }
         view('/counselor/Cdashboard', array(
             'counselorFeedback' => $counselorFeedback,
+            'inProgressAppointments' => $inProgressAppointments,
             'upcomingAppointments' => $upcomingAppointments,
             'escalatedCalls' => isset($escalatedCalls) ? $escalatedCalls : array(),
             'stats' => $stats
         ));
+
     }
 
     /**

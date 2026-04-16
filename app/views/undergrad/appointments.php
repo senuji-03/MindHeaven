@@ -2,14 +2,15 @@
 $TITLE = 'MindHeaven — Appointments';
 $CURRENT_PAGE = 'appointments';
 $PAGE_CSS = ["/MindHeaven/public/css/undergrad/appointments.css"];
-$PAGE_JS  = ["/MindHeaven/public/js/undergrad/appointments.js"];
+$PAGE_JS = ["/MindHeaven/public/js/undergrad/appointments.js"];
 require BASE_PATH . '/app/views/layouts/header.php';
 ?>
 
 <!-- ═══════════════════════════════════════════
-     BOOKING MODAL
+	 BOOKING MODAL
 ═══════════════════════════════════════════ -->
-<div id="bookingModal" class="mh-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" style="display:none;">
+<div id="bookingModal" class="mh-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+	style="display:none;">
 	<div class="mh-modal">
 		<!-- Modal Header -->
 		<div class="mh-modal__header">
@@ -18,7 +19,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 					<i class="fas fa-calendar-plus"></i>
 				</div>
 				<div>
-					<h2 id="modalTitle" class="mh-modal__title">Book an Appointment</h2>
+					<h2 id="modalTitle" class="mh-modal__title">Request an Appointment</h2>
 					<p class="mh-modal__subtitle">Schedule your counseling session</p>
 				</div>
 			</div>
@@ -114,7 +115,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 				<!-- Actions -->
 				<div class="mh-modal__actions">
-				<button type="button" class="mh-btn mh-btn--outline" onclick="closeBookingModal()">
+					<button type="button" class="mh-btn mh-btn--outline" onclick="closeBookingModal()">
 						<i class="fas fa-xmark"></i> Cancel
 					</button>
 					<button type="button" id="resetAppointmentForm" class="mh-btn mh-btn--ghost">
@@ -131,7 +132,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </div>
 
 <!-- ═══════════════════════════════════════════
-     JOIN PREFERENCE MODAL
+	 JOIN PREFERENCE MODAL
 ═══════════════════════════════════════════ -->
 <div id="joinPreferenceModal" class="mh-modal-overlay" style="display:none;z-index:9999;">
 	<div class="mh-modal" style="max-width:380px;text-align:center;padding:30px;">
@@ -142,24 +143,26 @@ require BASE_PATH . '/app/views/layouts/header.php';
 		<p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:25px;">
 			How would you like to join your counseling session today?
 		</p>
-		
+
 		<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
 			<button class="mh-btn mh-btn--primary" id="btnJoinVideo" style="width:100%;justify-content:center;">
 				<i class="fas fa-video"></i> Join with Video
 			</button>
-			<button class="mh-btn mh-btn--outline" id="btnJoinAudio" style="width:100%;justify-content:center;color:var(--text);border-color:#cbd5e1;">
+			<button class="mh-btn mh-btn--outline" id="btnJoinAudio"
+				style="width:100%;justify-content:center;color:var(--text);border-color:#cbd5e1;">
 				<i class="fas fa-phone"></i> Join with Audio Only
 			</button>
 		</div>
-		
-		<button class="mh-btn mh-btn--ghost" onclick="document.getElementById('joinPreferenceModal').style.display='none'" style="font-size:0.85rem;">
+
+		<button class="mh-btn mh-btn--ghost"
+			onclick="document.getElementById('joinPreferenceModal').style.display='none'" style="font-size:0.85rem;">
 			Cancel
 		</button>
 	</div>
 </div>
 
 <!-- ═══════════════════════════════════════════
-     MAIN PAGE
+	 MAIN PAGE
 ═══════════════════════════════════════════ -->
 <main id="main" class="mh-appointments-page">
 
@@ -213,20 +216,27 @@ require BASE_PATH . '/app/views/layouts/header.php';
 	<script crossorigin src="https://unpkg.com/@daily-co/daily-js"></script>
 
 	<!-- Daily Call Fullscreen Container -->
-	<div id="dailyCallContainer" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999999; background:#000;">
+	<div id="dailyCallContainer"
+		style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999999; background:#000;">
 		<div style="position:absolute; top:20px; left:20px; z-index:100;">
-			<button class="mh-btn mh-btn--danger" onclick="leaveDailyCall()" style="box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+			<button class="mh-btn mh-btn--danger" onclick="leaveDailyCall()"
+				style="box-shadow:0 4px 12px rgba(0,0,0,0.5);">
 				<i class="fas fa-phone-slash"></i> Leave Session
 			</button>
 		</div>
 		<div id="dailyIframePlaceholder" style="width:100%; height:100%;"></div>
 	</div>
 
+	<!-- Active Session Component (Populated by JS) -->
+	<div id="activeSessionContainer"></div>
+
 	<!-- Upcoming Appointments Table Card -->
+
 	<div class="mh-table-card" style="margin-bottom: 24px; border-top: 4px solid var(--apricot);">
 		<div class="mh-table-card__header">
 			<div>
-				<h2 class="mh-table-card__title" style="color: var(--apricot);"><i class="fas fa-clock"></i> Upcoming Sessions</h2>
+				<h2 class="mh-table-card__title" style="color: var(--apricot);"><i class="fas fa-clock"></i> Upcoming
+					Sessions</h2>
 				<p class="mh-table-card__sub">Your next scheduled counseling appointments</p>
 			</div>
 		</div>
@@ -275,7 +285,8 @@ require BASE_PATH . '/app/views/layouts/header.php';
 		<div id="appointmentsEmptyState" class="mh-empty-state" style="display:none;">
 			<div class="mh-empty-state__icon"><i class="fas fa-calendar-xmark"></i></div>
 			<h3 class="mh-empty-state__title">No appointments yet</h3>
-			<p class="mh-empty-state__desc">Book your first counseling session to get started on your wellness journey.</p>
+			<p class="mh-empty-state__desc">Book your first counseling session to get started on your wellness journey.
+			</p>
 			<button class="mh-btn mh-btn--primary" onclick="openBookingModal()">
 				<i class="fas fa-plus"></i> Book Now
 			</button>

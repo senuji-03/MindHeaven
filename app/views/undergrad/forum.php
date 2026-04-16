@@ -6,10 +6,10 @@ include BASE_PATH . '/app/views/layouts/header.php';
 
 <main id="main" class="main-content">
     <div class="container">
-        <div class="page-header">
-            <h1>Peer Discussion Forum</h1>
-            <p class="page-subtitle">Share, support, and connect with fellow students</p>
-        </div>
+    <div class="page-header forum-hero">
+        <h1 class="hero-title">Peer Discussion Forum</h1>
+        <p class="hero-subtitle">Share, support, and connect with fellow students</p>
+    </div>
 
         <!-- Forum Stats -->
         <div class="forum-stats">
@@ -115,7 +115,7 @@ include BASE_PATH . '/app/views/layouts/header.php';
                 <?php if (empty($threads)): ?>
                     <div class="thread-item">
                         <div class="thread-preview">
-                            <p style="text-align:center; color:#6b7280;">No conversations yet. Be the first to verify a
+                            <p style="text-align:center; color:var(--text-secondary);">No conversations yet. Be the first to verify a
                                 thought!</p>
                         </div>
                     </div>
@@ -134,7 +134,7 @@ include BASE_PATH . '/app/views/layouts/header.php';
                                         <?= $thread['is_anonymous'] ? 'Anonymous' : htmlspecialchars($thread['username']) ?>
                                         <?php if (!$thread['is_anonymous'] && in_array($thread['role'] ?? '', ['admin', 'moderator', 'counselor'])): ?>
                                             <span
-                                                style="font-size: 0.7em; padding: 2px 6px; border-radius: 4px; margin-left: 5px; vertical-align: middle; background: <?= $thread['role'] === 'admin' ? '#ef4444' : ($thread['role'] === 'counselor' ? '#10b981' : '#f59e0b') ?>; color: white; display: inline-block; line-height: 1;">
+                                                style="font-size: 0.7em; padding: 2px 6px; border-radius: var(--radius-sm); margin-left: 5px; vertical-align: middle; background: <?= $thread['role'] === 'admin' ? 'var(--crisis)' : ($thread['role'] === 'counselor' ? 'var(--success)' : 'var(--accent-warm)') ?>; color: white; display: inline-block; line-height: 1;">
                                                 <?= ucfirst(htmlspecialchars($thread['role'])) ?>
                                             </span>
                                         <?php endif; ?>
@@ -162,7 +162,7 @@ include BASE_PATH . '/app/views/layouts/header.php';
             <h3>Recent Activity</h3>
             <div class="activity-list" id="activityList">
                 <?php if (empty($recentActivity)): ?>
-                    <p style="color:#6b7280; text-align:center;">No recent activity.</p>
+                    <p style="color:var(--text-secondary); text-align:center;">No recent activity.</p>
                 <?php else: ?>
                     <?php foreach ($recentActivity as $activity): ?>
                         <div class="activity-item">
@@ -196,239 +196,292 @@ include BASE_PATH . '/app/views/layouts/header.php';
 
 <style>
     .main-content {
-        padding: 2rem;
+        padding: 16px 28px;
         max-width: 1200px;
         margin: 0 auto;
+        font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
     }
 
-    .page-header {
-        text-align: center;
-        margin-bottom: 2rem;
-        padding: 2rem 0;
+    .forum-hero {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+        border-radius: var(--radius-lg);
+        padding: 24px 32px;
+        margin-bottom: 24px;
+        color: white;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
     }
 
-    .page-header h1 {
-        font-size: 2.5rem;
-        color: #1f2937;
-        margin-bottom: 0.5rem;
+    .forum-hero::after {
+        content: '';
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(232,168,124,0.15);
+        bottom: -40px;
+        left: 15%;
     }
 
-    .page-subtitle {
-        font-size: 1.2rem;
-        color: #6b7280;
+    .forum-hero .hero-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #fff;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .forum-hero .hero-subtitle {
+        font-size: 1rem;
+        color: rgba(255,255,255,0.85);
         margin: 0;
+        line-height: 1.5;
+        position: relative;
+        z-index: 1;
     }
 
     /* Forum Stats */
     .forum-stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
+        gap: 16px;
+        margin-bottom: 24px;
     }
 
     .stat-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 8px;
+        background: var(--surface);
+        padding: 20px;
+        border-radius: var(--radius-lg);
         text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
     }
 
     .stat-number {
         font-size: 2rem;
-        font-weight: bold;
-        color: #4f46e5;
-        margin-bottom: 0.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 8px;
     }
 
     .stat-label {
-        color: #6b7280;
-        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        font-weight: 500;
     }
 
     /* Create Thread */
     .create-thread-section {
-        margin-bottom: 2rem;
+        margin-bottom: 24px;
     }
 
     .create-thread-btn {
-        background: #4f46e5;
+        background: var(--primary);
         color: white;
         border: none;
-        padding: 1rem 2rem;
-        border-radius: 8px;
+        padding: 12px 24px;
+        border-radius: var(--radius-full);
         font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        transition: background-color 0.3s ease;
+        gap: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(61,139,110,0.25);
     }
 
     .create-thread-btn:hover {
-        background: #4338ca;
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(61,139,110,0.35);
     }
 
     .create-thread-form {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-        margin-bottom: 2rem;
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border);
+        margin-bottom: 24px;
     }
 
     .form-container {
-        padding: 2rem;
+        padding: 24px;
     }
 
     .form-container h3 {
-        color: #1f2937;
-        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+        font-size: 1.2rem;
     }
 
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 24px;
     }
 
     .form-group label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: 8px;
         font-weight: 600;
-        color: #374151;
+        color: var(--text-primary);
+        font-size: 0.9rem;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
         width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
         font-size: 1rem;
-        transition: border-color 0.3s ease;
+        transition: all 0.2s ease;
         box-sizing: border-box;
+        background: var(--surface);
+        color: var(--text-primary);
+        font-family: inherit;
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(61, 139, 110, 0.12);
     }
 
     .checkbox-label {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 8px;
         cursor: pointer;
+        color: var(--text-primary);
+        font-size: 0.95rem;
     }
 
     .help-text {
         display: block;
-        color: #6b7280;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-top: 6px;
     }
 
     .form-actions {
         display: flex;
-        gap: 1rem;
+        gap: 16px;
         justify-content: flex-end;
     }
 
     .btn-primary,
     .btn-secondary {
-        padding: 0.75rem 1.5rem;
-        border-radius: 6px;
+        padding: 10px 20px;
+        border-radius: var(--radius-full);
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
     }
 
     .btn-primary {
-        background: #4f46e5;
+        background: var(--primary);
         color: white;
         border: none;
     }
 
     .btn-primary:hover {
-        background: #4338ca;
+        background: var(--primary-dark);
     }
 
     .btn-secondary {
-        background: #f3f4f6;
-        color: #374151;
-        border: 1px solid #d1d5db;
+        background: var(--bg-mid);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
     }
 
     .btn-secondary:hover {
-        background: #e5e7eb;
+        background: var(--border);
     }
 
     /* Category Tabs */
     .forum-categories {
-        margin-bottom: 2rem;
+        margin-bottom: 24px;
     }
 
     .category-tabs {
         display: flex;
-        gap: 0.5rem;
+        gap: 8px;
         flex-wrap: wrap;
     }
 
     .tab-btn {
-        padding: 0.75rem 1.5rem;
-        border: 1px solid #d1d5db;
-        background: white;
-        color: #6b7280;
-        border-radius: 6px;
+        padding: 8px 16px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-secondary);
+        border-radius: var(--radius-full);
         cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 500;
+        transition: all 0.2s ease;
+        font-weight: 600;
+        font-size: 0.85rem;
     }
 
     .tab-btn:hover {
-        background: #f9fafb;
-        color: #374151;
+        background: var(--bg-mid);
+        border-color: var(--primary-light);
+        color: var(--text-primary);
     }
 
     .tab-btn.active {
-        background: #4f46e5;
+        background: var(--primary);
         color: white;
-        border-color: #4f46e5;
+        border-color: var(--primary);
     }
 
     /* Threads */
     .threads-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-        margin-bottom: 2rem;
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+        margin-bottom: 24px;
     }
 
     .threads-header {
-        padding: 1.5rem 2rem;
-        border-bottom: 1px solid #e5e7eb;
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        background: var(--bg-mid);
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
 
     .threads-header h3 {
-        color: #1f2937;
+        color: var(--text-primary);
         margin: 0;
+        font-size: 1.15rem;
     }
 
     .sort-options select {
-        padding: 0.5rem;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        background: white;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.85rem;
     }
 
     .threads-list {
@@ -436,14 +489,14 @@ include BASE_PATH . '/app/views/layouts/header.php';
     }
 
     .thread-item {
-        padding: 1.5rem 2rem;
-        border-bottom: 1px solid #f3f4f6;
+        padding: 24px;
+        border-bottom: 1px solid var(--bg-mid);
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.2s ease;
     }
 
     .thread-item:hover {
-        background: #f9fafb;
+        background: var(--bg-mid);
     }
 
     .thread-item:last-child {
@@ -454,7 +507,7 @@ include BASE_PATH . '/app/views/layouts/header.php';
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 1rem;
+        margin-bottom: 16px;
     }
 
     .thread-title {
@@ -462,103 +515,110 @@ include BASE_PATH . '/app/views/layouts/header.php';
     }
 
     .thread-title h4 {
-        color: #1f2937;
-        margin: 0 0 0.5rem 0;
-        font-size: 1.1rem;
+        color: var(--text-primary);
+        margin: 0 0 8px 0;
+        font-size: 1.15rem;
     }
 
     .category-badge {
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.72rem;
+        font-weight: 700;
         text-transform: uppercase;
+        border: 1px solid transparent;
     }
 
     .category-badge.general {
-        background: #dbeafe;
-        color: #1e40af;
+        background: #E8F4F8;
+        color: var(--accent-calm);
+        border-color: #A8C5DA;
     }
 
     .category-badge.academic {
-        background: #fef3c7;
-        color: #92400e;
+        background: #FEF3E6;
+        color: var(--accent-warm);
+        border-color: #E8A87C;
     }
 
     .category-badge.relationships {
-        background: #fce7f3;
-        color: #be185d;
+        background: #FCE7F3;
+        color: #BE185D;
     }
 
     .category-badge.anxiety {
-        background: #fef2f2;
-        color: #dc2626;
+        background: #FEE2E2;
+        color: var(--crisis);
     }
 
     .category-badge.depression {
-        background: #f3f4f6;
-        color: #374151;
+        background: var(--bg-mid);
+        color: var(--text-secondary);
     }
 
     .category-badge.self-care {
-        background: #d1fae5;
-        color: #065f46;
+        background: #D1FAE5;
+        color: #065F46;
     }
 
     .category-badge.resources {
-        background: #e0e7ff;
-        color: #3730a3;
+        background: #E0E7FF;
+        color: #3730A3;
     }
 
     .thread-meta {
         text-align: right;
-        color: #6b7280;
-        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
     }
 
     .thread-meta .author {
         display: block;
         font-weight: 600;
+        color: var(--text-primary);
     }
 
     .thread-meta .timestamp {
         display: block;
+        margin-top: 4px;
     }
 
     .thread-preview {
-        color: #6b7280;
-        margin-bottom: 1rem;
-        line-height: 1.5;
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+        line-height: 1.6;
+        font-size: 0.95rem;
     }
 
     .thread-stats {
         display: flex;
-        gap: 1rem;
-        color: #9ca3af;
-        font-size: 0.875rem;
+        gap: 16px;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
     }
 
     /* Activity Feed */
     .activity-feed {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-        padding: 1.5rem;
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+        padding: 24px;
     }
 
     .activity-feed h3 {
-        color: #1f2937;
-        margin-bottom: 1rem;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        font-size: 1.15rem;
     }
 
     .activity-item {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f3f4f6;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--bg-mid);
     }
 
     .activity-item:last-child {
@@ -571,22 +631,23 @@ include BASE_PATH . '/app/views/layouts/header.php';
 
     .activity-text {
         flex: 1;
-        color: #374151;
+        color: var(--text-primary);
+        font-size: 0.95rem;
     }
 
     .activity-time {
-        color: #9ca3af;
-        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
     }
 
     @media (max-width: 768px) {
         .main-content {
-            padding: 1rem;
+            padding: 16px;
         }
 
         .thread-header {
             flex-direction: column;
-            gap: 1rem;
+            gap: 16px;
         }
 
         .thread-meta {

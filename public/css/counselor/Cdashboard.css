@@ -346,6 +346,24 @@ body {
     background: #7c3aed;
 }
 
+.btn-completed {
+    background: #10b981;
+    color: white;
+}
+
+.btn-completed:hover {
+    background: #059669;
+}
+
+.btn-noshow {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-noshow:hover {
+    background: #d97706;
+}
+
 /* Feedback Section */
 .feedback-item {
     padding: 1.5rem;

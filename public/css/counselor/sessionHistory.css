@@ -418,9 +418,18 @@
             color: #92400e;
         }
 
-        .status-in-progress {
-            background: #dbeafe;
-            color: #1d4ed8;
+        .status-overdue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .stat-card.overdue {
+            border-left-color: #ef4444;
+        }
+
+        .stat-card.overdue .stat-icon {
+            background: #fee2e2;
+            color: #ef4444;
         }
 
         .session-notes {
