@@ -615,14 +615,7 @@
                     <h2>
                         🚩 Flagged/Reported Items
                     </h2>
-                    <div class="list-stats">
-                        <span class="stat-item">
-                            ⚠️ <span id="flaggedCount">2</span> Flagged
-                        </span>
-                        <span class="stat-item">
-                            ✅ <span id="approvedCount">0</span> Approved
-                        </span>
-                    </div>
+
                 </div>
         <div id="queue">
           <?php if (empty($reports)): ?>
