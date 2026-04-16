@@ -1,43 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$TITLE = 'Mindheaven - Session History';
+$CURRENT_PAGE = 'sessionHistory';
+$PAGE_CSS = ['/MindHeaven/public/css/counselor/sessionHistory.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindheaven - Session History</title>
-    <link rel="stylesheet" href="/MindHeaven/public/css/counselor/sessionHistory.css">
-    <link rel="stylesheet" href="/MindHeaven/public/css/notifications.css">
-</head>
-
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                Mindheaven
-            </div>
-            <div class="nav-icons">
-                <div class="nav-icon" onclick="showNotifications()">
-                    🔔
-                    <span class="badge">3</span>
-                </div>
-                <div class="nav-icon" onclick="showMessages()">
-                    💬
-                    <span class="badge">7</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Sidebar -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
-
-
-        <!-- Main Content -->
-        <div class="main-content">
+<div class="main-content">
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -46,7 +14,7 @@
                             <div class="stat-title">Total Sessions</div>
                             <div class="stat-value" id="totalSessions">0</div>
                         </div>
-                        <div class="stat-icon">📊</div>
+                        <div class="stat-icon"><i class="fa-solid fa-chart-simple"></i></div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -55,25 +23,25 @@
                             <div class="stat-title">This Month</div>
                             <div class="stat-value" id="monthSessions">0</div>
                         </div>
-                        <div class="stat-icon">📅</div>
+                        <div class="stat-icon"><i class="fa-regular fa-calendar-days"></i></div>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card completed">
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Completed</div>
                             <div class="stat-value" id="completedSessions">0</div>
                         </div>
-                        <div class="stat-icon">✅</div>
+                        <div class="stat-icon"><i class="fa-solid fa-check"></i></div>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card cancelled">
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Cancelled</div>
                             <div class="stat-value" id="cancelledSessions">0</div>
                         </div>
-                        <div class="stat-icon">❌</div>
+                        <div class="stat-icon"><i class="fa-solid fa-xmark"></i></div>
                     </div>
                 </div>
                 <!-- Overdue Card -->
@@ -83,7 +51,7 @@
                             <div class="stat-title">Overdue</div>
                             <div class="stat-value" id="overdueSessions">0</div>
                         </div>
-                        <div class="stat-icon">⏰</div>
+                        <div class="stat-icon"><i class="fa-regular fa-clock"></i></div>
                     </div>
                 </div>
             </div>
@@ -114,7 +82,7 @@
                             <option value="in-progress">In Progress</option>
                         </select>
                     </div>
-                    <div class="filter-group">
+                    <div class="filter-group filter-btn-group">
                         <button class="filter-btn" onclick="applyFilters()">Filter</button>
                         <button class="clear-btn" onclick="clearFilters()">Clear</button>
                     </div>
@@ -125,7 +93,7 @@
             <div class="history-section">
                 <div class="section-header">
                     <h2 class="section-title">Session History</h2>
-                    <button class="export-btn" onclick="exportHistory()">Export CSV</button>
+                    <button class="export-btn" onclick="exportHistory()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
                 </div>
                 <div class="table-container">
                     <table class="history-table" id="historyTable">
@@ -161,7 +129,6 @@
     </div>
 
     <script src="/MindHeaven/public/js/counselor/sessionHistory.js"></script>
-    <script src="/MindHeaven/public/js/notifications.js"></script>
-</body>
+    
 
-</html>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

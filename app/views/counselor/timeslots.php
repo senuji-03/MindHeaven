@@ -1,39 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindHeaven — Manage Timeslots</title>
-    <meta name="description" content="Set your availability by selecting or creating timeslots for counseling sessions.">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/appoinmentmgt.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/timeslots.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/notifications.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
-<body>
+<?php
+$TITLE = 'Mindheaven - Manage Timeslots';
+$CURRENT_PAGE = 'timeslots';
+$PAGE_CSS = [BASE_URL . '/css/counselor/timeslots.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
+?>
 
-<!-- Navigation Bar -->
-<nav class="navbar">
-    <div class="nav-content">
-        <div class="logo">
-            <div class="logo-icon">M</div>
-            Mindheaven
-        </div>
-        <div class="nav-icons">
-            <div class="nav-icon">🔔<span class="badge">0</span></div>
-        </div>
-    </div>
-</nav>
+<!-- Main Content -->
+<div class="ts-main" style="padding-top:20px;">
 
-<!-- Main Container -->
-<div class="main-container ts-layout">
-    <!-- Sidebar -->
-    <?php include __DIR__ . '/sidebar.php'; ?>
-
-    <!-- Main Content -->
-    <div class="ts-main">
-
-        <!-- Hero Header -->
+    <!-- Hero Header -->
         <div class="ts-hero">
             <div class="ts-hero-inner">
                 <div>
@@ -94,7 +69,7 @@
 
                 <div class="ts-section__footer">
                     <div class="ts-save-row">
-                        <span id="tsFixedHint" style="font-size:.78rem;color:var(--ts-text-muted);"></span>
+                        <span id="tsFixedHint" style="font-size:0.85rem;color:var(--text-secondary);"></span>
                         <button class="ts-btn ts-btn--primary" id="btnSaveFixed">
                             <i class="fas fa-floppy-disk"></i> Save Fixed Slots
                         </button>
@@ -110,7 +85,7 @@
                     </div>
                     <div>
                         <h2 class="ts-section__title">Create Your Own Timeslots</h2>
-                        <p class="ts-section__subtitle">Add flexible slots with your preferred start & end times. Minimum duration: <strong style="color:var(--ts-primary-light)">45 minutes</strong>.</p>
+                        <p class="ts-section__subtitle">Add flexible slots with your preferred start & end times. Minimum duration: <strong style="color:var(--primary)">45 minutes</strong>.</p>
                     </div>
                 </div>
 
@@ -162,7 +137,7 @@
         </div>
         <div class="ts-modal__body">
             <input type="hidden" id="editSlotId">
-            <div class="ts-time-row" style="margin-bottom:12px;">
+            <div class="ts-time-row" style="margin-bottom:16px;">
                 <div class="ts-field-group">
                     <label class="ts-field-label" for="editStartTime">Start Time</label>
                     <input type="time" id="editStartTime" class="ts-time-input">
@@ -189,6 +164,15 @@
 
 <script>
     window.BASE_URL = '<?php echo BASE_URL; ?>';
+    
+    // Stub navigation functions
+    function showNotifications() {
+        alert('Notifications wrapper loaded.');
+    }
+
+    function showMessages() {
+        alert('Messages wrapper loaded.');
+    }
 </script>
 <script src="<?php echo BASE_URL; ?>/js/counselor/timeslots.js"></script>
 <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>

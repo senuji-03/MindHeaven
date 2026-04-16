@@ -1,43 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$TITLE = 'Mindheaven - Appointment Management';
+$CURRENT_PAGE = 'appointmentmgt';
+$PAGE_CSS = [BASE_URL . '/css/counselor/appoinmentmgt.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindheaven - Appointment Management</title>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/appoinmentmgt.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/notifications.css">
-</head>
-
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                Mindheaven
-            </div>
-            <div class="nav-icons">
-                <div class="nav-icon" onclick="showNotifications()">
-                    🔔
-                    <span class="badge">3</span>
-                </div>
-                <div class="nav-icon" onclick="showMessages()">
-                    💬
-                    <span class="badge">7</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Sidebar -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
-
-
-        <!-- Main Content -->
-        <div class="main-content">
+<div class="main-content">
             <!-- Page Header -->
             <div class="page-header">
                 <h1 class="page-title">Appointment Management</h1>
@@ -107,7 +75,7 @@
         </div>
     </div>
 
-    <!-- Reschedule Modal -->
+    <!-- Reject Modal -->
     <div id="rejectModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -115,7 +83,7 @@
                 <button class="close" onclick="closeModal('rejectModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 1.5rem; color: #64748b;">Please select a reason for rejecting this appointment. This reason will be visible to the student.</p>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Please select a reason for rejecting this appointment. This reason will be visible to the student.</p>
                 <div class="form-group">
                     <label class="form-label" for="rejectReason">Reason for Rejection</label>
                     <select id="rejectReason" class="form-input" onchange="toggleOtherReason()">
@@ -136,10 +104,12 @@
             </div>
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeModal('rejectModal')">Cancel</button>
-                <button class="btn-reject" onclick="submitReject()">Confirm Rejection</button>
+                <button class="btn btn-reject" onclick="submitReject()">Confirm</button>
             </div>
         </div>
     </div>
+
+    <!-- Reschedule Modal -->
     <div id="rescheduleModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -164,7 +134,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="rescheduleReason">Reason for Rescheduling</label>
+                        <label class="form-label" for="rescheduleReason">Reason</label>
                         <textarea id="rescheduleReason" class="form-textarea"
                             placeholder="Please provide a reason for rescheduling..." required></textarea>
                     </div>
@@ -172,7 +142,7 @@
             </div>
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeModal('rescheduleModal')">Cancel</button>
-                <button class="btn-primary" onclick="submitReschedule()">Reschedule Appointment</button>
+                <button class="btn btn-primary" onclick="submitReschedule()">Reschedule</button>
             </div>
         </div>
     </div>
@@ -180,38 +150,39 @@
     <!-- Student Note History Modal -->
     <div id="studentHistoryModal" class="modal">
         <div class="modal-content" style="max-width: 700px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white;">
+            <div class="modal-header">
                 <h3 class="modal-title" id="historyModalTitle">Student Session History</h3>
-                <button class="close" onclick="closeModal('studentHistoryModal')" style="color: white;">&times;</button>
+                <button class="close" onclick="closeModal('studentHistoryModal')">&times;</button>
             </div>
-            <div class="modal-body" style="background: #f8fafc; padding: 20px;">
-                <div id="historyStudentInfo" style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 12px; border-left: 5px solid #4f46e5; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <h4 id="historyStudentName" style="color: #1e293b; margin: 0; font-size: 1.2rem;">Patient Name</h4>
-                    <p style="color: #64748b; margin: 5px 0 0; font-size: 0.9rem;">Complete chronological history of session notes.</p>
+            <div class="modal-body">
+                <div id="historyStudentInfo" class="patient-info-card">
+                    <h4 id="historyStudentName">Patient Name</h4>
+                    <p>Complete chronological history of session notes.</p>
                 </div>
                 
-                <div id="historyList" style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
+                <div id="historyList" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
                     <!-- History items will be populated here -->
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeModal('studentHistoryModal')">Close History</button>
+                <button class="btn-secondary" onclick="closeModal('studentHistoryModal')">Close</button>
             </div>
         </div>
     </div>
 
     <style>
         .history-item {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
-            transition: transform 0.2s, box-shadow 0.2s;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
         }
         .history-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-md);
         }
         .history-item-header {
             display: flex;
@@ -219,27 +190,29 @@
             align-items: flex-start;
             margin-bottom: 12px;
             padding-bottom: 12px;
-            border-bottom: 1px dashed #e2e8f0;
+            border-bottom: 1px dashed var(--border);
         }
         .history-date {
-            font-weight: 600;
-            color: #4f46e5;
+            font-weight: 700;
+            color: var(--primary);
             font-size: 0.95rem;
         }
         .history-counselor {
             font-size: 0.85rem;
-            color: #64748b;
-            background: #f1f5f9;
-            padding: 4px 10px;
-            border-radius: 20px;
+            color: var(--text-secondary);
+            background: var(--bg-mid);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
         }
         .history-topic {
-            font-weight: 600;
-            color: #1e293b;
+            font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 8px;
+            font-size: 1.05rem;
         }
         .history-content {
-            color: #475569;
+            color: var(--text-secondary);
             line-height: 1.6;
             font-size: 0.95rem;
             white-space: pre-wrap;
@@ -247,30 +220,13 @@
         .history-empty {
             text-align: center;
             padding: 40px;
-            color: #94a3b8;
+            color: var(--text-secondary);
         }
         .history-empty i {
             font-size: 3rem;
             display: block;
             margin-bottom: 15px;
-        }
-        .btn-history {
-            background: #f1f5f9;
-            color: #475569;
-            padding: 6px 14px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-history:hover {
-            background: #e2e8f0;
-            color: #1e293b;
+            color: var(--border);
         }
     </style>
 
@@ -286,8 +242,7 @@
             }
         }
     </script>
-    <script src="<?php echo BASE_URL; ?>/js/counselor/appoinmentmgt.js"></script>
-    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
-</body>
+    <script src="<?php echo BASE_URL; ?>/js/counselor/appoinmentmgt.js?v=<?php echo time(); ?>"></script>
+    
 
-</html>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

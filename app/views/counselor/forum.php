@@ -1,42 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$TITLE = 'Mindheaven - Counselor Forum';
+$CURRENT_PAGE = 'forum';
+$PAGE_CSS = ['/MindHeaven/public/css/counselor/Cdashboard.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindheaven - Counselor Forum</title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\Cdashboard.css">
-</head>
-
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                Mindheaven
-            </div>
-            <div class="nav-icons">
-                <div class="nav-icon" onclick="showNotifications()">
-                    🔔
-                    <span class="badge">3</span>
-                </div>
-                <div class="nav-icon" onclick="showMessages()">
-                    💬
-                    <span class="badge">7</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Sidebar -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
-
-
-        <!-- Main Content -->
-        <div class="main-content">
+<div class="main-content">
             <main id="main" class="main-content">
                 <div class="container">
                     <div class="page-header">
@@ -729,6 +698,5 @@
 
         </div>
     </div>
-</body>
 
-</html>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>
