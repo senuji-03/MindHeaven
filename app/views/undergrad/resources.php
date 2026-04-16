@@ -5,6 +5,24 @@ $PAGE_CSS = ['/MindHeaven/public/css/undergrad/resources.css'];
 $PAGE_JS = ['/MindHeaven/public/js/undergrad/resources.js'];
 
 require BASE_PATH . '/app/views/layouts/header.php';
+
+// Helper for beautiful fallback gradients
+function getFallbackGradient($name) {
+    $gradients = [
+        ['#4facfe', '#00f2fe'], // Blue
+        ['#ff9a9e', '#fecfef'], // Pink
+        ['#a18cd1', '#fbc2eb'], // Purple
+        ['#84fab0', '#8fd3f4'], // Green
+        ['#a6c0fe', '#f68084'], // Indigo/Red
+        ['#fccb90', '#d57eeb'], // Orange
+        ['#ff0844', '#ffb199'], // Red
+        ['#43e97b', '#38f9d7'], // Light Green
+        ['#fa709a', '#fee140']  // Rose/Yellow
+    ];
+    // Map name to a consistent index
+    $index = abs(crc32($name)) % count($gradients);
+    return $gradients[$index];
+}
 ?>
 
 <main id="main" class="resources-main">
@@ -35,38 +53,46 @@ require BASE_PATH . '/app/views/layouts/header.php';
     </div>
     
     <div class="categories-grid">
-      <?php 
-      $allCategories = [
-          'Mental Health Basics' => ['icon' => '🧠', 'color1' => '#4facfe', 'color2' => '#00f2fe', 'description' => 'Understanding mental health, common conditions, and when to seek help'],
-          'Anxiety & Stress' => ['icon' => '😰', 'color1' => '#ff9a9e', 'color2' => '#fecfef', 'description' => 'Coping strategies and techniques for managing anxiety and stress'],
-          'Depression Support' => ['icon' => '😢', 'color1' => '#a18cd1', 'color2' => '#fbc2eb', 'description' => 'Resources and support for dealing with depression'],
-          'Mindfulness & Meditation' => ['icon' => '🧘‍♀️', 'color1' => '#84fab0', 'color2' => '#8fd3f4', 'description' => 'Guided practices for mindfulness and meditation'],
-          'Sleep & Wellness' => ['icon' => '💤', 'color1' => '#a6c0fe', 'color2' => '#f68084', 'description' => 'Tips for better sleep and overall wellness'],
-          'Relationships & Social' => ['icon' => '👥', 'color1' => '#fccb90', 'color2' => '#d57eeb', 'description' => 'Building healthy relationships and social connections'],
-          'Crisis Support' => ['icon' => '🆘', 'color1' => '#ff0844', 'color2' => '#ffb199', 'description' => 'Emergency resources and crisis intervention'],
-          'Self-Help Tools' => ['icon' => '🛠️', 'color1' => '#43e97b', 'color2' => '#38f9d7', 'description' => 'Interactive tools and exercises for mental wellness'],
-          'Professional Development' => ['icon' => '🎓', 'color1' => '#fa709a', 'color2' => '#fee140', 'description' => 'Resources for academic and career success']
-      ];
-      ?>
-      
-      <?php foreach ($allCategories as $categoryName => $catDetails): ?>
-        <?php 
-          // Count how many resources exist for this category
-          $count = isset($resourcesByCategory[$categoryName]) ? count($resourcesByCategory[$categoryName]) : 0; 
-        ?>
-        <div class="category-card" onclick="showCategoryResources('<?= htmlspecialchars($categoryName, ENT_QUOTES) ?>')" style="cursor: pointer; display: flex; flex-direction: column;">
-          <!-- Thumbnail Area using CSS Gradient and Emoji -->
-          <div class="category-thumbnail" style="height: 160px; background: linear-gradient(135deg, <?= $catDetails['color1'] ?> 0%, <?= $catDetails['color2'] ?> 100%); display: flex; align-items: center; justify-content: center; font-size: 64px;">
-            <?= $catDetails['icon'] ?>
+      <?php if (empty($categories)): ?>
+        <p style="text-align: center; grid-column: 1/-1; padding: 40px; color: var(--text-secondary);">No categories found. Check back later!</p>
+      <?php else: ?>
+        <?php foreach ($categories as $cat): ?>
+          <?php 
+            $categoryName = $cat['name'];
+            $count = isset($resourcesByCategory[$categoryName]) ? count($resourcesByCategory[$categoryName]) : 0; 
+            $gradient = getFallbackGradient($categoryName);
+          ?>
+          <div class="category-card" onclick="showCategoryResources('<?= htmlspecialchars($categoryName, ENT_QUOTES) ?>')" style="cursor: pointer; display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-lg); transition: transform 0.3s ease;">
+            
+            <div class="category-thumbnail" style="height: 180px; position: relative; overflow: hidden; background: linear-gradient(135deg, <?= $gradient[0] ?> 0%, <?= $gradient[1] ?> 100%);">
+              <?php if (!empty($cat['thumbnail'])): ?>
+                <img src="<?= BASE_URL ?>/<?= htmlspecialchars($cat['thumbnail']) ?>" 
+                     alt="<?= htmlspecialchars($categoryName) ?>"
+                     style="width: 100%; height: 100%; object-fit: cover;">
+              <?php else: ?>
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 64px; opacity: 0.8;">
+                   <!-- Logic to show a relevant emoji if no image? 
+                        We can keep it simple for now or use the first letter -->
+                   <span style="font-weight: 800; color: white; opacity: 0.4;">
+                       <?= strtoupper(substr($categoryName, 0, 1)) ?>
+                   </span>
+                </div>
+              <?php endif; ?>
+            </div>
+            
+            <div class="category-content" style="flex: 1; padding: 24px; background: white; border: 1px solid var(--border); border-top: none; border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+              <h3 class="category-title" style="margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 700;"><?= htmlspecialchars($categoryName) ?></h3>
+              <p class="category-description" style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">
+                  <?= htmlspecialchars(isset($cat['description']) ? $cat['description'] : 'Explore our collection of ' . $categoryName . ' resources.') ?>
+              </p>
+              <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--primary); font-size: 0.85rem; padding-top: 12px; border-top: 1px solid var(--bg-soft);">
+                  <i class="fas fa-layer-group"></i>
+                  <?= $count ?> Resource<?= $count !== 1 ? 's' : '' ?> Available
+              </div>
+            </div>
           </div>
-          
-          <div class="category-content" style="flex: 1;">
-            <h3 class="category-title" style="margin-bottom: 0.5rem;"><?= htmlspecialchars($categoryName) ?></h3>
-            <p class="category-description" style="margin-bottom: 1rem; font-size: 0.9rem;"><?= htmlspecialchars($catDetails['description']) ?></p>
-            <p style="font-weight: 600; color: var(--primary); font-size: 0.85rem; margin: 0;"><?= $count ?> Resource<?= $count !== 1 ? 's' : '' ?> Available</p>
-          </div>
-        </div>
-      <?php endforeach; ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </div>
   </section>
   
@@ -83,69 +109,24 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </main>
 
 <script>
-  function openResourceModal(resource) {
-    try {
-      const modal = document.getElementById('resourceModal');
-      const title = document.getElementById('resourceModalTitle');
-      const content = document.getElementById('resourceModalContent');
-
-      title.textContent = resource.title;
-
-      function buildFileUrl(filePath) {
-        if (!filePath) return '';
-        const clean = filePath.replace(/^\/+/, '');
-        return '/MindHeaven/public/' + clean;
-      }
-
-      let fullFilePath = buildFileUrl(resource.file_path || '');
-
-      let html = `<div class="resource-details">
-      <p>${resource.summary}</p>
-    `;
-
-      if (resource.file_path) {
-        html += `<a href="${fullFilePath}" target="_blank" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Open File</a>`;
-      }
-
-      if (resource.content) {
-        html += `<div style="margin-top:1rem;">${resource.content}</div>`;
-      }
-
-      html += `</div>`;
-
-      content.innerHTML = html;
-      modal.classList.add('open');
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
   function showCategoryResources(category) {
     const baseUrl = '<?= $categoryBaseUrl ?? (BASE_URL . "/ug/category-resources") ?>';
     window.location.href = baseUrl + '?category=' + encodeURIComponent(category);
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.resource-card, .resource-modal-trigger').forEach(el => {
-      el.addEventListener('click', function (e) {
-        if (this.tagName === 'A') e.preventDefault();
-        const data = this.getAttribute('data-resource');
-        if (data) openResourceModal(JSON.parse(data));
-      });
-    });
-  });
+    const closeModalBtn = document.getElementById('closeResourceModal');
+    if(closeModalBtn) {
+      closeModalBtn.onclick = function () {
+        document.getElementById('resourceModal').classList.remove('open');
+      };
+    }
 
-  const closeModalBtn = document.getElementById('closeResourceModal');
-  if(closeModalBtn) {
-    closeModalBtn.onclick = function () {
-      document.getElementById('resourceModal').classList.remove('open');
+    window.onclick = function (e) {
+      const modal = document.getElementById('resourceModal');
+      if (e.target === modal) modal.classList.remove('open');
     };
-  }
-
-  window.onclick = function (e) {
-    const modal = document.getElementById('resourceModal');
-    if (e.target === modal) modal.classList.remove('open');
-  };
+  });
 </script>
 
 <?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

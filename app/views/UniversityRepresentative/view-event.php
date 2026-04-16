@@ -1,478 +1,609 @@
+<?php
+// app/views/UniversityRepresentative/view-event.php
+
+$isRep = isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'university_representative';
+
+// Design System variables (fallback if not global)
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Event - University Representative | Mind Haven</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/university-rep/style.css">
-</head>
-
-<body>
-    <?php $isRep = isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'university_representative'; ?>
-    <?php if ($isRep): ?>
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>🧠 Mind Haven</h2>
-                <p>University Representative</p>
-            </div>
-
-            <nav class="sidebar-nav">
-                <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
-                    <span class="icon">📊</span>
-                    Dashboard
-                </a>
-                <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
-                    <span class="icon">📅</span>
-                    Manage Events
-                </a>
-                <a href="<?= BASE_URL ?>/university-rep/announcements" class="nav-item">
-                    <span class="icon">📰</span>
-                    Announcements
-                </a>
-                <a href="<?= BASE_URL ?>/university-rep/resources" class="nav-item">
-                    <span class="icon">📚</span>
-                    Resources
-                </a>
-                <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
-                    <span class="icon">🏫</span>
-                    University Profile
-                </a>
-                <a href="<?= BASE_URL ?>/university-rep/analytics" class="nav-item">
-                    <span class="icon">📈</span>
-                    Analytics
-                </a>
-                <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
-                    <span class="icon">👤</span>
-                    My Profile
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                    <span class="icon">🚪</span>
-                    Logout
-                </a>
-            </div>
-        </div>
-    <?php else: ?>
-        <style>
-            .main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-                padding: 2rem !important;
-            }
-
-            .topbar {
-                display: none !important;
-            }
-
-            .content-wrapper {
-                max-width: 1200px;
-                margin: 0 auto;
-                margin-top: 40px;
-            }
-        </style>
-    <?php endif; ?>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Bar -->
-        <div class="topbar">
-            <h1>View Event</h1>
-            <div class="topbar-right">
-                <div class="user-profile">
-                    <span><?= htmlspecialchars($_SESSION['university_name'] ?? 'University') ?></span>
-                    <div class="avatar"><?= strtoupper(substr($_SESSION['university_name'] ?? 'U', 0, 1)) ?></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Content -->
-        <div class="content-wrapper">
-            <div class="page-header">
-                <h2>📅 Event Details</h2>
-                <div class="header-actions">
-                    <?php if (isset($isOwner) && $isOwner): ?>
-                        <a href="<?= BASE_URL ?>/university-rep/events/edit/<?= $event['id'] ?>" class="btn btn-primary">✏️
-                            Edit Event</a>
-                    <?php endif; ?>
-                    <a href="<?= (isset($isOwner) && $isOwner) ? BASE_URL . '/university-rep/events' : BASE_URL . '/' ?>"
-                        class="btn btn-secondary">← Back</a>
-                </div>
-            </div>
-
-            <!-- Event Details Card -->
-            <div class="event-details-card">
-                <!-- Event Image Banner -->
-                <?php if (!empty($event['image_path'])): ?>
-                    <div
-                        style="width: 100%; text-align: center; background-color: #f8fafc; border-bottom: 1px solid #e5e7eb; padding: 1rem 0;">
-                        <img src="<?= BASE_URL . '/' . htmlspecialchars($event['image_path']) ?>" alt="Event Poster"
-                            style="max-width: 100%; height: auto; max-height: 400px; display: inline-block;">
-                    </div>
-                <?php else: ?>
-                    <div
-                        style="width: 100%; height: 200px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #9ca3af;">
-                        <span style="font-size: 4rem;">📸</span>
-                        <span style="font-size: 1rem; margin-top: 0.5rem;">No Image Available</span>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Event Header -->
-                <div class="event-header">
-                    <div class="event-title-section">
-                        <h1><?= htmlspecialchars($event['event_title']) ?></h1>
-                        <div class="event-meta">
-                            <span class="event-type">🎯
-                                <?= ucfirst(str_replace('_', ' ', $event['event_type'])) ?></span>
-                            <span
-                                class="event-status status-<?= $event['status'] ?>"><?= ucfirst($event['status']) ?></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Event Information Grid -->
-                <div class="event-info-grid">
-                    <!-- Basic Details -->
-                    <div class="info-section">
-                        <h3>📋 Basic Information</h3>
-                        <div class="info-item">
-                            <label>University:</label>
-                            <p><?= htmlspecialchars($event['university_name'] ?? 'Not Specified') ?></p>
-                        </div>
-                        <div class="info-item">
-                            <label>Description:</label>
-                            <p><?= nl2br(htmlspecialchars($event['description'])) ?></p>
-                        </div>
-                        <div class="info-item">
-                            <label>Target Amount:</label>
-                            <p><?= $event['target_amount'] ? '$' . number_format((float) $event['target_amount'], 2) : 'Not specified or N/A' ?>
-                            </p>
-                        </div>
-                        <div class="info-item">
-                            <label>Organized By:</label>
-                            <p><?= htmlspecialchars($event['organized_by']) ?></p>
-                        </div>
-                        <div class="info-item">
-                            <label>Target Audience:</label>
-                            <p>
-                                <?php
-                                $ta = $event['target_audience'] ?? null;
-                                if (!empty($ta)) {
-                                    if (is_string($ta)) {
-                                        // Attempt JSON decode if it looks like a JSON array
-                                        if (strpos(trim($ta), '[') === 0 && ($decoded = json_decode($ta, true))) {
-                                            $ta = $decoded;
-                                        } else {
-                                            $ta = explode(',', $ta);
-                                        }
-                                    }
-
-                                    if (is_array($ta)) {
-                                        echo htmlspecialchars(implode(', ', array_map('ucfirst', array_map('trim', $ta))));
-                                    } else {
-                                        echo htmlspecialchars(ucfirst(trim($ta)));
-                                    }
-                                } else {
-                                    echo "Not specified";
-                                }
-                                ?>
-                            </p>
-                        </div>
-                        <div class="info-item">
-                            <label>Accessibility:</label>
-                            <p><?= $event['open_for'] === 'all_universities' ? 'Open to All Universities' : 'Specific University Students Only' ?>
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Event Logistics -->
-                    <div class="info-section">
-                        <h3>📅 Event Logistics</h3>
-                        <div class="info-item">
-                            <label>Date:</label>
-                            <p><?= !empty($event['event_date']) ? date('F j, Y', strtotime($event['event_date'])) : 'TBD' ?></p>
-                        </div>
-                        <div class="info-item">
-                            <label>Time:</label>
-                            <p><?= !empty($event['start_time']) ? date('g:i A', strtotime($event['start_time'])) : 'TBD' ?> -
-                                <?= !empty($event['end_time']) ? date('g:i A', strtotime($event['end_time'])) : 'TBD' ?>
-                            </p>
-                        </div>
-                        <div class="info-item">
-                            <label>Venue:</label>
-                            <p><?= htmlspecialchars($event['venue']) ?></p>
-                        </div>
-                        <div class="info-item">
-                            <label>Mode:</label>
-                            <p><?= ucfirst($event['mode']) ?> Event</p>
-                        </div>
-                        <?php if (!empty($event['max_participants'])): ?>
-                            <div class="info-item">
-                                <label>Maximum Participants:</label>
-                                <p><?= htmlspecialchars($event['max_participants']) ?></p>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($event['registration_deadline'])): ?>
-                            <div class="info-item">
-                                <label>Registration Deadline:</label>
-                                <p><?= date('F j, Y', strtotime($event['registration_deadline'])) ?></p>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <!-- Contact Information -->
-                    <?php if ($event['contact_person'] || $event['contact_email'] || $event['contact_phone']): ?>
-                        <div class="info-section">
-                            <h3>📞 Contact Information</h3>
-                            <?php if ($event['contact_person']): ?>
-                                <div class="info-item">
-                                    <label>Contact Person:</label>
-                                    <p><?= htmlspecialchars($event['contact_person']) ?></p>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ($event['contact_email']): ?>
-                                <div class="info-item">
-                                    <label>Email:</label>
-                                    <p><a
-                                            href="mailto:<?= htmlspecialchars($event['contact_email']) ?>"><?= htmlspecialchars($event['contact_email']) ?></a>
-                                    </p>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ($event['contact_phone']): ?>
-                                <div class="info-item">
-                                    <label>Phone:</label>
-                                    <p><a
-                                            href="tel:<?= htmlspecialchars($event['contact_phone']) ?>"><?= htmlspecialchars($event['contact_phone']) ?></a>
-                                    </p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Additional Information -->
-                    <?php if ($event['additional_info']): ?>
-                        <div class="info-section">
-                            <h3>ℹ️ Additional Information</h3>
-                            <div class="info-item">
-                                <p><?= nl2br(htmlspecialchars($event['additional_info'])) ?></p>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Event Metadata -->
-                    <div class="info-section">
-                        <h3>📊 Event Metadata</h3>
-                        <div class="info-item">
-                            <label>Created:</label>
-                            <p><?= !empty($event['created_at']) ? date('F j, Y \a\t g:i A', strtotime($event['created_at'])) : 'N/A' ?></p>
-                        </div>
-                        <div class="info-item">
-                            <label>Last Updated:</label>
-                            <p><?= !empty($event['updated_at']) ? date('F j, Y \a\t g:i A', strtotime($event['updated_at'])) : 'N/A' ?></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="event-actions">
-                    <?php if (isset($isOwner) && $isOwner): ?>
-                        <a href="<?= BASE_URL ?>/university-rep/events/edit/<?= $event['id'] ?>" class="btn btn-primary">✏️
-                            Edit Event</a>
-                        <?php if ($event['status'] !== 'closed'): ?>
-                            <form action="<?= BASE_URL ?>/university-rep/events/close" method="POST"
-                                style="margin: 0; display: inline-block;"
-                                onsubmit="return confirm('Are you sure you want to close this event?');">
-                                <input type="hidden" name="event_id" value="<?= $event['id'] ?>">
-                                <button type="submit" class="btn btn-secondary" style="background: #f59e0b;">🔒 Mark as
-                                    Closed</button>
-                            </form>
-                        <?php endif; ?>
-                        <button onclick="deleteEvent(<?= $event['id'] ?>)" class="btn btn-danger">🗑️ Delete Event</button>
-                    <?php else: ?>
-                        <!-- Public Buttons -->
-                        <?php if ($event['status'] === 'approved'): ?>
-                            <a href="<?= BASE_URL ?>/donation/event/<?= $event['id'] ?>" class="btn btn-primary">💖 Donate</a>
-                            <a href="<?= BASE_URL ?>/donation/request-confirmation/<?= $event['id'] ?>" class="btn btn-secondary">📝 Request Confirmation</a>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                    <a href="<?= (isset($isOwner) && $isOwner) ? BASE_URL . '/university-rep/events' : BASE_URL . '/' ?>"
-                        class="btn btn-secondary">← Back</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <title>Event Details - <?= htmlspecialchars(isset($event['event_title']) ? $event['event_title'] : 'View Event') ?> | MindHaven</title>
+    
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        .event-details-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            margin-bottom: 2rem;
+        :root {
+            --primary: #3D8B6E;
+            --primary-light: #4A9F7E;
+            --primary-dark: #2F6B54;
+            --secondary: #1C2B2A;
+            --bg-soft: #F4F7F5;
+            --bg-mid: #E8F0ED;
+            --surface: #FFFFFF;
+            --text-primary: #1C2B2A;
+            --text-secondary: #5C716E;
+            --border: #D1DBD8;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-full: 9999px;
+            --shadow-sm: 0 2px 4px rgba(28, 43, 42, 0.05);
+            --shadow-md: 0 8px 24px rgba(28, 43, 42, 0.08);
+            --crisis: #D64F4F;
         }
 
-        .event-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-soft);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--secondary);
             color: white;
-            padding: 2rem;
-        }
-
-        .event-title-section h1 {
-            font-size: 2rem;
-            margin: 0 0 1rem 0;
-            font-weight: 600;
-        }
-
-        .event-meta {
+            position: fixed;
+            left: 0;
+            top: 0;
             display: flex;
-            gap: 1rem;
+            flex-direction: column;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 40px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary-light);
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+            padding: 30px 20px;
+        }
+
+        .nav-item {
+            display: flex;
             align-items: center;
-        }
-
-        .event-type {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-
-        .event-status {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            gap: 15px;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
             font-weight: 500;
         }
 
-        .status-published {
-            background: #10b981;
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
             color: white;
         }
 
-        .status-draft {
-            background: #f59e0b;
+        .nav-item.active {
+            background: var(--primary);
             color: white;
+            box-shadow: 0 4px 12px rgba(61, 139, 110, 0.3);
         }
 
-        .status-cancelled {
-            background: #ef4444;
-            color: white;
-        }
-
-        .event-info-grid {
-            padding: 2rem;
-            display: grid;
-            gap: 2rem;
-        }
-
-        .info-section h3 {
-            color: #374151;
-            margin-bottom: 1rem;
+        .nav-item i {
+            width: 20px;
+            text-align: center;
             font-size: 1.1rem;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 0.5rem;
         }
 
-        .info-item {
-            margin-bottom: 1rem;
+        .sidebar-footer {
+            padding: 30px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .info-item label {
-            font-weight: 600;
-            color: #6b7280;
-            display: block;
-            margin-bottom: 0.25rem;
-        }
-
-        .info-item p {
-            color: #374151;
-            margin: 0;
-            line-height: 1.5;
-        }
-
-        .info-item a {
-            color: #3b82f6;
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 20px;
+            color: #FFB3B3;
             text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+            font-weight: 600;
         }
 
-        .info-item a:hover {
-            text-decoration: underline;
+        .logout-btn:hover {
+            background: rgba(214, 79, 79, 0.1);
+        }
+
+        /* Main Content area */
+        .main-content {
+            margin-left: <?= $isRep ? '280px' : '0' ?>;
+            padding: 48px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+        }
+
+        .topbar h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: var(--surface);
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-profile .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* Event Layout */
+        .event-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 32px;
+        }
+
+        .page-header h2 {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            font-weight: 600;
         }
 
         .header-actions {
             display: flex;
-            gap: 1rem;
-            align-items: center;
+            gap: 12px;
         }
 
-        .event-actions {
-            padding: 1.5rem 2rem;
-            background: #f9fafb;
-            border-top: 1px solid #e5e7eb;
+        /* Cards and Components */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .event-banner {
+            width: 100%;
+            height: 480px;
+            background: var(--bg-mid);
             display: flex;
-            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .event-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-image {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+        }
+
+        .no-image i {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .event-main-content {
+            padding: 48px;
+        }
+
+        .event-titles {
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--bg-mid);
+            padding-bottom: 32px;
+        }
+
+        .event-titles h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .tag-group {
+            display: flex;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
+        .tag {
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-type { background: var(--bg-mid); color: var(--primary-dark); }
+        .tag-status { background: var(--primary); color: white; }
+        .tag-status.status-pending { background: #f59e0b; }
+        .tag-status.status-rejected { background: var(--crisis); }
+        .tag-status.status-closed { background: var(--text-secondary); }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 48px;
+        }
+
+        .info-section {
+            margin-bottom: 40px;
+        }
+
+        .info-section h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-section h3 i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .item-row {
+            margin-bottom: 20px;
+        }
+
+        .item-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .item-value {
+            font-size: 1.05rem;
+            color: var(--text-primary);
             font-weight: 500;
-            border: none;
+        }
+
+        .description-box {
+            background: var(--bg-soft);
+            padding: 24px;
+            border-radius: var(--radius-md);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-stats {
+            background: var(--bg-soft);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-item {
+            margin-bottom: 24px;
+        }
+
+        .stat-item:last-child { margin-bottom: 0; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: all 0.2s;
+            border: none;
         }
 
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(61, 139, 110, 0.2); }
+
+        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-secondary); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--bg-mid); }
+
+        .btn-danger { background: rgba(214, 79, 79, 0.1); color: var(--crisis); }
+        .btn-danger:hover { background: var(--crisis); color: white; }
+
+        .action-bar {
+            padding: 32px 48px;
+            background: var(--bg-mid);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            border-top: 1px solid var(--border);
         }
 
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-
-        .btn-secondary {
-            background: #6b7280;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #4b5563;
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
+        @media (max-width: 992px) {
+            .sidebar { width: 0; overflow: hidden; }
+            .main-content { margin-left: 0; padding: 24px; }
+            .info-grid { grid-template-columns: 1fr; }
         }
     </style>
+</head>
+<body>
 
-    <script>
-        function deleteEvent(eventId) {
-            if (confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
-                // Create a form to submit the delete request
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '<?= BASE_URL ?>/university-rep/events/delete';
+<?php if ($isRep): ?>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>🧠 Mind Haven</h2>
+            <p>University Rep</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
+                <i class="fas fa-calendar-alt"></i> Manage Events
+            </a>
+            <a href="<?= BASE_URL ?>/university-rep/announcements" class="nav-item">
+                <i class="fas fa-bullhorn"></i> Announcements
+            </a>
+            <a href="<?= BASE_URL ?>/university-rep/resources" class="nav-item">
+                <i class="fas fa-book-open"></i> Resources
+            </a>
+            <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
+                <i class="fas fa-university"></i> University Profile
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </aside>
+<?php endif; ?>
 
-                const eventIdInput = document.createElement('input');
-                eventIdInput.type = 'hidden';
-                eventIdInput.name = 'event_id';
-                eventIdInput.value = eventId;
+<main class="main-content">
+    <div class="topbar">
+        <h1>Event Details</h1>
+        <?php if ($isRep): ?>
+            <div class="user-profile">
+                <span><?= htmlspecialchars(isset($_SESSION['university_name']) ? $_SESSION['university_name'] : 'University') ?></span>
+                <div class="avatar"><?= strtoupper(substr(isset($_SESSION['university_name']) ? $_SESSION['university_name'] : 'U', 0, 1)) ?></div>
+            </div>
+        <?php endif; ?>
+    </div>
 
-                form.appendChild(eventIdInput);
-                document.body.appendChild(form);
-                form.submit();
+    <div class="event-container">
+        <div class="page-header">
+            <h2><i class="far fa-calendar-check" style="margin-right: 8px;"></i> Information Hub</h2>
+            <div class="header-actions">
+                <a href="<?= (isset($isOwner) && $isOwner) ? BASE_URL . '/university-rep/events' : BASE_URL . '/' ?>" class="btn btn-outline">
+                    <i class="fas fa-chevron-left"></i> Back
+                </a>
+                <?php if (isset($isOwner) && $isOwner): ?>
+                    <a href="<?= BASE_URL ?>/university-rep/events/edit/<?= $event['id'] ?>" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit Content
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <article class="card">
+            <!-- Banner Image -->
+            <div class="event-banner">
+                <?php if (!empty($event['image_path'])): ?>
+                    <img src="<?= BASE_URL . '/' . htmlspecialchars($event['image_path']) ?>" alt="Event Poster">
+                <?php else: ?>
+                    <div class="no-image">
+                        <i class="far fa-image"></i>
+                        <span>No visual assets available</span>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="event-main-content">
+                <div class="event-titles">
+                    <div class="tag-group" style="margin-bottom: 16px;">
+                        <span class="tag tag-type"><?= ucfirst(str_replace('_', ' ', $event['event_type'])) ?></span>
+                        <span class="tag tag-status status-<?= $event['status'] ?>"><?= ucfirst($event['status']) ?></span>
+                    </div>
+                    <h1><?= htmlspecialchars($event['event_title']) ?></h1>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem; font-weight: 500;">
+                        <i class="fas fa-building" style="margin-right: 8px; color: var(--primary);"></i>
+                        <?= htmlspecialchars(isset($event['university_name']) ? $event['university_name'] : 'Academic Institute') ?>
+                    </p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="left-col">
+                        <section class="info-section">
+                            <h3><i class="fas fa-info-circle"></i> About this Event</h3>
+                            <div class="description-box">
+                                <?= nl2br(htmlspecialchars($event['description'])) ?>
+                            </div>
+                        </section>
+
+                        <?php if (isset($event['additional_info']) && !empty($event['additional_info'])): ?>
+                            <section class="info-section">
+                                <h3><i class="fas fa-plus-circle"></i> Practical Information</h3>
+                                <p style="color: var(--text-secondary); line-height: 1.8;">
+                                    <?= nl2br(htmlspecialchars($event['additional_info'])) ?>
+                                </p>
+                            </section>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="right-col">
+                        <div class="sidebar-stats">
+                            <section class="info-section" style="margin-bottom: 0;">
+                                <h3><i class="fas fa-map-marker-alt"></i> Logistics</h3>
+                                
+                                <div class="stat-item">
+                                    <span class="item-label">Date</span>
+                                    <span class="item-value"><?= !empty($event['event_date']) ? date('F j, Y', strtotime($event['event_date'])) : 'TBD' ?></span>
+                                </div>
+                                
+                                <div class="stat-item">
+                                    <span class="item-label">Time</span>
+                                    <span class="item-value">
+                                        <?= !empty($event['start_time']) ? date('g:i A', strtotime($event['start_time'])) : 'TBD' ?> -
+                                        <?= !empty($event['end_time']) ? date('g:i A', strtotime($event['end_time'])) : 'TBD' ?>
+                                    </span>
+                                </div>
+
+                                <div class="stat-item">
+                                    <span class="item-label">Venue</span>
+                                    <span class="item-value"><?= htmlspecialchars($event['venue']) ?> (<?= ucfirst($event['mode']) ?>)</span>
+                                </div>
+
+                                <?php if (!empty($event['target_amount'])): ?>
+                                    <div class="stat-item">
+                                        <span class="item-label">Fundraising Goal</span>
+                                        <span class="item-value" style="color: var(--primary-dark); font-weight: 700;">
+                                            LKR <?= number_format((float) $event['target_amount'], 2) ?>
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
+                            </section>
+
+                            <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border);">
+
+                            <section class="info-section" style="margin-bottom: 0;">
+                                <h3><i class="fas fa-phone"></i> Direct Contact</h3>
+                                <div class="stat-item">
+                                    <span class="item-label">Organizer</span>
+                                    <span class="item-value"><?= htmlspecialchars(isset($event['organized_by']) ? $event['organized_by'] : 'University Rep') ?></span>
+                                </div>
+                                <?php if (!empty($event['contact_email'])): ?>
+                                    <div class="stat-item">
+                                        <span class="item-label">Email Support</span>
+                                        <a href="mailto:<?= htmlspecialchars($event['contact_email']) ?>" style="color: var(--primary); font-weight: 600; text-decoration: none; font-size: 0.95rem;">
+                                            <?= htmlspecialchars($event['contact_email']) ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <?php if (isset($isOwner) && $isOwner): ?>
+                    <form action="<?= BASE_URL ?>/university-rep/events/close" method="POST" style="margin: 0;" onsubmit="return confirm('Ensure all processes are finalized before closing.');">
+                        <input type="hidden" name="event_id" value="<?= $event['id'] ?>">
+                        <button type="submit" class="btn btn-primary" <?= ($event['status'] === 'closed') ? 'disabled' : '' ?> style="background: #f59e0b;">
+                            <i class="fas fa-lock"></i> Mark as Finalized
+                        </button>
+                    </form>
+                    <button onclick="deleteEvent(<?= $event['id'] ?>)" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Delete Entry
+                    </button>
+                <?php else: ?>
+                    <?php if ($event['status'] === 'approved'): ?>
+                        <a href="<?= BASE_URL ?>/donation/event/<?= $event['id'] ?>" class="btn btn-primary">
+                            <i class="fas fa-heart"></i> Make a Donation
+                        </a>
+                        <a href="<?= BASE_URL ?>/donation/request-confirmation/<?= $event['id'] ?>" class="btn btn-outline" style="background: white;">
+                            <i class="fas fa-file-invoice-dollar"></i> Request Confirmation
+                        </a>
+                    <?php else: ?>
+                        <div style="background: var(--bg-soft); padding: 12px 24px; border-radius: var(--radius-full); border: 1px solid var(--border); color: var(--text-secondary); font-weight: 600;">
+                            <i class="fas fa-info-circle" style="margin-right: 8px;"></i> 
+                            This event is currently <?= $event['status'] ?> and not accepting contributions.
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+                
+                <div style="margin-left: auto; font-size: 0.85rem; color: var(--text-secondary);">
+                    ID: <?= str_pad($event['id'], 5, '0', STR_PAD_LEFT) ?>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>
+
+<script>
+    function deleteEvent(eventId) {
+        if (confirm('CAUTION: This event data will be permanently removed. This action cannot be undone.')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '<?= BASE_URL ?>/university-rep/events/delete';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'event_id';
+            input.value = eventId;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
         }
- }
-    </script>
-</body>
+    }
+</script>
 
+</body>
 </html>

@@ -1,425 +1,288 @@
-<?php
-$TITLE = 'MindHeaven — Moderator Dashboard';
-$CURRENT_PAGE = 'moderator-dashboard';
-$PAGE_CSS = array(BASE_URL . '/css/undergrad/resources.css');
-$PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
-?>
-<!DOCTYPE html>
-<html lang="en">
+<?php require BASE_PATH . '/app/views/layouts/header.php'; ?>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= $TITLE ?></title>
-  <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
-  <?php foreach ($PAGE_CSS as $css): ?>
-    <link rel="stylesheet" href="<?= $css ?>">
-  <?php endforeach; ?>
-  <style>
-    /* Moderator Dashboard Specific Styles */
-    .resources-main {
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-      min-height: 100vh;
-    }
+<style>
+	/* ── MODERATOR DASHBOARD UNIFIED STYLES ── */
+	.mod-hero {
+		background: var(--bg-deep);
+		border-radius: var(--radius-lg);
+		padding: 56px 40px;
+		margin-bottom: 40px;
+		color: #fff;
+		position: relative;
+		overflow: hidden;
+		box-shadow: var(--shadow-lg);
+	}
 
-    .resources-hero {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      color: white;
-      padding: 3rem 0;
-    }
+	.mod-hero::after {
+		content: '';
+		position: absolute;
+		top: -50%;
+		right: -10%;
+		width: 450px;
+		height: 450px;
+		background: radial-gradient(circle, rgba(61, 139, 110, 0.25) 0%, transparent 70%);
+		pointer-events: none;
+	}
 
-    .hero-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
+	.mod-hero h1 {
+		font-size: 2.4rem;
+		font-weight: 700;
+		margin: 0 0 12px;
+		letter-spacing: -0.7px;
+	}
 
-    .hero-subtitle {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      margin-bottom: 2rem;
-    }
+	.mod-hero p {
+		font-size: 1.1rem;
+		opacity: 0.85;
+		max-width: 600px;
+		line-height: 1.7;
+		margin: 0 0 40px;
+	}
 
-    .hero-stats {
-      display: flex;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
+	/* ── STATS CARDS ── */
+	.mod-stats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 24px;
+	}
 
-    .hero-stat {
-      text-align: center;
-    }
+	.mod-stat-card {
+		background: rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(12px);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: var(--radius-md);
+		padding: 24px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
 
-    .stat-number {
-      display: block;
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
+	.mod-stat-card:hover {
+		transform: translateY(-5px);
+		background: rgba(255, 255, 255, 0.12);
+		border-color: rgba(255, 255, 255, 0.3);
+		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+	}
 
-    .stat-label {
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
+	.mod-stat-card .number {
+		display: block;
+		font-size: 2.5rem;
+		font-weight: 800;
+		line-height: 1;
+		color: #fff;
+	}
 
-    .quick-access {
-      padding: 3rem 0;
-      background: white;
-    }
+	.mod-stat-card .label {
+		font-size: 0.78rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 1.2px;
+		color: var(--primary-light);
+	}
 
-    .section-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
+	/* ── SECTION HEADERS ── */
+	.mod-section-title {
+		font-size: 1.6rem;
+		font-weight: 700;
+		color: var(--text-primary);
+		margin: 0 0 8px;
+		letter-spacing: -0.3px;
+	}
 
-    .section-title {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 0.5rem;
-    }
+	.mod-section-subtitle {
+		font-size: 1rem;
+		color: var(--text-secondary);
+		margin: 0 0 40px;
+	}
 
-    .section-subtitle {
-      font-size: 1.1rem;
-      color: #6b7280;
-    }
+	/* ── QUICK ACCESS GRID ── */
+	.mod-action-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 24px;
+		margin: 0 auto 60px; /* Centered with auto margins */
+		max-width: 800px;
+	}
 
-    .quick-access-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
+	.mod-action-card {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 32px;
+		text-decoration: none;
+		color: inherit;
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		display: flex;
+		align-items: flex-start;
+		gap: 24px;
+		box-shadow: var(--shadow-sm);
+	}
 
-    .quick-access-item {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 2rem;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
+	.mod-action-card:hover {
+		border-color: var(--primary-light);
+		box-shadow: var(--shadow-lg);
+		transform: translateY(-8px);
+	}
 
-    .quick-access-item:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      border-color: #3b82f6;
-    }
+	.mod-action-icon {
+		width: 64px;
+		height: 64px;
+		flex-shrink: 0;
+		background: var(--bg-mid);
+		color: var(--primary);
+		border-radius: var(--radius-md);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.8rem;
+		transition: all 0.3s ease;
+	}
 
-    .quick-access-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
+	.mod-action-card:hover .mod-action-icon {
+		background: var(--primary);
+		color: #fff;
+		transform: rotate(-8deg) scale(1.1);
+	}
 
-    .quick-access-item h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 0.5rem;
-    }
+	.mod-action-card .content h3 {
+		font-size: 1.35rem;
+		font-weight: 700;
+		color: var(--text-primary);
+		margin: 0 0 10px;
+	}
 
-    .quick-access-item p {
-      color: #6b7280;
-      line-height: 1.5;
-    }
+	.mod-action-card .content p {
+		font-size: 0.98rem;
+		color: var(--text-secondary);
+		line-height: 1.6;
+		margin: 0;
+	}
 
-    .category-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
+	/* ── MODAL MODERNIZATION ── */
+	.modal-content {
+		border-radius: var(--radius-lg) !important;
+		box-shadow: var(--shadow-xl) !important;
+		border: none !important;
+		padding: 48px !important;
+	}
 
-    .category-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
+	.modal-header h2 {
+		font-size: 1.8rem;
+		font-weight: 700;
+		margin-bottom: 24px;
+		color: var(--text-primary);
+		letter-spacing: -0.5px;
+	}
 
-    .category-icon {
-      font-size: 2rem;
-      margin-right: 1rem;
-    }
+	.modal-textarea {
+		width: 100%;
+		border: 1.8px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 20px;
+		font-family: inherit;
+		font-size: 1rem;
+		line-height: 1.6;
+		margin-bottom: 32px;
+		transition: all 0.25s ease;
+		background: var(--bg-mid);
+	}
 
-    .category-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #1e293b;
-    }
+	.modal-textarea:focus {
+		outline: none;
+		border-color: var(--primary);
+		background: #fff;
+		box-shadow: 0 0 0 5px rgba(61, 139, 110, 0.12);
+	}
+</style>
 
-    .category-content {
-      margin-bottom: 1rem;
-    }
+<div class="main-content">
 
-    .category-description {
-      color: #6b7280;
-      margin-bottom: 1rem;
-    }
 
-    .resource-list {
-      list-style: none;
-      padding: 0;
-    }
+	<!-- Resource Management -->
+	<section class="mod-sections">
+		<h2 class="mod-section-title">Resource Moderation</h2>
+		<p class="mod-section-subtitle">Core tools for managing educational content and community engagement.</p>
 
-    .resource-item {
-      background: #f8fafc;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+		<div class="mod-action-grid">
+			<a href="<?= BASE_URL ?>/AddResource" class="mod-action-card">
+				<div class="mod-action-icon"><i class="fas fa-plus-circle"></i></div>
+				<div class="content">
+					<h3>Add Resource</h3>
+					<p>Create and publish new educational articles, videos, or audio wellness materials.</p>
+				</div>
+			</a>
+			<a href="<?= BASE_URL ?>/EditPosts" class="mod-action-card">
+				<div class="mod-action-icon"><i class="fas fa-pen-to-square"></i></div>
+				<div class="content">
+					<h3>Edit Resources</h3>
+					<p>Review, correct, or enhance existing content library to maintain high standards.</p>
+				</div>
+			</a>
+			<a href="<?= BASE_URL ?>/Moderator/reported-resources" class="mod-action-card">
+				<div class="mod-action-icon" style="color:var(--crisis); box-shadow: 0 4px 12px rgba(214, 79, 79, 0.1);"><i class="fas fa-triangle-exclamation"></i></div>
+				<div class="content">
+					<h3>Reported Content</h3>
+					<p>Swiftly address items flagged by our community for review, safety, or accuracy checks.</p>
+				</div>
+			</a>
+		</div>
+	</section>
+</div>
 
-    .resource-content h4 {
-      margin: 0 0 0.5rem 0;
-      color: #1e293b;
-      font-size: 1rem;
-    }
+<!-- Edit Content Modal -->
+<div id="editModal" class="modal"
+	style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(30, 58, 52, 0.5); backdrop-filter: blur(8px);">
+	<div class="modal-content" style="background-color:#fff; margin:8% auto; width:560px; max-width: 90%;">
+		<div class="modal-header">
+			<span class="close" onclick="closeEditModal()" style="color:var(--text-secondary); float:right; font-size:28px; cursor:pointer; margin-top: -10px;">&times;</span>
+			<h2>Edit Reported Content</h2>
+		</div>
+		<form action="<?= BASE_URL ?>/moderator/edit-reported-content" method="POST">
+			<input type="hidden" name="report_id" id="editReportId">
+			<input type="hidden" name="post_id" id="editPostId">
 
-    .resource-content p {
-      margin: 0;
-      color: #6b7280;
-      font-size: 0.9rem;
-    }
+			<div style="margin-bottom: 24px;">
+				<label for="editContent" style="display:block; margin-bottom:12px; font-weight:700; font-size: 0.8rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">Full Content Preview</label>
+				<textarea name="content" id="editContent" rows="10" class="modal-textarea"></textarea>
+			</div>
 
-    .resource-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
+			<div style="display: flex; gap: 16px; justify-content: flex-end;">
+				<button type="button" class="btn btn-outline" style="border-radius: var(--radius-full); padding: 12px 24px;" onclick="closeEditModal()">Cancel</button>
+				<button type="submit" class="btn btn-primary" style="border-radius: var(--radius-full); padding: 12px 32px; box-shadow: var(--shadow-md);">Save Changes</button>
+			</div>
+		</form>
+	</div>
+</div>
 
-    .btn {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+<script>
+	const editModal = document.getElementById('editModal');
 
-    .btn-sm {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-    }
+	function openEditModal(report) {
+		document.getElementById('editReportId').value = report.id;
+		document.getElementById('editPostId').value = report.content_id;
 
-    .btn-success {
-      background: #10b981;
-      color: white;
-    }
+		const txt = document.createElement("textarea");
+		txt.innerHTML = report.full_content || report.content;
 
-    .btn-success:hover {
-      background: #059669;
-    }
+		document.getElementById('editContent').value = txt.value;
 
-    .btn-danger {
-      background: #ef4444;
-      color: white;
-    }
+		editModal.style.display = "block";
+	}
 
-    .btn-danger:hover {
-      background: #dc2626;
-    }
+	function closeEditModal() {
+		editModal.style.display = "none";
+	}
 
-    .btn-warning {
-      background: #f59e0b;
-      color: white;
-    }
+	window.onclick = function (event) {
+		if (event.target == editModal) {
+			closeEditModal();
+		}
+	}
+</script>
 
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #3b82f6;
-      color: #3b82f6;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 2rem;
-      color: #6b7280;
-      font-style: italic;
-    }
-
-    @media (max-width: 768px) {
-      .hero-stats {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .quick-access-grid {
-        grid-template-columns: 1fr;
-        padding: 0 1rem;
-      }
-
-      .hero-title {
-        font-size: 2rem;
-      }
-    }
-  </style>
-  <?php foreach ($PAGE_JS as $js): ?>
-    <script src="<?= $js ?>"></script>
-  <?php endforeach; ?>
-</head>
-
-<body>
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <h2>🧠 Mind Haven</h2>
-      <p>Moderator Panel</p>
-    </div>
-
-    <nav class="sidebar-nav">
-      <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item active">
-        <span class="icon">📊</span>
-        Dashboard
-      </a>
-
-      <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="nav-item">
-        <span class="icon">📚</span>
-        Resource Hub
-      </a>
-      <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
-        <span class="icon">💬</span>
-        Moderate Forum
-      </a>
-    </nav>
-
-    <div class="sidebar-footer">
-      <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-        <span class="icon">🚪</span>
-        Logout
-      </a>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Top Bar -->
-    <div class="topbar">
-      <h1>Moderator Dashboard</h1>
-      <div class="topbar-right" style="display: flex; align-items: center; gap: 1.5rem;">
-        <div class="admin-profile">
-          <span>Moderator</span>
-          <div class="avatar">M</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <div class="content-wrapper">
-
-      <main id="main" class="resources-main">
-
-        <!-- Hero Section -->
-        <section class="resources-hero">
-          <div class="hero-content">
-            <div class="hero-text">
-              <h1 class="hero-title">Moderator Dashboard 🛡</h1>
-              <p class="hero-subtitle">Manage content, moderate discussions, and ensure community safety</p>
-              <div class="hero-stats">
-                <div class="hero-stat">
-                  <span class="stat-number"><?= count($data['flaggedPosts'] ?? []); ?></span>
-                  <span class="stat-label">Flagged Posts</span>
-                </div>
-                <div class="hero-stat">
-                  <span class="stat-number"><?= count($data['pendingPosts'] ?? []); ?></span>
-                  <span class="stat-label">Pending Review</span>
-                </div>
-                <div class="hero-stat">
-                  <span class="stat-number"><?= count($data['flaggedUsers'] ?? []); ?></span>
-                  <span class="stat-label">Flagged Users</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Quick Access Actions -->
-        <section class="quick-access">
-          <div class="section-header">
-            <h2 class="section-title">Resource Management</h2>
-            <p class="section-subtitle">Quick access to resource moderation tools</p>
-          </div>
-          <div class="quick-access-grid">
-            <a href="<?= BASE_URL ?>/AddResource" class="quick-access-item">
-              <div class="quick-access-icon">➕</div>
-              <h3>Add Resource</h3>
-              <p>Create and publish new educational materials</p>
-            </a>
-            <a href="<?= BASE_URL ?>/EditPosts" class="quick-access-item">
-              <div class="quick-access-icon">✏️</div>
-              <h3>Edit Resources</h3>
-              <p>Modify or update existing resource content</p>
-            </a>
-            <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="quick-access-item">
-              <div class="quick-access-icon">🚨</div>
-              <h3>Reported Resources</h3>
-              <p>Review and resolve content flagged by users</p>
-            </a>
-          </div>
-        </section>
-
-      </main>
-    </div>
-  </div>
-
-  <!-- Edit Content Modal -->
-  <div id="editModal" class="modal"
-    style="display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
-    <div class="modal-content"
-      style="background-color:#fefefe; margin:15% auto; padding:20px; border:1px solid #888; width:50%; border-radius:8px;">
-      <span class="close" onclick="closeEditModal()"
-        style="color:#aaa; float:right; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
-      <h2>Edit Reported Content</h2>
-      <form action="<?= BASE_URL ?>/moderator/edit-reported-content" method="POST">
-        <input type="hidden" name="report_id" id="editReportId">
-        <input type="hidden" name="post_id" id="editPostId">
-
-        <div style="margin-bottom: 15px;">
-          <label for="editContent" style="display:block; margin-bottom:5px;">Content:</label>
-          <textarea name="content" id="editContent" rows="6"
-            style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary"
-          style="border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Save Changes</button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    const editModal = document.getElementById('editModal');
-
-    function openEditModal(report) {
-      document.getElementById('editReportId').value = report.id;
-      document.getElementById('editPostId').value = report.content_id;
-
-      const txt = document.createElement("textarea");
-      txt.innerHTML = report.full_content || report.content;
-
-      document.getElementById('editContent').value = txt.value;
-
-      editModal.style.display = "block";
-    }
-
-    function closeEditModal() {
-      editModal.style.display = "none";
-    }
-
-    window.onclick = function (event) {
-      if (event.target == editModal) {
-        closeEditModal();
-      }
-    }
-  </script>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>
+</script>
 </body>
 
 </html>

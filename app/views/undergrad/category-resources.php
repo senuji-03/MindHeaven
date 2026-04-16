@@ -284,8 +284,15 @@ require BASE_PATH . '/app/views/layouts/header.php';
       if (resource.youtube_url) {
           window.open(resource.youtube_url, '_blank');
       } else {
+          // Robust ID extraction
+          const rid = resource.id || resource.ID;
+          if (!rid) {
+              console.error("Resource ID missing:", resource);
+              alert("Unable to open resource details: ID not found.");
+              return;
+          }
           const viewUrlBase = '<?= $viewUrl ?? (BASE_URL . "/ug/viewResource") ?>';
-          window.location.href = viewUrlBase + '?id=' + resource.id;
+          window.location.href = viewUrlBase + '?id=' + rid;
       }
   }
 

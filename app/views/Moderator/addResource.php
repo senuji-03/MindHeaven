@@ -1,332 +1,405 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moderator - Add Resource</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/Admin/style.css">
-    <style>
-        /* Shared Styles from EditPosts */
-        .main-content { 
-            padding: 2rem; 
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            min-height: 100vh;
-        }
-        
-        header h1 { 
-            margin: 0 0 1rem 0; 
-            font-size: 2rem; 
-            color: #1e293b;
-            text-align: center;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .card { 
-            background: #fff; 
-            border: 1px solid #e5e7eb; 
-            border-radius: 16px; 
-            padding: 2rem; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .stack { display: grid; gap: 1.5rem; }
-        .form-rows { display: grid; gap: 1rem; }
-        .form-row { display: grid; grid-template-columns: 200px 1fr; align-items: center; gap: 1rem; }
-        .form-row label { margin: 0; font-weight: 600; color: #374151; }
-        
-        input[type="text"], input[type="file"], select, textarea {
-            width: 100%; 
-            padding: 0.75rem 1rem; 
-            border: 2px solid #e5e7eb; 
-            border-radius: 12px; 
-            font-size: 1rem; 
-            outline: none;
-            background: #fafafa;
-        }
-        
-        textarea { min-height: 160px; resize: vertical; }
+<?php 
+$TITLE = 'Add New Resource';
+$CURRENT_PAGE = 'resource-hub';
+require BASE_PATH . '/app/views/layouts/header.php'; 
+?>
 
-        .actions { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; }
-        
-        .btn { 
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem; 
-            border-radius: 12px; 
-            border: 2px solid transparent; 
-            background: #3b82f6; 
-            color: #fff; 
-            cursor: pointer; 
-            text-decoration: none; 
-            font-weight: 600;
-            min-width: 120px;
-            justify-content: center;
-        }
-        
-        .btn-primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-        .btn-secondary { background: #6b7280; }
+<style>
 
-        .form-wrapper { max-width: 800px; margin: 2rem auto; }
-        
-        .section-header-bar { 
-            background: linear-gradient(135deg, #1e3a8a, #1e40af); 
-            color: #ffffff; 
-            padding: 1.25rem 1.5rem; 
-            border-radius: 16px 16px 0 0; 
-        }
-        
-        .section-header-bar h2 { margin: 0; color: #ffffff; font-size: 1.5rem; font-weight: 700; }
-        .card.flush-top { border-top-left-radius: 0; border-top-right-radius: 0; }
+    /* ── FORM LAYOUT ── */
+    .form-wrapper {
+        max-width: 860px;
+        margin: 0 auto 60px;
+    }
 
-        .file-upload-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            background: #f8fafc;
-        }
+    .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding: 0 4px;
+    }
 
-        .alert { padding: 1rem 1.5rem; border-radius: 12px; margin: 1rem 0; font-size: 1rem; border-left: 4px solid; }
-        .alert.success { background: #ecfdf5; color: #065f46; border-left-color: #10b981; }
-        .alert.error { background: #fef2f2; color: #991b1b; border-left-color: #ef4444; }
+    .card-header-flex h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
+    .mod-form-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .form-rows {
+        display: grid;
+        gap: 24px;
+    }
+
+    .form-group-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .form-group-row label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        margin-top: 12px;
+    }
+
+    /* ── INPUTS ── */
+    .form-input-lib {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1.8px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        background: var(--bg-mid);
+        transition: all 0.25s ease;
+        outline: none;
+        color: var(--text-primary);
+    }
+
+    .form-input-lib:focus {
+        border-color: var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 5px rgba(61, 139, 110, 0.12);
+    }
+
+    textarea.form-input-lib {
+        resize: vertical;
+        min-height: 100px;
+        line-height: 1.6;
+    }
+
+    /* ── CONTENT TYPE SUB-CARDS ── */
+    .type-fields-card {
+        background: var(--bg-soft);
+        border: 1.5px dashed var(--border);
+        border-radius: var(--radius-md);
+        padding: 32px;
+        margin-top: 32px;
+        display: none; /* Controlled by JS */
+    }
+
+    .type-fields-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0 0 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* ── UPLOAD AREA ── */
+    .upload-box {
+        background: #fff;
+        border: 2px dashed var(--border);
+        border-radius: var(--radius-md);
+        padding: 40px 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-secondary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .upload-box:hover {
+        border-color: var(--primary);
+        background: var(--bg-mid);
+        color: var(--primary);
+    }
+
+    .upload-box i {
+        font-size: 2rem;
+        opacity: 0.5;
+        transition: all 0.3s ease;
+    }
+
+    .upload-box:hover i {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+
+    .upload-box strong {
+        color: var(--primary);
+        word-break: break-all;
+    }
+
+    /* ── ALERTS ── */
+    .alert-box {
+        padding: 18px 24px;
+        border-radius: var(--radius-md);
+        margin-bottom: 32px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-left: 4px solid;
+    }
+
+    .alert-success { background: var(--bg-mid); color: #1e3a34; border-left-color: var(--success); }
+    .alert-error { background: rgba(214, 79, 79, 0.05); color: #7f1d1d; border-left-color: var(--crisis); }
+
+    /* ── ACTIONS ── */
+    .form-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        margin-top: 48px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .form-group-row {
+            grid-template-columns: 1fr;
+            gap: 8px;
         }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p><?= (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? 'Admin Panel' : 'Moderator Panel' ?></p>
-        </div>
-        
-        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/admin" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item">
-                <span class="icon">👥</span>
-                Manage Users
-            </a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
-                <span class="icon">💬</span>
-                Moderate Forum
-            </a>
-            <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
-                <span class="icon">📅</span>
-                Appointments
-            </a>
-            <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
-                <span class="icon">📈</span>
-                System Reports
-            </a>
-            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
-                <span class="icon">🏛️</span>
-                University Events
-            </a>
-            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
-                <span class="icon">💰</span>
-                Donation Logs
-            </a>
-            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
-        </nav>
-        <?php else: ?>
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="nav-item">
-                <span class="icon">📚</span>
-                Resource Hub
-            </a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
-                <span class="icon">💬</span>
-                Moderate Forum
-            </a>
-        </nav>
+        .form-group-row label {
+            margin-top: 0;
+        }
+        .mod-form-card {
+            padding: 24px;
+        }
+    }
+</style>
+
+<div class="main-content" style="padding: 40px; background: var(--surface);">
+    <div class="add-page-header">
+        <h1>Add New Resource</h1>
+        <p>Curate high-quality wellness materials for the Mind Heaven community. Select your content type and fill out the details below.</p>
+    </div>
+
+    <div class="form-wrapper">
+        <!-- Status Alerts -->
+        <?php if (isset($_GET['created'])): ?>
+            <div class="alert-box alert-success">
+                <i class="fas fa-check-circle"></i> Resource added successfully to the library!
+            </div>
+        <?php elseif (isset($_GET['error'])): ?>
+            <div class="alert-box alert-error">
+                <i class="fas fa-triangle-exclamation"></i> Error: <?= htmlspecialchars($_GET['error']) ?>
+            </div>
         <?php endif; ?>
 
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <span class="icon">🚪</span>
-                Logout
+        <div class="card-header-flex">
+            <h2><i class="fas fa-book-medical" style="color:var(--primary);"></i> Resource Details</h2>
+            <a href="<?= BASE_URL ?>/resource-categories" class="btn btn-outline" style="border-radius: var(--radius-full); font-size: 0.85rem; padding: 8px 16px;">
+                <i class="fas fa-tags"></i> Manage Categories
             </a>
         </div>
-    </div>
 
-    <div class="main-content">
-        <header><h1>Add New Resource</h1></header>
-
-        <div class="form-wrapper">
-            <?php if (isset($_GET['created'])): ?>
-                <div class="alert success">✅ Resource created successfully!</div>
-            <?php elseif (isset($_GET['error'])): ?>
-                <div class="alert error">❌ Error: <?= htmlspecialchars($_GET['error']) ?></div>
-            <?php endif; ?>
-
-            <div class="section-header-bar" style="display: flex; justify-content: space-between; align-items: center;">
-                <h2>📚 Resource Details</h2>
-                <a href="<?= BASE_URL ?>/resource-categories" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); border: 1px solid white; min-width: auto; padding: 0.5rem 1rem;">⚙️ Manage Categories</a>
-            </div>
-            
-            <section class="card flush-top stack">
-                <form id="addPostForm" action="<?= BASE_URL ?>/Moderator/resource/create" method="POST" enctype="multipart/form-data" class="stack">
-                    <div class="form-rows">
-                        <div class="form-row">
-                            <label for="postName">Resource Title</label>
-                            <input id="postName" type="text" name="title" placeholder="Enter a descriptive title" required>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="category">Category</label>
-                            <select id="category" name="category" required>
-                                <option value="">Select a category</option>
-                                <?php foreach ($categories as $cat): ?>
-                                    <option value="<?= htmlspecialchars($cat['name']) ?>"><?= htmlspecialchars($cat['name']) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="contentTypeSelect">Content Type</label>
-                            <select name="content_type" id="contentTypeSelect" required>
-                                <option value="">Select content type</option>
-                                <option value="article">📝 Article</option>
-                                <option value="video">🎥 Video</option>
-                                <option value="audio">🎵 Audio</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="summary">Summary (Optional)</label>
-                            <textarea id="summary" name="summary" rows="3" placeholder="Brief description..."></textarea>
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="tags">Tags</label>
-                            <input id="tags" type="text" name="tags" placeholder="anxiety, stress, etc." />
-                        </div>
-                        
-                        <div class="form-row">
-                            <label for="status">Status</label>
-                            <select name="status" id="status">
-                                <option value="draft">📝 Draft</option>
-                                <option value="published">✅ Published</option>
-                                <option value="archived">📦 Archived</option>
-                            </select>
-                        </div>
+        <div class="mod-form-card">
+            <form id="addPostForm" action="<?= BASE_URL ?>/Moderator/resource/create" method="POST" enctype="multipart/form-data">
+                <div class="form-rows">
+                    <div class="form-group-row">
+                        <label for="postName">Title</label>
+                        <input id="postName" type="text" name="title" class="form-input-lib" placeholder="e.g. Managing Daily Stress" required>
                     </div>
 
-                    <!-- Type Specific Fields -->
-                    <div id="articleFields" class="stack card" style="display:none; border: 1px solid #e5e7eb; padding: 1.5rem;">
-                        <h3>📝 Article Content</h3>
-                        <div class="form-row">
-                            <label for="articleImage">Featured Image</label>
-                            <div class="file-upload-area" id="articleImageUpload">
-                                <input id="articleImage" type="file" name="article_image" accept="image/*" style="display: none;">
-                                <p>📁 Click to upload image</p>
+                    <div class="form-group-row">
+                        <label for="category">Category</label>
+                        <select id="category" name="category" class="form-input-lib" required>
+                            <option value="">Select a category</option>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?= htmlspecialchars($cat['name']) ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label for="contentTypeSelect">Content Type</label>
+                        <select name="content_type" id="contentTypeSelect" class="form-input-lib" required>
+                            <option value="">Select format</option>
+                            <option value="article">📝 Article</option>
+                            <option value="video">🎥 Video</option>
+                            <option value="audio">🎵 Audio</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label for="summary">Summary</label>
+                        <textarea id="summary" name="summary" class="form-input-lib" rows="3" placeholder="Briefly describe what students will learn..."></textarea>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label for="tags">Keywords/Tags</label>
+                        <input id="tags" type="text" name="tags" class="form-input-lib" placeholder="stress-relief, meditation, anxiety" />
+                    </div>
+
+                    <div class="form-group-row">
+                        <label for="status">Publish Status</label>
+                        <select name="status" id="status" class="form-input-lib">
+                            <option value="draft">Draft (Private)</option>
+                            <option value="published">Published (Public)</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+
+                    <!-- Type Specific Sections (Dynamic) -->
+                    
+                    <!-- Article Fields -->
+                    <div id="articleFields" class="type-fields-card">
+                        <h3><i class="fas fa-file-lines"></i> Article Content</h3>
+                        <div class="form-rows">
+                            <div class="form-group-row">
+                                <label>Featured Image</label>
+                                <div class="upload-box" id="articleImageUpload">
+                                    <i class="fas fa-image"></i>
+                                    <span>Click to upload header image (Max 2MB)</span>
+                                    <input id="articleImage" type="file" name="article_image" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="form-group-row">
+                                <label for="articleContent">Text Body</label>
+                                <textarea id="articleContent" name="article_content" class="form-input-lib" rows="12" placeholder="Write or paste your article content here..."></textarea>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <label for="articleContent">Content</label>
-                            <textarea id="articleContent" name="content" rows="12"></textarea>
-                        </div>
                     </div>
 
-                    <div id="videoFields" class="stack card" style="display:none; border: 1px solid #e5e7eb; padding: 1.5rem;">
-                        <h3>🎥 Video Content</h3>
-                        <div class="form-row">
-                            <label for="videoFile">Video File</label>
-                            <div class="file-upload-area" id="videoFileUpload">
-                                <input id="videoFile" type="file" name="video_file" accept="video/*" style="display: none;">
-                                <p>📁 Click to upload video</p>
+                    <!-- Video Fields -->
+                    <div id="videoFields" class="type-fields-card">
+                        <h3><i class="fas fa-video"></i> Video Content</h3>
+                        <div class="form-rows">
+                            <div class="form-group-row">
+                                <label>Video File</label>
+                                <div class="upload-box" id="videoFileUpload">
+                                    <i class="fas fa-clapperboard"></i>
+                                    <span>Click to upload video file (Max 2MB)</span>
+                                    <input id="videoFile" type="file" name="video_file" accept="video/*" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="form-group-row" style="padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 8px 0;">
+                                <div style="text-align: center; width: 100%; color: var(--text-secondary); font-size: 0.85rem; font-weight: 700;">OR USE YOUTUBE</div>
+                            </div>
+                            <div class="form-group-row">
+                                <label for="youtubeUrl">YouTube Link</label>
+                                <input id="youtubeUrl" type="url" name="youtube_url" class="form-input-lib" placeholder="https://youtube.com/watch?v=..." />
+                            </div>
+                            <div class="form-group-row">
+                                <label for="videoDescription">Description</label>
+                                <textarea id="videoDescription" name="video_content" class="form-input-lib" rows="6" placeholder="Additional details about the video..."></textarea>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <label for="youtubeUrl">YouTube Link</label>
-                            <input id="youtubeUrl" type="url" name="youtube_url" placeholder="https://..." />
-                        </div>
-                        <div class="form-row">
-                            <label for="videoDescription">Description</label>
-                            <textarea id="videoDescription" name="content" rows="6"></textarea>
-                        </div>
                     </div>
 
-                    <div id="audioFields" class="stack card" style="display:none; border: 1px solid #e5e7eb; padding: 1.5rem;">
-                        <h3>🎵 Audio Content</h3>
-                        <div class="form-row">
-                            <label for="audioFile">Audio File</label>
-                            <div class="file-upload-area" id="audioFileUpload">
-                                <input id="audioFile" type="file" name="audio_file" accept="audio/*" style="display: none;">
-                                <p>📁 Click to upload audio</p>
+                    <!-- Audio Fields -->
+                    <div id="audioFields" class="type-fields-card">
+                        <h3><i class="fas fa-headphones"></i> Audio Content</h3>
+                        <div class="form-rows">
+                            <div class="form-group-row">
+                                <label>Audio File</label>
+                                <div class="upload-box" id="audioFileUpload">
+                                    <i class="fas fa-microphone-lines"></i>
+                                    <span>Click to upload audio/podcast file (Max 2MB)</span>
+                                    <input id="audioFile" type="file" name="audio_file" accept="audio/*" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="form-group-row">
+                                <label for="audioDescription">Description</label>
+                                <textarea id="audioDescription" name="audio_content" class="form-input-lib" rows="6" placeholder="Additional details about the audio content..."></textarea>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <label for="audioDescription">Description</label>
-                            <textarea id="audioDescription" name="content" rows="6"></textarea>
-                        </div>
                     </div>
 
-                    <div class="actions">
-                        <button class="btn btn-secondary" type="reset">🗑️ Clear</button>
-                        <button class="btn btn-primary" type="submit">💾 Create Resource</button>
+                    <div class="form-actions">
+                        <button class="btn btn-outline" type="reset" style="border-radius: var(--radius-full); padding: 12px 32px;">
+                            <i class="fas fa-rotate-left"></i> Reset Form
+                        </button>
+                        <button class="btn btn-primary" type="submit" id="submitBtn" style="border-radius: var(--radius-full); padding: 12px 40px; box-shadow: var(--shadow-md);">
+                            <i class="fas fa-save"></i> Create Resource
+                        </button>
                     </div>
-                </form>
-            </section>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <script>
-    (function(){
-        const select = document.getElementById('contentTypeSelect');
-        const sections = {
-            article: document.getElementById('articleFields'),
-            video: document.getElementById('videoFields'),
-            audio: document.getElementById('audioFields')
-        };
-        
-        function updateVisibility(){
-            Object.keys(sections).forEach(key => {
+<script>
+(function(){
+    const select = document.getElementById('contentTypeSelect');
+    const sections = {
+        article: document.getElementById('articleFields'),
+        video: document.getElementById('videoFields'),
+        audio: document.getElementById('audioFields')
+    };
+    
+    function updateVisibility(){
+        Object.keys(sections).forEach(key => {
+            if(sections[key]) {
                 sections[key].style.display = (select.value === key) ? 'block' : 'none';
-            });
-        }
-        
-        select.addEventListener('change', updateVisibility);
-        document.getElementById('addPostForm').addEventListener('reset', () => setTimeout(updateVisibility, 0));
+            }
+        });
+    }
+    
+    select.addEventListener('change', updateVisibility);
+    document.getElementById('addPostForm').addEventListener('reset', () => setTimeout(updateVisibility, 0));
 
-        // Simplified file upload display
-        function setupFile(areaId, inputId) {
-            const area = document.getElementById(areaId);
-            const input = document.getElementById(inputId);
-            area.onclick = () => input.click();
-            input.onchange = () => {
-                if (input.files.length > 0) {
-                    area.innerHTML = `<strong>✅ ${input.files[0].name}</strong>`;
-                }
-            };
-        }
-        setupFile('articleImageUpload', 'articleImage');
-        setupFile('videoFileUpload', 'videoFile');
-        setupFile('audioFileUpload', 'audioFile');
+    // File upload logic
+    function setupFile(areaId, inputId, defaultText) {
+        const area = document.getElementById(areaId);
+        const input = document.getElementById(inputId);
+        if(!area || !input) return;
 
-        document.getElementById('addPostForm').onsubmit = function() {
-            const btn = this.querySelector('button[type="submit"]');
-            btn.innerHTML = '⏳ Creating...';
-            btn.disabled = true;
+        area.onclick = (e) => {
+            if(e.target !== input) input.click();
         };
-    })();
-    </script>
-</body>
-</html>
+        input.onchange = () => {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                const maxSize = 2 * 1024 * 1024; // 2MB
+                
+                if (file.size > maxSize) {
+                    area.removeChild(input);
+                    area.innerHTML = `<i class="fas fa-circle-exclamation" style="color:var(--crisis); opacity:1;"></i> <strong style="color:var(--crisis);">File too large (${(file.size/1024/1024).toFixed(2)}MB)</strong> <span style="font-size:0.8rem; display:block; margin-top:4px;">Max limit is 2MB</span>`;
+                    area.style.borderColor = 'var(--crisis)';
+                    area.style.background = 'rgba(214, 79, 79, 0.05)';
+                    area.appendChild(input);
+                    input.value = ""; // Clear the input
+                    return;
+                }
+
+                area.removeChild(input);
+                area.innerHTML = `<i class="fas fa-file-circle-check" style="color:var(--success); opacity:1;"></i> <strong>${file.name}</strong> <span style="font-size:0.8rem; display:block; margin-top:4px;">Click to change</span>`;
+                area.style.borderColor = 'var(--success)';
+                area.style.background = 'rgba(61, 139, 110, 0.05)';
+                area.appendChild(input);
+            } else {
+                area.removeChild(input);
+                area.innerHTML = `<i class="fas fa-upload"></i> <span>${defaultText}</span>`;
+                area.style.borderColor = 'var(--border)';
+                area.style.background = '#fff';
+                area.appendChild(input);
+            }
+        };
+    }
+    setupFile('articleImageUpload', 'articleImage', 'Click to upload header image');
+    setupFile('videoFileUpload', 'videoFile', 'Click to upload video file');
+    setupFile('audioFileUpload', 'audioFile', 'Click to upload audio/podcast file');
+
+    document.getElementById('addPostForm').onsubmit = function() {
+        const btn = document.getElementById('submitBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        btn.disabled = true;
+    };
+})();
+</script>
+
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

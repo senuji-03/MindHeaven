@@ -1,8 +1,8 @@
 <?php
 $TITLE = 'MindHeaven — ' . htmlspecialchars($resource['title']);
 $CURRENT_PAGE = 'resources';
-$PAGE_CSS = ['/MindHeaven/public/css/undergrad/resources.css'];
-$PAGE_JS = ['/MindHeaven/public/js/undergrad/resources.js'];
+$PAGE_CSS = array('/MindHeaven/public/css/undergrad/resources.css');
+$PAGE_JS = array('/MindHeaven/public/js/undergrad/resources.js');
 
 require BASE_PATH . '/app/views/layouts/header.php';
 
@@ -10,167 +10,169 @@ $isImage = false;
 $isPdf = false;
 if (!empty($resource['file_path'])) {
     $ext = strtolower(pathinfo($resource['file_path'], PATHINFO_EXTENSION));
-    $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+    $isImage = in_array($ext, array('jpg', 'jpeg', 'png', 'gif', 'webp'));
     $isPdf = ($ext === 'pdf');
 }
 ?>
 
-<main id="main" class="resources-main" style="padding-top: 2rem;">
-    <div class="container" style="max-width: 900px; margin: 0 auto; padding: 2rem;">
-        <a href="<?= $categoryBaseUrl ?? (BASE_URL . '/ug/category-resources') ?>?category=<?= urlencode($resource['category']) ?>"
-            class="btn btn-secondary" style="margin-bottom: 2rem;">&larr; Back to
-            <?= htmlspecialchars($resource['category']) ?></a>
+<main id="main" class="resources-details-page" style="padding: 48px 0; background: var(--bg-soft); min-height: 100vh;">
+    <div class="container" style="max-width: 1000px; margin: 0 auto;">
+        
+        <!-- Back Navigation -->
+        <div style="margin-bottom: 32px;">
+            <a href="<?= isset($categoryBaseUrl) ? $categoryBaseUrl : (BASE_URL . '/ug/category-resources') ?>?category=<?= urlencode($resource['category']) ?>"
+                class="btn btn-outline" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> 
+                Back to <?= htmlspecialchars($resource['category']) ?>
+            </a>
+        </div>
 
-        <div
-            style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem;">
-            <div style="margin-bottom: 1rem;">
-                <span
-                    style="background: #eee; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; text-transform: capitalize; margin-bottom: 1rem; display: inline-block;">
+        <!-- Main Content Card -->
+        <article class="card" style="padding: 48px; margin-bottom: 32px; border: none; box-shadow: var(--shadow-sm);">
+            <header style="margin-bottom: 40px;">
+                <span class="section-label" style="display: inline-block; background: var(--bg-mid); color: var(--primary-dark); padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 700; margin-bottom: 16px;">
                     <?= htmlspecialchars($resource['content_type']) ?>
                 </span>
-                <h1 style="font-size: 2.5rem; margin: 0.5rem 0; color: #222;">
+                <h1 class="section-title" style="font-size: 2.8rem; margin: 0 0 16px; text-align: left; color: var(--text-primary);">
                     <?= htmlspecialchars($resource['title']) ?>
                 </h1>
+                <div style="display: flex; align-items: center; gap: 12px; color: var(--text-secondary); font-size: 0.9rem;">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>Published in <?= htmlspecialchars($resource['category']) ?></span>
+                </div>
+            </header>
+
+            <div style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 40px; border-left: 4px solid var(--primary-light); padding-left: 24px; line-height: 1.6;">
+                <?= nl2br(htmlspecialchars($resource['summary'])) ?>
             </div>
 
-            <p
-                style="font-size: 1.2rem; color: #666; margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1.5rem;">
-                <?= nl2br(htmlspecialchars($resource['summary'])) ?>
-            </p>
-
-            <div class="content" style="font-size: 1.1rem; line-height: 1.8; color: #333; margin-bottom: 2rem;">
+            <div class="resource-content-body" style="margin-bottom: 48px;">
                 <?php if (!empty($resource['file_path'])): ?>
                     <?php
-                    // Build properly URL-encoded path (encode each path segment separately)
                     $pathParts = explode('/', ltrim($resource['file_path'], '/'));
                     $encodedPath = implode('/', array_map('rawurlencode', $pathParts));
                     $cleanPath = BASE_URL . '/' . $encodedPath;
                     ?>
-                    <?php if ($isImage): ?>
-                        <img src="<?= htmlspecialchars($cleanPath) ?>" alt="Resource file"
-                            style="max-width: 100%; border-radius: 8px;">
-                    <?php elseif ($isPdf): ?>
-                        <iframe src="<?= htmlspecialchars($cleanPath) ?>" width="100%" height="800px"
-                            style="border: none; border-radius: 8px;"></iframe>
-                    <?php elseif ($resource['content_type'] === 'video'): ?>
-                        <video controls src="<?= htmlspecialchars($cleanPath) ?>"
-                            style="max-width: 100%; border-radius: 8px;"></video>
-                    <?php elseif ($resource['content_type'] === 'audio'):
-                        $audioExt = strtolower(pathinfo($resource['file_path'], PATHINFO_EXTENSION));
-                        $mimeMap = ['mp3' => 'audio/mpeg', 'ogg' => 'audio/ogg', 'oga' => 'audio/ogg', 'wav' => 'audio/wav', 'm4a' => 'audio/mp4'];
-                        $audioMime = $mimeMap[$audioExt] ?? 'audio/mpeg';
-                        ?>
-                        <div style="background: #f8f9fa; border-radius: 12px; padding: 2rem; text-align: center;">
-                            <p style="font-size: 1rem; color: #555; margin-bottom: 1rem;">🎧
-                                <?= htmlspecialchars($resource['file_name'] ?? 'Audio File') ?>
-                            </p>
-                            <audio controls style="width: 100%;" preload="auto">
-                                <source src="<?= htmlspecialchars($cleanPath) ?>" type="<?= $audioMime ?>">
-                                Your browser does not support audio playback.
-                            </audio>
-                            <p style="margin-top: 1rem;">
-                                <a href="<?= htmlspecialchars($cleanPath) ?>" target="_blank"
-                                    style="color: #2563eb; font-size: 0.9rem;">▶ Open audio directly if player doesn't work</a>
-                            </p>
-                        </div>
-                    <?php else: ?>
-                        <div style="padding: 2rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
-                            <a href="<?= htmlspecialchars($cleanPath) ?>" target="_blank" class="btn btn-primary">Open File</a>
-                        </div>
-                    <?php endif; ?>
+                    
+                    <div class="file-display-container" style="background: var(--bg-soft); border-radius: var(--radius-lg); padding: 12px; margin-bottom: 32px; border: 1px solid var(--border);">
+                        <?php if ($isImage): ?>
+                            <img src="<?= htmlspecialchars($cleanPath) ?>" alt="Resource detail image"
+                                style="width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: block;">
+                        <?php elseif ($isPdf): ?>
+                            <div style="position: relative; overflow: hidden; border-radius: var(--radius-md);">
+                                <iframe src="<?= htmlspecialchars($cleanPath) ?>" width="100%" height="800px" style="border: none;"></iframe>
+                            </div>
+                        <?php elseif ($resource['content_type'] === 'video'): ?>
+                            <div style="position: relative; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 16/9;">
+                                <video controls src="<?= htmlspecialchars($cleanPath) ?>" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                            </div>
+                        <?php elseif ($resource['content_type'] === 'audio'): ?>
+                            <div style="background: var(--surface); border-radius: var(--radius-md); padding: 32px; text-align: center; border: 1px dashed var(--border);">
+                                <div style="width: 56px; height: 56px; background: var(--bg-mid); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.4rem;">
+                                    <i class="fas fa-headphones"></i>
+                                </div>
+                                <h4 style="margin-bottom: 12px; color: var(--text-primary);"><?= htmlspecialchars(isset($resource['file_name']) ? $resource['file_name'] : 'Wellness Audio Session') ?></h4>
+                                <audio controls style="width: 100%; max-width: 500px;" preload="auto">
+                                    <source src="<?= htmlspecialchars($cleanPath) ?>">
+                                </audio>
+                            </div>
+                        <?php else: ?>
+                            <div style="padding: 40px; background: var(--surface); border-radius: var(--radius-md); text-align: center; border: 1.5px dashed var(--border);">
+                                <i class="far fa-file-alt" style="font-size: 2.5rem; color: var(--text-secondary); margin-bottom: 16px;"></i>
+                                <p style="margin-bottom: 20px; color: var(--text-secondary);">This resource contains an external attachment.</p>
+                                <a href="<?= htmlspecialchars($cleanPath) ?>" target="_blank" class="btn btn-primary">
+                                    <i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> View Full Document
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 <?php endif; ?>
 
                 <?php if (!empty($resource['content'])): ?>
-                    <div style="margin-top: 2rem;">
+                    <div class="text-content" style="font-size: 1.05rem; line-height: 1.75; color: var(--text-primary); letter-spacing: -0.01em;">
                         <?= $resource['content'] ?>
                     </div>
                 <?php endif; ?>
             </div>
 
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 1.5rem; margin-top: 1rem;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <button class="like-button <?= in_array($resource['id'], $userLikes ?? []) ? 'liked' : '' ?>"
+            <!-- Interaction Bar -->
+            <footer style="display: flex; justify-content: space-between; align-items: center; padding-top: 32px; border-top: 1.5px solid var(--bg-mid);">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <button class="like-button-fancy <?= in_array($resource['id'], isset($userLikes) ? $userLikes : array()) ? 'liked' : '' ?>"
                         onclick="toggleLikeDetail(this, <?= $resource['id'] ?>)"
-                        style="background: transparent; border: none; cursor: pointer; padding: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8f9fa; transition: transform 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-                            role="presentation" focusable="false"
-                            style="display: block; fill: rgba(0, 0, 0, 0.5); height: 28px; width: 28px; stroke: white; stroke-width: 2; overflow: visible; transition: fill 0.2s ease, stroke 0.2s ease;">
-                            <path
-                                d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
-                            </path>
-                        </svg>
+                        title="Mark as helpful"
+                        style="width: 52px; height: 52px; border-radius: 50%; border: none; background: var(--bg-soft); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; box-shadow: var(--shadow-sm);">
+                        <i class="fas fa-heart" style="font-size: 1.4rem; color: #94a3b8; transition: color 0.3s ease;"></i>
+                        <span class="like-ripple"></span>
                     </button>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-weight: 600; color: #222; font-size: 1.1rem;">Do you find this helpful?</span>
-                        <span style="font-weight: 500; color: #666; font-size: 0.95rem;"><span
-                                id="detail-likes-count-<?= $resource['id'] ?>"><?= $resource['likes'] ?? 0 ?></span>
-                            people liked this</span>
+                    <div style="line-height: 1.4;">
+                        <span style="display: block; font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Do you find this helpful?</span>
+                        <span style="color: var(--text-secondary); font-size: 0.85rem;">
+                            <span id="detail-likes-count-<?= $resource['id'] ?>" style="font-weight: 600; color: var(--primary);"><?= isset($resource['likes']) ? $resource['likes'] : 0 ?></span> users appreciated this
+                        </span>
                     </div>
                 </div>
 
-                <div style="position: relative;">
-                    <button onclick="toggleDropdown(event, 'actionDropdown<?= $resource['id'] ?>')" title="More actions"
-                        style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999; padding: 0.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: background 0.2s, color 0.2s;"
-                        onmouseover="this.style.background='#f1f5f9'; this.style.color='#334155'"
-                        onmouseout="this.style.background='none'; this.style.color='#999'">
-                        &#8942;
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline" onclick="copyResourceLink()" title="Share Link">
+                        <i class="fas fa-share-alt"></i> Share
                     </button>
-                    <!-- Dropdown Menu -->
-                    <div id="actionDropdown<?= $resource['id'] ?>" class="dropdown-menu"
-                        style="display: none; position: absolute; bottom: 100%; right: 0; margin-bottom: 0.5rem; background: #2d2d2d; color: #fff; border-radius: 4px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: max-content; z-index: 10;">
-                        <button
-                            onclick="document.getElementById('reportModal').style.display='flex'; toggleDropdown(event, 'actionDropdown<?= $resource['id'] ?>')"
-                            style="background: transparent; border: none; color: #fff; width: 100%; padding: 0.75rem 1.25rem; text-align: left; cursor: pointer; font-family: inherit; font-size: 0.95rem; display: flex; align-items: center; gap: 0.75rem; transition: background 0.2s;"
-                            onmouseover="this.style.background='#444'" onmouseout="this.style.background='transparent'">
-                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
-                                fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                                <line x1="4" y1="22" x2="4" y2="15"></line>
-                            </svg>
-                            Report
+                    <div style="position: relative;">
+                        <button onclick="toggleDropdown(event, 'actionDropdown<?= $resource['id'] ?>')" class="btn btn-outline" style="width: 42px; padding: 0;">
+                            <i class="fas fa-ellipsis-v"></i>
                         </button>
+                        <div id="actionDropdown<?= $resource['id'] ?>" class="dropdown-menu-modern"
+                            style="display: none; position: absolute; bottom: 100%; right: 0; margin-bottom: 12px; background: white; min-width: 180px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-lg); overflow: hidden; z-index: 100;">
+                            <button onclick="openReportModal()" style="width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; cursor: pointer; color: var(--crisis); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem;">
+                                <i class="fas fa-flag"></i> Report Resource
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </footer>
+        </article>
 
         <!-- Comments Section -->
-        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 1.5rem; color: #222; margin-bottom: 1.5rem;">Comments (<?= count($comments) ?>)</h3>
+        <section class="card" style="padding: 40px; border: none; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
+                <h3 style="font-size: 1.4rem; font-weight: 700; margin: 0;">Discussion</h3>
+                <span style="background: var(--bg-mid); color: var(--primary); padding: 2px 10px; border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 600;">
+                    <?= count($comments) ?> Comments
+                </span>
+            </div>
 
-            <form action="<?= $addCommentUrl ?? (BASE_URL . '/ug/addComment') ?>" method="POST"
-                style="margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 1rem;">
+            <form action="<?= isset($addCommentUrl) ? $addCommentUrl : (BASE_URL . '/ug/addComment') ?>" method="POST" style="margin-bottom: 40px;">
                 <input type="hidden" name="resource_id" value="<?= $resource['id'] ?>">
-                <textarea name="comment" rows="3" placeholder="Add a comment..." required
-                    style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
-                <div style="display: flex; justify-content: flex-end;">
-                    <button type="submit" class="btn btn-primary"
-                        style="background: #2563eb; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s ease;">Post
-                        Comment</button>
+                <div style="position: relative;">
+                    <textarea name="comment" rows="1" class="comment-input" placeholder="Share your perspective..." required
+                        style="width: 100%; padding: 18px; border: 1.5px solid var(--border); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; transition: all 0.3s ease; resize: none; overflow: hidden; min-height: 56px;"
+                        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <button type="submit" style="position: absolute; right: 10px; bottom: 8px; background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
                 </div>
             </form>
 
-            <div class="comments-list" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="comments-list" style="display: flex; flex-direction: column; gap: 24px;">
                 <?php if (empty($comments)): ?>
-                    <p style="color: #666; font-style: italic; text-align: center; padding: 2rem 0;">No comments yet. Be the
-                        first to share your thoughts!</p>
+                    <div style="text-align: center; padding: 40px; background: var(--bg-soft); border-radius: var(--radius-md); border: 1.5px dashed var(--border);">
+                        <i class="far fa-comments" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 8px;"></i>
+                        <p style="color: var(--text-secondary); margin: 0;">No thoughts shared yet. Start the conversation!</p>
+                    </div>
                 <?php else: ?>
                     <?php foreach ($comments as $comment): ?>
-                        <div style="display: flex; gap: 1rem; border-bottom: 1px solid #eee; padding-bottom: 1.5rem;">
-                            <div
-                                style="width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #64748b; font-size: 1.2rem; flex-shrink: 0;">
-                                <?= strtoupper(substr($comment['user_name'] ?? 'U', 0, 1)) ?>
+                        <div class="comment-item" style="display: flex; gap: 16px; padding-bottom: 24px; border-bottom: 1.2px solid var(--bg-mid);">
+                            <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                <?= strtoupper(substr(isset($comment['user_name']) ? $comment['user_name'] : 'U', 0, 1)) ?>
                             </div>
                             <div style="flex-grow: 1;">
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">
-                                    <strong
-                                        style="color: #334155; font-size: 1.05rem;"><?= htmlspecialchars($comment['user_name'] ?? 'User') ?></strong>
-                                    <span
-                                        style="font-size: 0.85rem; color: #94a3b8;"><?= date('M j, Y, g:i a', strtotime($comment['created_at'])) ?></span>
+                                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                                    <strong style="color: var(--text-primary); font-size: 0.98rem;"><?= htmlspecialchars(isset($comment['user_name']) ? $comment['user_name'] : 'User') ?></strong>
+                                    <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 500;">
+                                        <?= date('M j, Y', strtotime($comment['created_at'])) ?>
+                                    </span>
                                 </div>
-                                <p style="margin: 0; color: #475569; line-height: 1.5; font-size: 1rem;">
+                                <p style="margin: 0; color: var(--text-primary); line-height: 1.6; font-size: 0.95rem;">
                                     <?= nl2br(htmlspecialchars($comment['comment'])) ?>
                                 </p>
                             </div>
@@ -178,26 +180,24 @@ if (!empty($resource['file_path'])) {
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-        </div>
+        </section>
     </div>
 </main>
 
-<!-- Report Modal -->
-<div id="reportModal"
-    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; padding: 1rem;">
-    <div
-        style="background: white; width: 100%; max-width: 500px; border-radius: 12px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-        <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: #222;">Report Resource</h3>
-        <p style="color: #666; margin-bottom: 2rem; font-size: 0.95rem;">Please let us know why you are reporting this
-            resource. Your feedback helps keep MindHeaven safe.</p>
+<!-- Report Modal Modernized -->
+<div id="reportModal" style="display: none; position: fixed; inset: 0; background: rgba(28, 43, 42, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 2000; padding: 24px;">
+    <div class="card" style="width: 100%; max-width: 500px; padding: 32px; box-shadow: var(--shadow-xl); border: none; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <header style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 8px; color: var(--crisis); font-size: 1.4rem;">Report Resource</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Your report helps us maintain high accuracy and safety standards.</p>
+        </header>
 
         <form id="reportForm">
             <input type="hidden" id="reportResourceId" value="<?= $resource['id'] ?>">
 
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">Reason</label>
-                <select id="reportReason" required
-                    style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 1rem;">
+            <div style="margin-bottom: 20px;">
+                <label class="form-label">Select Reason</label>
+                <select id="reportReason" required class="form-input">
                     <option value="" disabled selected>Select a reason...</option>
                     <option value="Inappropriate content">Inappropriate content</option>
                     <option value="Misinformation">Misinformation</option>
@@ -207,56 +207,92 @@ if (!empty($resource['file_path'])) {
                 </select>
             </div>
 
-            <div style="margin-bottom: 2rem;">
-                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">Description
-                    (Optional)</label>
-                <textarea id="reportDescription" rows="3" placeholder="Provide more details..."
-                    style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
+            <div style="margin-bottom: 32px;">
+                <label class="form-label">Additional Context (Optional)</label>
+                <textarea id="reportDescription" rows="3" class="form-input" placeholder="Provide more details..."></textarea>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-                <button type="button" onclick="document.getElementById('reportModal').style.display='none'"
-                    style="padding: 0.75rem 1.5rem; border: 1px solid #ddd; background: transparent; border-radius: 8px; font-weight: 600; color: #555; cursor: pointer;">Cancel</button>
-                <button type="submit"
-                    style="padding: 0.75rem 1.5rem; border: none; background: #dc2626; color: white; border-radius: 8px; font-weight: 600; cursor: pointer;">Submit
-                    Report</button>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" onclick="closeReportModal()" class="btn btn-outline" style="border: none; background: var(--bg-soft);">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background: var(--crisis);">
+                    <i class="fas fa-flag" style="margin-right: 6px;"></i> Send Report
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <style>
-    .like-button.liked svg {
-        fill: #ff385c !important;
-        stroke: #ff385c !important;
-    }
+/* Transitions and Animations for Details Page */
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
 
-    .like-button:hover {
-        transform: scale(1.1);
-    }
+.like-button-fancy.liked i {
+    color: var(--crisis) !important;
+    animation: heartBeat 0.4s ease;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.comment-input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(61, 139, 110, 0.1) !important;
+    outline: none;
+}
+
+.dropdown-menu-modern {
+    animation: dropDown 0.2s ease-out;
+}
+
+@keyframes dropDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-primary:active { transform: translateY(0) scale(0.98); }
 </style>
 
 <script>
+    function openReportModal() {
+        document.getElementById('reportModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeReportModal() {
+        document.getElementById('reportModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    function copyResourceLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            const btn = event.currentTarget;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => btn.innerHTML = originalHtml, 2000);
+        });
+    }
+
+    // Reuse existing toggleDropdown and toggleLikeDetail functions from original file, but optimized
     function toggleDropdown(event, id) {
         event.stopPropagation();
         const dropdown = document.getElementById(id);
         const isVisible = dropdown.style.display === 'block';
-
-        // Hide all other open dropdowns
-        document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
-
-        // Toggle targeted dropdown
+        document.querySelectorAll('[id^="actionDropdown"]').forEach(el => el.style.display = 'none');
         dropdown.style.display = isVisible ? 'none' : 'block';
     }
 
-    document.addEventListener('click', function (event) {
-        if (!event.target.closest('[id^=actionDropdown]') && !event.target.closest('button[onclick^="toggleDropdown"]')) {
-            document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
-        }
+    document.addEventListener('click', () => {
+        document.querySelectorAll('[id^="actionDropdown"]').forEach(el => el.style.display = 'none');
     });
 
     function toggleLikeDetail(btn, resourceId) {
-        const likeUrlBase = '<?= $likeUrl ?? (BASE_URL . "/ug/likeResource") ?>';
+        const likeUrlBase = '<?= isset($likeUrl) ? $likeUrl : (BASE_URL . "/ug/likeResource") ?>';
         fetch(likeUrlBase, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -272,49 +308,38 @@ if (!empty($resource['file_path'])) {
                     btn.classList.remove('liked');
                     countSpan.textContent = Math.max(0, count - 1);
                 }
-            } else {
-                alert("Error processing like request.");
             }
-        }).catch(err => {
-            console.error("Like error:", err);
-        });
+        }).catch(err => console.error("Like error:", err));
     }
 
     document.getElementById('reportForm').addEventListener('submit', function (e) {
         e.preventDefault();
-
         const resourceId = document.getElementById('reportResourceId').value;
         const reason = document.getElementById('reportReason').value;
         const description = document.getElementById('reportDescription').value;
-
         const submitBtn = this.querySelector('button[type="submit"]');
+        
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting...';
-
-        const reportUrlBase = '<?= $reportResourceUrl ?? (BASE_URL . "/ug/reportResource") ?>';
+        
+        const reportUrlBase = '<?= isset($reportResourceUrl) ? $reportResourceUrl : (BASE_URL . "/ug/reportResource") ?>';
         fetch(reportUrlBase, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ resource_id: resourceId, reason: reason, description: description })
         })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Thank you. Your report has been submitted successfully.');
-                    document.getElementById('reportModal').style.display = 'none';
-                    this.reset();
-                } else {
-                    alert(data.error || 'Failed to submit report. You may have already reported this item or exceeded your daily limit.');
-                }
-            })
-            .catch(err => {
-                console.error("Report error:", err);
-                alert('An error occurred while submitting your report.');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Report';
-            });
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Thank you. Your report has been submitted.');
+                closeReportModal();
+                this.reset();
+            } else {
+                alert(data.error || 'Failed to submit report.');
+            }
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+        });
     });
 </script>
 
