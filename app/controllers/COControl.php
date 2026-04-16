@@ -58,7 +58,7 @@ class COControl
             $pdo = Database::getConnection();
             $stmt = $pdo->query("SELECT c.*, COALESCE(u.full_name, u.username, 'Anonymous') AS caller_name 
                                  FROM crisis_calls c 
-                                 LEFT JOIN users u ON c.caller_user_id = u.id 
+                                 LEFT JOIN users u ON c.caller_id = u.id 
                                  WHERE c.status = 'escalated' 
                                  ORDER BY c.created_at DESC LIMIT 5");
             $escalatedCalls = $stmt->fetchAll(PDO::FETCH_ASSOC);
