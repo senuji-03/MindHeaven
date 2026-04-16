@@ -59,20 +59,25 @@ class ModeratorControl
                 $resourcesByCategory[$cat][] = $resource;
             }
             $stats = $resourceHub->getStats();
+            $categories = $resourceHub->getCategories();
+            
             view('undergrad/resources', array(
                 'resources'           => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
-                    'stats'               => $stats,
-                    'lastUpdated'         => date('Y-m-d H:i:s'),
-                    'categoryBaseUrl'     => BASE_URL . '/Moderator/category-resources'
-                ));
+                'categories'          => $categories,
+                'stats'               => $stats,
+                'lastUpdated'         => date('Y-m-d H:i:s'),
+                'categoryBaseUrl'     => BASE_URL . '/Moderator/category-resources'
+            ));
         } catch (Exception $e) {
             view('undergrad/resources', array(
                 'resources'           => array(),
                 'resourcesByCategory' => array(),
+                'categories'          => array(),
                 'stats'               => array('total_resources' => 0, 'published' => 0),
-                'error'               => 'Unable to load resources.',
-                'lastUpdated'         => date('Y-m-d H:i:s')
+                'error'               => 'Unable to load resources: ' . $e->getMessage(),
+                'lastUpdated'         => date('Y-m-d H:i:s'),
+                'categoryBaseUrl'     => BASE_URL . '/Moderator/category-resources'
             ));
         }
     }
@@ -174,6 +179,7 @@ class ModeratorControl
 
     public function createResource()
     {
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/EditPosts');
             exit;
@@ -196,6 +202,16 @@ class ModeratorControl
                 exit;
             }
 
+            // Determine the correct content field based on content type
+            $rawContent = '';
+            if ($contentType === 'article') {
+                $rawContent = isset($_POST['article_content']) ? $_POST['article_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            } elseif ($contentType === 'video') {
+                $rawContent = isset($_POST['video_content']) ? $_POST['video_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            } elseif ($contentType === 'audio') {
+                $rawContent = isset($_POST['audio_content']) ? $_POST['audio_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            }
+
             $data = array(
                 'title' => $title,
                 'category' => $category,
@@ -204,32 +220,38 @@ class ModeratorControl
                 'tags' => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
                 'status' => isset($_POST['status']) ? $_POST['status'] : 'draft',
                 'created_by' => $userId,
-                'content' => trim(isset($_POST['content']) ? $_POST['content'] : ''),
+                'content' => trim($rawContent),
                 'youtube_url' => trim(isset($_POST['youtube_url']) ? $_POST['youtube_url'] : '') ? trim($_POST['youtube_url']) : null,
             );
 
             // Handle file upload based on content type
             if ($contentType === 'article') {
-                if (isset($_FILES['article_image']) && $_FILES['article_image']['error'] === 0) {
+                if (isset($_FILES['article_image']) && !empty($_FILES['article_image']['name'])) {
                     $uploadResult = $this->handleFileUpload($_FILES['article_image'], 'images');
                     if ($uploadResult['success']) {
                         $data['file_path'] = $uploadResult['path'];
                         $data['file_name'] = $uploadResult['name'];
                         $data['file_size'] = $uploadResult['size'];
                         $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/AddResource?error=' . urlencode($uploadResult['error']));
+                        exit;
                     }
                 }
             } else {
                 $fileField = $contentType === 'video' ? 'video_file' : 'audio_file';
                 $uploadDir = $contentType === 'video' ? 'videos' : 'audio';
 
-                if (isset($_FILES[$fileField]) && $_FILES[$fileField]['error'] === 0) {
+                if (isset($_FILES[$fileField]) && !empty($_FILES[$fileField]['name'])) {
                     $uploadResult = $this->handleFileUpload($_FILES[$fileField], $uploadDir);
                     if ($uploadResult['success']) {
                         $data['file_path'] = $uploadResult['path'];
                         $data['file_name'] = $uploadResult['name'];
                         $data['file_size'] = $uploadResult['size'];
                         $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/AddResource?error=' . urlencode($uploadResult['error']));
+                        exit;
                     }
                 }
             }
@@ -287,7 +309,7 @@ class ModeratorControl
             }
 
             $categories = $resourceHub->getCategories();
-            view('Moderator/editResource', ['resource' => $resource, 'categories' => $categories]);
+            view('Moderator/editResource', array('resource' => $resource, 'categories' => $categories));
 
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/EditPosts?error=load_failed');
@@ -297,13 +319,14 @@ class ModeratorControl
 
     public function updateResource()
     {
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/EditPosts');
             exit;
         }
 
         try {
-            $resourceId = (int) ($_POST['id'] ?? 0);
+            $resourceId = (int) (isset($_POST['id']) ? $_POST['id'] : 0);
             if ($resourceId <= 0) {
                 header('Location: ' . BASE_URL . '/EditPosts?error=invalid_id');
                 exit;
@@ -329,6 +352,16 @@ class ModeratorControl
                 exit;
             }
 
+            // Determine the correct content field based on content type
+            $rawContent = '';
+            if ($contentType === 'article') {
+                $rawContent = isset($_POST['article_content']) ? $_POST['article_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            } elseif ($contentType === 'video') {
+                $rawContent = isset($_POST['video_content']) ? $_POST['video_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            } elseif ($contentType === 'audio') {
+                $rawContent = isset($_POST['audio_content']) ? $_POST['audio_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            }
+
             $data = array(
                 'title'        => $title,
                 'category'     => $category,
@@ -336,7 +369,7 @@ class ModeratorControl
                 'summary'      => $summary,
                 'tags'         => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
                 'status'       => isset($_POST['status']) ? $_POST['status'] : 'draft',
-                'content'      => trim(isset($_POST['content']) ? $_POST['content'] : ''),
+                'content'      => trim($rawContent),
                 'youtube_url'  => trim(isset($_POST['youtube_url']) ? $_POST['youtube_url'] : '') ? trim($_POST['youtube_url']) : null,
                 // Preserve existing file info by default
                 'file_path'    => $existing['file_path'],
@@ -347,26 +380,32 @@ class ModeratorControl
 
             // Handle file upload based on content type
             if ($contentType === 'article') {
-                if (isset($_FILES['article_image']) && $_FILES['article_image']['error'] === 0) {
+                if (isset($_FILES['article_image']) && !empty($_FILES['article_image']['name'])) {
                     $uploadResult = $this->handleFileUpload($_FILES['article_image'], 'images');
                     if ($uploadResult['success']) {
                         $data['file_path'] = $uploadResult['path'];
                         $data['file_name'] = $uploadResult['name'];
                         $data['file_size'] = $uploadResult['size'];
                         $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/EditPosts?error=' . urlencode($uploadResult['error']));
+                        exit;
                     }
                 }
             } else {
                 $fileField = $contentType === 'video' ? 'video_file' : 'audio_file';
                 $uploadDir = $contentType === 'video' ? 'videos' : 'audio';
 
-                if (isset($_FILES[$fileField]) && $_FILES[$fileField]['error'] === 0) {
+                if (isset($_FILES[$fileField]) && !empty($_FILES[$fileField]['name'])) {
                     $uploadResult = $this->handleFileUpload($_FILES[$fileField], $uploadDir);
                     if ($uploadResult['success']) {
                         $data['file_path'] = $uploadResult['path'];
                         $data['file_name'] = $uploadResult['name'];
                         $data['file_size'] = $uploadResult['size'];
                         $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/EditPosts?error=' . urlencode($uploadResult['error']));
+                        exit;
                     }
                 }
             }
@@ -383,22 +422,34 @@ class ModeratorControl
 
     private function handleFileUpload($file, $uploadDir)
     {
-        // Allowed types per category
-        $allowedTypes = array(
-            'images'    => array('image/jpeg', 'image/png', 'image/gif', 'image/webp'),
-            'videos'    => array('video/mp4', 'video/avi', 'video/quicktime', 'video/x-msvideo'),
-            'audio'     => array('audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/m4a', 'audio/x-m4a'),
-            'resources' => array('image/jpeg', 'image/png', 'image/gif', 'image/webp',
-                            'video/mp4', 'video/avi', 'video/quicktime',
-                            'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/mp4'),
+        // Check for PHP upload errors (especially useful for 2MB limit)
+        if ($file['error'] !== 0) {
+            $errorMap = array(
+                1 => 'File exceeds upload_max_filesize (2MB).',
+                2 => 'File exceeds MAX_FILE_SIZE in form.',
+                3 => 'File only partially uploaded.',
+                4 => 'No file was uploaded.',
+                6 => 'Missing temporary folder.',
+                7 => 'Failed to write to disk.',
+                8 => 'A PHP extension stopped the upload.'
+            );
+            $msg = isset($errorMap[$file['error']]) ? $errorMap[$file['error']] : 'Unknown upload error (code: ' . $file['error'] . ')';
+            return ['success' => false, 'error' => $msg];
+        }
+
+        // Allowed types per category (Extensions)
+        $allowedExts = array(
+            'images'    => array('jpg', 'jpeg', 'png', 'gif', 'webp'),
+            'videos'    => array('mp4', 'avi', 'mov', 'wmv'),
+            'audio'     => array('mp3', 'wav', 'm4a', 'ogg'),
+            'resources' => array('pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'mp4', 'mp3'),
         );
 
-        $mimeType = mime_content_type($file['tmp_name']);
-        $allowed  = isset($allowedTypes[$uploadDir]) ? $allowedTypes[$uploadDir] : array();
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = isset($allowedExts[$uploadDir]) ? $allowedExts[$uploadDir] : array();
 
-        if (!empty($allowed) && !in_array($mimeType, $allowed)) {
-            error_log("File upload rejected — mime type '{$mimeType}' not allowed in '{$uploadDir}'.");
-            return ['success' => false, 'error' => 'File type not allowed.'];
+        if (!empty($allowed) && !in_array($ext, $allowed)) {
+            return ['success' => false, 'error' => 'File extension ".' . $ext . '" not allowed in ' . $uploadDir . '.'];
         }
 
         // Always store under public/uploads/resources/ for simplicity
@@ -406,7 +457,7 @@ class ModeratorControl
         $uploadPath = BASE_PATH . '/public/uploads/' . $storeDir . '/';
 
         if (!is_dir($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
+            @mkdir($uploadPath, 0755, true);
         }
 
         $safeBase   = preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($file['name']));
@@ -419,12 +470,11 @@ class ModeratorControl
                 'path'    => 'uploads/resources/' . $fileName,
                 'name'    => $file['name'],
                 'size'    => $file['size'],
-                'type'    => $mimeType,
+                'type'    => $ext, // Storing extension as type for consistency
             ];
         }
 
-        error_log("move_uploaded_file failed: tmp={$file['tmp_name']} target={$targetPath}");
-        return ['success' => false, 'error' => 'Could not move uploaded file.'];
+        return ['success' => false, 'error' => 'Server error: Could not move file to final destination. Check folder permissions.'];
     }
 
     public function reportedResources()
@@ -551,7 +601,7 @@ class ModeratorControl
             $input = json_decode(file_get_contents('php://input'), true);
             if (isset($input['resource_id'], $input['reason'])) {
                 $resourceHub = new ResourceHub();
-                $success = $resourceHub->reportResource($input['resource_id'], $_SESSION['user_id'], $input['reason'], $input['description'] ?? '');
+                $success = $resourceHub->reportResource($input['resource_id'], $_SESSION['user_id'], $input['reason'], isset($input['description']) ? $input['description'] : '');
                 header('Content-Type: application/json');
                 if ($success) {
                     echo json_encode(['success' => true]);

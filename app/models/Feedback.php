@@ -203,4 +203,22 @@ class Feedback
         $stmt->execute(array(':id' => $feedback_id, ':user_id' => $user_id));
         return $stmt->fetchColumn() > 0;
     }
+
+    /**
+     * Get average ratings for multiple counselors in bulk.
+     * @param array $counselorIds
+     * @return array Mapping of counselor_id => avg_rating
+     */
+    public function getAvgRatingsBulk($counselorIds)
+    {
+        if (empty($counselorIds)) return array();
+        $placeholders = str_repeat('?,', count($counselorIds) - 1) . '?';
+        $sql = "SELECT counselor_id, AVG(rating) as avg_rating 
+                FROM feedback 
+                WHERE counselor_id IN ($placeholders) 
+                GROUP BY counselor_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($counselorIds);
+        return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
 }

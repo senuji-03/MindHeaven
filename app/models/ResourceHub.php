@@ -16,7 +16,7 @@ class ResourceHub {
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             
-            $result = $stmt->execute(array(
+            $values = array(
                 $data['title'],
                 $data['category'],
                 $data['content_type'],
@@ -30,11 +30,14 @@ class ResourceHub {
                 isset($data['tags']) ? $data['tags'] : null,
                 isset($data['status']) ? $data['status'] : 'draft',
                 $data['created_by']
-            ));
+            );
+
+            $result = $stmt->execute($values);
             
             // Log successful creation
             if ($result) {
-                error_log("Resource created successfully: " . $data['title'] . " (Status: " . ($data['status'] ?? 'draft') . ")");
+                $statusLog = isset($data['status']) ? $data['status'] : 'draft';
+                error_log("Resource created successfully: " . $data['title'] . " (Status: " . $statusLog . ")");
             }
             
             return $result;
@@ -53,7 +56,7 @@ class ResourceHub {
             $params[] = $status;
         }
         
-        $sql .= " ORDER BY likes DESC, created_at DESC";
+        $sql .= " ORDER BY likes_count DESC, created_at DESC";
         
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
@@ -98,13 +101,13 @@ class ResourceHub {
     }
 
     public function getByCategory($category, $status = 'published') {
-        $stmt = $this->pdo->prepare("SELECT * FROM resource_hub WHERE category = ? AND status = ? ORDER BY likes DESC, created_at DESC");
+        $stmt = $this->pdo->prepare("SELECT * FROM resource_hub WHERE category = ? AND status = ? ORDER BY likes_count DESC, created_at DESC");
         $stmt->execute(array($category, $status));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getByContentType($contentType) {
-        $stmt = $this->pdo->prepare("SELECT * FROM resource_hub WHERE content_type = ? AND status = 'published' ORDER BY likes DESC, created_at DESC");
+        $stmt = $this->pdo->prepare("SELECT * FROM resource_hub WHERE content_type = ? AND status = 'published' ORDER BY likes_count DESC, created_at DESC");
         $stmt->execute(array($contentType));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -114,7 +117,7 @@ class ResourceHub {
             SELECT * FROM resource_hub 
             WHERE (title LIKE ? OR content LIKE ? OR summary LIKE ? OR tags LIKE ?) 
             AND status = 'published' 
-            ORDER BY likes DESC, created_at DESC
+            ORDER BY likes_count DESC, created_at DESC
         ");
         $searchTerm = "%" . $query . "%";
         $stmt->execute(array($searchTerm, $searchTerm, $searchTerm, $searchTerm));
@@ -124,7 +127,7 @@ class ResourceHub {
     public function getCategories()
     {
         $pdo = Database::getConnection();
-        $stmt = $pdo->query("SELECT name, description FROM resource_categories WHERE is_active = 1 ORDER BY name ASC");
+        $stmt = $pdo->query("SELECT name, description, thumbnail FROM resource_categories WHERE is_active = 1 ORDER BY name ASC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -157,15 +160,15 @@ class ResourceHub {
         if ($stmt->fetch()) {
             $stmt = $this->pdo->prepare("DELETE FROM resource_likes WHERE resource_id = ? AND user_id = ?");
             $stmt->execute(array($resourceId, $userId));
-            $stmt = $this->pdo->prepare("UPDATE resource_hub SET likes = GREATEST(0, likes - 1) WHERE id = ?");
+            $stmt = $this->pdo->prepare("UPDATE resource_hub SET likes_count = GREATEST(0, likes_count - 1) WHERE id = ?");
             $stmt->execute(array($resourceId));
-            return ['action' => 'unliked'];
+            return array('action' => 'unliked');
         } else {
             $stmt = $this->pdo->prepare("INSERT INTO resource_likes (resource_id, user_id) VALUES (?, ?)");
             $stmt->execute(array($resourceId, $userId));
-            $stmt = $this->pdo->prepare("UPDATE resource_hub SET likes = likes + 1 WHERE id = ?");
+            $stmt = $this->pdo->prepare("UPDATE resource_hub SET likes_count = likes_count + 1 WHERE id = ?");
             $stmt->execute(array($resourceId));
-            return ['action' => 'liked'];
+            return array('action' => 'liked');
         }
     }
 

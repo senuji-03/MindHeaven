@@ -39,7 +39,11 @@ class DonationControl
             exit;
         }
 
-        view('donation/event-form', array('event' => $event));
+        view('donation/event-form', array(
+            'event' => $event,
+            'TITLE' => 'Donate to ' . $event['event_title'],
+            'CURRENT_PAGE' => 'donation'
+        ));
     }
 
     public function startPayHereCheckout()
@@ -73,9 +77,8 @@ class DonationControl
             $stmt = $pdo->prepare("SELECT full_name, email FROM users WHERE id = ?");
             $stmt->execute(array($donorId));
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            $donorName = trim($user['full_name'] ?? '');
-            $donorEmail = trim($user['email'] ?? '');
+            $donorName = trim(isset($user['full_name']) ? $user['full_name'] : '');
+            $donorEmail = trim(isset($user['email']) ? $user['email'] : '');
             $donorPhone = $donorPhone !== '' ? $donorPhone : '0771234567';
         } else {
             if ($donorName === '' || $donorEmail === '' || $donorPhone === '') {
@@ -138,7 +141,7 @@ class DonationControl
             'amount' => $formattedAmount,
             'first_name' => $firstName,
             'last_name' => $lastName,
-            'email' => $donorEmail !== '' ? $donorEmail : 'guest@example.com',
+            'email' => count($nameParts) > 1 && $donorEmail !== '' ? $donorEmail : 'guest@example.com',
             'phone' => $donorPhone !== '' ? $donorPhone : '0771234567',
             'address' => 'Not Provided',
             'city' => 'Colombo',
@@ -182,7 +185,7 @@ class DonationControl
 
     public function payhereCancel()
     {
-        $transactionId = $_GET['order_id'] ?? null;
+        $transactionId = isset($_GET['order_id']) ? $_GET['order_id'] : null;
 
         if (!$transactionId) {
             $_SESSION['error'] = 'Invalid cancel request.';

@@ -1039,6 +1039,38 @@ ob_start();
         line-height: 1.6;
     }
 
+    .counselor-card-stats {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        margin: 14px 0;
+        padding: 10px 0;
+        border-top: 1px dashed var(--border);
+        border-bottom: 1px dashed var(--border);
+    }
+
+    .c-stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .c-stat-value {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .c-stat-label {
+        font-size: 0.68rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
     .counselor-card-footer {
         padding: 16px 22px;
         border-top: 1px solid var(--border);
@@ -1586,6 +1618,20 @@ if (!empty($counselors)):
                                         <?php endforeach; ?>
                                     </div>
                                 <?php endif; ?>
+
+                                <div class="counselor-card-stats">
+                                    <div class="c-stat-item">
+                                        <span class="c-stat-value"><?php echo (int)($counselor['completed_sessions'] ?? 0); ?></span>
+                                        <span class="c-stat-label">Sessions</span>
+                                    </div>
+                                    <div class="c-stat-item">
+                                        <span class="c-stat-value">
+                                            <i class="fas fa-star" style="color:var(--accent-warm); font-size:0.8rem; margin-right:2px;"></i>
+                                            <?php echo number_format((float)($counselor['avg_rating'] ?? 0), 1); ?>
+                                        </span>
+                                        <span class="c-stat-label">Rating</span>
+                                    </div>
+                                </div>
 
                                 <p class="counselor-bio"><?php echo $bioShort; ?></p>
                             </div>

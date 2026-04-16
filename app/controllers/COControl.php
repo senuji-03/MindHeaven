@@ -188,8 +188,23 @@ class COControl
         $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
         
         $qualifications = array();
+        $totalSessions = 0;
+        $avgRating = 0.0;
+
         if ($counselor && !empty($counselor['id'])) {
             $qualifications = $counselorModel->getQualifications($counselor['id']);
+            
+            // Fetch session stats
+            $appointmentModel = new Appointment();
+            $sessionStats = $appointmentModel->getSessionHistoryStats((int)$_SESSION['user_id']);
+            $totalSessions = $sessionStats['completed'] ?? 0;
+
+            // Fetch feedback stats (for average rating)
+            $feedbackModel = new Feedback();
+            $feedbackStats = $feedbackModel->getStats(array('counselor_id' => $counselor['id']));
+            if ($feedbackStats && isset($feedbackStats['avg_rating'])) {
+                $avgRating = round((float)$feedbackStats['avg_rating'], 1);
+            }
         }
 
         // Fetch donation history
@@ -199,7 +214,9 @@ class COControl
         view('/counselor/counselor_profile', array(
             'counselor' => $counselor,
             'qualifications' => $qualifications,
-            'donations' => $donations
+            'donations' => $donations,
+            'totalSessions' => $totalSessions,
+            'avgRating' => $avgRating
         ));
     }
 
@@ -607,30 +624,35 @@ class COControl
             $allResources = $resourceHub->getAll('published');
 
             // Group resources by category
-            $resourcesByCategory = [];
+            $resourcesByCategory = array();
             foreach ($allResources as $resource) {
                 $category = $resource['category'];
                 if (!isset($resourcesByCategory[$category])) {
-                    $resourcesByCategory[$category] = [];
+                    $resourcesByCategory[$category] = array();
                 }
                 $resourcesByCategory[$category][] = $resource;
             }
 
             // Get resource statistics
             $stats = $resourceHub->getStats();
+            $categories = $resourceHub->getCategories();
 
-            view('/counselor/Cresource_hub', [
+            view('/counselor/Cresource_hub', array(
                 'resources' => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
-                'stats' => $stats
-            ]);
+                'categories' => $categories,
+                'stats' => $stats,
+                'categoryBaseUrl' => BASE_URL . '/counselor/category-resources'
+            ));
         } catch (Exception $e) {
             error_log("Counselor ResourceHub Error: " . $e->getMessage());
-            view('/counselor/Cresource_hub', [
-                'resources' => [],
-                'resourcesByCategory' => [],
-                'stats' => ['total_resources' => 0, 'published' => 0]
-            ]);
+            view('/counselor/Cresource_hub', array(
+                'resources' => array(),
+                'resourcesByCategory' => array(),
+                'categories' => array(),
+                'stats' => array('total_resources' => 0, 'published' => 0),
+                'error' => $e->getMessage()
+            ));
         }
     }
 
@@ -640,20 +662,20 @@ class COControl
             require_once BASE_PATH . '/app/models/ResourceHub.php';
             $resourceHub = new ResourceHub();
 
-            $category = $_GET['category'] ?? '';
+            $category = isset($_GET['category']) ? $_GET['category'] : '';
             if (empty($category)) {
                 header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
                 exit;
             }
 
             $categoryResources = $resourceHub->getByCategory($category, 'published');
-            $userLikes = [];
+            $userLikes = array();
             if (isset($_SESSION['user_id'])) {
                 $userLikes = $resourceHub->getUserLikes($_SESSION['user_id']);
             }
 
             $allResources = $resourceHub->getAll('published');
-            $allCategories = [];
+            $allCategories = array();
             foreach ($allResources as $resource) {
                 $cat = $resource['category'];
                 if (!isset($allCategories[$cat])) {
@@ -664,20 +686,20 @@ class COControl
             }
 
             $categoriesList = $resourceHub->getCategories();
-            $categoryInfo = [];
+            $categoryInfo = array();
             foreach ($categoriesList as $cat) {
-                $categoryInfo[$cat['name']] = ['description' => $cat['description']];
+                $categoryInfo[$cat['name']] = array('description' => $cat['description']);
             }
-            $currentCategoryInfo = $categoryInfo[$category] ?? ['description' => 'Resources for ' . $category];
+            $currentCategoryInfo = isset($categoryInfo[$category]) ? $categoryInfo[$category] : array('description' => 'Resources for ' . $category);
 
-            view('/counselor/Ccategory_resources', [
+            view('/counselor/Ccategory_resources', array(
                 'category' => $category,
                 'categoryInfo' => $currentCategoryInfo,
                 'resources' => $categoryResources,
                 'allCategories' => $allCategories,
                 'totalResources' => count($categoryResources),
                 'userLikes' => $userLikes
-            ]);
+            ));
 
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=category_not_found');
@@ -704,18 +726,18 @@ class COControl
                 exit;
             }
 
-            $userLikes = [];
+            $userLikes = array();
             if (isset($_SESSION['user_id'])) {
                 $userLikes = $resourceHub->getUserLikes($_SESSION['user_id']);
             }
 
             $comments = $resourceHub->getComments($resourceId);
 
-            view('/counselor/Cresource_details', [
+            view('/counselor/Cresource_details', array(
                 'resource' => $resource,
                 'userLikes' => $userLikes,
                 'comments' => $comments
-            ]);
+            ));
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
             exit;
@@ -731,12 +753,12 @@ class COControl
                 $resourceHub = new ResourceHub();
                 $result = $resourceHub->toggleLike($input['resource_id'], $_SESSION['user_id']);
                 header('Content-Type: application/json');
-                echo json_encode(['success' => true, 'action' => $result['action']]);
+                echo json_encode(array('success' => true, 'action' => $result['action']));
                 exit;
             }
         }
         header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'error' => 'Invalid request']);
+        echo json_encode(array('success' => false, 'error' => 'Invalid request'));
         exit;
     }
 
@@ -768,19 +790,19 @@ class COControl
             if (isset($input['resource_id'], $input['reason'])) {
                 require_once BASE_PATH . '/app/models/ResourceHub.php';
                 $resourceHub = new ResourceHub();
-                $success = $resourceHub->reportResource($input['resource_id'], $_SESSION['user_id'], $input['reason'], $input['description'] ?? '');
+                $success = $resourceHub->reportResource($input['resource_id'], $_SESSION['user_id'], $input['reason'], isset($input['description']) ? $input['description'] : '');
                 
                 header('Content-Type: application/json');
                 if ($success) {
-                    echo json_encode(['success' => true]);
+                    echo json_encode(array('success' => true));
                 } else {
-                    echo json_encode(['success' => false, 'error' => 'Rate limit exceeded or duplicate report.']);
+                    echo json_encode(array('success' => false, 'error' => 'Rate limit exceeded or duplicate report.'));
                 }
                 exit;
             }
         }
         header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'error' => 'Invalid request']);
+        echo json_encode(array('success' => false, 'error' => 'Invalid request'));
         exit;
     }
     

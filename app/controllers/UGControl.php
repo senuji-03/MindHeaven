@@ -109,11 +109,11 @@ class UGControl
             $allResources = $resourceHub->getAll('published');
 
             // Group resources by category
-            $resourcesByCategory = [];
+            $resourcesByCategory = array();
             foreach ($allResources as $resource) {
                 $category = $resource['category'];
                 if (!isset($resourcesByCategory[$category])) {
-                    $resourcesByCategory[$category] = [];
+                    $resourcesByCategory[$category] = array();
                 }
                 $resourcesByCategory[$category][] = $resource;
             }
@@ -121,29 +121,34 @@ class UGControl
             // Get resource statistics
             $stats = $resourceHub->getStats();
 
+            // Fetch dynamic categories from the database
+            $categories = $resourceHub->getCategories();
+
             // Add last updated timestamp for debugging
             $lastUpdated = date('Y-m-d H:i:s');
 
-            view('undergrad/resources', [
+            view('undergrad/resources', array(
                 'resources' => $allResources,
                 'resourcesByCategory' => $resourcesByCategory,
+                'categories' => $categories,
                 'stats' => $stats,
                 'lastUpdated' => $lastUpdated,
                 'categoryBaseUrl' => BASE_URL . '/ug/category-resources'
-            ]);
+            ));
         } catch (Exception $e) {
             // Log the error for debugging
             error_log("ResourceHub Error: " . $e->getMessage());
 
             // Fallback to static view if database fails
-            view('undergrad/resources', [
-                'resources' => [],
-                'resourcesByCategory' => [],
-                'stats' => ['total_resources' => 0, 'published' => 0],
-                'error' => 'Unable to load resources. Please try again later.',
+            view('undergrad/resources', array(
+                'resources' => array(),
+                'resourcesByCategory' => array(),
+                'categories' => array(),
+                'stats' => array('total_resources' => 0, 'published' => 0),
+                'error' => $e->getMessage(),
                 'lastUpdated' => date('Y-m-d H:i:s'),
                 'categoryBaseUrl' => BASE_URL . '/ug/category-resources'
-            ]);
+            ));
         }
     }
 

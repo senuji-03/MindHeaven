@@ -19,7 +19,8 @@ if (!function_exists('is_active')) {
 }
 
 // Function to get navigation items based on user role
-function getNavigationItems($role)
+if (!function_exists('getNavigationItems')) {
+  function getNavigationItems($role)
 {
   $navItems = [
     'undergrad' => [
@@ -76,9 +77,8 @@ function getNavigationItems($role)
     'moderator' => [
       'main' => [
         ['icon' => 'fas fa-chart-bar', 'text' => 'Dashboard', 'url' => '/ModeratorDashboard', 'slug' => 'dashboard'],
-        ['icon' => 'fas fa-edit', 'text' => 'Edit Posts', 'url' => '/EditPosts', 'slug' => 'edit-posts'],
-        ['icon' => 'fas fa-flag', 'text' => 'Flagged Users', 'url' => '/FlaggedUsers', 'slug' => 'flagged-users'],
-        ['icon' => 'fas fa-exclamation-triangle', 'text' => 'Warn Users', 'url' => '/WarnForm', 'slug' => 'warn-form'],
+        ['icon' => 'fas fa-book', 'text' => 'Resource Hub', 'url' => '/Moderator/resource-hub', 'slug' => 'resource-hub'],
+        ['icon' => 'fas fa-comments', 'text' => 'Moderate Forum', 'url' => '/admin/moderate-forum', 'slug' => 'moderate-forum'],
       ]
     ],
     'call_responder' => [
@@ -95,6 +95,7 @@ function getNavigationItems($role)
   ];
 
   return $navItems[$role] ?? $navItems['undergrad'];
+}
 }
 
 // Get current user info

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderate Forum - <?= ($_SESSION['role'] === 'admin') ? 'Admin' : 'Moderator' ?> | Mind Haven</title>
+    <!-- Fonts and Icons (from Design System) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
         * {
@@ -13,10 +16,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'DM Sans', 'Inter', system-ui, -apple-system, sans-serif;
+            background: #F5F0E8; /* --bg-soft */
             min-height: 100vh;
-            color: #333;
+            color: #1E3A34; /* --text-primary */
         }
 
         .sidebar {
@@ -25,7 +28,7 @@
             top: 0;
             width: 280px;
             height: 100vh;
-            background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+            background: #1C2B2A; /* --bg-deep */
             color: white;
             z-index: 1000;
             box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
@@ -41,9 +44,7 @@
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: white;
         }
 
         .sidebar-header p {
@@ -68,13 +69,13 @@
         .nav-item:hover {
             background: rgba(255, 255, 255, 0.05);
             color: white;
-            border-left-color: #60a5fa;
+            border-left-color: #3D8B6E; /* --primary */
         }
 
         .nav-item.active {
-            background: rgba(96, 165, 250, 0.1);
-            color: #60a5fa;
-            border-left-color: #60a5fa;
+            background: rgba(61, 139, 110, 0.15);
+            color: white; /* Changed to white for better contrast */
+            border-left-color: #3D8B6E; /* --primary */
         }
 
         .nav-item .icon {
@@ -109,7 +110,7 @@
         .main-content {
             margin-left: 280px;
             min-height: 100vh;
-            background: #f8fafc;
+            background: #F5F0E8;
         }
 
         .topbar {
@@ -496,7 +497,7 @@
   <div class="sidebar">
     <div class="sidebar-header">
       <h2>🧠 Mind Haven</h2>
-      <p>Admin Panel</p>
+      <p><?= (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? 'Admin Panel' : 'Moderator Panel' ?></p>
     </div>
 
     <nav class="sidebar-nav">
@@ -538,25 +539,13 @@
                 <span class="icon">📊</span>
                 Dashboard
             </a>
-            <a href="<?= BASE_URL ?>/AddResource" class="nav-item">
-                <span class="icon">➕</span>
-                Add Resource
+            <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="nav-item">
+                <span class="icon">📚</span>
+                Resource Hub
             </a>
             <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
                 <span class="icon">💬</span>
                 Moderate Forum
-            </a>
-            <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
-                <span class="icon">🚨</span>
-                Reported Resources
-            </a>
-            <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
-                <span class="icon">🚩</span>
-                Flagged Users
-            </a>
-            <a href="<?= BASE_URL ?>/WarnForm" class="nav-item">
-                <span class="icon">⚠️</span>
-                Warn Users
             </a>
         <?php endif; ?>
     </nav>

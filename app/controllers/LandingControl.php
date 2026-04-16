@@ -7,15 +7,28 @@ class LandingControl
         $counselorModel = new Counselor();
         $counselors = $counselorModel->getApproved(8);
 
-        // Fetch qualifications for display
+        // Fetch bulk data for display
         $counselorIds = array();
+        $counselorUserIds = array();
         foreach ($counselors as $c) {
-            $counselorIds[] = $c['id'];
+            $counselorIds[] = (int) $c['id'];
+            $counselorUserIds[] = (int) $c['user_id'];
         }
+        
         $qualificationsMap = $counselorModel->getQualificationsBulk($counselorIds);
+        
+        require_once BASE_PATH . '/app/models/Appointment.php';
+        $appointmentModel = new Appointment();
+        $sessionCountsMap = $appointmentModel->getCompletedSessionsCountBulk($counselorUserIds);
+        
+        require_once BASE_PATH . '/app/models/Feedback.php';
+        $feedbackModel = new Feedback();
+        $avgRatingsMap = $feedbackModel->getAvgRatingsBulk($counselorIds);
 
         foreach ($counselors as &$counselor) {
             $counselor['qualifications'] = isset($qualificationsMap[$counselor['id']]) ? $qualificationsMap[$counselor['id']] : array();
+            $counselor['completed_sessions'] = $sessionCountsMap[$counselor['user_id']] ?? 0;
+            $counselor['avg_rating'] = $avgRatingsMap[$counselor['id']] ?? 0.0;
         }
         unset($counselor); // Clean up reference
 
