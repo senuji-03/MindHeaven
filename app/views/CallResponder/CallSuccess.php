@@ -34,7 +34,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 .logs-page-header p {
 	font-size: 0.95rem;
-	color: var(--text-secondary);
+	color: #000;
 	margin: 0;
 }
 
@@ -82,7 +82,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 	align-items: center;
 	gap: 16px;
 	font-size: 0.85rem;
-	color: var(--text-secondary);
+	color: #000;
 }
 
 .log-badge {
@@ -110,25 +110,39 @@ require BASE_PATH . '/app/views/layouts/header.php';
 	border-radius: var(--radius-md);
 	padding: 16px;
 	border: 1px solid var(--border);
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.log-notes-section:hover {
+	background: #f0f4f4;
 }
 
 .log-notes-label {
 	font-size: 0.82rem;
 	font-weight: 700;
 	text-transform: uppercase;
-	color: var(--text-secondary);
+	color: #000;
 	margin-bottom: 8px;
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	gap: 6px;
 }
 
 .log-notes-content {
 	font-size: 0.95rem;
-	color: var(--text-primary);
+	color: #000;
 	line-height: 1.6;
 	margin: 0;
 	white-space: pre-wrap;
+	max-height: 100px;
+	overflow: hidden;
+	transition: max-height 0.3s ease;
+}
+
+.log-notes-section.expanded .log-notes-content {
+	max-height: 2000px;
 }
 
 /* ═══ EMPTY STATE ══════════════════════════════════════════ */
@@ -186,9 +200,10 @@ require BASE_PATH . '/app/views/layouts/header.php';
 						</div>
 					</div>
 					
-					<div class="log-notes-section">
+					<div class="log-notes-section" onclick="this.classList.toggle('expanded')">
 						<div class="log-notes-label">
-							<i class="fas fa-file-medical"></i> Intervention Notes
+							<span><i class="fas fa-file-medical"></i> Intervention Notes</span>
+							<span style="font-size:0.7rem; color:var(--primary); font-weight:bold;">Click to Expand/Collapse</span>
 						</div>
 						<div class="log-notes-content"><?= $notes ?></div>
 					</div>

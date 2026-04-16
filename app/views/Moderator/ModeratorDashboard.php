@@ -281,25 +281,14 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
         <span class="icon">📊</span>
         Dashboard
       </a>
-      <a href="<?= BASE_URL ?>/AddResource" class="nav-item">
-        <span class="icon">➕</span>
-        Add Resource
+
+      <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="nav-item">
+        <span class="icon">📚</span>
+        Resource Hub
       </a>
-      <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-        <span class="icon">✏️</span>
-        Edit Resources
-      </a>
-      <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
-        <span class="icon">🚨</span>
-        Reported Resources
-      </a>
-      <a href="<?= BASE_URL ?>/FlaggedUsers" class="nav-item">
-        <span class="icon">🚩</span>
-        Flagged Users
-      </a>
-      <a href="<?= BASE_URL ?>/WarnForm" class="nav-item">
-        <span class="icon">⚠️</span>
-        Warn Users
+      <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
+        <span class="icon">💬</span>
+        Moderate Forum
       </a>
     </nav>
 
@@ -317,9 +306,6 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
     <div class="topbar">
       <h1>Moderator Dashboard</h1>
       <div class="topbar-right" style="display: flex; align-items: center; gap: 1.5rem;">
-        <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="btn btn-primary" style="text-decoration: none; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
-            📚 Resource Hub
-        </a>
         <div class="admin-profile">
           <span>Moderator</span>
           <div class="avatar">M</div>
@@ -356,147 +342,31 @@ $PAGE_JS = array(BASE_URL . '/js/undergrad/resources.js');
           </div>
         </section>
 
-        <!-- Quick Access -->
+        <!-- Quick Access Actions -->
         <section class="quick-access">
           <div class="section-header">
-            <h2 class="section-title">Moderation Tools</h2>
-            <p class="section-subtitle">Quick access to moderation features</p>
+            <h2 class="section-title">Resource Management</h2>
+            <p class="section-subtitle">Quick access to resource moderation tools</p>
           </div>
           <div class="quick-access-grid">
-            <a href="#flagged-posts" class="quick-access-item">
-              <div class="quick-access-icon">🚩</div>
-              <h3>Flagged Posts</h3>
-              <p>Review and moderate flagged content</p>
+            <a href="<?= BASE_URL ?>/AddResource" class="quick-access-item">
+              <div class="quick-access-icon">➕</div>
+              <h3>Add Resource</h3>
+              <p>Create and publish new educational materials</p>
             </a>
-            <a href="#pending-posts" class="quick-access-item">
-              <div class="quick-access-icon">⏳</div>
-              <h3>Pending Posts</h3>
-              <p>Approve or reject pending content</p>
-            </a>
-            <a href="<?= BASE_URL ?>/FlaggedUsers" class="quick-access-item">
-              <div class="quick-access-icon">👥</div>
-              <h3>Flagged Users</h3>
-              <p>Manage user warnings and actions</p>
+            <a href="<?= BASE_URL ?>/EditPosts" class="quick-access-item">
+              <div class="quick-access-icon">✏️</div>
+              <h3>Edit Resources</h3>
+              <p>Modify or update existing resource content</p>
             </a>
             <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="quick-access-item">
               <div class="quick-access-icon">🚨</div>
               <h3>Reported Resources</h3>
-              <p>Review and moderate reported resources</p>
+              <p>Review and resolve content flagged by users</p>
             </a>
           </div>
         </section>
 
-        <!-- Content Management -->
-        <section class="content-management">
-          <div class="section-header">
-            <h2 class="section-title">Content Management</h2>
-            <p class="section-subtitle">Review and moderate community content</p>
-          </div>
-
-          <div class="category-grid">
-            <!-- Flagged Posts -->
-            <div class="category-card">
-              <div class="category-header">
-                <div class="category-icon">🚩</div>
-                <h3 class="category-title">Flagged Posts</h3>
-              </div>
-              <div class="category-content">
-                <p class="category-description">Posts that have been reported by community members</p>
-                <?php if (empty($data['flaggedPosts'])): ?>
-                  <div class="empty-state">
-                    <p>No flagged posts at the moment 🎉</p>
-                  </div>
-                <?php else: ?>
-                  <div class="resource-list">
-                    <?php foreach ($data['flaggedPosts'] as $post): ?>
-                      <div class="resource-item">
-                        <div class="resource-content">
-                          <h4>Post #<?= $post['id']; ?></h4>
-                          <p>
-                            <?= htmlspecialchars(substr($post['content'], 0, 100)) . (strlen($post['content']) > 100 ? '...' : ''); ?>
-                          </p>
-                        </div>
-                        <div class="resource-actions">
-                          <a class="btn btn-sm btn-success" href="<?= BASE_URL ?>/moderator/approvePost/<?= $post['id']; ?>">Approve</a>
-                          <a class="btn btn-sm btn-danger" href="<?= BASE_URL ?>/moderator/deletePost/<?= $post['id']; ?>">Delete</a>
-                          <a class="btn btn-sm btn-secondary" href="<?= BASE_URL ?>/moderator/editPost/<?= $post['id']; ?>">Edit</a>
-                        </div>
-                      </div>
-                    <?php endforeach; ?>
-                  </div>
-                <?php endif; ?>
-              </div>
-            </div>
-
-            <!-- Pending Posts -->
-            <div class="category-card">
-              <div class="category-header">
-                <div class="category-icon">⏳</div>
-                <h3 class="category-title">Pending Posts</h3>
-              </div>
-              <div class="category-content">
-                <p class="category-description">Posts awaiting moderator approval</p>
-                <?php if (empty($data['pendingPosts'])): ?>
-                  <div class="empty-state">
-                    <p>No pending posts awaiting review ✅</p>
-                  </div>
-                <?php else: ?>
-                  <div class="resource-list">
-                    <?php foreach ($data['pendingPosts'] as $post): ?>
-                      <div class="resource-item">
-                        <div class="resource-content">
-                          <h4>Post #<?= $post['id']; ?></h4>
-                          <p>
-                            <?= htmlspecialchars(substr($post['content'], 0, 100)) . (strlen($post['content']) > 100 ? '...' : ''); ?>
-                          </p>
-                        </div>
-                        <div class="resource-actions">
-                          <a class="btn btn-sm btn-success" href="<?= BASE_URL ?>/moderator/approvePost/<?= $post['id']; ?>">Approve</a>
-                          <a class="btn btn-sm btn-danger" href="<?= BASE_URL ?>/moderator/deletePost/<?= $post['id']; ?>">Delete</a>
-                        </div>
-                      </div>
-                    <?php endforeach; ?>
-                  </div>
-                <?php endif; ?>
-              </div>
-            </div>
-
-            <!-- Flagged Users -->
-            <div class="category-card">
-              <div class="category-header">
-                <div class="category-icon">👥</div>
-                <h3 class="category-title">Flagged Users</h3>
-              </div>
-              <div class="category-content">
-                <p class="category-description">Users who have been reported or have strikes</p>
-                <?php if (empty($data['flaggedUsers'])): ?>
-                  <div class="empty-state">
-                    <p>No flagged users right now 🎉</p>
-                  </div>
-                <?php else: ?>
-                  <div class="resource-list">
-                    <?php foreach ($data['flaggedUsers'] as $user): ?>
-                      <div class="resource-item">
-                        <div class="resource-content">
-                          <h4><?= htmlspecialchars($user['username']); ?></h4>
-                          <p>Strikes: <?= $user['strikes']; ?></p>
-                        </div>
-                        <div class="resource-actions">
-                          <a class="btn btn-sm btn-warning" href="<?= BASE_URL ?>/moderator/warnUser/<?= $user['id']; ?>">Warn</a>
-                          <a class="btn btn-sm btn-success" href="<?= BASE_URL ?>/moderator/unflagUser/<?= $user['id']; ?>">Unflag</a>
-                          <a class="btn btn-sm btn-danger" href="<?= BASE_URL ?>/moderator/escalateUser/<?= $user['id']; ?>">Escalate</a>
-                        </div>
-                      </div>
-                    <?php endforeach; ?>
-                  </div>
-                  <div class="category-footer" style="margin-top: 1rem;">
-                    <a href="<?= BASE_URL ?>/FlaggedUsers" class="btn btn-outline btn-small">View All Users</a>
-                  </div>
-                <?php endif; ?>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
     </div>
   </div>

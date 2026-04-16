@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moderate Forum - Admin | Mind Haven</title>
+    <title>Moderate Forum - <?= ($_SESSION['role'] === 'admin') ? 'Admin' : 'Moderator' ?> | Mind Haven</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
         * {
@@ -500,86 +500,117 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a href="<?= BASE_URL ?>/admin" class="nav-item">
-        <span class="icon">📊</span>
-        Dashboard
-      </a>
-      <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item">
-        <span class="icon">👥</span>
-        Manage Users
-      </a>
-      <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
-        <span class="icon">📚</span>
-        Resource Hub
-      </a>
-      <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
-        <span class="icon">💬</span>
-        Moderate Forum
-      </a>
-      <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item">
-        <span class="icon">👨‍⚕️</span>
-        Manage Counselors
-      </a>
-      <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
-        <span class="icon">📅</span>
-        Appointments
-      </a>
-      <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
-        <span class="icon">📈</span>
-        Reports
-      </a>
-      <!-- Keywords and Automated Flags removed and moved to Moderate Forum -->            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
-                <span class="icon">???</span>
-                University Events
-            </a>
-      <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
-        <span class="icon">⚙️</span>
-        Settings
-      </a>
-                <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
+            <?php if ($_SESSION['role'] === 'admin'): ?>
+                <a href="<?= BASE_URL ?>/admin" class="nav-item">
+                    <span class="icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item">
+                    <span class="icon">👥</span>
+                    Manage Users
+                </a>
+                <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
+                    <span class="icon">📚</span>
+                    Resource Hub
+                </a>
+                <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
+                    <span class="icon">💬</span>
+                    Moderate Forum
+                </a>
+                <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item">
+                    <span class="icon">👨‍⚕️</span>
+                    Manage Counselors
+                </a>
+                <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
+                    <span class="icon">📅</span>
+                    Appointments
+                </a>
+                <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
+                    <span class="icon">📈</span>
+                    Reports
+                </a>
+                <a href="<?= BASE_URL ?>/admin/keywords" class="nav-item">
+                    <span class="icon">🔑</span>
+                    Keywords
+                </a>
+                <a href="<?= BASE_URL ?>/admin/system-flags" class="nav-item">
+                    <span class="icon">🚩</span>
+                    Automated Flags
+                </a>
+                <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
+                    <span class="icon">🏛️</span>
+                    University Events
+                </a>
+                <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
+                    <span class="icon">⚙️</span>
+                    Settings
+                </a>
+            <?php else: ?>
+                <a href="<?= BASE_URL ?>/ModeratorDashboard" class="nav-item">
+                    <span class="icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="<?= BASE_URL ?>/Moderator/resource-hub" class="nav-item">
+                    <span class="icon">📚</span>
+                    Resource Hub
+                </a>
+                <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item active">
+                    <span class="icon">💬</span>
+                    Moderate Forum
+                </a>
+                <a href="<?= BASE_URL ?>/Moderator/reported-resources" class="nav-item">
+                    <span class="icon">🚨</span>
+                    Reported Resources
+                </a>
+            <?php endif; ?>
         </nav>
 
-    <div class="sidebar-footer">
-      <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-        <span class="icon">🚪</span>
-        Logout
-      </a>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Top Bar -->
-    <div class="topbar">
-      <h1>Moderate Forum</h1>
-      <div class="topbar-right">
-        <div class="admin-profile">
-          <span>Admin User</span>
-          <div class="avatar">A</div>
+        <div class="sidebar-footer">
+            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
+                <span class="icon">🚪</span>
+                Logout
+            </a>
         </div>
-      </div>
     </div>
 
-    <!-- Content -->
-    <div class="content-wrapper">
-      <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert alert-success">
-          <?= $_SESSION['success'];
-          unset($_SESSION['success']); ?>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <h1>Moderate Forum</h1>
+            <div class="topbar-right" style="display: flex; align-items: center; gap: 1.5rem;">
+                <!-- Role/Profile Info -->
+                <div style="display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; padding: 0.5rem 1rem; border-radius: 99px; border: 1px solid #e2e8f0;">
+                    <div style="width: 32px; height: 32px; background: #6366f1; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">
+                        <?= strtoupper(substr($_SESSION['role'], 0, 1)) ?>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #1e293b; line-height: 1.2;">
+                            <?= $_SESSION['role'] === 'admin' ? 'Administrator' : 'Moderator User' ?>
+                        </span>
+                        <span style="font-size: 0.75rem; color: #64748b;">
+                            <?= ucfirst($_SESSION['role']) ?> Role
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
-      <?php endif; ?>
-      <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger">
-          <?= $_SESSION['error'];
-          unset($_SESSION['error']); ?>
-        </div>
-      <?php endif; ?>
 
-      <div class="toolbar">
-        <div class="tabs">
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success">
+                <?= $_SESSION['success'];
+                unset($_SESSION['success']); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger">
+                <?= $_SESSION['error'];
+                unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="toolbar">
+            <div class="tabs">
           <button class="tab active" data-tab="preview">Preview</button>
           <button class="tab" data-tab="queue">Flagged Queue</button>
           <button class="tab" data-tab="auto-flags">Automated Flags</button>

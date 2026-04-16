@@ -160,6 +160,45 @@
                 <?php endif; ?>
             </div>
 
+            <!-- Escalated Emergency Calls -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title"><span style="color:#D64F4F;">🚨</span> Escalated Urgent Calls</h2>
+                </div>
+                <?php
+                $escalatedCalls = isset($escalatedCalls) ? $escalatedCalls : array();
+                if (empty($escalatedCalls)):
+                    ?>
+                    <div class="feedback-empty-state">
+                        <p class="feedback-empty-text">No escalated calls at the moment. Urgent escalations from responders will appear here.</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($escalatedCalls as $call): ?>
+                        <div class="appointment-row" style="background:#fffafa; border-left: 4px solid #D64F4F; margin-bottom: 12px; padding: 12px 16px; border-radius: 6px;">
+                            <div class="patient-info">
+                                <h4 style="margin:0 0 4px 0;"><?php echo htmlspecialchars($call['caller_name']); ?></h4>
+                                <p style="color:#D64F4F; font-weight:bold; margin:0; font-size:0.85rem;">Emergency Escalation</p>
+                            </div>
+                            <div class="time-slot" style="flex:2;">
+                                <div class="date" style="font-size:0.85rem; color:#666;">Responder Notes:</div>
+                                <div class="time" style="font-size:0.9rem; font-style:italic; cursor:pointer; color:#000;" 
+                                     onclick="showFullNotes(`<?php echo addslashes(htmlspecialchars($call['notes'])); ?>`, `<?php echo htmlspecialchars($call['caller_name']); ?>`)">
+                                    <?php echo htmlspecialchars(substr($call['notes'], 0, 100)) . (strlen($call['notes']) > 100 ? '...' : ''); ?>
+                                    <?php if(strlen($call['notes']) > 100): ?>
+                                        <span style="color:var(--primary); font-size:0.75rem; font-weight:bold;"> (Click to read more)</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <?php if (!empty($call['daily_room_url'])): ?>
+                                    <a href="<?php echo htmlspecialchars($call['daily_room_url']); ?>" target="_blank" class="btn btn-start" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center; background:#D64F4F; color:#fff; padding:6px 14px; border-radius:4px; font-weight:600; font-size:0.9rem;">📞 Connect</a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+
             <!-- Recent Student Feedbacks (counselor feedback from undergraduates) -->
             <div class="section-card">
                 <div class="section-header">
@@ -313,8 +352,36 @@
         </div>
     </div>
 
+    <!-- Notes Modal -->
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Responder Intervention Notes</h3>
+                <button class="close" onclick="closeModal('notesModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="patient-info-card">
+                    <h4 id="notesCallerName">Caller Name</h4>
+                    <p style="color:#D64F4F; font-weight:600; font-size:0.85rem; margin-top:4px;">Emergency Escalation Record</p>
+                </div>
+                <div style="background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #e2e8f0; margin-top:16px;">
+                    <p id="fullNotesContent" style="white-space:pre-wrap; line-height:1.6; color:#000;"></p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="closeModal('notesModal')">Close View</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         window.BASE_URL = '<?php echo htmlspecialchars(BASE_URL); ?>';
+        
+        function showFullNotes(notes, callerName) {
+            document.getElementById('notesCallerName').textContent = callerName;
+            document.getElementById('fullNotesContent').textContent = notes || 'No detailed notes provided.';
+            document.getElementById('notesModal').style.display = 'block';
+        }
     </script>
     <script src="<?php echo BASE_URL; ?>/js/counselor/Cdashboard.js"></script>
 </body>

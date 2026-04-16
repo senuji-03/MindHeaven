@@ -28,11 +28,17 @@ require BASE_PATH . '/app/views/layouts/header.php';
   </section>
   
   <!-- Filter Bar -->
+  <?php
+  $articlesCount = count(array_filter($resources, function($r){ return $r['content_type'] === 'article'; }));
+  $videosCount   = count(array_filter($resources, function($r){ return $r['content_type'] === 'video'; }));
+  $audiosCount   = count(array_filter($resources, function($r){ return $r['content_type'] === 'audio'; }));
+  $totalCount    = count($resources);
+  ?>
   <div class="filter-bar" style="max-width: 1200px; margin: 2rem auto 0; padding: 0 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-    <button class="filter-btn active" onclick="filterContent('all', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">All</button>
-    <button class="filter-btn" onclick="filterContent('article', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Articles</button>
-    <button class="filter-btn" onclick="filterContent('audio', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Audio</button>
-    <button class="filter-btn" onclick="filterContent('video', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Videos</button>
+    <button class="filter-btn active" onclick="filterContent('all', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">All (<?= $totalCount ?>)</button>
+    <button class="filter-btn" onclick="filterContent('article', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Articles (<?= $articlesCount ?>)</button>
+    <button class="filter-btn" onclick="filterContent('audio', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Audio (<?= $audiosCount ?>)</button>
+    <button class="filter-btn" onclick="filterContent('video', this)" style="padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Videos (<?= $videosCount ?>)</button>
   </div>
 
 <style>
