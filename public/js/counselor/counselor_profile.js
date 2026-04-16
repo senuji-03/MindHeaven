@@ -1,11 +1,3 @@
-// Simulate session count update
-let sessionCount = 247;
-
-function updateSessionCount() {
-    // This would typically fetch from a database
-    document.getElementById('totalSessions').textContent = sessionCount;
-}
-
 // Navigation Functions
 function showNotifications() {
     alert('Notifications:\n• New appointment request from John Doe\n• Reminder: Session with Sarah in 30 mins\n• Weekly report is ready');
@@ -431,18 +423,8 @@ window.onclick = function(event) {
     }
 }
 
-// Simulate automatic session count update
-setInterval(() => {
-    // This would typically be triggered by actual session completions
-    // For demo purposes, we'll increment occasionally
-    if (Math.random() > 0.99) { // Very rare random increment for demo
-        sessionCount++;
-        updateSessionCount();
-    }
-}, 10000); // Check every 10 seconds
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    updateSessionCount();
     console.log('Counselor Profile loaded successfully!');
 });

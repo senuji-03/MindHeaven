@@ -28,11 +28,11 @@ $qualifications = isset($qualifications) && is_array($qualifications) ? $qualifi
                     <h1 class="profile-name" id="profileName"><?php echo htmlspecialchars($c_full_name); ?></h1>
                     <div class="profile-stats">
                         <div class="stat-item">
-                            <div class="stat-value" id="totalSessions">247</div>
+                            <div class="stat-value" id="totalSessions"><?php echo (int) ($totalSessions ?? 0); ?></div>
                             <div class="stat-label">Sessions Conducted</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">4.8</div>
+                            <div class="stat-value"><?php echo number_format((float) ($avgRating ?? 0), 1); ?></div>
                             <div class="stat-label">Average Rating</div>
                         </div>
                     </div>

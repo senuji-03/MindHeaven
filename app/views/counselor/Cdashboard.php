@@ -179,12 +179,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                         <button class="btn btn-feedback"
                             onclick="sendFeedback(<?php echo (int) $appt['id']; ?>, '<?php echo addslashes($studentNameSafe); ?>', '<?php echo addslashes($titleSafe); ?>')"><i
                                 class="fa-regular fa-clipboard"></i> Session Notes</button>
-                        <button class="btn btn-completed"
-                            onclick="markSessionStatus(<?php echo (int) $appt['id']; ?>, 'completed', '<?php echo addslashes($studentNameSafe); ?>')"><i
-                                class="fa-solid fa-check"></i> Completed</button>
-                        <button class="btn btn-noshow"
-                            onclick="markSessionStatus(<?php echo (int) $appt['id']; ?>, 'no_show', '<?php echo addslashes($studentNameSafe); ?>')"><i
-                                class="fa-solid fa-xmark"></i> No Show</button>
+
                         <button class="btn btn-history" style="margin-top: 5px;"
                             onclick="viewStudentHistory(<?php echo (int) $appt['student_user_id']; ?>, '<?php echo addslashes($studentNameSafe); ?>')"><i
                                 class="fa-solid fa-clock-rotate-left"></i> History</button>

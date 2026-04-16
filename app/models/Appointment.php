@@ -264,23 +264,6 @@ class Appointment
             WHERE a.student_user_id = :student_user_id
               AND a.counselor_notes IS NOT NULL
               AND a.counselor_notes != ''
-
-            UNION ALL
-
-            SELECT 
-                n.id,
-                DATE(n.created_at) as date,
-                TIME(n.created_at) as time,
-                'Emergency Crisis Intervention' as title,
-                n.notes as counselor_notes,
-                COALESCE(c.full_name, u.full_name, u.username) as counselor_name,
-                'crisis' AS type
-            FROM crisis_intervention_notes n
-            JOIN crisis_calls cc ON n.crisis_call_id = cc.id
-            LEFT JOIN users u ON n.counselor_user_id = u.id
-            LEFT JOIN counselors c ON n.counselor_user_id = c.user_id
-            WHERE cc.caller_user_id = :student_user_id
-
             ORDER BY date DESC, time DESC
         ";
 
@@ -587,5 +570,23 @@ class Appointment
             'overdue' => (int) ($row['overdue'] ?? 0),
             'cancelled' => (int) ($row['cancelled'] ?? 0)
         );
+    }
+    /**
+     * Get the count of completed sessions for multiple counselors in bulk.
+     * @param array $counselorUserIds
+     * @return array Mapping of counselor_user_id => completed_count
+     */
+    public function getCompletedSessionsCountBulk($counselorUserIds)
+    {
+        if (empty($counselorUserIds)) return array();
+        $pdo = Database::getConnection();
+        $placeholders = str_repeat('?,', count($counselorUserIds) - 1) . '?';
+        $sql = "SELECT counselor_user_id, COUNT(*) as count 
+                FROM appointments 
+                WHERE counselor_user_id IN ($placeholders) AND status = 'completed' 
+                GROUP BY counselor_user_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($counselorUserIds);
+        return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
     }
 }
