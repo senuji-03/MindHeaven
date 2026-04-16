@@ -50,6 +50,7 @@ $router->post('/ug/profile/edit', 'UGControl@editProfile');
 $router->get('/ug/profile/complete', 'UGControl@completeProfile');
 $router->post('/ug/profile/complete', 'UGControl@completeProfile');
 $router->get('/ug/feedback', 'UGControl@feedback');
+$router->post('/ug/contact/submit', 'UGControl@submitContact');
 $router->post('/ug/feedback/create', 'UGControl@createFeedback');
 $router->post('/ug/feedback/edit', 'UGControl@editFeedback');
 $router->post('/ug/feedback/delete', 'UGControl@deleteFeedback');
