@@ -44,13 +44,13 @@ function loadSessionHistory(statusFilter) {
 
     // Show loading indicator
     const tbody = document.getElementById('historyTableBody');
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-icon">&#9203;</div><div>Loading sessions&hellip;</div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="loading"><div class="loading-spinner"></div><div>Loading sessions&hellip;</div></td></tr>';
 
     fetch(url, { credentials: 'same-origin' })
         .then(function (res) { return res.json(); })
         .then(function (data) {
             if (data.error) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-icon">&#9888;&#65039;</div><div>' + escHtml(data.error) + '</div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><div>' + escHtml(data.error) + '</div></td></tr>';
                 return;
             }
 
@@ -69,7 +69,7 @@ function loadSessionHistory(statusFilter) {
         })
         .catch(function (err) {
             console.error('Failed to load session history:', err);
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-icon">&#9888;&#65039;</div><div>Could not load session history. Please try refreshing the page.</div></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><div>Could not load session history. Please try refreshing the page.</div></td></tr>';
         });
 }
 
@@ -157,7 +157,7 @@ function renderSessionHistory() {
     if (filteredHistory.length === 0) {
         tbody.innerHTML =
             '<tr><td colspan="5" class="empty-state">' +
-            '<div class="empty-icon">&#128221;</div>' +
+            '<div class="empty-icon"><i class="fa-regular fa-clipboard"></i></div>' +
             '<div>No sessions found matching your criteria</div>' +
             '</td></tr>';
         return;
@@ -202,8 +202,8 @@ function renderSessionHistory() {
                 toggleBtn +
             '</div></td>' +
             '<td><div class="action-buttons">' +
-                '<button class="btn-small btn-view"   onclick="viewSessionDetail(\'' + sid + '\')">View</button>' +
-                '<button class="btn-small btn-report" onclick="generateReport(\''    + sid + '\')">Report</button>' +
+                '<button class="btn-small btn-view"   onclick="viewSessionDetail(\'' + sid + '\')"><i class="fa-regular fa-eye"></i> View</button>' +
+                '<button class="btn-small btn-report" onclick="generateReport(\''    + sid + '\')"><i class="fa-solid fa-download"></i> Report</button>' +
             '</div></td>' +
             '</tr>';
     }).join('');
@@ -268,35 +268,35 @@ function viewSessionDetail(sessionId) {
 
     var extraInfo = '';
     if (session.status === 'cancelled' && session.rejectionReason) {
-        extraInfo = '<div class="detail-card">' +
+        extraInfo = '<div class="detail-card" style="border-left-color: var(--text-secondary);">' +
             '<div class="detail-label">Cancellation Reason</div>' +
             '<div class="detail-value">' + escHtml(session.rejectionReason) + '</div>' +
             '</div>';
     } else if (session.status === 'rescheduled' && session.rescheduleReason) {
-        extraInfo = '<div class="detail-card">' +
+        extraInfo = '<div class="detail-card" style="border-left-color: #5b21b6;">' +
             '<div class="detail-label">Reschedule Reason</div>' +
             '<div class="detail-value">' + escHtml(session.rescheduleReason) + '</div>' +
             '</div>';
     }
 
     var scheduleInfo = '<div class="detail-card"><div class="detail-label">Date &amp; Time</div>' +
-        '<div class="detail-value">' + formatDate(session.date) + '<br>' + escHtml(session.time) + ' (' + escHtml(session.duration) + ')</div></div>';
+        '<div class="detail-value">' + formatDate(session.date) + '<br>' + escHtml(session.time) + ' <span style="color:var(--text-secondary); font-size:0.85em;">(' + escHtml(session.duration) + ')</span></div></div>';
 
     if (session.originalDate) {
-        scheduleInfo = '<div class="detail-card" style="border-left-color: #f59e0b; background: #fffbeb;">' +
-            '<div class="detail-label" style="color: #92400e;">Initial Undergrad Booking</div>' +
-            '<div class="detail-value" style="color: #92400e; opacity: 0.8;">' + formatDate(session.originalDate) + '<br>' + formatTime(session.originalTime) + '</div>' +
+        scheduleInfo = '<div class="detail-card" style="border-left-color: var(--accent-warm);">' +
+            '<div class="detail-label">Initial Booking Request</div>' +
+            '<div class="detail-value" style="color: var(--text-secondary);">' + formatDate(session.originalDate) + ' — ' + formatTime(session.originalTime) + '</div>' +
             '</div>' +
-            '<div class="detail-card" style="border-left-color: #10b981; background: #f0fdf4;">' +
-            '<div class="detail-label" style="color: #166534;">Final Schedule</div>' +
-            '<div class="detail-value" style="color: #166534;">' + formatDate(session.date) + '<br>' + escHtml(session.time) + '</div>' +
+            '<div class="detail-card" style="border-left-color: var(--success);">' +
+            '<div class="detail-label">Final Schedule</div>' +
+            '<div class="detail-value">' + formatDate(session.date) + ' — ' + escHtml(session.time) + '</div>' +
             '</div>';
     }
 
     document.getElementById('sessionDetailBody').innerHTML =
         '<div class="session-detail-grid">' +
             '<div class="detail-card"><div class="detail-label">Patient Information</div>' +
-                '<div class="detail-value"><strong>' + escHtml(session.patientName) + '</strong><br>User ID: ' + escHtml(session.userId) + '</div></div>' +
+                '<div class="detail-value"><strong>' + escHtml(session.patientName) + '</strong><br><span style="font-size:0.85em;color:var(--text-secondary);">User ID: ' + escHtml(session.userId) + '</span></div></div>' +
             '<div class="detail-card"><div class="detail-label">Session Information</div>' +
                 '<div class="detail-value">Session ID: #' + escHtml(String(session.id)) + '<br>Type: ' + escHtml(session.sessionType) + '</div></div>' +
             scheduleInfo +
@@ -309,13 +309,13 @@ function viewSessionDetail(sessionId) {
             extraInfo +
         '</div>' +
         (session.counselorNotes ? 
-        '<div class="detail-card" style="margin-top:1rem; border-left: 4px solid #10b981; background: #f0fdf4;">' +
-            '<div class="detail-label" style="color: #166534;">Counselor Session Notes</div>' +
-            '<div class="detail-value" style="white-space:pre-wrap;line-height:1.6; color: #15803d;">' + escHtml(session.counselorNotes) + '</div>' +
+        '<div class="detail-card" style="margin-top:1rem; border-left: 4px solid var(--success); background: #f0fdf4;">' +
+            '<div class="detail-label" style="color: #166534;"><i class="fa-solid fa-clipboard-check"></i> Counselor Session Notes</div>' +
+            '<div class="detail-value" style="white-space:pre-wrap;line-height:1.6; color: #15803d; font-size:0.95em;">' + escHtml(session.counselorNotes) + '</div>' +
         '</div>' : '') +
-        '<div class="detail-card" style="margin-top:1rem;">' +
-            '<div class="detail-label">Student\'s Booking Notes & Reasons</div>' +
-            '<div class="detail-value" style="white-space:pre-wrap;line-height:1.6;">' + (session.notes ? escHtml(session.notes) : 'No additional notes provided.') + '</div>' +
+        '<div class="detail-card" style="margin-top:1rem; border-left-color: var(--primary-light);">' +
+            '<div class="detail-label"><i class="fa-regular fa-comment-dots"></i> Student\'s Booking Notes & Reasons</div>' +
+            '<div class="detail-value" style="white-space:pre-wrap;line-height:1.6; font-size:0.95em; color:var(--text-secondary);">' + (session.notes ? escHtml(session.notes) : 'No additional notes provided.') + '</div>' +
         '</div>';
 
     document.getElementById('sessionDetailModal').style.display = 'block';

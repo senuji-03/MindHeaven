@@ -42,29 +42,32 @@ function fmt_date(string $ts): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with <?php echo htmlspecialchars($otherName); ?> — MindHeaven</title>
     <meta name="description" content="Private counselling chat session on MindHeaven.">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/chat/chat.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #0f172a; }
     </style>
 </head>
 <body class="chat-room-body">
 
 <!-- ── Room Header ──────────────────────────────────────────────────────── -->
 <header class="room-header">
-    <a href="<?php echo $backUrl; ?>" class="room-back-btn" title="Back to chats">← Back</a>
+    <a href="<?php echo $backUrl; ?>" class="room-back-btn" title="Back to chats"><i class="fa-solid fa-arrow-left"></i> Back</a>
 
-    <div class="room-avatar"><?php echo $isCounselor ? '🎓' : '🧑‍💼'; ?></div>
+    <div class="room-avatar"><i class="<?php echo $isCounselor ? 'fa-solid fa-graduation-cap' : 'fa-solid fa-user-tie'; ?>"></i></div>
 
     <div class="room-user-info">
         <div class="room-user-name"><?php echo htmlspecialchars($otherName); ?></div>
         <div class="room-user-role"><?php echo $isCounselor ? 'Undergraduate Student' : 'Counselor'; ?></div>
     </div>
 
-    <span class="secure-badge" style="margin-left:auto; margin-right:0.75rem;">🔒 Secure</span>
+    <span class="secure-badge" style="margin-left:auto; margin-right:0.75rem;"><i class="fa-solid fa-shield-halved"></i> Secure</span>
 
     <button class="room-refresh-btn" id="refreshBtn" onclick="refreshMessages()">
-        <span class="refresh-icon">↻</span> Refresh
+        <span class="refresh-icon"><i class="fa-solid fa-arrow-rotate-right"></i></span> Refresh
     </button>
 </header>
 
@@ -72,7 +75,7 @@ function fmt_date(string $ts): string {
 <div class="messages-area" id="messagesArea">
     <?php if (empty($messages)): ?>
         <div class="messages-empty" id="emptyState">
-            <div class="empty-icon">💬</div>
+            <div class="empty-icon"><i class="fa-regular fa-comments"></i></div>
             <p>No messages yet. Send the first message to start the conversation!</p>
         </div>
     <?php else: ?>
@@ -116,13 +119,13 @@ function fmt_date(string $ts): string {
                 <button class="msg-action-btn edit-btn"
                         onclick="openEdit(<?php echo (int)$msg['id']; ?>)"
                         title="Edit message">
-                    ✏️ Edit
+                    <i class="fa-solid fa-pen"></i> Edit
                 </button>
                 <?php endif; ?>
                 <button class="msg-action-btn delete-btn"
                         onclick="deleteMsg(<?php echo (int)$msg['id']; ?>)"
                         title="Delete message">
-                    🗑 Delete
+                    <i class="fa-solid fa-trash-can"></i> Delete
                 </button>
             </div>
 
@@ -150,22 +153,23 @@ function fmt_date(string $ts): string {
 
 <!-- ── Input Bar ─────────────────────────────────────────────────────────── -->
 <div class="input-bar">
-    <textarea class="message-input"
-              id="messageInput"
-              placeholder="Type your message… (Enter to send, Shift+Enter for new line)"
-              rows="1"
-              maxlength="4000"
-              autocomplete="off"></textarea>
-    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send message" disabled>
-        ➤
-    </button>
+    <div class="input-bar-inner">
+        <textarea class="message-input"
+                  id="messageInput"
+                  placeholder="Type your message… (Enter to send, Shift+Enter for new line)"
+                  rows="1"
+                  maxlength="4000"
+                  autocomplete="off"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send message" disabled>
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </div>
 </div>
 
 <!-- ── JavaScript ────────────────────────────────────────────────────────── -->
 <script>
 /* ========================================================================
    MindHeaven Secure Chat — Room JS
-   No external libraries. Vanilla JS + native fetch.
 ======================================================================== */
 
 var SESSION_ID  = <?php echo $sessionId; ?>;
@@ -181,7 +185,7 @@ function scrollToBottom() {
 /* ── Toast ────────────────────────────────────────────────────────────── */
 function showToast(msg, type) {
     var el = document.getElementById('chatToast');
-    el.textContent = msg;
+    el.innerHTML = msg;
     el.className = 'chat-toast ' + (type || '');
     void el.offsetWidth; // reflow
     el.classList.add('show');
@@ -228,7 +232,7 @@ function sendMessage() {
             btn.disabled = true;
             refreshMessages(); // reload to show the new message
         } else {
-            showToast(data.message || 'Failed to send', 'error');
+            showToast('<i class="fa-solid fa-circle-exclamation"></i> ' + (data.message || 'Failed to send'), 'error');
             btn.disabled = false;
         }
     })
@@ -269,7 +273,7 @@ function refreshMessages() {
 function renderMessages(msgs) {
     var area = document.getElementById('messagesArea');
     if (!msgs || msgs.length === 0) {
-        area.innerHTML = '<div class="messages-empty" id="emptyState"><div class="empty-icon">💬</div><p>No messages yet. Send the first message to start the conversation!</p></div>';
+        area.innerHTML = '<div class="messages-empty" id="emptyState"><div class="empty-icon"><i class="fa-regular fa-comments"></i></div><p>No messages yet. Send the first message to start the conversation!</p></div>';
         return;
     }
 
@@ -302,9 +306,9 @@ function renderMessages(msgs) {
         if (isOwn) {
             html += '<div class="message-actions">';
             if (canEdit) {
-                html += '<button class="msg-action-btn edit-btn" onclick="openEdit(' + msg.id + ')" title="Edit">✏️ Edit</button>';
+                html += '<button class="msg-action-btn edit-btn" onclick="openEdit(' + msg.id + ')" title="Edit"><i class="fa-solid fa-pen"></i> Edit</button>';
             }
-            html += '<button class="msg-action-btn delete-btn" onclick="deleteMsg(' + msg.id + ')" title="Delete">🗑 Delete</button>';
+            html += '<button class="msg-action-btn delete-btn" onclick="deleteMsg(' + msg.id + ')" title="Delete"><i class="fa-solid fa-trash-can"></i> Delete</button>';
             html += '</div>';
 
             html += '<div class="inline-edit-form" id="editForm-' + msg.id + '">'
@@ -363,7 +367,7 @@ function saveEdit(id) {
                     meta.appendChild(tag);
                 }
             }
-            showToast('Message updated.', 'success');
+            showToast('<i class="fa-regular fa-circle-check"></i> Message updated.', 'success');
         } else {
             showToast(data.message || 'Could not edit message.', 'error');
         }
@@ -391,7 +395,7 @@ function deleteMsg(id) {
                 el.style.transform = 'scale(0.95)';
                 setTimeout(function () { el.remove(); }, 300);
             }
-            showToast('Message deleted.', 'success');
+            showToast('<i class="fa-regular fa-circle-check"></i> Message deleted.', 'success');
         } else {
             showToast(data.message || 'Could not delete message.', 'error');
         }

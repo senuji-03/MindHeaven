@@ -1,162 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$TITLE = 'MindHeaven — ' . htmlspecialchars($category ?? '') . ' Resources';
+$CURRENT_PAGE = 'Ccategory_resources';
+$PAGE_CSS = ['/MindHeaven/public/css/counselor/Cdashboard.css', '/MindHeaven/public/css/undergrad/resources.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindHeaven — <?= htmlspecialchars($category) ?> Resources</title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\Cdashboard.css">
-    <link rel="stylesheet" href="/MindHeaven/public/css/undergrad/resources.css">
-    <style>
-        .resources-main {
-            padding: 2rem;
-            max-width: 100%;
-            margin: 0;
-        }
-
-        .airbnb-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .airbnb-card {
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            text-align: left;
-            transition: transform 0.2s ease;
-        }
-
-        .airbnb-card:hover .airbnb-cover img {
-            transform: scale(1.05);
-        }
-
-        .airbnb-cover {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 0.75rem;
-            position: relative;
-            background: #f4f4f4;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .airbnb-cover img,
-        .airbnb-cover .placeholder-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .airbnb-cover .placeholder-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 5rem;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-        }
-
-        .airbnb-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #222;
-            text-transform: capitalize;
-            z-index: 10;
-        }
-
-        .airbnb-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #222;
-            margin: 0 0 0.2rem 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .airbnb-summary {
-            font-size: 0.9rem;
-            color: #717171;
-            margin: 0 0 0.2rem 0;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.3;
-        }
-
-        .airbnb-meta {
-            font-size: 0.85rem;
-            color: #222;
-            font-weight: 500;
-            margin-top: 0.2rem;
-        }
-
-        .like-button {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            z-index: 20;
-            transition: transform 0.2s ease;
-            padding: 0;
-        }
-
-        .like-button:hover {
-            transform: scale(1.1);
-        }
-
-        .like-button svg {
-            display: block;
-            fill: rgba(0, 0, 0, 0.5);
-            height: 24px;
-            width: 24px;
-            stroke: white;
-            stroke-width: 2;
-            overflow: visible;
-            transition: fill 0.2s ease, stroke 0.2s ease;
-        }
-
-        .like-button.liked svg {
-            fill: #ff385c !important;
-            stroke: #ff385c !important;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                Mindheaven
-            </div>
-            <div class="nav-icons">
-                <div class="nav-icon">🔔<span class="badge">3</span></div>
-                <div class="nav-icon">💬<span class="badge">7</span></div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Container -->
-    <div class="main-container">
+<div class="main-container">
         <!-- Sidebar -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
+        
 
         <!-- Main Content -->
         <main class="main-content resources-main">
@@ -344,6 +195,5 @@
             });
         }
     </script>
-</body>
 
-</html>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

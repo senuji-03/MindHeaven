@@ -1,48 +1,20 @@
-<!DOCTYPE html>
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$TITLE = 'Mindheaven - Calendar';
+$CURRENT_PAGE = 'calender';
+$PAGE_CSS = [BASE_URL . '/css/counselor/calender.css'];
+require BASE_PATH . '/app/views/layouts/header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindheaven - Calendar</title>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/calender.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/notifications.css">
-</head>
-
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                Mindheaven
+<div class="main-content">
+            
+            <div class="section-header" style="border: none; padding: 0; margin-bottom: 24px;">
+                <h2 class="section-title" style="font-size: 2.2rem;">Calendar</h2>
             </div>
-            <div class="nav-icons">
-                <div class="nav-icon">
-                    🔔
-                    <span class="badge">3</span>
-                </div>
-                <div class="nav-icon">
-                    💬
-                    <span class="badge">7</span>
-                </div>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Sidebar -->
-        <?php include __DIR__ . '/sidebar.php'; ?>
-
-
-        <!-- Main Content -->
-        <div class="main-content">
             <!-- Today's Events -->
             <div class="todays-events">
                 <div class="section-header">
-                    <h2 class="section-title">📅 Today's Schedule</h2>
+                    <h2 class="section-title"><i class="fa-regular fa-calendar-check" style="color: var(--primary);"></i> Today's Schedule</h2>
                 </div>
                 <div id="todaysEventsList">
                     <?php if (!empty($todaysEvents)): ?>
@@ -52,7 +24,7 @@
                                     <h4><?php echo htmlspecialchars($event->title); ?></h4>
                                     <p><?php echo htmlspecialchars($event->description); ?></p>
                                 </div>
-                                <div class="event-time"><?php echo date('g:i A', strtotime($event->event_time)); ?></div>
+                                <div class="event-time"><i class="fa-regular fa-clock"></i> <?php echo date('g:i A', strtotime($event->event_time)); ?></div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -70,9 +42,9 @@
             <div class="calendar-container">
                 <div class="calendar-header">
                     <div class="calendar-nav">
-                        <button class="nav-btn" onclick="previousMonth()">‹</button>
+                        <button class="nav-btn" onclick="previousMonth()"><i class="fa-solid fa-chevron-left"></i></button>
                         <div class="current-month" id="currentMonth">December 2024</div>
-                        <button class="nav-btn" onclick="nextMonth()">›</button>
+                        <button class="nav-btn" onclick="nextMonth()"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                     <button class="today-btn" onclick="goToToday()">Today</button>
                 </div>
@@ -97,7 +69,7 @@
     </div>
 
     <!-- Add Event Button -->
-    <button class="add-event-btn" onclick="showAddEventModal()">+</button>
+    <button class="add-event-btn" onclick="showAddEventModal()"><i class="fa-solid fa-plus"></i></button>
 
     <!-- Add/Edit Event Modal -->
     <div id="eventModal" class="modal">
@@ -140,8 +112,8 @@
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button>
                 <button class="btn-danger" id="deleteEventBtn" onclick="deleteEvent()"
-                    style="display: none;">Delete</button>
-                <button class="btn-primary" onclick="saveEvent()" id="saveEventBtn">Save Event</button>
+                    style="display: none;"><i class="fa-solid fa-trash"></i> Delete</button>
+                <button class="btn-primary" onclick="saveEvent()" id="saveEventBtn"><i class="fa-solid fa-check"></i> Save Event</button>
             </div>
         </div>
     </div>
@@ -160,7 +132,7 @@
             </div>
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeModal('dayEventsModal')">Close</button>
-                <button class="btn-primary" onclick="addEventForDay()">Add Event</button>
+                <button class="btn-primary" onclick="addEventForDay()"><i class="fa-solid fa-plus"></i> Add Event</button>
             </div>
         </div>
     </div>
@@ -196,7 +168,6 @@
         });
     </script>
     <script src="<?php echo BASE_URL; ?>/js/counselor/calender.js?v=<?php echo time(); ?>"></script>
-    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
-</body>
+    
 
-</html>
+<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

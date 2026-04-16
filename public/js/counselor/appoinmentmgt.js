@@ -41,7 +41,7 @@ function renderAppointments(appointmentsToRender = appointments) {
 
     if (appointmentsToRender.length === 0) {
         appointmentsList.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: #64748b;">
+                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                         <h3>No appointments found</h3>
                         <p>No appointments match your current filters.</p>
                     </div>
@@ -58,17 +58,17 @@ function renderAppointments(appointmentsToRender = appointments) {
                         </div>
                         <div class="time-info">
                             <div class="date-time">${formatDate(appointment.requestedDate)} at ${formatTime(appointment.requestedTime)}</div>
-                            <div class="duration">${appointment.duration}</div>
+                            <div class="duration"><i class="fa-regular fa-clock"></i> ${appointment.duration}</div>
                         </div>
                         <div class="media-type ${appointment.mediaType === 'chat' ? 'audio' : 'video'}-call">
-                            ${appointment.mediaType === 'chat' ? '💬 Chat' : '🎥 Audio/Video'}
+                            ${appointment.mediaType === 'chat' ? '<i class="fa-regular fa-comment-dots"></i> Chat' : '<i class="fa-solid fa-video"></i> Audio/Video'}
                         </div>
                         <div class="status-badge status-${appointment.status}">
                             ${appointment.status}
                         </div>
-                        <div class="initial-actions" style="display: flex; gap: 8px;">
+                        <div class="initial-actions">
                             <button class="btn-history" onclick="viewStudentHistory(${appointment.studentUserId}, '${appointment.patientName.replace(/'/g, "\\'")}')">
-                                📋 History
+                                <i class="fa-regular fa-clipboard"></i> History
                             </button>
                             ${!['completed', 'no_show','in_progress'].includes(appointment.status) ? `
                                 <button class="btn btn-edit" onclick="editAppointment(${appointment.id})">
@@ -106,33 +106,33 @@ function renderAppointments(appointmentsToRender = appointments) {
                                     <span class="detail-value">${appointment.sessionType ? appointment.sessionType.charAt(0).toUpperCase() + appointment.sessionType.slice(1).replace('_', ' ') : 'Standard'}</span>
                                 </div>
                                 ${appointment.originalDate && (appointment.originalDate !== appointment.requestedDate || appointment.originalTime !== appointment.requestedTime) ? `
-                                <div class="detail-item" style="margin-top: 10px; padding: 10px; background: #fffbeb; border-radius: 6px; border-left: 4px solid #f59e0b;">
-                                    <span class="detail-label" style="color: #92400e; font-weight: 600;">Original Undergrad Booking:</span>
-                                    <span class="detail-value" style="color: #92400e;">${formatDate(appointment.originalDate)} at ${formatTime(appointment.originalTime)}</span>
+                                <div class="detail-item" style="margin-top: 10px; padding: 12px; background: rgba(232, 168, 124, 0.1); border-radius: 8px; border-left: 4px solid var(--accent-warm);">
+                                    <span class="detail-label" style="color: var(--text-primary); font-weight: 700;">Original Undergrad Booking:</span>
+                                    <span class="detail-value" style="color: var(--text-secondary);">${formatDate(appointment.originalDate)} at ${formatTime(appointment.originalTime)}</span>
                                 </div>
                                 ` : ''}
                             </div>
                         </div>
                         ${appointment.notes ? `
-                            <div class="detail-section" style="margin-bottom: 1.5rem;">
+                            <div class="detail-section" style="margin-bottom: 24px;">
                                 <h5>Notes</h5>
-                                <p style="color: #64748b; line-height: 1.5;">${appointment.notes}</p>
+                                <p style="color: var(--text-secondary); line-height: 1.6;">${appointment.notes}</p>
                             </div>
                         ` : ''}
                         <div class="action-section">
                             <div class="action-buttons">
                                 ${appointment.status === 'pending' ? `
-                                    <button class="btn btn-accept" onclick="updateStatus(${appointment.id}, 'accepted')">Accept</button>
-                                    <button class="btn btn-reject" onclick="openRejectModal(${appointment.id})">Reject</button>
+                                    <button class="btn btn-accept" onclick="updateStatus(${appointment.id}, 'accepted')"><i class="fa-solid fa-check"></i> Accept</button>
+                                    <button class="btn btn-reject" onclick="openRejectModal(${appointment.id})"><i class="fa-solid fa-xmark"></i> Reject</button>
                                 ` : ''}
                                 ${appointment.status === 'rejected' || appointment.status === 'reject' ? `
-                                    <button class="btn btn-reject" onclick="hideAppointment(${appointment.id})">Delete</button>
+                                    <button class="btn btn-reject" onclick="hideAppointment(${appointment.id})"><i class="fa-solid fa-trash"></i> Delete</button>
                                 ` : (!['completed', 'no_show','in_progress'].includes(appointment.status) ? `
-                                    <button class="btn btn-reschedule" onclick="reschedule('${appointment.patientName}', '${appointment.reason}', ${appointment.id})">Reschedule</button>
+                                    <button class="btn btn-reschedule" onclick="reschedule('${appointment.patientName}', '${appointment.reason}', ${appointment.id})"><i class="fa-solid fa-calendar-day"></i> Reschedule</button>
                                 ` : '')}
                                 ${appointment.status === 'accept' || appointment.status === 'accepted' ? `
-                                    <button class="btn btn-save" onclick="saveToCalendar(${appointment.id})">Save to Calendar</button>
-                                    ${appointment.meeting_link ? `<a href="${appointment.meeting_link}" target="_blank" class="btn btn-accept" style="text-decoration:none;display:inline-flex;align-items:center;">🎥 Join Meeting</a>` : ''}
+                                    <button class="btn btn-save" onclick="saveToCalendar(${appointment.id})"><i class="fa-solid fa-calendar-plus"></i> Save to Calendar</button>
+                                    ${appointment.meeting_link ? `<a href="${appointment.meeting_link}" target="_blank" class="btn btn-accept" style="text-decoration:none;"><i class="fa-solid fa-video"></i> Join Meeting</a>` : ''}
                                 ` : ''}
                             </div>
                         </div>
@@ -263,27 +263,13 @@ function reschedule(patientName, reason, appointmentId) {
     loadAvailableSlots(today);
 
     // Show modal
-    document.getElementById('rescheduleModal').style.display = 'block';
+    document.getElementById('rescheduleModal').style.display = 'flex'; // Ensure Flex is used since we updated the CSS globally
 }
 
 // Fetch available slots for counselor on a specific date
 function loadAvailableSlots(date) {
     const timeSel = document.getElementById('newTime');
     if (!timeSel) return;
-
-    // We can use the existing API for slots
-    // Since we are in counselor context, we need counselor_id. 
-    // It's not explicitly stored in JS but we can get it from session or just use the current user's ID if the API supports it.
-    // The getSlots API in AppointmentApiControl uses counselor_id from GET.
-    
-    // We'll need the counselor's user ID. We can probably get it from loadAppointments or just assume the API can figure it out.
-    // Actually, listForCounselor gets appointments for the logged-in counselor.
-    // Let's check if we have the counselor ID globally or if we should fetch it.
-    // In this context, the counselor is the logged in user.
-    
-    // For now, let's assume we can hit /api/appointments/slots with a dummy counselor_id if the backend handles session
-    // Wait, the backend getSlots requires counselor_id in GET.
-    // Let's find out how the counselor ID is exposed.
     
     fetch(BASE_URL + '/api/appointments/slots?date=' + date + '&counselor_id=self') // I might need to update backend to support 'self'
         .then(response => response.json())
@@ -441,7 +427,7 @@ let currentRejectId = null;
 
 function openRejectModal(id) {
     currentRejectId = id;
-    document.getElementById('rejectModal').style.display = 'block';
+    document.getElementById('rejectModal').style.display = 'flex'; // Use flex for centering via our updated css
 }
 
 function submitReject() {
@@ -513,8 +499,8 @@ function viewStudentHistory(studentUserId, patientName) {
 
     document.getElementById('historyStudentName').textContent = patientName;
     const historyList = document.getElementById('historyList');
-    historyList.innerHTML = '<div class="history-empty">Loading history...</div>';
-    document.getElementById('studentHistoryModal').style.display = 'block';
+    historyList.innerHTML = '<div class="history-empty"><i class="fa-solid fa-spinner fa-spin"></i><br>Loading history...</div>';
+    document.getElementById('studentHistoryModal').style.display = 'flex';
 
     fetch(BASE_URL + '/api/student/history?student_id=' + studentUserId)
         .then(res => res.json())
@@ -522,7 +508,7 @@ function viewStudentHistory(studentUserId, patientName) {
             if (data.success) {
                 const history = data.history || [];
                 if (history.length === 0) {
-                    historyList.innerHTML = '<div class="history-empty"><i>📝</i><br>No previous session notes found for this student.</div>';
+                    historyList.innerHTML = '<div class="history-empty"><i class="fa-regular fa-clipboard"></i><br>No previous session notes found for this student.</div>';
                 } else {
                     historyList.innerHTML = history.map(item => `
                         <div class="history-item">
@@ -536,12 +522,12 @@ function viewStudentHistory(studentUserId, patientName) {
                     `).join('');
                 }
             } else {
-                historyList.innerHTML = `<div class="history-empty" style="color: #ef4444;">Error: ${data.error || 'Failed to load history'}</div>`;
+                historyList.innerHTML = `<div class="history-empty" style="color: var(--crisis);"><i class="fa-solid fa-circle-exclamation"></i><br>Error: ${data.error || 'Failed to load history'}</div>`;
             }
         })
         .catch(err => {
             console.error('Error fetching history:', err);
-            historyList.innerHTML = '<div class="history-empty" style="color: #ef4444;">A connection error occurred.</div>';
+            historyList.innerHTML = '<div class="history-empty" style="color: var(--crisis);"><i class="fa-solid fa-circle-exclamation"></i><br>A connection error occurred.</div>';
         });
 }
 
