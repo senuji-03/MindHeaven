@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Calendar</title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/counselor/calender.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/notifications.css">
 </head>
 
 <body>
@@ -194,6 +196,7 @@
         });
     </script>
     <script src="<?php echo BASE_URL; ?>/js/counselor/calender.js?v=<?php echo time(); ?>"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 
 </html>

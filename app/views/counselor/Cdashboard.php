@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Counselor Dashboard</title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\Cdashboard.css">
+    <link rel="stylesheet" href="/MindHeaven/public/css/counselor/Cdashboard.css">
+    <link rel="stylesheet" href="/MindHeaven/public/css/notifications.css">
 </head>
 
 <body>
@@ -421,6 +422,7 @@
         window.BASE_URL = '<?php echo htmlspecialchars(BASE_URL); ?>';
     </script>
     <script src="<?php echo BASE_URL; ?>/js/counselor/Cdashboard.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/notifications.js"></script>
 </body>
 
 </html>

@@ -82,7 +82,7 @@ if (!$isEmbedded) {
             <!-- Threads List -->
             <div class="threads-list" id="threadsList">
                 <?php if (empty($threads)): ?>
-                    <div style="padding: 2rem; text-align: center; color: #6b7280;">
+                    <div style="padding: 24px; text-align: center; color: var(--text-secondary);">
                         No threads found. Be the first to start a discussion!
                     </div>
                 <?php else: ?>
@@ -99,8 +99,7 @@ if (!$isEmbedded) {
                                         <?php echo htmlspecialchars($thread['role'] ?? 'Student'); ?>
                                     </span>
                                     <!-- Category Badge (if separate style needed, handled by CSS or inline) -->
-                                    <span class="category-badge"
-                                        style="background:#eee; padding:2px 6px; border-radius:4px; font-size:0.8em; margin-left:8px;">
+                                    <span class="category-badge category-badge-<?php echo strtolower(htmlspecialchars($thread['category'])); ?>">
                                         <?php echo htmlspecialchars($thread['category']); ?>
                                     </span>
                                 </div>

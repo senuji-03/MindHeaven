@@ -45,6 +45,8 @@ $router->post('/ug/likeResource', 'UGControl@likeResource');
 $router->post('/ug/reportResource', 'UGControl@reportResource');
 $router->get('/ug/quiz', 'UGControl@quiz');
 $router->get('/ug/profile', 'UGControl@profile');
+$router->get('/ug/profile/edit', 'UGControl@editProfile');
+$router->post('/ug/profile/edit', 'UGControl@editProfile');
 $router->get('/ug/profile/complete', 'UGControl@completeProfile');
 $router->post('/ug/profile/complete', 'UGControl@completeProfile');
 $router->get('/ug/feedback', 'UGControl@feedback');
@@ -197,6 +199,11 @@ $router->get('/api/mood/list',   'MoodApiControl@list');
 $router->post('/api/mood/create','MoodApiControl@create');
 $router->put('/api/mood/update', 'MoodApiControl@update');
 $router->delete('/api/mood/delete','MoodApiControl@delete');
+
+// Notification API Routes
+$router->get('/api/notifications', 'NotificationControl@list');
+$router->get('/api/notifications/unread-count', 'NotificationControl@unreadCount');
+$router->post('/api/notifications/mark-read', 'NotificationControl@markRead');
 
 $router->get('/CallResponder', 'CallResponderControl@index');
 $router->get('/CallResponder/dashboard', 'CallResponderControl@dashboard');

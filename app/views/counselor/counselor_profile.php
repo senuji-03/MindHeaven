@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mindheaven - Counselor Profile</title>
-    <link rel="stylesheet" href="\MindHeaven\public\css\counselor\counselor_profile.css">
+    <link rel="stylesheet" href="/MindHeaven/public/css/counselor/counselor_profile.css">
+    <link rel="stylesheet" href="/MindHeaven/public/css/notifications.css">
 </head>
 
 <body>
@@ -256,7 +257,8 @@
         </div>
     </div>
 
-    <script src="\MindHeaven\public\js\counselor\counselor_profile.js"></script>
+    <script src="/MindHeaven/public/js/counselor/counselor_profile.js"></script>
+    <script src="/MindHeaven/public/js/notifications.js"></script>
 </body>
 
 </html>
