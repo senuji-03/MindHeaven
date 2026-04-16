@@ -188,8 +188,23 @@ class COControl
         $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
         
         $qualifications = array();
+        $totalSessions = 0;
+        $avgRating = 0.0;
+
         if ($counselor && !empty($counselor['id'])) {
             $qualifications = $counselorModel->getQualifications($counselor['id']);
+            
+            // Fetch session stats
+            $appointmentModel = new Appointment();
+            $sessionStats = $appointmentModel->getSessionHistoryStats((int)$_SESSION['user_id']);
+            $totalSessions = $sessionStats['completed'] ?? 0;
+
+            // Fetch feedback stats (for average rating)
+            $feedbackModel = new Feedback();
+            $feedbackStats = $feedbackModel->getStats(array('counselor_id' => $counselor['id']));
+            if ($feedbackStats && isset($feedbackStats['avg_rating'])) {
+                $avgRating = round((float)$feedbackStats['avg_rating'], 1);
+            }
         }
 
         // Fetch donation history
@@ -199,7 +214,9 @@ class COControl
         view('/counselor/counselor_profile', array(
             'counselor' => $counselor,
             'qualifications' => $qualifications,
-            'donations' => $donations
+            'donations' => $donations,
+            'totalSessions' => $totalSessions,
+            'avgRating' => $avgRating
         ));
     }
 

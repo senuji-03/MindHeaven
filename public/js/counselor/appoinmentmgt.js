@@ -70,11 +70,7 @@ function renderAppointments(appointmentsToRender = appointments) {
                             <button class="btn-history" onclick="viewStudentHistory(${appointment.studentUserId}, '${appointment.patientName.replace(/'/g, "\\'")}')">
                                 <i class="fa-regular fa-clipboard"></i> History
                             </button>
-                            ${!['completed', 'no_show','in_progress'].includes(appointment.status) ? `
-                                <button class="btn btn-edit" onclick="editAppointment(${appointment.id})">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                            ` : ''}
+
                             <button class="btn btn-view" onclick="toggleDetails(${appointment.id})">
                                 <span id="viewText-${appointment.id}">View</span>
                             </button>
