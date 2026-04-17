@@ -806,4 +806,316 @@ class COControl
         exit;
     }
     
+
+    public function CeditResource()
+    {
+        $resourceId = (int) (isset($_GET['id']) ? $_GET['id'] : 0);
+        if ($resourceId <= 0) {
+            header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=invalid_id');
+            exit;
+        }
+
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            $resource = $resourceHub->getById($resourceId);
+
+            if (!$resource) {
+                header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=resource_not_found');
+                exit;
+            }
+
+            $categories = $resourceHub->getCategories();
+            view('Moderator/editResource', array(
+                'resource' => $resource, 
+                'categories' => $categories,
+                'updateUrl' => BASE_URL . '/counselor/resource/update',
+                'backUrl' => BASE_URL . '/counselor/viewResource?id=' . $resourceId
+            ));
+
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=load_failed');
+            exit;
+        }
+    }
+
+    public function CupdateResource()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/counselor/Cresource_hub');
+            exit;
+        }
+
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceId = (int) (isset($_POST['id']) ? $_POST['id'] : 0);
+            if ($resourceId <= 0) {
+                header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=invalid_id');
+                exit;
+            }
+
+            $resourceHub = new ResourceHub();
+
+            // Load existing record
+            $existing = $resourceHub->getById($resourceId);
+            if (!$existing) {
+                header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=resource_not_found');
+                exit;
+            }
+
+            // Validate required fields
+            $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
+            $category = trim(isset($_POST['category']) ? $_POST['category'] : '');
+            $contentType = trim(isset($_POST['content_type']) ? $_POST['content_type'] : '');
+            $summary = trim(isset($_POST['summary']) ? $_POST['summary'] : '');
+
+            if (empty($title) || empty($category) || empty($contentType)) {
+                header('Location: ' . BASE_URL . '/counselor/resource/edit?id=' . $resourceId . '&error=missing_fields');
+                exit;
+            }
+
+            // Determine content field
+            $rawContent = '';
+            if ($contentType === 'article') {
+                $rawContent = isset($_POST['article_content']) ? $_POST['article_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            } elseif ($contentType === 'video') {
+                $rawContent = isset($_POST['video_content']) ? $_POST['video_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            } elseif ($contentType === 'audio') {
+                $rawContent = isset($_POST['audio_content']) ? $_POST['audio_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            }
+
+            $data = array(
+                'title'        => $title,
+                'category'     => $category,
+                'content_type' => $contentType,
+                'summary'      => $summary,
+                'tags'         => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
+                'status'       => isset($_POST['status']) ? $_POST['status'] : 'draft',
+                'content'      => trim($rawContent),
+                'youtube_url'  => trim(isset($_POST['youtube_url']) ? $_POST['youtube_url'] : '') ? trim($_POST['youtube_url']) : null,
+                'file_path'    => $existing['file_path'],
+                'file_name'    => $existing['file_name'],
+                'file_size'    => $existing['file_size'],
+                'file_type'    => $existing['file_type'],
+            );
+
+            // Handle file upload
+            if ($contentType === 'article') {
+                if (isset($_FILES['article_image']) && !empty($_FILES['article_image']['name'])) {
+                    $uploadResult = $this->handleResourceFileUpload($_FILES['article_image'], 'images');
+                    if ($uploadResult['success']) {
+                        $data['file_path'] = $uploadResult['path'];
+                        $data['file_name'] = $uploadResult['name'];
+                        $data['file_size'] = $uploadResult['size'];
+                        $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/counselor/resource/edit?id=' . $resourceId . '&error=' . urlencode($uploadResult['error']));
+                        exit;
+                    }
+                }
+            } else {
+                $fileField = $contentType === 'video' ? 'video_file' : 'audio_file';
+                $uploadDir = $contentType === 'video' ? 'videos' : 'audio';
+
+                if (isset($_FILES[$fileField]) && !empty($_FILES[$fileField]['name'])) {
+                    $uploadResult = $this->handleResourceFileUpload($_FILES[$fileField], $uploadDir);
+                    if ($uploadResult['success']) {
+                        $data['file_path'] = $uploadResult['path'];
+                        $data['file_name'] = $uploadResult['name'];
+                        $data['file_size'] = $uploadResult['size'];
+                        $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/counselor/resource/edit?id=' . $resourceId . '&error=' . urlencode($uploadResult['error']));
+                        exit;
+                    }
+                }
+            }
+
+            $resourceHub->update($resourceId, $data);
+            header('Location: ' . BASE_URL . '/counselor/viewResource?id=' . $resourceId . '&updated=1');
+            exit;
+
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=update_failed');
+            exit;
+        }
+    }
+
+    private function handleResourceFileUpload($file, $uploadDir)
+    {
+        if ($file['error'] !== 0) {
+            return ['success' => false, 'error' => 'Upload error code: ' . $file['error']];
+        }
+
+        $allowedExts = array(
+            'images'    => array('jpg', 'jpeg', 'png', 'gif', 'webp'),
+            'videos'    => array('mp4', 'avi', 'mov', 'wmv'),
+            'audio'     => array('mp3', 'wav', 'm4a', 'ogg')
+        );
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = isset($allowedExts[$uploadDir]) ? $allowedExts[$uploadDir] : array();
+
+        if (!empty($allowed) && !in_array($ext, $allowed)) {
+            return ['success' => false, 'error' => 'File extension not allowed for this content type.'];
+        }
+
+        $uploadPath = BASE_PATH . '/public/uploads/resources/';
+        if (!is_dir($uploadPath)) {
+            @mkdir($uploadPath, 0755, true);
+        }
+
+        $safeBase   = preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($file['name']));
+        $fileName   = time() . '_' . $safeBase;
+        $targetPath = $uploadPath . $fileName;
+
+        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+            return [
+                'success' => true,
+                'path'    => 'uploads/resources/' . $fileName,
+                'name'    => $file['name'],
+                'size'    => $file['size'],
+                'type'    => $ext,
+            ];
+        }
+
+        return ['success' => false, 'error' => 'Failed to move uploaded file.'];
+    }
+
+    public function CaddResource()
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'counselor') {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            $categories = $resourceHub->getCategories();
+            view('Moderator/addResource', array(
+                'categories' => $categories,
+                'createUrl' => BASE_URL . '/counselor/resource/create'
+            ));
+        } catch (Exception $e) {
+            view('Moderator/addResource', array(
+                'categories' => array(), 
+                'error' => 'Failed to load categories: ' . $e->getMessage(),
+                'createUrl' => BASE_URL . '/counselor/resource/create'
+            ));
+        }
+    }
+
+    public function CcreateResource()
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'counselor') {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/counselor/addResource');
+            exit;
+        }
+
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+
+            $userId = $_SESSION['user_id'];
+
+            // Validate required fields
+            $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
+            $category = trim(isset($_POST['category']) ? $_POST['category'] : '');
+            $contentType = trim(isset($_POST['content_type']) ? $_POST['content_type'] : '');
+            $summary = trim(isset($_POST['summary']) ? $_POST['summary'] : '');
+
+            if (empty($title) || empty($category) || empty($contentType)) {
+                header('Location: ' . BASE_URL . '/counselor/addResource?error=missing_fields');
+                exit;
+            }
+
+            // Determine the correct content field based on content type
+            $rawContent = '';
+            if ($contentType === 'article') {
+                $rawContent = isset($_POST['article_content']) ? $_POST['article_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            } elseif ($contentType === 'video') {
+                $rawContent = isset($_POST['video_content']) ? $_POST['video_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            } elseif ($contentType === 'audio') {
+                $rawContent = isset($_POST['audio_content']) ? $_POST['audio_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
+            }
+
+            $data = array(
+                'title' => $title,
+                'category' => $category,
+                'content_type' => $contentType,
+                'summary' => $summary,
+                'tags' => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
+                'status' => isset($_POST['status']) ? $_POST['status'] : 'draft',
+                'created_by' => $userId,
+                'content' => trim($rawContent),
+                'youtube_url' => trim(isset($_POST['youtube_url']) ? $_POST['youtube_url'] : '') ? trim($_POST['youtube_url']) : null,
+            );
+
+            // Handle file upload based on content type
+            if ($contentType === 'article') {
+                if (isset($_FILES['article_image']) && !empty($_FILES['article_image']['name'])) {
+                    $uploadResult = $this->handleResourceFileUpload($_FILES['article_image'], 'images');
+                    if ($uploadResult['success']) {
+                        $data['file_path'] = $uploadResult['path'];
+                        $data['file_name'] = $uploadResult['name'];
+                        $data['file_size'] = $uploadResult['size'];
+                        $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/counselor/addResource?error=' . urlencode($uploadResult['error']));
+                        exit;
+                    }
+                }
+            } else {
+                $fileField = $contentType === 'video' ? 'video_file' : 'audio_file';
+                $uploadDir = $contentType === 'video' ? 'videos' : 'audio';
+
+                if (isset($_FILES[$fileField]) && !empty($_FILES[$fileField]['name'])) {
+                    $uploadResult = $this->handleResourceFileUpload($_FILES[$fileField], $uploadDir);
+                    if ($uploadResult['success']) {
+                        $data['file_path'] = $uploadResult['path'];
+                        $data['file_name'] = $uploadResult['name'];
+                        $data['file_size'] = $uploadResult['size'];
+                        $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/counselor/addResource?error=' . urlencode($uploadResult['error']));
+                        exit;
+                    }
+                }
+            }
+
+            $resourceHub->create($data);
+            header('Location: ' . BASE_URL . '/counselor/addResource?created=1');
+            exit;
+
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/counselor/addResource?error=creation_failed');
+            exit;
+        }
+    }
+    public function CmanageResources()
+    {
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            $resources = $resourceHub->getAll(); 
+            $categories = $resourceHub->getCategories();
+            view('Moderator/editPosts', array(
+                'resources' => $resources, 
+                'categories' => $categories,
+                'editUrl' => BASE_URL . '/counselor/resource/edit',
+                'deleteUrl' => BASE_URL . '/Moderator/resource/delete'
+            ));
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/counselor/dashboard?error=load_failed');
+            exit;
+        }
+    }
 }

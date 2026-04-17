@@ -206,7 +206,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
         </div>
 
         <div class="mod-form-card">
-            <form id="addPostForm" action="<?= BASE_URL ?>/Moderator/resource/create" method="POST" enctype="multipart/form-data">
+            <form id="addPostForm" action="<?= isset($createUrl) ? $createUrl : BASE_URL . '/Moderator/resource/create' ?>" method="POST" enctype="multipart/form-data">
                 <div class="form-rows">
                     <div class="form-group-row">
                         <label for="postName">Title</label>

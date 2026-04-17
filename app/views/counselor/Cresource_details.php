@@ -14,6 +14,9 @@ require BASE_PATH . '/app/views/layouts/header.php';
             <div class="resource-detail-container">
                 <a href="<?= BASE_URL ?>/counselor/category-resources?category=<?= urlencode($resource['category']) ?>"
                     class="btn btn-secondary" style="margin-bottom: 2rem; display: inline-block; text-decoration: none; color: #64748b; padding: 0.5rem 1rem; background: #f1f5f9; border-radius: 8px;">&larr; Back to <?= htmlspecialchars($resource['category']) ?></a>
+                
+                <a href="<?= BASE_URL ?>/counselor/resource/edit?id=<?= $resource['id'] ?>"
+                    class="btn btn-primary" style="margin-bottom: 2rem; margin-left: 1rem; display: inline-block; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px;">Edit Resource</a>
 
                 <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem;">
                     <div style="margin-bottom: 1rem;">
@@ -145,3 +148,5 @@ require BASE_PATH . '/app/views/layouts/header.php';
     </script>
 
 <?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>
+
+
