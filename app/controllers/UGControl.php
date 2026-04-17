@@ -21,8 +21,29 @@ class UGControl
 
         // Fetch Habit Stats
         require_once BASE_PATH . '/app/models/Habit.php';
+        require_once BASE_PATH . '/app/models/Notification.php';
         $habitDb = new Habit();
+        $notifDb = new Notification();
         $habitStats = $habitDb->getStats($userId);
+
+        // Daily Reminder Logic (10 AM)
+        $currentHour = (int)date('H');
+        if ($currentHour >= 10) {
+            $pending = $habitDb->getIncompleteHabitsForToday($userId);
+            if (!empty($pending)) {
+                // Check if reminder was already sent today
+                $today = date('Y-m-d');
+                $stmtRem = Database::getConnection()->prepare("
+                    SELECT COUNT(*) FROM notifications 
+                    WHERE user_id = ? AND type = 'habit_reminder' 
+                    AND DATE(created_at) = ?
+                ");
+                $stmtRem->execute([$userId, $today]);
+                if ((int)$stmtRem->fetchColumn() === 0) {
+                    $notifDb->create($userId, "Friendly reminder: You have ".count($pending)." habits to complete today! 🎯", 'habit_reminder');
+                }
+            }
+        }
 
         $pdo = Database::getConnection();
 

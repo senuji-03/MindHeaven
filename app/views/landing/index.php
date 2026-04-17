@@ -1281,7 +1281,7 @@ ob_start();
                 </h1>
                 <p class="hero-subtitle">
                     MindHeaven connects undergraduate students with professional counseling, peer support, and tools to
-                    understand and improve their mental wellness — all in one private platform.
+                    understand and improve their mental wellness. All in one private platform.
                 </p>
                 <div class="hero-actions">
                     <a href="<?php echo BASE_URL; ?>/signup" class="btn btn-primary btn-lg">
@@ -1390,8 +1390,7 @@ ob_start();
             And you deserve support.
         </h2>
         <p>
-            Whether it's stress, loneliness, anxiety, or something you can't name yet —
-            you don't have to figure it out alone. MindHeaven was built for moments like this.
+            Whether it's stress, loneliness, anxiety, or something you can't name yet. You don't have to figure it out alone. MindHeaven was built for moments like this.
         </p>
     </div>
 </section>
@@ -1402,7 +1401,7 @@ ob_start();
         <div class="section-header animate-on-scroll">
             <span class="section-label">What we offer</span>
             <h2 class="section-title">One place for your whole well-being</h2>
-            <p class="section-subtitle">Everything you need to understand, track, and improve your mental health — all
+            <p class="section-subtitle">Everything you need to understand, track, and improve your mental health, all
                 in one platform.</p>
         </div>
 
@@ -1434,7 +1433,7 @@ ob_start();
             <div class="feature-card animate-on-scroll">
                 <div class="feature-icon feature-icon--red"><i class="fas fa-phone-alt"></i></div>
                 <h3>24/7 Crisis Support</h3>
-                <p>Immediate help when you need it most. No login required, no waiting — just reach out anytime.</p>
+                <p>Immediate help when you need it most. No login required, no waiting. just reach out anytime.</p>
             </div>
             <div class="feature-card animate-on-scroll">
                 <div class="feature-icon feature-icon--mint"><i class="fas fa-chart-line"></i></div>

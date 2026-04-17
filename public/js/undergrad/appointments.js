@@ -7,8 +7,8 @@ const ALL_SLOTS = ['09:00', '13:00', '16:00'];
 const BASE = window.BASE_URL || '/MindHeaven/public';
 
 const MODE_LABELS = {
-    audio_video: 'ðŸŽ¥ Audio/Video',
-    chat: 'ðŸ’¬ Chat'
+    audio_video: '<i class="fas fa-video" style="margin-right:6px; opacity:0.8;"></i> Audio/Video',
+    chat: '<i class="fas fa-comment" style="margin-right:6px; opacity:0.8;"></i> Chat'
 };
 
 const STATUS_CLASS = {
@@ -76,7 +76,7 @@ function openBookingModal(appointment = null) {
         if (submitTxt) submitTxt.textContent = 'Update Appointment';
         prefillForm(appointment);
     } else {
-        if (title) title.textContent = 'Book an Appointment';
+        if (title) title.textContent = 'Request an Appointment';
         if (submitTxt) submitTxt.textContent = 'Save Appointment';
     }
 
@@ -162,7 +162,7 @@ async function loadCounselors() {
             sel.innerHTML = '<option value="">No counselors available</option>';
             return;
         }
-        sel.innerHTML = '<option value="">Select a counselorâ€¦</option>' +
+        sel.innerHTML = '<option value="">Select a counselor...</option>' +
             data.map(c => {
                 const name = (c.full_name || c.username) + (c.specialization ? ` (${c.specialization})` : '');
                 return `<option value="${c.id}">${escHtml(name)}</option>`;
@@ -183,13 +183,13 @@ function loadAppointmentTypes() {
         { value: 'assessment', label: 'Assessment' },
         { value: 'follow_up', label: 'Follow-up Session' }
     ];
-    sel.innerHTML = '<option value="">Select typeâ€¦</option>' +
+    sel.innerHTML = '<option value="">Select type...</option>' +
         types.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
 }
 
 // â”€â”€â”€ Time Slots â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function formatSlotLabel(time) {
-    if (!time) return 'â€”';
+    if (!time) return '-';
     const [h, m] = time.split(':').map(Number);
     const ampm = h >= 12 ? 'PM' : 'AM';
     return `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${ampm}`;
@@ -230,7 +230,7 @@ async function loadTimeSlots() {
                 const isBooked = s.is_booked == 1 || s.is_booked === '1';
                 const isFrozen = s.is_frozen == 1 || s.is_frozen === '1';
                 const isUnavailable = isBooked || isFrozen;
-                return `<option value="${s.start_time}"${isUnavailable ? ' disabled' : ''}>${label}${isUnavailable ? ' \u2014 \uD83D\uDD12 Booked' : ''}</option>`;
+                return `<option value="${s.start_time}"${isUnavailable ? ' disabled' : ''}>${label}${isUnavailable ? ' - (Already Booked)' : ''}</option>`;
             }).join('');
         timeSel.disabled = false;
     } catch {
@@ -279,7 +279,7 @@ async function onFormSubmit(e) {
     const submitTxt = document.getElementById('submitBtnText');
 
     if (submitBtn) { submitBtn.disabled = true; }
-    if (submitTxt) { submitTxt.textContent = 'Savingâ€¦'; }
+    if (submitTxt) { submitTxt.textContent = 'Saving...'; }
 
 
     const isUpdate = !!id;
@@ -299,7 +299,7 @@ async function onFormSubmit(e) {
         const json = await res.json();
         if (!res.ok) throw new Error(json.detail || json.error || 'Server error');
 
-        toastSuccess(isUpdate ? 'Appointment updated!' : 'Appointment booked successfully!');
+        toastSuccess(isUpdate ? 'Appointment updated!' : 'Appointment requested successfully!');
         closeBookingModal();
         setTimeout(() => renderAppointments(), 180);
 
@@ -316,7 +316,7 @@ function setupEventListeners() {
     document.getElementById('appointmentDate')?.addEventListener('change', loadTimeSlots);
     document.getElementById('resetAppointmentForm')?.addEventListener('click', resetForm);
     document.getElementById('importDemoAppointments')?.addEventListener('click', () =>
-        toastInfo('Use the Book Appointment button to add sessions.'));
+        toastInfo('Use the Request Appointment button to add sessions.'));
     document.getElementById('exportAppointmentsCsv')?.addEventListener('click', exportCsv);
 }
 
@@ -327,7 +327,7 @@ async function renderAppointments() {
     if (!tbody) return;
 
     tbody.innerHTML = `<tr><td colspan="8" class="mh-table__loading">
-        <span class="mh-spinner"></span> Loading appointmentsâ€¦</td></tr>`;
+        <span class="mh-spinner"></span> Loading appointments...</td></tr>`;
     if (empty) empty.style.display = 'none';
 
     try {
@@ -589,7 +589,7 @@ function exportCsv() {
 }
 
 function formatDate(dateString) {
-    if (!dateString) return 'â€”';
+    if (!dateString) return '-';
     const d = new Date(dateString + 'T00:00:00');
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 }
@@ -598,10 +598,10 @@ function escHtml(str) {
     return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// â”€â”€â”€ Toast Notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function toastSuccess(msg) { toast(msg, '#4CAF82', 'âœ…'); }
-function toastError(msg) { toast(msg, '#D64F4F', 'âŒ'); }
-function toastInfo(msg) { toast(msg, '#3D8B6E', 'â„¹ï¸'); }
+// --- Toast Notifications -----------------------------------------------------
+function toastSuccess(msg) { toast(msg, '#4CAF82', '<i class="fas fa-circle-check"></i>'); }
+function toastError(msg) { toast(msg, '#D64F4F', '<i class="fas fa-circle-xmark"></i>'); }
+function toastInfo(msg) { toast(msg, '#3D8B6E', '<i class="fas fa-circle-info"></i>'); }
 
 function toast(msg, color, icon) {
     document.querySelectorAll('.mh-toast').forEach(t => t.remove());

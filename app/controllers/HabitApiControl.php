@@ -5,6 +5,7 @@ if (!defined('BASE_PATH')) {
 
 require_once BASE_PATH . '/config/config.php';
 require_once BASE_PATH . '/app/models/Habit.php';
+require_once BASE_PATH . '/app/models/Notification.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -12,9 +13,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
 class HabitApiControl {
     private $habitModel;
+    private $notificationModel;
 
     public function __construct() {
         $this->habitModel = new Habit();
+        $this->notificationModel = new Notification();
     }
 
     // ----------------------------------------------------------------
@@ -96,6 +99,26 @@ class HabitApiControl {
                 $data['notes']       ?? null,
                 isset($data['mood_rating']) ? (int)$data['mood_rating'] : null
             );
+
+            // Generate notification for completions (only when ALL are done)
+            try {
+                $today = date('Y-m-d');
+                $allScheduled = 0;
+                $allHabits = $this->habitModel->getByUser($userId);
+                foreach ($allHabits as $h) {
+                    if ($this->habitModel->isScheduledOnDate($h, $today)) $allScheduled++;
+                }
+
+                $pending = $this->habitModel->getIncompleteHabitsForToday($userId);
+                
+                // Only notify if we just COMPLETED the last one (pending is 0 and scheduled > 0)
+                if ($allScheduled > 0 && empty($pending)) {
+                    $msg = "Fantastic! 🌟 You've completed all your habits for today. Keep up the amazing work!";
+                    $this->notificationModel->create($userId, $msg, 'habits_all_completed');
+                }
+            } catch (Exception $e) {
+                $this->log("Notification error: " . $e->getMessage());
+            }
 
             $this->json(['id' => $completionId, 'message' => 'Habit logged for ' . $date], 201);
         } catch (Exception $e) {
