@@ -96,6 +96,12 @@
             <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
                 <i class="fas fa-hand-holding-usd"></i> Donation Logs
             </a>
+            <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
+                <i class="fas fa-book"></i> Resource Hub
+            </a>
+            <a href="<?= BASE_URL ?>/admin/add-resource" class="nav-item">
+                <i class="fas fa-plus-circle"></i> Add Resource
+            </a>
             <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
                 <i class="fas fa-edit"></i> Edit Resources
             </a>

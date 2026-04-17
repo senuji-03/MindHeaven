@@ -942,11 +942,43 @@ class COControl
             }
 
             $resourceHub->update($resourceId, $data);
-            header('Location: ' . BASE_URL . '/counselor/viewResource?id=' . $resourceId . '&updated=1');
+            header('Location: ' . BASE_URL . '/counselor/resources/manage?updated=1');
             exit;
 
         } catch (Exception $e) {
-            header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=update_failed');
+            header('Location: ' . BASE_URL . '/counselor/resources/manage?error=update_failed');
+            exit;
+        }
+    }
+
+    public function CdeleteResource()
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'counselor') {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/counselor/resources/manage');
+            exit;
+        }
+
+        try {
+            $resourceId = (int) (isset($_POST['id']) ? $_POST['id'] : 0);
+            if ($resourceId <= 0) {
+                header('Location: ' . BASE_URL . '/counselor/resources/manage?error=invalid_id');
+                exit;
+            }
+
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            $resourceHub->delete($resourceId);
+            header('Location: ' . BASE_URL . '/counselor/resources/manage?deleted=1');
+            exit;
+
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/counselor/resources/manage?error=deletion_failed');
             exit;
         }
     }
@@ -1121,7 +1153,7 @@ class COControl
                 'resources' => $resources, 
                 'categories' => $categories,
                 'editUrl' => BASE_URL . '/counselor/resource/edit',
-                'deleteUrl' => BASE_URL . '/Moderator/resource/delete'
+                'deleteUrl' => BASE_URL . '/counselor/resource/delete'
             ));
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/counselor/dashboard?error=load_failed');

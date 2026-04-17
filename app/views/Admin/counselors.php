@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -28,6 +28,10 @@
             <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
                 <span class="icon">📚</span>
                 Resource Hub
+            </a>
+            <a href="<?= BASE_URL ?>/admin/add-resource" class="nav-item">
+                <span class="icon">➕</span>
+                Add Resource
             </a>
             <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
                 <span class="icon">💬</span>

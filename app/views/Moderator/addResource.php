@@ -246,8 +246,9 @@ require BASE_PATH . '/app/views/layouts/header.php';
                     <div class="form-group-row">
                         <label for="status">Publish Status</label>
                         <select name="status" id="status" class="form-input-lib">
-                            <option value="draft">Draft (Private)</option>
-                            <option value="published">Published (Public)</option>
+                            <?php $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'); ?>
+                            <option value="draft" <?= !$isAdmin ? 'selected' : '' ?>>Draft (Private)</option>
+                            <option value="published" <?= $isAdmin ? 'selected' : '' ?>>Published (Public)</option>
                             <option value="archived">Archived</option>
                         </select>
                     </div>
