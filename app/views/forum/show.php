@@ -70,53 +70,62 @@ if (!$isEmbedded) {
             <div class="thread-layout">
                 <!-- Left Column: Thread Content -->
                 <div class="thread-content-col">
-                    <!-- Thread Header -->
+                    <!-- Thread Header — matches index.php thread-card layout -->
                     <div class="thread-card main-thread">
-                        <div class="thread-title" style="margin-bottom: 20px;">
-                            <h1 style="font-size: 1.8rem; margin: 0; color: var(--text-primary);">
-                                <?= htmlspecialchars($thread_data['title']) ?>
-                            </h1>
-                            <span class="role-badge <?= 'role-' . strtolower($thread_data['role'] ?? 'student') ?>">
-                                <?= htmlspecialchars(ucfirst($thread_data['role'] ?? 'Student')) ?>
-                            </span>
-                            <span class="category-badge category-badge-<?= strtolower(htmlspecialchars($thread_data['category'])) ?>">
-                                <?= htmlspecialchars(ucfirst($thread_data['category'])) ?>
-                            </span>
-                            <?php if (!empty($thread_data['is_locked'])): ?>
-                                <span class="status-badge locked"><i class="fas fa-lock"></i> Locked</span>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="thread-meta" style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
-                            <div class="author-avatar <?= strtolower($thread_data['role'] ?? 'student') === 'counselor' ? 'counselor-avatar' : '' ?>" style="width: 42px; height: 42px; font-size: 1.1rem; flex-shrink: 0;">
-                                <?= strtoupper(substr($thread_data['is_anonymous'] ? 'A' : $thread_data['username'], 0, 1)) ?>
+                        <div class="thread-main">
+                            <div class="thread-title">
+                                <h4 style="font-size: 1.4rem; margin: 0 0 6px;">
+                                    <?= htmlspecialchars($thread_data['title']) ?>
+                                </h4>
+                                <!-- Role Badge -->
+                                <span class="role-badge <?= 'role-' . strtolower($thread_data['role'] ?? 'student') ?>">
+                                    <?= htmlspecialchars(ucfirst($thread_data['role'] ?? 'Student')) ?>
+                                </span>
+                                <!-- Category Badge -->
+                                <span class="category-badge category-badge-<?= strtolower(htmlspecialchars($thread_data['category'])) ?>">
+                                    <?= htmlspecialchars(ucfirst($thread_data['category'])) ?>
+                                </span>
+                                <?php if (!empty($thread_data['is_locked'])): ?>
+                                    <span class="status-badge locked"><i class="fas fa-lock"></i> Locked</span>
+                                <?php endif; ?>
                             </div>
-                            <div style="display: flex; flex-direction: column; gap: 4px;">
-                                <span class="author-name" style="font-size: 1.05rem; font-weight: 600; line-height: 1;">
-                                    <?= $thread_data['is_anonymous']
-                                        ? 'Anonymous' . str_pad($thread_data['user_id'], 3, '0', STR_PAD_LEFT)
-                                        : htmlspecialchars($thread_data['username']) ?>
-                                </span>
-                                <span class="timestamp" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1;">
-                                    Posted on <?= date('M j, Y \a\t g:i a', strtotime($thread_data['created_at'])) ?>
-                                </span>
+
+                            <div class="thread-preview" style="margin: 14px 0;">
+                                <p><?= nl2br(htmlspecialchars($thread_data['description'])) ?></p>
                             </div>
-                        </div>
 
-                        <div class="thread-body">
-                            <?= nl2br(htmlspecialchars($thread_data['description'])) ?>
-                        </div>
-
-                        <div class="thread-actions">
-                            <div class="stats">
-                                <span><i class="far fa-eye"></i>
-                                    <?= $thread_data['view_count'] ?? 0 ?> Views
+                            <div class="thread-meta">
+                                <span class="author-info">
+                                    <div class="author-avatar <?= strtolower($thread_data['role'] ?? 'student') === 'counselor' ? 'counselor-avatar' : '' ?>">
+                                        <?= strtoupper(substr($thread_data['is_anonymous'] ? 'A' : $thread_data['username'], 0, 1)) ?>
+                                    </div>
+                                    <span class="author-name">
+                                        <?php if ($thread_data['is_anonymous']): ?>
+                                            Anonymous<?= str_pad($thread_data['user_id'], 3, '0', STR_PAD_LEFT) ?>
+                                        <?php else: ?>
+                                            <?= htmlspecialchars($thread_data['username']) ?>
+                                        <?php endif; ?>
+                                    </span>
                                 </span>
-                                <span><i class="far fa-comment-alt"></i>
-                                    <?= count($posts) ?> Replies
+                                <span class="meta-dot">•</span>
+                                <span class="timestamp">
+                                    <?= date('M j, Y \a\t g:i a', strtotime($thread_data['created_at'])) ?>
                                 </span>
                             </div>
-                            <div class="actions-right">
+                        </div>
+
+                        <div class="thread-stats" style="flex-direction: column; align-items: flex-end; justify-content: space-between; min-height: 80px;">
+                            <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                                <div class="stat-item">
+                                    <i class="fas fa-comment-alt"></i>
+                                    <span><?= count($posts) ?></span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span><?= $thread_data['view_count'] ?? 0 ?></span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; margin-top: 10px;">
                                 <?php if (isset($_SESSION['user_id']) && ($_SESSION['user_id'] == $thread_data['user_id'] || $_SESSION['role'] === 'admin' || $_SESSION['role'] === 'moderator')): ?>
                                     <form action="<?= BASE_URL ?>/forum/delete<?= $isEmbedded ? '?embed=true' : '' ?>" method="POST" style="display:inline;"
                                         onsubmit="return confirm('Are you sure you want to delete this thread? This action cannot be undone.');">

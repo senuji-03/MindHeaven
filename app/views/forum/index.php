@@ -41,6 +41,27 @@ if (!$isEmbedded) {
                 </div>
             <?php endif; ?>
 
+            <!-- Back to Home — guests only -->
+            <?php if (($userRole ?? 'guest') === 'guest' || !isset($_SESSION['user_id'])): ?>
+                <a href="<?= BASE_URL ?>/" style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 0.875rem;
+                    color: var(--text-secondary, #6b7280);
+                    text-decoration: none;
+                    margin-bottom: 1rem;
+                    padding: 6px 14px;
+                    border: 1px solid var(--border, #d1d5db);
+                    border-radius: 99px;
+                    background: var(--surface, #fff);
+                    transition: all 0.15s;
+                " onmouseover="this.style.color='#3D8B6E';this.style.borderColor='#3D8B6E';"
+                   onmouseout="this.style.color='';this.style.borderColor='';">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
+            <?php endif; ?>
+
             <!-- Header Section -->
             <div class="forum-header">
                 <div class="header-content">

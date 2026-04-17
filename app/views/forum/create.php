@@ -71,23 +71,13 @@ $oldInput = $old ?? [];
                         <div class="options-group">
                             <h4>Privacy Options</h4>
 
-                            <div class="form-group" style="margin-bottom: 8px;">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="anonymousPost" name="anonymous" <?php echo (isset($oldInput['anonymous'])) ? 'checked' : ''; ?>>
                                     <span class="checkmark"></span>
                                     Post anonymously
                                 </label>
                                 <small class="help-text">Your username will be hidden from other users.</small>
-                            </div>
-
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="transparencyOption" name="transparency" <?php echo (isset($oldInput['transparency'])) ? 'checked' : ''; ?>>
-                                    <span class="checkmark"></span>
-                                    Allow counselors to view my identity
-                                </label>
-                                <small class="help-text">If checked, counselors can see who posted even if you post
-                                    anonymously.</small>
                             </div>
                         </div>
                     <?php endif; ?>
