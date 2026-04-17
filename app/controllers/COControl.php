@@ -706,6 +706,8 @@ class COControl
             ));
 
         } catch (Exception $e) {
+            error_log("CcategoryResources Error: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             header('Location: ' . BASE_URL . '/counselor/Cresource_hub?error=category_not_found');
             exit;
         }

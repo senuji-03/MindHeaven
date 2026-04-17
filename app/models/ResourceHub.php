@@ -42,6 +42,7 @@ class ResourceHub {
             
             return $result;
         } catch (Exception $e) {
+            echo "MODEL ERROR: " . $e->getMessage() . "\n";
             error_log("Resource creation failed: " . $e->getMessage());
             return false;
         }
