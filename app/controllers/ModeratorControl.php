@@ -18,9 +18,19 @@ class ModeratorControl
             $resourceHub = new ResourceHub();
             $resources = $resourceHub->getAll();
             $categories = $resourceHub->getCategories();
-            view('Moderator/editPosts', array('resources' => $resources, 'categories' => $categories));
+            view('Moderator/editPosts', array(
+                'resources' => $resources, 
+                'categories' => $categories,
+                'editUrl' => BASE_URL . '/Moderator/resource/edit',
+                'deleteUrl' => BASE_URL . '/Moderator/resource/delete'
+            ));
         } catch (Exception $e) {
-            view('Moderator/editPosts', array('resources' => array(), 'error' => 'Failed to load resources: ' . $e->getMessage()));
+            view('Moderator/editPosts', array(
+                'resources' => array(), 
+                'error' => 'Failed to load resources: ' . $e->getMessage(),
+                'editUrl' => BASE_URL . '/Moderator/resource/edit',
+                'deleteUrl' => BASE_URL . '/Moderator/resource/delete'
+            ));
         }
     }
 
@@ -309,7 +319,12 @@ class ModeratorControl
             }
 
             $categories = $resourceHub->getCategories();
-            view('Moderator/editResource', array('resource' => $resource, 'categories' => $categories));
+            view('Moderator/editResource', array(
+                'resource' => $resource, 
+                'categories' => $categories,
+                'updateUrl' => BASE_URL . '/Moderator/resource/update',
+                'backUrl' => BASE_URL . '/EditPosts'
+            ));
 
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/EditPosts?error=load_failed');

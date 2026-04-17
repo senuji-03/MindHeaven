@@ -396,10 +396,10 @@ require BASE_PATH . '/app/views/layouts/header.php';
                         </span>
                         
                         <div class="btn-group">
-                            <a href="<?= BASE_URL ?>/Moderator/resource/edit?id=<?= $r['id']; ?>" class="btn-icon" title="Edit Metadata">
+                            <a href="<?= $editUrl ?? BASE_URL . '/Moderator/resource/edit' ?>?id=<?= $r['id']; ?>" class="btn-icon" title="Edit Metadata">
                                 <i class="fas fa-pen"></i>
                             </a>
-                            <form action="<?= BASE_URL ?>/Moderator/resource/delete" method="POST" style="display: inline;">
+                            <form action="<?= $deleteUrl ?? BASE_URL . '/Moderator/resource/delete' ?>" method="POST" style="display: inline;">
                                 <input type="hidden" name="id" value="<?= (int)$r['id']; ?>">
                                 <button type="submit" class="btn-icon btn-icon-danger" onclick="return confirm('Permanently delete this resource?')" title="Delete">
                                     <i class="fas fa-trash"></i>

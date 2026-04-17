@@ -19,7 +19,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                 <h2>📝 Update Resource: <?= htmlspecialchars($resource['title']); ?></h2>
             </div>
             <section class="create-resource card flush-top stack">
-                <form id="editResourceForm" action="<?= BASE_URL ?>/Moderator/resource/update" method="POST" enctype="multipart/form-data" class="stack">
+                <form id="editResourceForm" action="<?= $updateUrl ?? BASE_URL . '/Moderator/resource/update' ?>" method="POST" enctype="multipart/form-data" class="stack">
                     <input type="hidden" name="id" value="<?= $resource['id']; ?>">
                     
                     <div class="form-rows">
@@ -148,7 +148,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                     </div>
 
                     <div class="actions">
-                        <a href="<?= BASE_URL ?>/EditPosts" class="btn btn-secondary">
+                        <a href="<?= $backUrl ?? BASE_URL . '/EditPosts' ?>" class="btn btn-secondary">
                             ← Back to Resources
                         </a>
                         <button class="btn btn-primary" type="submit">

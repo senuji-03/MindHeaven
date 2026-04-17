@@ -146,6 +146,11 @@ $router->get('/counselor/viewResource', 'COControl@CviewResource');
 $router->post('/counselor/likeResource', 'COControl@ClikeResource');
 $router->post('/counselor/addComment', 'COControl@CaddComment');
 $router->post('/counselor/reportResource', 'COControl@CreportResource');
+$router->get('/counselor/resource/edit', 'COControl@CeditResource');
+$router->post('/counselor/resource/update', 'COControl@CupdateResource');
+$router->get('/counselor/resources/manage', 'COControl@CmanageResources');
+$router->get('/counselor/addResource', 'COControl@CaddResource');
+$router->post('/counselor/resource/create', 'COControl@CcreateResource');
 
 // Counselor routes
 
