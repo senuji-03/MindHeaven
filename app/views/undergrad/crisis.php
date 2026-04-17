@@ -76,19 +76,37 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 				<!-- Connecting State -->
 				<div id="crisisConnectingState" class="mh-connecting-state">
-					<div class="mh-loading-pulse">
-						<i class="fas fa-headset"></i>
+					<div class="mh-loading-pulse" id="crisisLoadingIcon">
+						<i class="fas fa-headset" id="crisisLoadingIco"></i>
 					</div>
-					<h4 class="mh-connecting-state__title">Connecting you to a responder…</h4>
-					<p class="mh-connecting-state__sub">Please stay on the line. A trained professional will be with you shortly.</p>
-					<div class="mh-connecting-dots">
+					<h4 class="mh-connecting-state__title" id="crisisConnectingTitle">Connecting you to a responder…</h4>
+					<p class="mh-connecting-state__sub" id="crisisConnectingSub">Please stay on the line. A trained professional will be with you shortly.</p>
+					<div class="mh-connecting-dots" id="crisisConnectingDots">
 						<span></span><span></span><span></span>
 					</div>
 				</div>
 
-				<!-- Daily.co iframe container (hidden until joined) -->
+				<!-- Connected State (audio-only, shown only after responder joins) -->
 				<div class="mh-call-workspace" id="crisisWorkspace" style="display:none;">
-					<div class="mh-call-frame" id="dailyIframePlaceholder"></div>
+					<div class="mh-audio-call-ui">
+						<!-- Responder connected badge -->
+						<div class="mh-responder-badge">
+							<i class="fas fa-check-circle"></i>
+							<span>Responder Connected</span>
+						</div>
+						<!-- Animated audio waveform -->
+						<div class="mh-audio-indicator">
+							<div class="mh-audio-wave" id="crisisWave">
+								<span></span><span></span><span></span><span></span><span></span>
+							</div>
+							<p class="mh-audio-label">Your responder is listening — speak freely.</p>
+						</div>
+						<!-- Mute toggle -->
+						<button class="mh-btn mh-btn--outline mh-btn--sm" id="muteBtn" onclick="toggleMute()">
+							<i class="fas fa-microphone" id="muteIcon"></i>
+							<span id="muteLabel">Mute</span>
+						</button>
+					</div>
 					<div class="mh-call-connected-msg">
 						<i class="fas fa-shield-halved"></i>
 						You are connected securely. Your call is private and encrypted.
@@ -241,29 +259,139 @@ require BASE_PATH . '/app/views/layouts/header.php';
 </div><!-- /mh-crisis-page -->
 
 
-<script>
-let currentCrisisFrame = null;
-let currentCrisisCallId = null;
-let callTimerInterval  = null;
-let callStartTime      = null;
+<style>
+/* ── Crisis modal states: simple display toggle (no overlap needed) ──
+   The two panels (connecting vs connected) are mutually exclusive,
+   so we just show/hide them — no absolute positioning required.    */
+#crisisConnectingState {
+	min-height: 220px;          /* keeps modal tall while in waiting state */
+}
 
-// ── Open the modal popup ──────────────────────────────────────
+/* ── Audio call UI (shown after joined-meeting fires) ───────── */
+.mh-audio-call-ui {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	gap: 8px;
+}
+.mh-audio-indicator {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+}
+.mh-audio-label {
+	font-size: 0.92rem;
+	color: var(--text-secondary);
+	margin: 0;
+	text-align: center;
+}
+/* Animated waveform bars */
+.mh-audio-wave {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	height: 48px;
+}
+.mh-audio-wave span {
+	display: block;
+	width: 6px;
+	border-radius: 3px;
+	background: var(--primary, #3d8b6e);
+	animation: audioWave 1.2s ease-in-out infinite;
+}
+.mh-audio-wave span:nth-child(1) { height: 18px; animation-delay: 0s;    }
+.mh-audio-wave span:nth-child(2) { height: 32px; animation-delay: 0.1s;  }
+.mh-audio-wave span:nth-child(3) { height: 44px; animation-delay: 0.2s;  }
+.mh-audio-wave span:nth-child(4) { height: 32px; animation-delay: 0.3s;  }
+.mh-audio-wave span:nth-child(5) { height: 18px; animation-delay: 0.4s;  }
+@keyframes audioWave {
+	0%, 100% { transform: scaleY(0.5); opacity: 0.6; }
+	50%       { transform: scaleY(1);   opacity: 1;   }
+}
+.mh-audio-wave.muted span {
+	background: var(--text-secondary, #9ca3af);
+	animation: none;
+	height: 6px !important;
+}
+/* ── Responder connected badge ──────────────────────────────── */
+.mh-responder-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: rgba(16, 185, 129, 0.12);
+	color: var(--success, #10b981);
+	border: 1px solid rgba(16, 185, 129, 0.3);
+	padding: 7px 18px;
+	border-radius: 100px;
+	font-size: 0.85rem;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+.mh-responder-badge i {
+	font-size: 1rem;
+}
+</style>
+
+<script>
+let currentCrisisFrame = null;  // Daily.co Call Object
+let currentCrisisCallId = null;
+let callTimerInterval   = null;
+let callStartTime       = null;
+let isMuted             = false;
+
+// ── Open the modal ────────────────────────────────────────────
 function openCrisisModal() {
 	const backdrop = document.getElementById('crisisModalBackdrop');
 	backdrop.classList.add('active');
 	backdrop.setAttribute('aria-hidden', 'false');
-	document.body.style.overflow = 'hidden'; // Prevent background scroll
-	// Show connecting state, hide workspace
+	document.body.style.overflow = 'hidden';
+	// Connecting overlay visible; workspace hidden until joined
 	document.getElementById('crisisConnectingState').style.display = 'flex';
-	document.getElementById('crisisWorkspace').style.display = 'none';
+	document.getElementById('crisisWorkspace').style.display       = 'none';
 }
 
-// ── Close the modal popup ─────────────────────────────────────
+// ── Close the modal ───────────────────────────────────────────
 function closeCrisisModal() {
 	const backdrop = document.getElementById('crisisModalBackdrop');
 	backdrop.classList.remove('active');
 	backdrop.setAttribute('aria-hidden', 'true');
 	document.body.style.overflow = '';
+	// Reset connecting state for next session
+	document.getElementById('crisisConnectingState').style.display = 'flex';
+	document.getElementById('crisisWorkspace').style.display       = 'none';
+	document.getElementById('crisisConnectingTitle').textContent   = 'Connecting you to a responder…';
+	document.getElementById('crisisConnectingSub').textContent     = 'Please stay on the line. A trained professional will be with you shortly.';
+	document.getElementById('crisisConnectingDots').style.display  = 'flex';
+	const ico = document.getElementById('crisisLoadingIco');
+	if (ico) { ico.className = 'fas fa-headset'; }
+	isMuted = false;
+	updateMuteUI();
+}
+
+// ── Mute / unmute toggle ──────────────────────────────────────
+function toggleMute() {
+	if (!currentCrisisFrame) return;
+	isMuted = !isMuted;
+	currentCrisisFrame.setLocalAudio(!isMuted);   // true = audio ON
+	updateMuteUI();
+}
+function updateMuteUI() {
+	const icon  = document.getElementById('muteIcon');
+	const label = document.getElementById('muteLabel');
+	const wave  = document.querySelector('.mh-audio-wave');
+	if (!icon || !label) return;
+	if (isMuted) {
+		icon.className  = 'fas fa-microphone-slash';
+		label.textContent = 'Unmute';
+		if (wave) wave.classList.add('muted');
+	} else {
+		icon.className  = 'fas fa-microphone';
+		label.textContent = 'Mute';
+		if (wave) wave.classList.remove('muted');
+	}
 }
 
 // ── Student clicks "Connect Now" ──────────────────────────────
@@ -279,50 +407,88 @@ async function requestCrisisAudioCall() {
 		const data = await res.json();
 
 		if (data.error || !data.url) {
-			const msg = data.error || 'No responders available right now. Please call 988 immediately.';
-			showCrisisAlert(msg);
+			showCrisisAlert(data.error || 'No responders available. Please call 988 immediately.');
 			btn.innerHTML = origHTML;
 			btn.disabled  = false;
 			return;
 		}
 
-		// Store the call ID so we can reference it later if needed
 		currentCrisisCallId = data.call_id || null;
-
-		// Pop the modal open (connecting state)
 		openCrisisModal();
 
-		// Initialise Daily Prebuilt — AUDIO ONLY
-		const placeholder = document.getElementById('dailyIframePlaceholder');
-		placeholder.innerHTML = '';
+		// ── Use Call Object API (NOT createFrame) ──────────────
+		// createFrame() uses the Daily.co prebuilt iframe which shows
+		// a haircheck/pre-join screen. The student must click
+		// "Join Meeting" inside that iframe before joined-meeting
+		// fires — but our overlay blocks that click forever.
+		//
+		// createCallObject() has NO UI and NO haircheck screen.
+		// It joins audio programmatically, and joined-meeting fires
+		// immediately once the WebRTC connection is established.
+		currentCrisisFrame = DailyIframe.createCallObject();
 
-		currentCrisisFrame = window.DailyIframe.createFrame(placeholder, {
-			iframeStyle: {
-				width:  '100%',
-				height: '100%',
-				border: '0',
-				borderRadius: '12px',
-				backgroundColor: '#0d1117'
-			},
-			dailyConfig: {
-				startVideoOff: true,   // ← AUDIO ONLY hotline
-				startAudioOff: false
-			}
+		// ── STEP 1: Student joined the room ──────────────────────
+		// Keep "Connecting" overlay visible but update the text
+		// to "Waiting for responder" — the student is in the
+		// Daily.co room but the responder hasn't answered yet.
+		currentCrisisFrame.on('joined-meeting', () => {
+			document.getElementById('crisisConnectingTitle').textContent = 'Waiting for a responder to join…';
+			document.getElementById('crisisConnectingSub').textContent    = 'You are in the queue. A trained professional will join shortly.';
+			// Ensure mic is live so responder hears student when they join
+			currentCrisisFrame.setLocalAudio(true);
 		});
 
-		// When actually joined → switch from "connecting" to live workspace
-		currentCrisisFrame.on('joined-meeting', () => {
+		// ── STEP 2: Responder joins the same room ─────────────────
+		// participant-joined fires for EVERY remote participant.
+		// The first non-local join = the responder answered.
+		currentCrisisFrame.on('participant-joined', (evt) => {
+			if (evt.participant.local) return; // ignore self
+			// Responder is in the room — show connected state
 			document.getElementById('crisisConnectingState').style.display = 'none';
 			document.getElementById('crisisWorkspace').style.display       = 'flex';
 			startCallTimer();
 		});
 
-		// Auto-close if the student leaves via Daily UI
+		// ── STEP 3: Responder leaves ──────────────────────────────
+		// If the responder disconnects mid-call, revert to waiting
+		currentCrisisFrame.on('participant-left', (evt) => {
+			if (evt.participant.local) return; // ignore self
+			// Check if any non-local participants remain
+			const others = Object.values(currentCrisisFrame.participants())
+				.filter(p => !p.local);
+			if (others.length === 0) {
+				// Responder left — go back to waiting state
+				stopCallTimer();
+				document.getElementById('crisisWorkspace').style.display       = 'none';
+				document.getElementById('crisisConnectingState').style.display = 'flex';
+				document.getElementById('crisisConnectingTitle').textContent   = 'Responder disconnected.';
+				document.getElementById('crisisConnectingSub').textContent     = 'Reconnecting you to another responder… Please stay on the line.';
+				document.getElementById('crisisConnectingDots').style.display  = 'flex';
+				// Update icon to alert
+				const ico = document.getElementById('crisisLoadingIco');
+				if (ico) ico.className = 'fas fa-exclamation-circle';
+			}
+		});
+
+		// ── Student leaves via Daily internally ───────────────────
 		currentCrisisFrame.on('left-meeting', () => endCrisisCall());
 
-		await currentCrisisFrame.join({ url: data.url });
+		// ── Error handler ─────────────────────────────────────────
+		currentCrisisFrame.on('error', (e) => {
+			console.error('Daily.co error:', e);
+			showCrisisAlert('Audio connection error. Please call 988 directly if this is a crisis.');
+			endCrisisCall();
+			btn.innerHTML = origHTML;
+			btn.disabled  = false;
+		});
 
-		// Update the connect button while in call
+		// Join the room — no haircheck, audio starts immediately
+		await currentCrisisFrame.join({
+			url:            data.url,
+			startVideoOff:  true,    // audio-only hotline
+			startAudioOff:  false
+		});
+
 		btn.innerHTML = '<i class="fas fa-headset"></i> Call Active…';
 
 	} catch (err) {
@@ -341,10 +507,10 @@ function startCallTimer() {
 		const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
 		const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
 		const s = String(elapsed % 60).padStart(2, '0');
-		document.getElementById('callTimer').textContent = `${m}:${s}`;
+		const el = document.getElementById('callTimer');
+		if (el) el.textContent = `${m}:${s}`;
 	}, 1000);
 }
-
 function stopCallTimer() {
 	if (callTimerInterval) {
 		clearInterval(callTimerInterval);
@@ -357,14 +523,12 @@ function stopCallTimer() {
 // ── Student ends call ─────────────────────────────────────────
 function endCrisisCall() {
 	if (currentCrisisFrame) {
-		try { currentCrisisFrame.leave(); } catch(e) {}
+		try { currentCrisisFrame.leave();   } catch(e) {}
 		try { currentCrisisFrame.destroy(); } catch(e) {}
 		currentCrisisFrame = null;
 	}
-
 	stopCallTimer();
 	closeCrisisModal();
-
 	const btn = document.getElementById('connectBtn');
 	if (btn) {
 		btn.innerHTML = '<i class="fas fa-phone-volume"></i> Connect Now';
@@ -374,7 +538,6 @@ function endCrisisCall() {
 
 // ── Close modal by clicking backdrop ─────────────────────────
 document.getElementById('crisisModalBackdrop').addEventListener('click', function(e) {
-	// Only close if clicking the backdrop itself, not the modal content
 	if (e.target === this && !currentCrisisFrame) {
 		closeCrisisModal();
 	}
@@ -382,7 +545,6 @@ document.getElementById('crisisModalBackdrop').addEventListener('click', functio
 
 // ── Coping tools ──────────────────────────────────────────────
 function openTool(tool) {
-	// Placeholder — wire up to your modal system
 	alert('Opening ' + tool + ' tool…');
 }
 
@@ -395,7 +557,6 @@ function showCrisisAlert(msg) {
 		border-radius:12px;font-weight:600;font-size:.9rem;
 		box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:360px;
 		display:flex;align-items:center;gap:10px;
-		animation:mh-toast-in .3s ease;
 	`;
 	d.innerHTML = `<i class="fas fa-triangle-exclamation"></i><span>${msg}</span>`;
 	document.body.appendChild(d);

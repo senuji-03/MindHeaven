@@ -70,23 +70,28 @@ class CrisisApiControl
         // Record the crisis call in DB
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare(
-                "INSERT INTO crisis_calls 
-                    (caller_user_id, caller_name, caller_phone, crisis_type, severity_level, description, daily_room_url, status) 
-                 VALUES (?, ?, ?, 'other', 'high', 'Emergency audio hotline request', ?, 'waiting')"
-            );
-            $callerName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Anonymous Student';
+            $callerName  = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Anonymous Student';
             $callerPhone = $_SESSION['phone'] ?? '000-000-0000';
-            $stmt->execute([$userId, $callerName, $callerPhone, $result['url']]);
+
+            $stmt = $pdo->prepare(
+                "INSERT INTO crisis_calls
+                    (caller_user_id, caller_id, caller_name, caller_phone,
+                     crisis_type, severity_level, description,
+                     daily_room_url, status)
+                 VALUES (?, ?, ?, ?, 'other', 'high',
+                         'Emergency audio hotline request', ?, 'waiting')"
+            );
+            // caller_user_id = new FK column; caller_id = legacy FK column (both store the same userId)
+            $stmt->execute([$userId, $userId, $callerName, $callerPhone, $result['url']]);
             $callId = $pdo->lastInsertId();
         } catch (Exception $e) {
             error_log("Crisis DB insert error: " . $e->getMessage());
-            // Still let the student join if DB fails
+            // Still let the student join even if DB write fails
             $callId = null;
         }
 
         echo json_encode([
-            'url' => $result['url'],
+            'url'     => $result['url'],
             'call_id' => $callId
         ]);
     }
@@ -108,15 +113,17 @@ class CrisisApiControl
 
         try {
             $pdo = Database::getConnection();
-            $sql = "SELECT 
+            // Use COALESCE across both FK columns for backward-compatibility
+            $sql = "SELECT
                         c.id,
-                        c.caller_user_id,
+                        COALESCE(c.caller_user_id, c.caller_id) AS caller_user_id,
                         c.daily_room_url,
                         c.status,
                         c.created_at,
                         COALESCE(c.caller_name, u.full_name, u.username, 'Anonymous Student') AS caller_name
                     FROM crisis_calls c
-                    LEFT JOIN users u ON c.caller_user_id = u.id
+                    LEFT JOIN users u
+                          ON u.id = COALESCE(c.caller_user_id, c.caller_id)
                     WHERE c.status = 'waiting'
                     ORDER BY c.created_at ASC";
             $stmt = $pdo->query($sql);
@@ -154,22 +161,24 @@ class CrisisApiControl
         try {
             $pdo = Database::getConnection();
 
-            // Mark as in_progress (only if it's still waiting to prevent double-answer)
+            // Mark as in_progress — update both FK columns for compatibility
             $stmt = $pdo->prepare(
-                "UPDATE crisis_calls 
-                    SET status = 'in_progress', responder_user_id = ?
+                "UPDATE crisis_calls
+                    SET status = 'in_progress',
+                        responder_user_id = ?,
+                        responder_id      = ?
                   WHERE id = ? AND status = 'waiting'"
             );
-            $stmt->execute([$_SESSION['user_id'], $callId]);
+            $stmt->execute([$_SESSION['user_id'], $_SESSION['user_id'], $callId]);
             $rowsUpdated = $stmt->rowCount();
 
             if ($rowsUpdated === 0) {
-                // Call was already taken by another responder
+                // Call was already taken by another responder, or it was never in 'waiting'
                 echo json_encode(['error' => 'This call has already been answered by another responder.']);
                 return;
             }
 
-            // Fetch the room URL
+            // Fetch the Daily.co room URL
             $stmt = $pdo->prepare("SELECT daily_room_url FROM crisis_calls WHERE id = ?");
             $stmt->execute([$callId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -195,10 +204,12 @@ class CrisisApiControl
     {
         header('Content-Type: application/json');
 
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data   = json_decode(file_get_contents('php://input'), true);
         $callId = (int) ($data['call_id'] ?? 0);
-        $status = in_array($data['status'] ?? '', ['completed', 'escalated']) ? $data['status'] : 'completed';
-        $notes = trim($data['notes'] ?? '');
+        // 'completed' maps to our new enum value; 'escalated' also exists
+        $allowed = ['completed', 'escalated', 'resolved'];
+        $status  = in_array($data['status'] ?? '', $allowed) ? $data['status'] : 'completed';
+        $notes   = trim($data['notes'] ?? '');
 
         if (!$callId) {
             http_response_code(400);
@@ -207,9 +218,11 @@ class CrisisApiControl
         }
 
         try {
-            $pdo = Database::getConnection();
+            $pdo  = Database::getConnection();
             $stmt = $pdo->prepare(
-                "UPDATE crisis_calls SET status = ?, notes = ?, response_notes = ? WHERE id = ?"
+                "UPDATE crisis_calls
+                    SET status = ?, notes = ?, response_notes = ?
+                  WHERE id = ?"
             );
             $stmt->execute([$status, $notes, $notes, $callId]);
             echo json_encode(['success' => true]);
