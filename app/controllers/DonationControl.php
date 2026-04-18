@@ -19,6 +19,59 @@ class DonationControl
         exit;
     }
 
+    // Public view for event details
+    public function viewEvent($id = null)
+    {
+        try {
+            $pdo = Database::getConnection();
+
+            // Get event ID from URL parameter
+            $eventId = $id ?? $_GET['id'] ?? null;
+            if (!$eventId) {
+                $_SESSION['error'] = 'Event ID is required';
+                header('Location: ' . BASE_URL . '/#fundraising-events');
+                exit;
+            }
+
+            // Fetch the event to view
+            $stmt = $pdo->prepare("
+                SELECT e.*, u.name as university_name 
+                FROM university_rep_events e
+                LEFT JOIN university_representatives ur ON e.university_rep_id = ur.user_id
+                LEFT JOIN universities u ON ur.university_id = u.id
+                WHERE e.id = ?
+            ");
+            $stmt->execute([$eventId]);
+            $event = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$event) {
+                $_SESSION['error'] = 'Event not found or invalid';
+                header('Location: ' . BASE_URL . '/#fundraising-events');
+                exit;
+            }
+
+            // Convert target_audience back to array for display
+            if (!empty($event['target_audience'])) {
+                $event['target_audience'] = explode(',', $event['target_audience']);
+            } else {
+                $event['target_audience'] = [];
+            }
+
+            // We use the same view as the representative but with flags to hide admin controls
+            view('UniversityRepresentative/view-event', [
+                'event' => $event, 
+                'isOwner' => false,
+                'TITLE' => 'MindHaven | ' . $event['event_title']
+            ]);
+
+        } catch (Exception $e) {
+            error_log("Public View Event Error: " . $e->getMessage());
+            $_SESSION['error'] = 'Failed to load event details';
+            header('Location: ' . BASE_URL);
+            exit;
+        }
+    }
+
     // Show donation form for a specific event
     public function showEventDonationForm($eventId = null)
     {

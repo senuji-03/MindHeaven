@@ -1532,7 +1532,7 @@ ob_start();
                                             : 'To be announced' ?>
                                     </div>
                                     <div class="event-card-actions">
-                                        <a href="<?= BASE_URL ?>/university-rep/events/view/<?= $event['id'] ?>"
+                                        <a href="<?= BASE_URL ?>/donation/event-details/<?= $event['id'] ?>"
                                             class="btn btn-outline btn-sm">View Details</a>
                                         <a href="<?= BASE_URL ?>/donation?event_id=<?= $event['id'] ?>"
                                             class="btn btn-success btn-sm">

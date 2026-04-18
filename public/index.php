@@ -231,6 +231,7 @@ $router->get('/CallSuccess', 'CallResponderControl@success');
 $router->get('/donation', 'DonationControl@index');
 // New PayHere sandbox flow routes
 $router->get('/donation/event/{id}', 'DonationControl@showEventDonationForm');
+$router->get('/donation/event-details/{id}', 'DonationControl@viewEvent');
 $router->post('/donation/payhere/start', 'DonationControl@startPayHereCheckout');
 $router->get('/donation/payhere/return', 'DonationControl@payhereReturn');
 $router->get('/donation/payhere/cancel', 'DonationControl@payhereCancel');

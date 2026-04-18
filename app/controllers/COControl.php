@@ -1162,3 +1162,6 @@ class COControl
         }
     }
 }
+        }
+    }
+}
