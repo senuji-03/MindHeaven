@@ -23,12 +23,12 @@ $PAGE_JS = [];
     --success: #4CAF82;
     --border: #D6E4DD;
     --shadow-sm: 0 1px 3px rgba(30, 58, 52, 0.06);
-    --shadow-md: 0 4px 12px rgba(30, 58, 52, 0.08);
-    --shadow-lg: 0 12px 32px rgba(30, 58, 52, 0.10);
+    --shadow-md: 0 4px 16px rgba(30, 58, 52, 0.10);
+    --shadow-lg: 0 12px 36px rgba(30, 58, 52, 0.12);
     --radius-sm: 8px;
     --radius-md: 14px;
-    --radius-lg: 20px;
-    --radius-xl: 28px;
+    --radius-lg: 18px;
+    --radius-xl: 26px;
     --radius-full: 9999px;
   }
 
@@ -39,9 +39,49 @@ $PAGE_JS = [];
     margin: 0 auto;
   }
 
+  /* ── Section Headers ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 3px;
+    background: var(--primary);
+    border-radius: var(--radius-full);
+  }
+
+  .section-link {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .section-link:hover {
+    color: var(--primary);
+  }
+
   /* ── Hero Section ── */
   .dashboard-hero {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+    background: linear-gradient(135deg, #1e4a38 0%, var(--primary) 50%, #5aab88 100%);
     color: white;
     padding: 20px 28px;
     border-radius: var(--radius-lg);
@@ -54,89 +94,112 @@ $PAGE_JS = [];
   .dashboard-hero::before {
     content: '';
     position: absolute;
-    width: 200px;
-    height: 200px;
+    width: 320px;
+    height: 320px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    top: -60px;
-    right: -40px;
+    background: rgba(255, 255, 255, 0.045);
+    top: -120px;
+    right: -80px;
   }
 
   .dashboard-hero::after {
     content: '';
     position: absolute;
-    width: 120px;
-    height: 120px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
-    background: rgba(232, 168, 124, 0.1);
-    bottom: -30px;
-    left: 20%;
+    background: rgba(232, 168, 124, 0.08);
+    bottom: -60px;
+    left: 30%;
   }
 
   .hero-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 24px;
+    gap: 28px;
     position: relative;
     z-index: 1;
   }
 
-  .hero-greeting {
-    font-size: 0.85rem;
-    opacity: 0.8;
-    margin-bottom: 4px;
-    font-weight: 500;
+  .hero-eyebrow {
+    font-size: 0.78rem;
+    opacity: 0.7;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
   }
 
   .hero-title {
-    font-size: 1.8rem;
-    margin: 0 0 6px 0;
+    font-size: 2rem;
+    margin: 0 0 8px 0;
     font-weight: 700;
     letter-spacing: -0.5px;
     font-family: 'DM Sans', system-ui, sans-serif;
+    line-height: 1.2;
+    color: #ffffff;
   }
 
   .hero-subtitle {
-    font-size: 0.92rem;
-    opacity: 0.85;
-    margin: 0 0 20px 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0 0 24px 0;
     line-height: 1.6;
   }
 
-  .hero-stats {
+  .hero-pills {
     display: flex;
-    gap: 24px;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
-  .hero-stat {
-    text-align: center;
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: var(--radius-md);
-    padding: 12px 20px;
+  .hero-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.13);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    padding: 8px 16px;
     backdrop-filter: blur(8px);
+    font-size: 0.82rem;
+    font-weight: 600;
   }
 
-  .hero-stat .stat-number {
-    display: block;
-    font-size: 1.6rem;
+  .hero-pill i {
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+
+  .hero-pill-value {
+    font-size: 1rem;
     font-weight: 700;
-    margin-bottom: 2px;
-    color: white;
   }
 
-  .hero-stat .stat-label {
-    font-size: 0.78rem;
-    opacity: 0.75;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 500;
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
   }
 
   .hero-actions {
     display: flex;
     gap: 10px;
-    flex-shrink: 0;
+  }
+
+  .hero-date-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    opacity: 0.85;
   }
 
   /* ── Buttons ── */
@@ -152,7 +215,7 @@ $PAGE_JS = [];
     font-size: 0.85rem;
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     text-decoration: none;
     white-space: nowrap;
   }
@@ -162,10 +225,13 @@ $PAGE_JS = [];
     color: white;
   }
 
-  .btn-primary:hover {
+  .btn-primary:hover,
+  .btn-primary:active,
+  .btn-primary:focus {
     background: var(--primary-dark);
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(61, 139, 110, 0.3);
+    color: white !important;
   }
 
   .btn-outline-white {
@@ -175,9 +241,11 @@ $PAGE_JS = [];
     backdrop-filter: blur(4px);
   }
 
-  .btn-outline-white:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.6);
+  .btn-outline-white:hover,
+  .btn-outline-white:active,
+  .btn-outline-white:focus {
+    background: rgba(255, 255, 255, 0.28);
+    color: white !important;
   }
 
   .btn-outline {
@@ -199,20 +267,17 @@ $PAGE_JS = [];
   .btn-danger:hover {
     background: #c14343;
     transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(214, 79, 79, 0.3);
   }
 
-  .btn-small {
-    padding: 8px 16px;
-    font-size: 0.82rem;
+  .btn-sm {
+    padding: 7px 16px;
+    font-size: 0.8rem;
   }
 
-  .btn-icon {
-    font-size: 1rem;
-  }
-
-  /* ── Stats Grid ── */
+  /* ── Overview Stats Grid ── */
   .dashboard-stats {
-    margin-bottom: 16px;
+    margin-bottom: 24px;
   }
 
   .stats-grid {
@@ -223,11 +288,11 @@ $PAGE_JS = [];
 
   .stat-card {
     background: var(--surface);
-    padding: 16px 20px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
+    transition: all 0.28s ease;
+    overflow: hidden;
   }
 
   .stat-card:hover {
@@ -236,156 +301,184 @@ $PAGE_JS = [];
     border-color: var(--primary-light);
   }
 
+  .stat-card-inner {
+    padding: 20px 22px;
+  }
+
+  .stat-card-footer {
+    padding: 12px 22px;
+    border-top: 1px solid var(--bg-mid);
+    background: var(--bg-mid);
+  }
+
   .stat-header {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
   }
 
   .stat-icon-box {
-    width: 42px;
-    height: 42px;
-    border-radius: var(--radius-sm);
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: white;
+    flex-shrink: 0;
   }
 
-  .stat-icon-box.teal {
-    background: var(--primary);
+  .stat-icon-box.teal    { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); }
+  .stat-icon-box.warm    { background: linear-gradient(135deg, #d48a5d, var(--accent-warm)); }
+  .stat-icon-box.calm    { background: linear-gradient(135deg, #7aaec7, var(--accent-calm)); }
+  .stat-icon-box.green   { background: linear-gradient(135deg, #37936a, var(--success)); }
+  .stat-icon-box.red     { background: linear-gradient(135deg, #b83b3b, var(--crisis)); }
+
+  .stat-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+    letter-spacing: 0.3px;
   }
 
-  .stat-icon-box.warm {
-    background: var(--accent-warm);
+  .stat-badge.positive {
+    background: rgba(76, 175, 130, 0.12);
+    color: var(--success);
   }
 
-  .stat-icon-box.calm {
-    background: var(--accent-calm);
+  .stat-badge.neutral {
+    background: var(--bg-mid);
+    color: var(--text-secondary);
   }
 
-  .stat-icon-box.green {
-    background: var(--success);
-  }
-
-  .stat-icon-box.red {
-    background: var(--crisis);
+  .stat-badge.pending {
+    background: rgba(232, 168, 124, 0.18);
+    color: #c47a3d;
   }
 
   .stat-title {
-    font-size: 0.95rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    margin: 0 0 2px 0;
-    color: var(--text-primary);
-  }
-
-  .stat-subtitle {
-    font-size: 0.8rem;
+    margin: 0 0 4px 0;
     color: var(--text-secondary);
-    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
-  .stat-content {
-    margin-bottom: 10px;
-  }
-
-  .stat-number {
-    font-size: 1.6rem;
+  .stat-value {
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 6px;
     font-family: 'DM Sans', system-ui, sans-serif;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-value-sub {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 500;
   }
 
   .progress-bar {
     width: 100%;
-    height: 6px;
-    background: var(--bg-mid);
+    height: 5px;
+    background: var(--border);
     border-radius: var(--radius-full);
     overflow: hidden;
-    margin-bottom: 6px;
+    margin: 12px 0 6px;
   }
 
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--primary), var(--primary-light));
     border-radius: var(--radius-full);
-    transition: width 0.6s ease;
+    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .progress-text {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-secondary);
     font-weight: 500;
   }
 
-  .mood-display {
-    display: flex;
+  /* Mood chip display */
+  .mood-chip {
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 6px;
-  }
-
-  .mood-emoji {
-    font-size: 2rem;
-  }
-
-  .mood-text {
-    font-size: 1rem;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: var(--radius-full);
+    background: var(--bg-mid);
+    font-size: 0.88rem;
     font-weight: 600;
     color: var(--text-primary);
+    margin-bottom: 8px;
   }
 
-  .mood-time {
-    font-size: 0.8rem;
+  .mood-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .mood-dot.happy   { background: #4CAF82; }
+  .mood-dot.calm    { background: #4CAF82; }
+  .mood-dot.content { background: #4CAF82; }
+  .mood-dot.excited { background: #4CAF82; }
+  .mood-dot.neutral { background: var(--accent-calm); }
+  .mood-dot.tired   { background: var(--accent-warm); }
+  .mood-dot.sad     { background: #A8C5DA; }
+  .mood-dot.anxious { background: var(--accent-warm); }
+  .mood-dot.stressed{ background: var(--crisis); }
+  .mood-dot.angry   { background: var(--crisis); }
+  .mood-dot.default { background: var(--border); }
+
+  .mood-timestamp {
+    font-size: 0.78rem;
     color: var(--text-secondary);
   }
 
-  .appointment-info {
-    color: var(--text-primary);
+  /* Appointment detail */
+  .appt-date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    background: rgba(61, 139, 110, 0.1);
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    margin-bottom: 8px;
   }
 
-  .appointment-time {
-    font-size: 1rem;
-    font-weight: 600;
+  .appt-time {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
     margin-bottom: 4px;
+  }
+
+  .appt-meta {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
-  .appointment-time i {
+  .appt-meta i {
+    font-size: 0.75rem;
     color: var(--primary);
-    font-size: 0.85rem;
-  }
-
-  .appointment-type,
-  .appointment-location {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin-bottom: 2px;
-  }
-
-  .stat-actions {
-    padding-top: 10px;
-    border-top: 1px solid var(--border);
   }
 
   /* ── Analytics Grid ── */
   .dashboard-analytics {
-    margin-bottom: 16px;
-  }
-
-  .section-label {
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--primary);
-    margin-bottom: 10px;
-    display: block;
+    margin-bottom: 24px;
   }
 
   .analytics-grid {
@@ -400,29 +493,41 @@ $PAGE_JS = [];
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
+    transition: box-shadow 0.25s;
+  }
+
+  .analytics-card:hover {
+    box-shadow: var(--shadow-md);
   }
 
   .card-header {
-    padding: 14px 20px 0;
+    padding: 18px 22px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
   .card-title {
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--text-primary);
     margin: 0;
   }
 
+  .card-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin: 2px 0 0 0;
+    font-weight: 500;
+  }
+
   .time-filter {
-    padding: 4px 10px;
+    padding: 5px 10px;
     border: 1.5px solid var(--border);
     border-radius: var(--radius-sm);
     background: var(--surface);
     font-family: inherit;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-secondary);
     cursor: pointer;
     outline: none;
@@ -434,54 +539,88 @@ $PAGE_JS = [];
   }
 
   .card-content {
-    padding: 12px 20px;
+    padding: 14px 22px 18px;
+  }
+
+  .chart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    gap: 8px;
+  }
+
+  .chart-empty i {
+    font-size: 2rem;
+    opacity: 0.3;
   }
 
   /* ── Quick Actions ── */
   .dashboard-actions {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
   .actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 16px;
   }
 
   .action-card {
     background: var(--surface);
-    padding: 24px 20px;
+    padding: 22px 18px 18px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
-    text-align: center;
-    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    transition: all 0.28s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--card-accent, var(--primary));
+    opacity: 0;
+    transition: opacity 0.25s;
   }
 
   .action-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-md);
-    border-color: var(--primary-light);
+    border-color: transparent;
+  }
+
+  .action-card:hover::before {
+    opacity: 1;
   }
 
   .action-icon-box {
-    width: 52px;
-    height: 52px;
+    width: 46px;
+    height: 46px;
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
+    font-size: 1rem;
     color: white;
     margin-bottom: 14px;
+    flex-shrink: 0;
   }
 
   .action-title {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.92rem;
+    font-weight: 700;
     color: var(--text-primary);
     margin: 0 0 6px 0;
   }
@@ -490,406 +629,228 @@ $PAGE_JS = [];
     color: var(--text-secondary);
     margin: 0 0 16px 0;
     line-height: 1.55;
-    font-size: 0.83rem;
+    font-size: 0.8rem;
     flex: 1;
   }
 
-  /* ── Modal ── */
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(28, 43, 42, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
+  /* Crisis action card */
+  .action-card.crisis-card {
+    --card-accent: var(--crisis);
+    background: linear-gradient(135deg, #fff5f5, #fff);
+    border-color: rgba(214, 79, 79, 0.18);
   }
 
-  .modal.show {
-    display: flex;
-  }
-
-  .modal-content {
-    background: var(--surface);
-    border-radius: var(--radius-xl);
-    max-width: 520px;
-    width: 92%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-lg);
-    animation: modalIn 0.25s ease;
-  }
-
-  @keyframes modalIn {
-    from {
-      opacity: 0;
-      transform: translateY(12px) scale(0.98);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  .modal-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .modal-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
-  }
-
-  .modal-close {
-    background: var(--bg-mid);
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: all 0.2s;
-  }
-
-  .modal-close:hover {
-    background: var(--border);
-    color: var(--text-primary);
-  }
-
-  .modal-body {
-    padding: 24px;
-  }
-
-  .mood-selector {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-
-  .mood-option {
-    background: var(--bg-mid);
-    border: 2px solid transparent;
-    border-radius: var(--radius-md);
-    padding: 14px 8px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    text-align: center;
-    font-family: inherit;
-  }
-
-  .mood-option:hover {
-    border-color: var(--primary-light);
-    background: var(--surface);
-    transform: translateY(-2px);
-  }
-
-  .mood-option.selected {
-    border-color: var(--primary);
-    background: var(--surface);
-    box-shadow: 0 0 0 3px rgba(61, 139, 110, 0.12);
-  }
-
-  .mood-option .mood-emoji {
-    font-size: 1.8rem;
-    display: block;
-    margin-bottom: 6px;
-  }
-
-  .mood-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .mood-details {
-    margin-top: 20px;
-  }
-
-  .form-label {
-    display: block;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-    font-size: 0.85rem;
-  }
-
-  .intensity-slider {
-    width: 100%;
-    margin-bottom: 6px;
-    accent-color: var(--primary);
-  }
-
-  .intensity-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-  }
-
-  .form-textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: inherit;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    resize: vertical;
-    min-height: 80px;
-    outline: none;
-    transition: border-color 0.25s ease;
-  }
-
-  .form-textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(61, 139, 110, 0.12);
-  }
-
-  .modal-footer {
-    padding: 16px 24px 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
+  .action-card.crisis-card:hover {
+    border-color: rgba(214, 79, 79, 0.3);
   }
 
   /* ── Responsive ── */
   @media (max-width: 1024px) {
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .analytics-grid {
-      grid-template-columns: 1fr;
-    }
+    .stats-grid        { grid-template-columns: repeat(2, 1fr); }
+    .analytics-grid    { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 768px) {
-    .dashboard-main {
-      padding: 16px;
-    }
-
-    .hero-content {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .hero-stats {
-      justify-content: center;
-    }
-
-    .hero-actions {
-      justify-content: center;
-    }
-
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .actions-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .mood-selector {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    .dashboard-main    { padding: 16px; }
+    .hero-content      { flex-direction: column; align-items: flex-start; }
+    .hero-right        { align-items: flex-start; }
+    .stats-grid        { grid-template-columns: 1fr; }
+    .actions-grid      { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (max-width: 480px) {
-    .actions-grid {
-      grid-template-columns: 1fr;
-    }
+    .actions-grid      { grid-template-columns: 1fr; }
+    .hero-title        { font-size: 1.5rem; }
   }
 </style>
 
 <main id="main" class="dashboard-main">
-  <!-- Welcome Hero -->
+
+  <!-- ── Welcome Hero ── -->
   <section class="dashboard-hero">
     <div class="hero-content">
       <div class="hero-text">
-        <div class="hero-greeting">Good day 👋</div>
-        <h1 class="hero-title">Welcome back, <?= htmlspecialchars($studentName ?? 'Student') ?>!</h1>
-        <p class="hero-subtitle">Here's your mental health overview for today</p>
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <span class="stat-number"><?= $habitStats['scheduled_today'] ?? 0 ?></span>
-            <span class="stat-label">Tasks Today</span>
+        <div class="hero-eyebrow">Welcome back</div>
+        <h1 class="hero-title"><?= htmlspecialchars($studentName ?? 'Student') ?></h1>
+        <p class="hero-subtitle">Here is your mental wellness overview for today.</p>
+        <div class="hero-pills">
+          <div class="hero-pill">
+            <i class="fas fa-check-circle"></i>
+            <span class="hero-pill-value"><?= $habitStats['scheduled_today'] ?? 0 ?></span>
+            <span>Tasks Today</span>
           </div>
-          <div class="hero-stat">
-            <span class="stat-number"><?= $habitStats['completion_rate'] ?? 0 ?>%</span>
-            <span class="stat-label">Completion Rate</span>
+          <div class="hero-pill">
+            <i class="fas fa-fire"></i>
+            <span class="hero-pill-value"><?= $habitStats['completion_rate'] ?? 0 ?>%</span>
+            <span>Completion Rate</span>
           </div>
         </div>
       </div>
-      <div class="hero-actions">
-        <a href="<?= BASE_URL ?>/ug/mood?log=1" class="btn btn-outline-white">
-          <span class="btn-icon">😊</span> Log Mood
-        </a>
-        <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-outline-white">
-          <span class="btn-icon">✨</span> Add Habit
-        </a>
+
+      <div class="hero-right">
+        <div class="hero-date-chip">
+          <i class="fas fa-calendar-day"></i>
+          <?= date('l, F j') ?>
+        </div>
+        <div class="hero-actions">
+          <a href="<?= BASE_URL ?>/ug/mood" class="btn btn-outline-white btn-sm">
+            <i class="fas fa-smile"></i> Log Mood
+          </a>
+          <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-outline-white btn-sm">
+            <i class="fas fa-plus"></i> Add Habit
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Stats Grid -->
+  <!-- ── Overview Stats ── -->
   <section class="dashboard-stats">
-    <span class="section-label">Overview</span>
+    <div class="section-header">
+      <span class="section-label">Overview</span>
+    </div>
     <div class="stats-grid">
+
       <!-- Habits Card -->
       <div class="stat-card">
-        <div class="stat-header">
-          <div class="stat-icon-box teal">✓</div>
-          <div class="stat-info">
-            <h3 class="stat-title">Today's Habits</h3>
-            <p class="stat-subtitle">Keep building healthy routines</p>
+        <div class="stat-card-inner">
+          <div class="stat-header">
+            <div class="stat-icon-box teal"><i class="fas fa-check-double"></i></div>
+            <span class="stat-badge positive">Today</span>
           </div>
-        </div>
-        <div class="stat-content">
+          <div class="stat-title">Habits Completed</div>
           <?php
-          $habitsCompleted = $habitStats['completed_today'] ?? 0;
-          $habitsScheduled = $habitStats['scheduled_today'] ?? 0;
-          $habitRatio = $habitsScheduled > 0 ? "{$habitsCompleted}/{$habitsScheduled}" : "0/0";
-          $habitPercent = $habitsScheduled > 0 ? min(100, round(($habitsCompleted / $habitsScheduled) * 100)) : 0;
+            $habitsCompleted = $habitStats['completed_today'] ?? 0;
+            $habitsScheduled = $habitStats['scheduled_today'] ?? 0;
+            $habitRatio      = $habitsScheduled > 0 ? "{$habitsCompleted}/{$habitsScheduled}" : "0/0";
+            $habitPercent    = $habitsScheduled > 0 ? min(100, round(($habitsCompleted / $habitsScheduled) * 100)) : 0;
           ?>
-          <div class="stat-number"><?= $habitRatio ?></div>
+          <div class="stat-value"><?= $habitRatio ?></div>
+          <div class="stat-value-sub">habits done today</div>
           <div class="progress-bar">
-            <div class="progress-fill" style="width: <?= $habitPercent ?>%"></div>
+            <div class="progress-fill" style="width:<?= $habitPercent ?>%"></div>
           </div>
-          <span class="progress-text"><?= $habitPercent ?>% Complete</span>
+          <span class="progress-text"><?= $habitPercent ?>% complete</span>
         </div>
-        <div class="stat-actions">
-          <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-small btn-outline">View All</a>
+        <div class="stat-card-footer">
+          <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-outline btn-sm">
+            <i class="fas fa-arrow-right"></i> View Habits
+          </a>
         </div>
       </div>
 
       <!-- Mood Card -->
       <div class="stat-card">
-        <div class="stat-header">
-          <div class="stat-icon-box warm">☀️</div>
-          <div class="stat-info">
-            <h3 class="stat-title">Current Mood</h3>
-            <p class="stat-subtitle">How are you feeling?</p>
+        <div class="stat-card-inner">
+          <div class="stat-header">
+            <div class="stat-icon-box warm"><i class="fas fa-smile-beam"></i></div>
+            <?php if (!empty($currentMood)): ?>
+              <span class="stat-badge positive">Logged</span>
+            <?php else: ?>
+              <span class="stat-badge neutral">Not Logged</span>
+            <?php endif; ?>
           </div>
-        </div>
-        <div class="stat-content">
+          <div class="stat-title">Today's Mood</div>
           <?php
-          $moodText = "Not logged today";
-          $moodEmoji = "😐";
-          $moodTime = "Never";
-          if (!empty($currentMood)) {
-            $moodTime = date('g:i A', strtotime($currentMood['created_at']));
-            $moodType = strtolower($currentMood['mood_type']);
-            $moodMap = [
-              'happy' => ['emoji' => '😄', 'text' => 'Happy'],
-              'sad' => ['emoji' => '😢', 'text' => 'Sad'],
-              'anxious' => ['emoji' => '😬', 'text' => 'Anxious'],
-              'calm' => ['emoji' => '😌', 'text' => 'Calm'],
-              'angry' => ['emoji' => '😠', 'text' => 'Angry'],
-              'stressed' => ['emoji' => '😫', 'text' => 'Stressed'],
-              'tired' => ['emoji' => '😴', 'text' => 'Tired'],
-              'neutral' => ['emoji' => '😐', 'text' => 'Neutral'],
-            ];
-            if (isset($moodMap[$moodType])) {
-              $moodEmoji = $moodMap[$moodType]['emoji'];
-              $moodText = $moodMap[$moodType]['text'];
-            } else {
-              $moodText = ucfirst($moodType);
+            $moodLabel = "Not logged today";
+            $moodClass = 'default';
+            $moodTime  = '';
+            if (!empty($currentMood)) {
+              $moodTime  = date('g:i A', strtotime($currentMood['created_at']));
+              $moodType  = strtolower($currentMood['mood_type']);
+              $moodMap   = [
+                'happy'   => ['label' => 'Happy',    'class' => 'happy'],
+                'sad'     => ['label' => 'Sad',      'class' => 'sad'],
+                'anxious' => ['label' => 'Anxious',  'class' => 'anxious'],
+                'calm'    => ['label' => 'Calm',     'class' => 'calm'],
+                'angry'   => ['label' => 'Angry',    'class' => 'angry'],
+                'stressed'=> ['label' => 'Stressed', 'class' => 'stressed'],
+                'tired'   => ['label' => 'Tired',    'class' => 'tired'],
+                'neutral' => ['label' => 'Neutral',  'class' => 'neutral'],
+                'content' => ['label' => 'Content',  'class' => 'content'],
+                'excited' => ['label' => 'Excited',  'class' => 'excited'],
+              ];
+              if (isset($moodMap[$moodType])) {
+                $moodLabel = $moodMap[$moodType]['label'];
+                $moodClass = $moodMap[$moodType]['class'];
+              } else {
+                $moodLabel = ucfirst($moodType);
+              }
             }
-          }
           ?>
-          <div class="mood-display">
-            <span class="mood-emoji" id="currentMoodEmoji"><?= $moodEmoji ?></span>
-            <span class="mood-text" id="currentMoodText"><?= htmlspecialchars($moodText) ?></span>
+          <div class="mood-chip">
+            <span class="mood-dot <?= $moodClass ?>"></span>
+            <span id="currentMoodText"><?= htmlspecialchars($moodLabel) ?></span>
           </div>
-          <div class="mood-time" id="moodTime">Last logged:
-            <?= empty($currentMood) ? 'Never' : "Today at " . htmlspecialchars($moodTime) ?></div>
+          <div class="mood-timestamp" id="moodTime">
+            <?= empty($currentMood) ? 'Log your mood to start tracking trends.' : 'Logged today at ' . htmlspecialchars($moodTime) ?>
+          </div>
         </div>
-        <div class="stat-actions">
-          <a href="<?= BASE_URL ?>/ug/mood" class="btn btn-small btn-primary">Log Mood</a>
+        <div class="stat-card-footer">
+          <a href="<?= BASE_URL ?>/ug/mood" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Log Mood
+          </a>
         </div>
       </div>
 
       <!-- Appointments Card -->
       <div class="stat-card">
-        <div class="stat-header">
-          <div class="stat-icon-box calm">📅</div>
-          <div class="stat-info">
-            <h3 class="stat-title">Next Appointment</h3>
-            <p class="stat-subtitle">Upcoming sessions</p>
+        <div class="stat-card-inner">
+          <div class="stat-header">
+            <div class="stat-icon-box calm"><i class="fas fa-calendar-check"></i></div>
+            <?php if (!empty($nextAppointment)): ?>
+              <span class="stat-badge pending">Upcoming</span>
+            <?php else: ?>
+              <span class="stat-badge neutral">None</span>
+            <?php endif; ?>
           </div>
-        </div>
-        <div class="stat-content">
-          <?php
-          if (!empty($nextAppointment)) {
-            $aptDate = '';
-            $dateObj = new DateTime($nextAppointment['date']);
-            $today = new DateTime('today');
+          <div class="stat-title">Next Appointment</div>
+          <?php if (!empty($nextAppointment)):
+            $dateObj  = new DateTime($nextAppointment['date']);
+            $today    = new DateTime('today');
             $tomorrow = new DateTime('tomorrow');
-            if ($dateObj == $today)
-              $aptDate = 'Today';
-            elseif ($dateObj == $tomorrow)
-              $aptDate = 'Tomorrow';
-            else
-              $aptDate = $dateObj->format('F j');
-
-            $aptTime = date('g:i A', strtotime($nextAppointment['time']));
-            $aptType = htmlspecialchars($nextAppointment['type']);
-            $counselor = htmlspecialchars($nextAppointment['counselor_name'] ?? 'Counselor');
-            $aptMode = $nextAppointment['mode'] ?? 'audio_video';
-
-            $modeText = 'Online Meeting';
-            if ($aptMode == 'in_person')
-              $modeText = 'In-Person';
-            elseif ($aptMode == 'audio_video')
-              $modeText = 'Online';
-            ?>
-            <div class="appointment-info">
-              <div class="appointment-time"><i class="fas fa-clock"></i> <?= $aptDate ?>, <?= $aptTime ?></div>
-              <div class="appointment-type"><?= $aptType ?> (<?= htmlspecialchars($modeText) ?>)</div>
-              <div class="appointment-location" style="color:var(--text-secondary);font-size:0.85rem;margin-top:4px;">with
-                <?= $counselor ?></div>
-            </div>
-          <?php } else { ?>
-            <div class="appointment-info">
-              <div class="appointment-time">No upcoming appointments</div>
-              <div class="appointment-type">Ready to talk?</div>
-              <div class="appointment-location" style="color:var(--text-secondary);font-size:0.85rem;margin-top:4px;">Book
-                a session today</div>
-            </div>
-          <?php } ?>
+            if ($dateObj == $today)          $aptDate = 'Today';
+            elseif ($dateObj == $tomorrow)   $aptDate = 'Tomorrow';
+            else                             $aptDate = $dateObj->format('F j');
+            $aptTime    = date('g:i A', strtotime($nextAppointment['time']));
+            $aptType    = htmlspecialchars($nextAppointment['type']);
+            $counselor  = htmlspecialchars($nextAppointment['counselor_name'] ?? 'Counselor');
+            $aptMode    = $nextAppointment['mode'] ?? 'audio_video';
+            $modeText   = ($aptMode == 'in_person') ? 'In-Person' : 'Online';
+          ?>
+            <div class="appt-date-badge"><i class="fas fa-calendar-alt"></i> <?= $aptDate ?></div>
+            <div class="appt-time"><?= $aptTime ?></div>
+            <div class="appt-meta"><i class="fas fa-user-md"></i> <?= $counselor ?></div>
+            <div class="appt-meta" style="margin-top:4px;"><i class="fas fa-video"></i> <?= $aptType ?> &mdash; <?= htmlspecialchars($modeText) ?></div>
+          <?php else: ?>
+            <div class="stat-value" style="font-size:1.1rem;margin-bottom:6px;">No upcoming sessions</div>
+            <div class="appt-meta">Schedule a session with a counselor whenever you are ready.</div>
+          <?php endif; ?>
         </div>
-        <div class="stat-actions">
-          <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-small btn-outline">Manage</a>
+        <div class="stat-card-footer">
+          <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-outline btn-sm">
+            <i class="fas fa-calendar-plus"></i> Manage
+          </a>
         </div>
       </div>
+
     </div>
   </section>
 
-  <!-- Analytics -->
+  <!-- ── Analytics ── -->
   <section class="dashboard-analytics">
-    <span class="section-label">Analytics</span>
+    <div class="section-header">
+      <span class="section-label">Analytics</span>
+      <a href="<?= BASE_URL ?>/ug/mood" class="section-link">View full history</a>
+    </div>
     <div class="analytics-grid">
+
       <div class="analytics-card">
         <div class="card-header">
-          <h3 class="card-title">Habit Progress</h3>
+          <div>
+            <h3 class="card-title">Habit Progress</h3>
+            <p class="card-subtitle">Daily completion over time</p>
+          </div>
           <select class="time-filter" id="habitTimeFilter">
             <option value="7">Last 7 days</option>
             <option value="30" selected>Last 30 days</option>
@@ -897,13 +858,23 @@ $PAGE_JS = [];
           </select>
         </div>
         <div class="card-content">
-          <canvas id="habitChart" width="400" height="150"></canvas>
+          <?php if (!empty($habitChartData['data'])): ?>
+            <canvas id="habitChart" width="400" height="150"></canvas>
+          <?php else: ?>
+            <div class="chart-empty">
+              <i class="fas fa-chart-line"></i>
+              <span>No habit data yet. Start tracking habits to see progress.</span>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
 
       <div class="analytics-card">
         <div class="card-header">
-          <h3 class="card-title">Mood Trends</h3>
+          <div>
+            <h3 class="card-title">Mood Trends</h3>
+            <p class="card-subtitle">Emotional pattern overview</p>
+          </div>
           <select class="time-filter" id="moodTimeFilter">
             <option value="7">Last 7 days</option>
             <option value="30" selected>Last 30 days</option>
@@ -911,195 +882,176 @@ $PAGE_JS = [];
           </select>
         </div>
         <div class="card-content">
-          <canvas id="moodChart" width="400" height="150"></canvas>
+          <?php if (!empty($moodChartData['data'])): ?>
+            <canvas id="moodChart" width="400" height="150"></canvas>
+          <?php else: ?>
+            <div class="chart-empty">
+              <i class="fas fa-smile"></i>
+              <span>No mood data yet. Log your mood daily to build insights.</span>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
+
     </div>
   </section>
 
-  <!-- Quick Actions -->
+  <!-- ── Quick Actions ── -->
   <section class="dashboard-actions">
-    <span class="section-label">Quick Actions</span>
+    <div class="section-header">
+      <span class="section-label">Quick Actions</span>
+    </div>
     <div class="actions-grid">
-      <div class="action-card">
-        <div class="action-icon-box" style="background:var(--primary);">🎯</div>
+
+      <div class="action-card" style="--card-accent:var(--primary);">
+        <div class="action-icon-box" style="background:linear-gradient(135deg,var(--primary-dark),var(--primary));">
+          <i class="fas fa-bullseye"></i>
+        </div>
         <h4 class="action-title">Set Goals</h4>
-        <p class="action-description">Create new wellness goals for this week</p>
-        <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-small btn-outline">Get Started</a>
+        <p class="action-description">Create and manage wellness habits to build consistent routines.</p>
+        <a href="<?= BASE_URL ?>/ug/habits" class="btn btn-outline btn-sm">Get Started</a>
       </div>
 
-      <div class="action-card">
-        <div class="action-icon-box" style="background:var(--accent-calm);">📚</div>
+      <div class="action-card" style="--card-accent:var(--accent-calm);">
+        <div class="action-icon-box" style="background:linear-gradient(135deg,#7aaec7,var(--accent-calm));">
+          <i class="fas fa-book-open"></i>
+        </div>
         <h4 class="action-title">Resources</h4>
-        <p class="action-description">Explore mental health resources and tools</p>
-        <a href="<?= BASE_URL ?>/ug/resources" class="btn btn-small btn-outline">Browse</a>
+        <p class="action-description">Access curated mental health articles, tools and guides.</p>
+        <a href="<?= BASE_URL ?>/ug/resources" class="btn btn-outline btn-sm">Browse</a>
       </div>
 
-      <div class="action-card">
-        <div class="action-icon-box" style="background:var(--accent-warm);">🤝</div>
-        <h4 class="action-title">Support</h4>
-        <p class="action-description">Connect with counselors and book sessions</p>
-        <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-small btn-outline">Connect</a>
+      <div class="action-card" style="--card-accent:var(--accent-warm);">
+        <div class="action-icon-box" style="background:linear-gradient(135deg,#d48a5d,var(--accent-warm));">
+          <i class="fas fa-user-md"></i>
+        </div>
+        <h4 class="action-title">Book a Session</h4>
+        <p class="action-description">Connect with a counselor and schedule a support session.</p>
+        <a href="<?= BASE_URL ?>/ug/appointment" class="btn btn-outline btn-sm">Schedule</a>
       </div>
 
-      <div class="action-card">
-        <div class="action-icon-box" style="background:var(--primary-light);">📋</div>
+      <div class="action-card" style="--card-accent:var(--primary-light);">
+        <div class="action-icon-box" style="background:linear-gradient(135deg,#4a9c7e,var(--primary-light));">
+          <i class="fas fa-clipboard-list"></i>
+        </div>
         <h4 class="action-title">Self-Assessment</h4>
-        <p class="action-description">Take a quick mental health check-in</p>
-        <a href="<?= BASE_URL ?>/ug/quiz" class="btn btn-small btn-outline">Start Quiz</a>
+        <p class="action-description">Take a short mental health quiz to understand your wellbeing.</p>
+        <a href="<?= BASE_URL ?>/ug/quiz" class="btn btn-outline btn-sm">Start Quiz</a>
       </div>
 
-      <div class="action-card">
-        <div class="action-icon-box" style="background:var(--crisis);">🆘</div>
+      <div class="action-card crisis-card">
+        <div class="action-icon-box" style="background:linear-gradient(135deg,#b83b3b,var(--crisis));">
+          <i class="fas fa-phone-alt"></i>
+        </div>
         <h4 class="action-title">Crisis Support</h4>
-        <p class="action-description">Immediate help when you need it most</p>
-        <a href="<?= BASE_URL ?>/ug/crisis" class="btn btn-small btn-danger">Get Help</a>
+        <p class="action-description">Reach a trained responder immediately if you need urgent help.</p>
+        <a href="<?= BASE_URL ?>/ug/crisis" class="btn btn-danger btn-sm">Get Help Now</a>
       </div>
+
     </div>
   </section>
-</main>
 
-<!-- Mood Modal -->
-<div id="moodModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 class="modal-title">How are you feeling right now?</h3>
-      <button class="modal-close" id="closeMoodModal">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="mood-selector">
-        <button class="mood-option" data-mood="excited" data-emoji="🤩">
-          <span class="mood-emoji">🤩</span>
-          <span class="mood-label">Excited</span>
-        </button>
-        <button class="mood-option" data-mood="happy" data-emoji="😊">
-          <span class="mood-emoji">😊</span>
-          <span class="mood-label">Happy</span>
-        </button>
-        <button class="mood-option" data-mood="content" data-emoji="😌">
-          <span class="mood-emoji">😌</span>
-          <span class="mood-label">Content</span>
-        </button>
-        <button class="mood-option" data-mood="neutral" data-emoji="😐">
-          <span class="mood-emoji">😐</span>
-          <span class="mood-label">Neutral</span>
-        </button>
-        <button class="mood-option" data-mood="tired" data-emoji="😴">
-          <span class="mood-emoji">😴</span>
-          <span class="mood-label">Tired</span>
-        </button>
-        <button class="mood-option" data-mood="stressed" data-emoji="😰">
-          <span class="mood-emoji">😰</span>
-          <span class="mood-label">Stressed</span>
-        </button>
-        <button class="mood-option" data-mood="sad" data-emoji="😢">
-          <span class="mood-emoji">😢</span>
-          <span class="mood-label">Sad</span>
-        </button>
-        <button class="mood-option" data-mood="angry" data-emoji="😡">
-          <span class="mood-emoji">😡</span>
-          <span class="mood-label">Angry</span>
-        </button>
-      </div>
-      <div class="mood-details">
-        <label for="moodIntensity" class="form-label">Intensity (1-10)</label>
-        <input type="range" id="moodIntensity" class="intensity-slider" min="1" max="10" value="5">
-        <div class="intensity-labels">
-          <span>Low</span>
-          <span>High</span>
-        </div>
-        <label for="moodNotes" class="form-label">Notes (optional)</label>
-        <textarea id="moodNotes" class="form-textarea" placeholder="What's contributing to this mood?"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" id="cancelMoodLog">Cancel</button>
-      <button class="btn btn-primary" id="saveMoodLog">Save Mood</button>
-    </div>
-  </div>
-</div>
+</main>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    // ── Chart Colors (Design System) ──
-    const primaryColor = '#3D8B6E';
-    const primaryLightColor = 'rgba(61,139,110,0.12)';
-    const successColor = '#4CAF82';
-    const successLightColor = 'rgba(76,175,130,0.12)';
-    const gridColor = '#D6E4DD';
-    const labelColor = '#6B8C7E';
+    const primaryColor      = '#3D8B6E';
+    const primaryFill       = 'rgba(61,139,110,0.10)';
+    const successColor      = '#4CAF82';
+    const successFill       = 'rgba(76,175,130,0.10)';
+    const gridColor         = '#D6E4DD';
+    const labelColor        = '#6B8C7E';
 
-    // Dynamic chart data passed from backend
     const habitData = <?= json_encode($habitChartData ?? ['labels' => [], 'data' => []]) ?>;
-    const moodData = <?= json_encode($moodChartData ?? ['labels' => [], 'data' => []]) ?>;
+    const moodData  = <?= json_encode($moodChartData  ?? ['labels' => [], 'data' => []]) ?>;
 
-    function drawChart(canvasId, data, color, fillColor) {
+    function drawChart(canvasId, data, lineColor, fillColor) {
       const canvas = document.getElementById(canvasId);
       if (!canvas) return;
+      if (!data.data || data.data.length < 2) return;
+
       const ctx = canvas.getContext('2d');
       const W = canvas.width, H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
-      const m = 40, cw = W - 2 * m, ch = H - 2 * m;
-      const max = Math.max(...data.data);
-      const min = Math.min(...data.data);
-      const range = max - min || 1;
+      const m = { top: 14, right: 16, bottom: 28, left: 36 };
+      const cw = W - m.left - m.right;
+      const ch = H - m.top - m.bottom;
 
-      // Grid
-      ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
+      ctx.clearRect(0, 0, W, H);
+
+      const vals  = data.data;
+      const max   = Math.max(...vals);
+      const min   = Math.min(...vals);
+      const range = (max - min) || 1;
+
+      const xOf = i => m.left + (cw / (vals.length - 1)) * i;
+      const yOf = v => m.top + ch - ((v - min) / range) * ch;
+
+      // Grid lines
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth   = 1;
       for (let i = 0; i <= 4; i++) {
-        const y = m + (ch / 4) * i;
-        ctx.beginPath(); ctx.moveTo(m, y); ctx.lineTo(W - m, y); ctx.stroke();
+        const y = m.top + (ch / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(m.left, y);
+        ctx.lineTo(W - m.right, y);
+        ctx.stroke();
       }
 
-      // Area fill
+      // Fill area
       ctx.fillStyle = fillColor;
       ctx.beginPath();
-      data.data.forEach((v, i) => {
-        const x = m + (cw / (data.data.length - 1)) * i;
-        const y = H - m - ((v - min) / range) * ch;
-        i === 0 ? (ctx.moveTo(x, H - m), ctx.lineTo(x, y)) : ctx.lineTo(x, y);
-      });
-      ctx.lineTo(W - m, H - m); ctx.closePath(); ctx.fill();
+      ctx.moveTo(xOf(0), H - m.bottom);
+      ctx.lineTo(xOf(0), yOf(vals[0]));
+      for (let i = 1; i < vals.length; i++) ctx.lineTo(xOf(i), yOf(vals[i]));
+      ctx.lineTo(xOf(vals.length - 1), H - m.bottom);
+      ctx.closePath();
+      ctx.fill();
 
-      // Line
-      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
-      data.data.forEach((v, i) => {
-        const x = m + (cw / (data.data.length - 1)) * i;
-        const y = H - m - ((v - min) / range) * ch;
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      // Line (smooth-ish using lineTo)
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth   = 2.5;
+      ctx.lineJoin    = 'round';
+      ctx.beginPath();
+      vals.forEach((v, i) => {
+        i === 0 ? ctx.moveTo(xOf(i), yOf(v)) : ctx.lineTo(xOf(i), yOf(v));
       });
       ctx.stroke();
 
       // Dots
-      ctx.fillStyle = color;
-      data.data.forEach((v, i) => {
-        const x = m + (cw / (data.data.length - 1)) * i;
-        const y = H - m - ((v - min) / range) * ch;
-        ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fill();
-        // White inner
-        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, 2, 0, 2 * Math.PI); ctx.fill();
-        ctx.fillStyle = color;
+      vals.forEach((v, i) => {
+        const x = xOf(i), y = yOf(v);
+        ctx.fillStyle  = '#fff';
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillStyle   = lineColor;
+        ctx.beginPath();
+        ctx.arc(x, y, 3.5, 0, 2 * Math.PI);
+        ctx.fill();
       });
 
       // X labels
-      ctx.fillStyle = labelColor; ctx.font = '12px DM Sans, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillStyle  = labelColor;
+      ctx.font       = '11px DM Sans, sans-serif';
+      ctx.textAlign  = 'center';
       data.labels.forEach((l, i) => {
-        ctx.fillText(l, m + (cw / (data.labels.length - 1)) * i, H - 16);
+        ctx.fillText(l, xOf(i), H - m.bottom + 16);
       });
 
       // Y labels
       ctx.textAlign = 'right';
       for (let i = 0; i <= 4; i++) {
         const val = Math.round(min + (range / 4) * i);
-        ctx.fillText(val, m - 8, H - m - (ch / 4) * i + 4);
+        ctx.fillText(val, m.left - 6, m.top + ch - (ch / 4) * i + 4);
       }
     }
 
-    drawChart('habitChart', habitData, primaryColor, primaryLightColor);
-    drawChart('moodChart', moodData, successColor, successLightColor);
+    drawChart('habitChart', habitData, primaryColor, primaryFill);
+    drawChart('moodChart',  moodData,  successColor, successFill);
 
-    // Time filter redraws
-    document.getElementById('habitTimeFilter')?.addEventListener('change', () => drawChart('habitChart', habitData, primaryColor, primaryLightColor));
-    document.getElementById('moodTimeFilter')?.addEventListener('change', () => drawChart('moodChart', moodData, successColor, successLightColor));
+    document.getElementById('habitTimeFilter')?.addEventListener('change', () =>
+      drawChart('habitChart', habitData, primaryColor, primaryFill));
+    document.getElementById('moodTimeFilter')?.addEventListener('change', () =>
+      drawChart('moodChart', moodData, successColor, successFill));
   });
 </script>

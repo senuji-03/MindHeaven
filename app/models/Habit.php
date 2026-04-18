@@ -1,10 +1,12 @@
 <?php
 require_once BASE_PATH . '/core/Database.php';
 
-class Habit {
+class Habit
+{
     private $pdo;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->pdo = Database::getConnection();
     }
 
@@ -12,17 +14,17 @@ class Habit {
     // CREATE a new habit with full scheduling info
     // ----------------------------------------------------------------
     public function create(
-        int     $userId,
-        string  $name,
-        ?string $description    = null,
-        string  $category       = 'other',
-        string  $frequency      = 'today',
-        ?string $startDate      = null,
-        ?string $endDate        = null,
-        ?string $daysOfWeek     = null,
-        int     $repeatInterval = 1,
-        string  $color          = '#10b981',
-        string  $icon           = '🎯'
+        int $userId,
+        string $name,
+        ?string $description = null,
+        string $category = 'other',
+        string $frequency = 'today',
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?string $daysOfWeek = null,
+        int $repeatInterval = 1,
+        string $color = '#10b981',
+        string $icon = '🎯'
     ): int {
         // Default start_date to today if omitted
         if (!$startDate) {
@@ -41,22 +43,32 @@ class Habit {
         ");
 
         $result = $stmt->execute([
-            $userId, $name, $description, $category, $frequency,
-            $startDate, $endDate, $daysOfWeek, $repeatInterval, $color, $icon
+            $userId,
+            $name,
+            $description,
+            $category,
+            $frequency,
+            $startDate,
+            $endDate,
+            $daysOfWeek,
+            $repeatInterval,
+            $color,
+            $icon
         ]);
 
         if (!$result) {
             throw new Exception("Failed to insert habit into database");
         }
-        return (int)$this->pdo->lastInsertId();
+        return (int) $this->pdo->lastInsertId();
     }
 
     // ----------------------------------------------------------------
     // READ all active habits for a user with today's completion status
     // ----------------------------------------------------------------
-    public function getByUser(int $userId): array {
+    public function getByUser(int $userId): array
+    {
         $today = date('Y-m-d');
-        $stmt  = $this->pdo->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT h.*,
                    CASE WHEN hc.id IS NOT NULL THEN 1 ELSE 0 END AS completed_today
             FROM habits h
@@ -72,7 +84,8 @@ class Habit {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getById(int $id, int $userId): ?array {
+    public function getById(int $id, int $userId): ?array
+    {
         $stmt = $this->pdo->prepare("SELECT * FROM habits WHERE id = ? AND user_id = ? AND is_active = 1 LIMIT 1");
         $stmt->execute([$id, $userId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -83,7 +96,8 @@ class Habit {
     // READ calendar data: count of scheduled (active) habits per day
     // Returns: ['YYYY-MM-DD' => count, ...]
     // ----------------------------------------------------------------
-    public function getCalendarData(int $userId, int $year, int $month): array {
+    public function getCalendarData(int $userId, int $year, int $month): array
+    {
         // Fetch all active habit scheduling rules
         $stmt = $this->pdo->prepare("
             SELECT id, frequency, start_date, end_date, days_of_week, repeat_interval, color
@@ -93,16 +107,17 @@ class Habit {
         $stmt->execute([$userId]);
         $habits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (empty($habits)) return [];
+        if (empty($habits))
+            return [];
 
-        $from    = new DateTime(sprintf('%04d-%02d-01', $year, $month));
-        $to      = new DateTime($from->format('Y-m-t'));
-        $result  = [];
+        $from = new DateTime(sprintf('%04d-%02d-01', $year, $month));
+        $to = new DateTime($from->format('Y-m-t'));
+        $result = [];
         $current = clone $from;
 
         while ($current <= $to) {
             $dateStr = $current->format('Y-m-d');
-            $count   = 0;
+            $count = 0;
             foreach ($habits as $habit) {
                 if ($this->isScheduledOnDate($habit, $dateStr)) {
                     $count++;
@@ -120,7 +135,8 @@ class Habit {
     // READ habits with completion status for a SPECIFIC DATE
     // Only returns habits that are scheduled (active) on that date
     // ----------------------------------------------------------------
-    public function getWithCompletionForDate(int $userId, string $date): array {
+    public function getWithCompletionForDate(int $userId, string $date): array
+    {
         $stmt = $this->pdo->prepare("
             SELECT h.*,
                    hc.id           AS completion_id,
@@ -150,8 +166,11 @@ class Habit {
     // LOG a habit completion for a specific date
     // ----------------------------------------------------------------
     public function completeForDate(
-        int $habitId, int $userId, string $date,
-        ?string $notes = null, ?int $moodRating = null
+        int $habitId,
+        int $userId,
+        string $date,
+        ?string $notes = null,
+        ?int $moodRating = null
     ): int {
         $time = date('H:i:s');
         $stmt = $this->pdo->prepare("
@@ -167,13 +186,14 @@ class Habit {
             LIMIT 1
         ");
         $stmt2->execute([$habitId, $userId, $date]);
-        return (int)$stmt2->fetchColumn();
+        return (int) $stmt2->fetchColumn();
     }
 
     // ----------------------------------------------------------------
     // REMOVE a habit completion for a specific date
     // ----------------------------------------------------------------
-    public function uncompleteForDate(int $habitId, int $userId, string $date): void {
+    public function uncompleteForDate(int $habitId, int $userId, string $date): void
+    {
         $stmt = $this->pdo->prepare("
             DELETE FROM habit_completions
             WHERE habit_id = ? AND user_id = ? AND completion_date = ?
@@ -185,26 +205,65 @@ class Habit {
     // UPDATE a habit
     // ----------------------------------------------------------------
     public function update(
-        int $id, int $userId,
-        ?string $name = null, ?string $description = null,
-        ?string $category = null, ?string $frequency = null,
-        ?string $startDate = null, ?string $endDate = null,
-        ?string $daysOfWeek = null, ?int $repeatInterval = null,
-        ?string $color = null, ?string $icon = null
+        int $id,
+        int $userId,
+        ?string $name = null,
+        ?string $description = null,
+        ?string $category = null,
+        ?string $frequency = null,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?string $daysOfWeek = null,
+        ?int $repeatInterval = null,
+        ?string $color = null,
+        ?string $icon = null
     ): bool {
-        $fields = []; $params = [];
-        if ($name           !== null) { $fields[] = 'name = ?';          $params[] = $name; }
-        if ($description    !== null) { $fields[] = 'description = ?';   $params[] = $description; }
-        if ($category       !== null) { $fields[] = 'category = ?';      $params[] = $category; }
-        if ($frequency      !== null) { $fields[] = 'frequency = ?';     $params[] = $frequency; }
-        if ($startDate      !== null) { $fields[] = 'start_date = ?';    $params[] = $startDate; }
-        if ($endDate        !== null) { $fields[] = 'end_date = ?';      $params[] = $endDate; }
-        if ($daysOfWeek     !== null) { $fields[] = 'days_of_week = ?';  $params[] = $daysOfWeek; }
-        if ($repeatInterval !== null) { $fields[] = 'repeat_interval = ?'; $params[] = $repeatInterval; }
-        if ($color          !== null) { $fields[] = 'color = ?';          $params[] = $color; }
-        if ($icon           !== null) { $fields[] = 'icon = ?';           $params[] = $icon; }
-        if (empty($fields)) return false;
-        $params[] = $id; $params[] = $userId;
+        $fields = [];
+        $params = [];
+        if ($name !== null) {
+            $fields[] = 'name = ?';
+            $params[] = $name;
+        }
+        if ($description !== null) {
+            $fields[] = 'description = ?';
+            $params[] = $description;
+        }
+        if ($category !== null) {
+            $fields[] = 'category = ?';
+            $params[] = $category;
+        }
+        if ($frequency !== null) {
+            $fields[] = 'frequency = ?';
+            $params[] = $frequency;
+        }
+        if ($startDate !== null) {
+            $fields[] = 'start_date = ?';
+            $params[] = $startDate;
+        }
+        if ($endDate !== null) {
+            $fields[] = 'end_date = ?';
+            $params[] = $endDate;
+        }
+        if ($daysOfWeek !== null) {
+            $fields[] = 'days_of_week = ?';
+            $params[] = $daysOfWeek;
+        }
+        if ($repeatInterval !== null) {
+            $fields[] = 'repeat_interval = ?';
+            $params[] = $repeatInterval;
+        }
+        if ($color !== null) {
+            $fields[] = 'color = ?';
+            $params[] = $color;
+        }
+        if ($icon !== null) {
+            $fields[] = 'icon = ?';
+            $params[] = $icon;
+        }
+        if (empty($fields))
+            return false;
+        $params[] = $id;
+        $params[] = $userId;
         $stmt = $this->pdo->prepare(
             "UPDATE habits SET " . implode(', ', $fields) .
             " WHERE id = ? AND user_id = ? AND is_active = 1"
@@ -216,7 +275,8 @@ class Habit {
     // ----------------------------------------------------------------
     // HARD-DELETE a habit
     // ----------------------------------------------------------------
-    public function delete(int $id, int $userId): bool {
+    public function delete(int $id, int $userId): bool
+    {
         $stmt = $this->pdo->prepare("DELETE FROM habits WHERE id = ? AND user_id = ?");
         $stmt->execute([$id, $userId]);
         return $stmt->rowCount() > 0;
@@ -225,33 +285,37 @@ class Habit {
     // ----------------------------------------------------------------
     // COMPLETE — record completion for today (legacy helper)
     // ----------------------------------------------------------------
-    public function complete(int $habitId, int $userId, ?string $notes = null, ?int $moodRating = null): int {
+    public function complete(int $habitId, int $userId, ?string $notes = null, ?int $moodRating = null): int
+    {
         return $this->completeForDate($habitId, $userId, date('Y-m-d'), $notes, $moodRating);
     }
 
     // ----------------------------------------------------------------
     // UNCOMPLETE — remove today's completion (legacy helper)
     // ----------------------------------------------------------------
-    public function uncomplete(int $habitId, int $userId): void {
+    public function uncomplete(int $habitId, int $userId): void
+    {
         $this->uncompleteForDate($habitId, $userId, date('Y-m-d'));
     }
 
     // ----------------------------------------------------------------
     // STATS — summary counts
     // ----------------------------------------------------------------
-    public function getStats(int $userId): array {
+    public function getStats(int $userId): array
+    {
         $today = date('Y-m-d');
 
         // Total active habits
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM habits WHERE user_id = ? AND is_active = 1");
         $stmt->execute([$userId]);
-        $total = (int)$stmt->fetchColumn();
+        $total = (int) $stmt->fetchColumn();
 
         // Habits scheduled for today
-        $allHabits    = $this->getByUser($userId);
+        $allHabits = $this->getByUser($userId);
         $scheduledToday = 0;
         foreach ($allHabits as $h) {
-            if ($this->isScheduledOnDate($h, $today)) $scheduledToday++;
+            if ($this->isScheduledOnDate($h, $today))
+                $scheduledToday++;
         }
 
         // Completed today
@@ -262,20 +326,20 @@ class Habit {
             WHERE hc.user_id = ? AND hc.completion_date = ?
         ");
         $stmt->execute([$userId, $today]);
-        $completedToday = (int)$stmt->fetchColumn();
+        $completedToday = (int) $stmt->fetchColumn();
 
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM habit_completions WHERE user_id = ?");
         $stmt->execute([$userId]);
-        $totalCompletions = (int)$stmt->fetchColumn();
+        $totalCompletions = (int) $stmt->fetchColumn();
 
         return [
-            'total_habits'      => $total,
-            'scheduled_today'   => $scheduledToday,
-            'completed_today'   => $completedToday,
+            'total_habits' => $total,
+            'scheduled_today' => $scheduledToday,
+            'completed_today' => $completedToday,
             'total_completions' => $totalCompletions,
-            'completion_rate'   => $scheduledToday > 0
-                                    ? round(($completedToday / $scheduledToday) * 100)
-                                    : 0
+            'completion_rate' => $scheduledToday > 0
+                ? round(($completedToday / $scheduledToday) * 100)
+                : 0
         ];
     }
 
@@ -286,19 +350,23 @@ class Habit {
     /**
      * Determine if a habit is "scheduled" (should appear) on a given date.
      */
-    public function isScheduledOnDate(array $habit, string $date): bool {
-        $startDate      = $habit['start_date']      ?? null;
-        $endDate        = $habit['end_date']        ?? null;
-        $frequency      = $habit['frequency']       ?? 'daily';
-        $daysOfWeek     = $habit['days_of_week']    ?? '';
-        $repeatInterval = max(1, (int)($habit['repeat_interval'] ?? 1));
+    public function isScheduledOnDate(array $habit, string $date): bool
+    {
+        $startDate = $habit['start_date'] ?? null;
+        $endDate = $habit['end_date'] ?? null;
+        $frequency = $habit['frequency'] ?? 'daily';
+        $daysOfWeek = $habit['days_of_week'] ?? '';
+        $repeatInterval = max(1, (int) ($habit['repeat_interval'] ?? 1));
 
         // Legacy habits with no start_date: always show (backwards compat)
-        if (!$startDate) return true;
+        if (!$startDate)
+            return true;
 
         // Outside date range
-        if ($date < $startDate)              return false;
-        if ($endDate && $date > $endDate)    return false;
+        if ($date < $startDate)
+            return false;
+        if ($endDate && $date > $endDate)
+            return false;
 
         switch ($frequency) {
             case 'today':
@@ -309,13 +377,13 @@ class Habit {
 
             case 'weekly':
                 // days_of_week = comma-separated 0-6 (0=Sun, 6=Sat)
-                $dayOfWeek  = (int)date('w', strtotime($date));
-                $activeDays = array_filter(array_map('trim', explode(',', (string)$daysOfWeek)));
-                return in_array((string)$dayOfWeek, $activeDays, true);
+                $dayOfWeek = (int) date('w', strtotime($date));
+                $activeDays = array_filter(array_map('trim', explode(',', (string) $daysOfWeek)));
+                return in_array((string) $dayOfWeek, $activeDays, true);
 
             case 'custom':
                 // every N days from start_date
-                $diff = (int)(
+                $diff = (int) (
                     (strtotime($date) - strtotime($startDate)) / 86400
                 );
                 return $diff >= 0 && ($diff % $repeatInterval === 0);
@@ -328,7 +396,8 @@ class Habit {
     /**
      * Calculate the current consecutive day streak for a habit.
      */
-    public function getCurrentStreak(int $habitId, int $userId): int {
+    public function getCurrentStreak(int $habitId, int $userId): int
+    {
         $stmt = $this->pdo->prepare("
             SELECT completion_date 
             FROM habit_completions 
@@ -338,16 +407,18 @@ class Habit {
         $stmt->execute([$habitId, $userId]);
         $dates = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        if (empty($dates)) return 0;
+        if (empty($dates))
+            return 0;
 
         $streak = 0;
         $curr = new DateTime(date('Y-m-d'));
-        
+
         // If the most recent completion wasn't today or yesterday, streak is 0
         $lastDate = new DateTime($dates[0]);
         $diff = $curr->diff($lastDate)->days;
-        
-        if ($diff > 1) return 0;
+
+        if ($diff > 1)
+            return 0;
 
         $streak = 1;
         $prev = $lastDate;
@@ -355,7 +426,7 @@ class Habit {
         for ($i = 1; $i < count($dates); $i++) {
             $thisDate = new DateTime($dates[$i]);
             $interval = $prev->diff($thisDate)->days;
-            
+
             if ($interval === 1) {
                 $streak++;
                 $prev = $thisDate;
@@ -366,17 +437,18 @@ class Habit {
                 break;
             }
         }
-        
+
         return $streak;
     }
 
     /**
      * Get habits scheduled for today that haven't been completed yet.
      */
-    public function getIncompleteHabitsForToday(int $userId): array {
+    public function getIncompleteHabitsForToday(int $userId): array
+    {
         $today = date('Y-m-d');
         $all = $this->getByUser($userId);
-        
+
         $pending = [];
         foreach ($all as $h) {
             if ($this->isScheduledOnDate($h, $today) && !$h['completed_today']) {

@@ -11,11 +11,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-class HabitApiControl {
+class HabitApiControl
+{
     private $habitModel;
     private $notificationModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->habitModel = new Habit();
         $this->notificationModel = new Notification();
     }
@@ -23,7 +25,8 @@ class HabitApiControl {
     // ----------------------------------------------------------------
     // GET /api/habits  — list all habits for the logged-in student
     // ----------------------------------------------------------------
-    public function list() {
+    public function list()
+    {
         $userId = $this->requireAuth();
         try {
             $habits = $this->habitModel->getByUser($userId);
@@ -37,9 +40,10 @@ class HabitApiControl {
     // GET /api/habits/for-date?date=YYYY-MM-DD
     // Returns all habits with completion status for the given date
     // ----------------------------------------------------------------
-    public function listByDate() {
+    public function listByDate()
+    {
         $userId = $this->requireAuth();
-        $date   = $_GET['date'] ?? '';
+        $date = $_GET['date'] ?? '';
 
         if (!$date || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
             return $this->json(['error' => 'Valid date (YYYY-MM-DD) is required'], 400);
@@ -57,10 +61,11 @@ class HabitApiControl {
     // GET /api/habits/calendar?year=YYYY&month=M
     // Returns a map of date => completion count for the month
     // ----------------------------------------------------------------
-    public function calendarData() {
+    public function calendarData()
+    {
         $userId = $this->requireAuth();
-        $year   = (int)($_GET['year']  ?? date('Y'));
-        $month  = (int)($_GET['month'] ?? date('n'));
+        $year = (int) ($_GET['year'] ?? date('Y'));
+        $month = (int) ($_GET['month'] ?? date('n'));
 
         if ($year < 2000 || $year > 2100 || $month < 1 || $month > 12) {
             return $this->json(['error' => 'Invalid year or month'], 400);
@@ -78,12 +83,13 @@ class HabitApiControl {
     // POST /api/habits/log-date
     // Body: { habit_id, date, notes?, mood_rating? }
     // ----------------------------------------------------------------
-    public function logForDate() {
+    public function logForDate()
+    {
         $userId = $this->requireAuth();
         try {
-            $data    = $this->getJsonInput();
-            $habitId = (int)($data['habit_id'] ?? 0);
-            $date    = trim($data['date'] ?? '');
+            $data = $this->getJsonInput();
+            $habitId = (int) ($data['habit_id'] ?? 0);
+            $date = trim($data['date'] ?? '');
 
             if (!$habitId) {
                 return $this->json(['error' => 'habit_id is required'], 400);
@@ -96,8 +102,8 @@ class HabitApiControl {
                 $habitId,
                 $userId,
                 $date,
-                $data['notes']       ?? null,
-                isset($data['mood_rating']) ? (int)$data['mood_rating'] : null
+                $data['notes'] ?? null,
+                isset($data['mood_rating']) ? (int) $data['mood_rating'] : null
             );
 
             // Generate notification for completions (only when ALL are done)
@@ -106,11 +112,12 @@ class HabitApiControl {
                 $allScheduled = 0;
                 $allHabits = $this->habitModel->getByUser($userId);
                 foreach ($allHabits as $h) {
-                    if ($this->habitModel->isScheduledOnDate($h, $today)) $allScheduled++;
+                    if ($this->habitModel->isScheduledOnDate($h, $today))
+                        $allScheduled++;
                 }
 
                 $pending = $this->habitModel->getIncompleteHabitsForToday($userId);
-                
+
                 // Only notify if we just COMPLETED the last one (pending is 0 and scheduled > 0)
                 if ($allScheduled > 0 && empty($pending)) {
                     $msg = "Fantastic! 🌟 You've completed all your habits for today. Keep up the amazing work!";
@@ -130,12 +137,13 @@ class HabitApiControl {
     // POST /api/habits/unlog-date
     // Body: { habit_id, date }
     // ----------------------------------------------------------------
-    public function unlogForDate() {
+    public function unlogForDate()
+    {
         $userId = $this->requireAuth();
         try {
-            $data    = $this->getJsonInput();
-            $habitId = (int)($data['habit_id'] ?? 0);
-            $date    = trim($data['date'] ?? '');
+            $data = $this->getJsonInput();
+            $habitId = (int) ($data['habit_id'] ?? 0);
+            $date = trim($data['date'] ?? '');
 
             if (!$habitId) {
                 return $this->json(['error' => 'habit_id is required'], 400);
@@ -154,7 +162,8 @@ class HabitApiControl {
     // ----------------------------------------------------------------
     // POST /api/habits/create
     // ----------------------------------------------------------------
-    public function create() {
+    public function create()
+    {
         $userId = $this->requireAuth();
         try {
             $data = $this->getJsonInput();
@@ -165,24 +174,24 @@ class HabitApiControl {
                 }
             }
 
-            $freq           = $data['frequency']       ?? 'today';
-            $startDate      = $data['start_date']      ?? date('Y-m-d');
-            $endDate        = !empty($data['end_date']) ? $data['end_date'] : null;
-            $daysOfWeek     = !empty($data['days_of_week']) ? $data['days_of_week'] : null;
-            $repeatInterval = (int)($data['repeat_interval'] ?? 1);
+            $freq = $data['frequency'] ?? 'today';
+            $startDate = $data['start_date'] ?? date('Y-m-d');
+            $endDate = !empty($data['end_date']) ? $data['end_date'] : null;
+            $daysOfWeek = !empty($data['days_of_week']) ? $data['days_of_week'] : null;
+            $repeatInterval = (int) ($data['repeat_interval'] ?? 1);
 
             $habitId = $this->habitModel->create(
                 $userId,
                 trim($data['name']),
                 $data['description'] ?? null,
-                $data['category']    ?? 'other',
+                $data['category'] ?? 'other',
                 $freq,
                 $startDate,
                 $endDate,
                 $daysOfWeek,
                 $repeatInterval,
-                $data['color']       ?? '#10b981',
-                $data['icon']        ?? '🎯'
+                $data['color'] ?? '#10b981',
+                $data['icon'] ?? '🎯'
             );
 
             $this->log("Habit ID $habitId (freq=$freq) created by User ID $userId");
@@ -197,7 +206,8 @@ class HabitApiControl {
     // ----------------------------------------------------------------
     // PUT /api/habits/update
     // ----------------------------------------------------------------
-    public function update() {
+    public function update()
+    {
         $userId = $this->requireAuth();
         try {
             $data = $this->getJsonInput();
@@ -206,18 +216,18 @@ class HabitApiControl {
             }
 
             $updated = $this->habitModel->update(
-                (int)$data['id'],
+                (int) $data['id'],
                 $userId,
-                $data['name']        ?? null,
+                $data['name'] ?? null,
                 $data['description'] ?? null,
-                $data['category']    ?? null,
-                $data['frequency']   ?? null,
+                $data['category'] ?? null,
+                $data['frequency'] ?? null,
                 !empty($data['start_date']) ? $data['start_date'] : null,
                 array_key_exists('end_date', $data) ? ($data['end_date'] ?: null) : null,
                 !empty($data['days_of_week']) ? $data['days_of_week'] : null,
-                isset($data['repeat_interval']) ? (int)$data['repeat_interval'] : null,
-                $data['color']       ?? null,
-                $data['icon']        ?? null
+                isset($data['repeat_interval']) ? (int) $data['repeat_interval'] : null,
+                $data['color'] ?? null,
+                $data['icon'] ?? null
             );
 
             if ($updated) {
@@ -233,11 +243,12 @@ class HabitApiControl {
     // ----------------------------------------------------------------
     // DELETE /api/habits/delete
     // ----------------------------------------------------------------
-    public function delete() {
+    public function delete()
+    {
         $userId = $this->requireAuth();
         try {
             $data = $this->getJsonInput();
-            $id   = (int)($data['id'] ?? $_GET['id'] ?? 0);
+            $id = (int) ($data['id'] ?? $_GET['id'] ?? 0);
 
             if (!$id) {
                 return $this->json(['error' => 'Habit id is required'], 400);
@@ -257,11 +268,12 @@ class HabitApiControl {
     // ----------------------------------------------------------------
     // POST /api/habits/complete  (today only — legacy)
     // ----------------------------------------------------------------
-    public function complete() {
+    public function complete()
+    {
         $userId = $this->requireAuth();
         try {
-            $data    = $this->getJsonInput();
-            $habitId = (int)($data['habit_id'] ?? 0);
+            $data = $this->getJsonInput();
+            $habitId = (int) ($data['habit_id'] ?? 0);
             if (!$habitId) {
                 return $this->json(['error' => 'habit_id is required'], 400);
             }
@@ -269,7 +281,7 @@ class HabitApiControl {
             $completionId = $this->habitModel->complete(
                 $habitId,
                 $userId,
-                $data['notes']       ?? null,
+                $data['notes'] ?? null,
                 $data['mood_rating'] ?? null
             );
 
@@ -282,11 +294,12 @@ class HabitApiControl {
     // ----------------------------------------------------------------
     // POST /api/habits/uncomplete  (today only — legacy)
     // ----------------------------------------------------------------
-    public function uncomplete() {
+    public function uncomplete()
+    {
         $userId = $this->requireAuth();
         try {
-            $data    = $this->getJsonInput();
-            $habitId = (int)($data['habit_id'] ?? 0);
+            $data = $this->getJsonInput();
+            $habitId = (int) ($data['habit_id'] ?? 0);
             if (!$habitId) {
                 return $this->json(['error' => 'habit_id is required'], 400);
             }
@@ -301,7 +314,8 @@ class HabitApiControl {
     // ----------------------------------------------------------------
     // GET /api/habits/stats
     // ----------------------------------------------------------------
-    public function stats() {
+    public function stats()
+    {
         $userId = $this->requireAuth();
         try {
             $stats = $this->habitModel->getStats($userId);
@@ -314,9 +328,10 @@ class HabitApiControl {
     // ----------------------------------------------------------------
     // GET /api/habits/test
     // ----------------------------------------------------------------
-    public function test() {
+    public function test()
+    {
         $this->json([
-            'status'  => 'ok',
+            'status' => 'ok',
             'message' => 'HabitApiControl is reachable',
             'user_id' => $_SESSION['user_id'] ?? null
         ]);
@@ -326,26 +341,30 @@ class HabitApiControl {
     // Private helpers
     // ================================================================
 
-    private function requireAuth(): int {
+    private function requireAuth(): int
+    {
         if (!isset($_SESSION['user_id'])) {
             $this->json(['error' => 'Authentication required. Please log in.'], 401);
         }
-        return (int)$_SESSION['user_id'];
+        return (int) $_SESSION['user_id'];
     }
 
-    private function getJsonInput(): array {
+    private function getJsonInput(): array
+    {
         $input = file_get_contents('php://input');
         return json_decode($input, true) ?? [];
     }
 
-    private function json($data, int $status = 200): void {
+    private function json($data, int $status = 200): void
+    {
         http_response_code($status);
         header('Content-Type: application/json');
         echo json_encode($data);
         exit;
     }
 
-    private function log(string $message): void {
+    private function log(string $message): void
+    {
         $dir = BASE_PATH . '/logs';
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);
