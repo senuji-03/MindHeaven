@@ -1153,11 +1153,10 @@ $currentMonth = (int) date('n');
           <label for="habitIcon">Icon (Emoji)</label>
           <input type="text" id="habitIcon" class="form-control" placeholder="🎯" value="🎯">
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
-            <?php foreach(['🎯','📚','🏋️','💧','🧘','🏃','💻','🥗','🎨','🎸','🚭','😴','💰','📝','📖','🧠','🌱','🧹','🍳','🍎','🚲','🐕','⚕️','🌤️','🎵','💼','💡','⏳','🌍','❤️','🔥'] as $em): ?>
-              <span style="cursor:pointer; font-size:1.15rem; transition:transform .15s;" 
-                    onmouseover="this.style.transform='scale(1.25)'" 
-                    onmouseout="this.style.transform='scale(1)'"
-                    onclick="document.getElementById('habitIcon').value='<?= $em ?>'"><?= $em ?></span>
+            <?php foreach (['🎯', '📚', '🏋️', '💧', '🧘', '🏃', '💻', '🥗', '🎨', '🎸', '🚭', '😴', '💰', '📝', '📖', '🧠', '🌱', '🧹', '🍳', '🍎', '🚲', '🐕', '⚕️', '🌤️', '🎵', '💼', '💡', '⏳', '🌍', '❤️', '🔥'] as $em): ?>
+              <span style="cursor:pointer; font-size:1.15rem; transition:transform .15s;"
+                onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"
+                onclick="document.getElementById('habitIcon').value='<?= $em ?>'"><?= $em ?></span>
             <?php endforeach; ?>
           </div>
         </div>
