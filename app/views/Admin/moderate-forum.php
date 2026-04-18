@@ -7,7 +7,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 <style>
     /* ── Forum-specific styles ── */
-    .forum-page-wrapper { padding: 28px 32px; }
+    .forum-page-wrapper { padding: 28px 32px; background: var(--surface); min-height: 100vh; }
 
     /* Tabs toolbar */
     .toolbar {

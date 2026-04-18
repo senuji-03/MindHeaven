@@ -249,5 +249,23 @@ class ResourceHub {
         $stmt = $this->pdo->prepare("UPDATE resource_reports SET status = ?, reviewed_by = ?, action_taken = ? WHERE id = ?");
         return $stmt->execute(array($rejectOrReviewed, $moderatorId, $actionTaken, $reportId));
     }
+    
+    public function updateComment($id, $userId, $comment) {
+        // SQL Query: UPDATE resource_comments SET comment = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?
+        $stmt = $this->pdo->prepare("UPDATE resource_comments SET comment = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?");
+        return $stmt->execute(array($comment, $id, $userId));
+    }
+
+    public function deleteComment($id, $userId, $isAuthorized = false) {
+        if ($isAuthorized) {
+            // SQL Query: DELETE FROM resource_comments WHERE id = ?
+            $stmt = $this->pdo->prepare("DELETE FROM resource_comments WHERE id = ?");
+            return $stmt->execute(array($id));
+        } else {
+            // SQL Query: DELETE FROM resource_comments WHERE id = ? AND user_id = ?
+            $stmt = $this->pdo->prepare("DELETE FROM resource_comments WHERE id = ? AND user_id = ?");
+            return $stmt->execute(array($id, $userId));
+        }
+    }
 
 }

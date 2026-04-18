@@ -15,7 +15,7 @@ if (!empty($resource['file_path'])) {
 }
 ?>
 
-<main id="main" class="resources-details-page" style="padding: 48px 0; background: var(--bg-soft); min-height: 100vh;">
+<main id="main" class="resources-details-page" style="padding: 48px 0; background: var(--surface); min-height: 100vh;">
     <div class="container" style="max-width: 1000px; margin: 0 auto;">
         
         <!-- Back Navigation -->
@@ -28,21 +28,21 @@ if (!empty($resource['file_path'])) {
         </div>
 
         <!-- Main Content Card -->
-        <article class="card" style="padding: 48px; margin-bottom: 32px; border: none; box-shadow: var(--shadow-sm);">
+        <article class="card" style="padding: 48px; margin-bottom: 32px; border: none; box-shadow: var(--shadow-xl); background: var(--bg-deep);">
             <header style="margin-bottom: 40px;">
                 <span class="section-label" style="display: inline-block; background: var(--bg-mid); color: var(--primary-dark); padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 700; margin-bottom: 16px;">
                     <?= htmlspecialchars($resource['content_type']) ?>
                 </span>
-                <h1 class="section-title" style="font-size: 2.8rem; margin: 0 0 16px; text-align: left; color: var(--text-primary);">
+                <h1 class="section-title" style="font-size: 2.8rem; margin: 0 0 16px; text-align: left; color: white;">
                     <?= htmlspecialchars($resource['title']) ?>
                 </h1>
-                <div style="display: flex; align-items: center; gap: 12px; color: var(--text-secondary); font-size: 0.9rem;">
+                <div style="display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.6); font-size: 0.9rem;">
                     <i class="far fa-calendar-alt"></i>
                     <span>Published in <?= htmlspecialchars($resource['category']) ?></span>
                 </div>
             </header>
 
-            <div style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 40px; border-left: 4px solid var(--primary-light); padding-left: 24px; line-height: 1.6;">
+            <div style="font-size: 1.15rem; color: rgba(255,255,255,0.9); margin-bottom: 40px; border-left: 4px solid var(--primary-light); padding-left: 24px; line-height: 1.6;">
                 <?= nl2br(htmlspecialchars($resource['summary'])) ?>
             </div>
 
@@ -71,7 +71,7 @@ if (!empty($resource['file_path'])) {
                                 <div style="width: 56px; height: 56px; background: var(--bg-mid); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.4rem;">
                                     <i class="fas fa-headphones"></i>
                                 </div>
-                                <h4 style="margin-bottom: 12px; color: var(--text-primary);"><?= htmlspecialchars(isset($resource['file_name']) ? $resource['file_name'] : 'Wellness Audio Session') ?></h4>
+                                <h4 style="margin-bottom: 12px; color: white;"><?= htmlspecialchars(isset($resource['file_name']) ? $resource['file_name'] : 'Wellness Audio Session') ?></h4>
                                 <audio controls style="width: 100%; max-width: 500px;" preload="auto">
                                     <source src="<?= htmlspecialchars($cleanPath) ?>">
                                 </audio>
@@ -89,7 +89,7 @@ if (!empty($resource['file_path'])) {
                 <?php endif; ?>
 
                 <?php if (!empty($resource['content'])): ?>
-                    <div class="text-content" style="font-size: 1.05rem; line-height: 1.75; color: var(--text-primary); letter-spacing: -0.01em;">
+                    <div class="text-content" style="font-size: 1.05rem; line-height: 1.75; color: rgba(255,255,255,0.92); letter-spacing: -0.01em;">
                         <?= $resource['content'] ?>
                     </div>
                 <?php endif; ?>
@@ -106,9 +106,9 @@ if (!empty($resource['file_path'])) {
                         <span class="like-ripple"></span>
                     </button>
                     <div style="line-height: 1.4;">
-                        <span style="display: block; font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Do you find this helpful?</span>
-                        <span style="color: var(--text-secondary); font-size: 0.85rem;">
-                            <span id="detail-likes-count-<?= $resource['id'] ?>" style="font-weight: 600; color: var(--primary);"><?= isset($resource['likes']) ? $resource['likes'] : 0 ?></span> users appreciated this
+                        <span style="display: block; font-weight: 700; color: white; font-size: 0.95rem;">Do you find this helpful?</span>
+                        <span style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">
+                            <span id="detail-likes-count-<?= $resource['id'] ?>" style="font-weight: 600; color: var(--primary-light);"><?= isset($resource['likes']) ? $resource['likes'] : 0 ?></span> users appreciated this
                         </span>
                     </div>
                 </div>
@@ -130,10 +130,10 @@ if (!empty($resource['file_path'])) {
         </article>
 
         <!-- Comments Section -->
-        <section class="card" style="padding: 40px; border: none; box-shadow: var(--shadow-sm);">
+        <section class="card" style="padding: 40px; border: none; box-shadow: var(--shadow-xl); background: var(--bg-deep);">
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
-                <h3 style="font-size: 1.4rem; font-weight: 700; margin: 0;">Discussion</h3>
-                <span style="background: var(--bg-mid); color: var(--primary); padding: 2px 10px; border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 600;">
+                <h3 style="font-size: 1.4rem; font-weight: 700; margin: 0; color: white;">Discussion</h3>
+                <span style="background: rgba(255,255,255,0.1); color: var(--primary-light); padding: 2px 10px; border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 600;">
                     <?= count($comments) ?> Comments
                 </span>
             </div>
@@ -142,7 +142,7 @@ if (!empty($resource['file_path'])) {
                 <input type="hidden" name="resource_id" value="<?= $resource['id'] ?>">
                 <div style="position: relative;">
                     <textarea name="comment" rows="1" class="comment-input" placeholder="Share your perspective..." required
-                        style="width: 100%; padding: 18px; border: 1.5px solid var(--border); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; transition: all 0.3s ease; resize: none; overflow: hidden; min-height: 56px;"
+                        style="width: 100%; padding: 18px; border: 1.5px solid rgba(255,255,255,0.15); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; transition: all 0.3s ease; resize: none; overflow: hidden; min-height: 56px; background: rgba(255,255,255,0.05); color: white;"
                         oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
                     <button type="submit" style="position: absolute; right: 10px; bottom: 8px; background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
                         <i class="fas fa-paper-plane"></i>
@@ -164,14 +164,47 @@ if (!empty($resource['file_path'])) {
                             </div>
                             <div style="flex-grow: 1;">
                                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
-                                    <strong style="color: var(--text-primary); font-size: 0.98rem;"><?= htmlspecialchars(isset($comment['user_name']) ? $comment['user_name'] : 'User') ?></strong>
-                                    <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 500;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <strong style="color: white; font-size: 0.98rem;"><?= htmlspecialchars(isset($comment['user_name']) ? $comment['user_name'] : 'User') ?></strong>
+                                        <?php if (isset($_SESSION['user_id']) && (int)$comment['user_id'] === (int)$_SESSION['user_id']): ?>
+                                            <div style="display: flex; gap: 8px; margin-left: 8px;">
+                                                <button onclick="toggleEditComment(<?= $comment['id'] ?>)" style="background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size: 0.8rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-light)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button onclick="confirmDeleteComment(<?= $comment['id'] ?>)" style="background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size: 0.8rem; transition: color 0.2s;" onmouseover="this.style.color='var(--crisis)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <span style="font-size: 0.78rem; color: rgba(255,255,255,0.5); font-weight: 500;">
                                         <?= date('M j, Y', strtotime($comment['created_at'])) ?>
                                     </span>
                                 </div>
-                                <p style="margin: 0; color: var(--text-primary); line-height: 1.6; font-size: 0.95rem;">
-                                    <?= nl2br(htmlspecialchars($comment['comment'])) ?>
-                                </p>
+                                
+                                <div id="comment-display-<?= $comment['id'] ?>">
+                                    <p style="margin: 0; color: rgba(255,255,255,0.85); line-height: 1.6; font-size: 0.95rem;">
+                                        <?= nl2br(htmlspecialchars($comment['comment'])) ?>
+                                    </p>
+                                </div>
+
+                                <?php if (isset($_SESSION['user_id']) && (int)$comment['user_id'] === (int)$_SESSION['user_id']): ?>
+                                    <div id="comment-edit-<?= $comment['id'] ?>" style="display: none;">
+                                        <form action="<?= BASE_URL ?>/ug/editComment" method="POST">
+                                            <input type="hidden" name="comment_id" value="<?= $comment['id'] ?>">
+                                            <input type="hidden" name="resource_id" value="<?= $resource['id'] ?>">
+                                            <textarea name="comment" class="comment-input" required style="width: 100%; padding: 12px; border: 1.5px solid var(--primary); border-radius: var(--radius-md); background: rgba(255,255,255,0.05); color: white; margin-bottom: 8px;"><?= htmlspecialchars($comment['comment']) ?></textarea>
+                                            <div style="display: flex; gap: 8px;">
+                                                <button type="submit" class="btn btn-primary" style="padding: 4px 12px; font-size: 0.85rem;">Save</button>
+                                                <button type="button" onclick="toggleEditComment(<?= $comment['id'] ?>)" class="btn btn-outline" style="padding: 4px 12px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2); background:transparent; color:white;">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <form id="delete-form-<?= $comment['id'] ?>" action="<?= BASE_URL ?>/ug/deleteComment" method="POST" style="display: none;">
+                                        <input type="hidden" name="comment_id" value="<?= $comment['id'] ?>">
+                                        <input type="hidden" name="resource_id" value="<?= $resource['id'] ?>">
+                                    </form>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -183,34 +216,34 @@ if (!empty($resource['file_path'])) {
 
 <!-- Report Modal Modernized -->
 <div id="reportModal" style="display: none; position: fixed; inset: 0; background: rgba(28, 43, 42, 0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 2000; padding: 24px;">
-    <div class="card" style="width: 100%; max-width: 500px; padding: 32px; box-shadow: var(--shadow-xl); border: none; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+    <div class="card" style="width: 100%; max-width: 500px; padding: 32px; box-shadow: var(--shadow-xl); border: 1px solid rgba(255,255,255,0.1); background: var(--bg-deep); animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
         <header style="margin-bottom: 24px;">
-            <h3 style="margin: 0 0 8px; color: var(--crisis); font-size: 1.4rem;">Report Resource</h3>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Your report helps us maintain high accuracy and safety standards.</p>
+            <h3 style="margin: 0 0 8px; color: white; font-size: 1.4rem;">Report Resource</h3>
+            <p style="color: rgba(255,255,255,0.65); font-size: 0.9rem; margin: 0;">Your report helps us maintain high accuracy and safety standards.</p>
         </header>
 
         <form id="reportForm">
             <input type="hidden" id="reportResourceId" value="<?= $resource['id'] ?>">
 
             <div style="margin-bottom: 20px;">
-                <label class="form-label">Select Reason</label>
-                <select id="reportReason" required class="form-input">
-                    <option value="" disabled selected>Select a reason...</option>
-                    <option value="Inappropriate content">Inappropriate content</option>
-                    <option value="Misinformation">Misinformation</option>
-                    <option value="Copyright violation">Copyright violation</option>
-                    <option value="Spam / irrelevant">Spam / irrelevant</option>
-                    <option value="Other">Other (please specify below)</option>
+                <label class="form-label" style="color: white;">Select Reason</label>
+                <select id="reportReason" required class="form-input" style="background: rgba(255,255,255,0.05); color: white; border-color: rgba(255,255,255,0.2);">
+                    <option value="" disabled selected style="background: var(--bg-deep);">Select a reason...</option>
+                    <option value="Inappropriate content" style="background: var(--bg-deep);">Inappropriate content</option>
+                    <option value="Misinformation" style="background: var(--bg-deep);">Misinformation</option>
+                    <option value="Copyright violation" style="background: var(--bg-deep);">Copyright violation</option>
+                    <option value="Spam / irrelevant" style="background: var(--bg-deep);">Spam / irrelevant</option>
+                    <option value="Other" style="background: var(--bg-deep);">Other (please specify below)</option>
                 </select>
             </div>
 
             <div style="margin-bottom: 32px;">
-                <label class="form-label">Additional Context (Optional)</label>
-                <textarea id="reportDescription" rows="3" class="form-input" placeholder="Provide more details..."></textarea>
+                <label class="form-label" style="color: white;">Additional Context (Optional)</label>
+                <textarea id="reportDescription" rows="3" class="form-input" placeholder="Provide more details..." style="background: rgba(255,255,255,0.05); color: white; border-color: rgba(255,255,255,0.2);"></textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 12px;">
-                <button type="button" onclick="closeReportModal()" class="btn btn-outline" style="border: none; background: var(--bg-soft);">Cancel</button>
+                <button type="button" onclick="closeReportModal()" class="btn btn-outline" style="border: 1px solid rgba(255,255,255,0.4); background: transparent; color: white;">Cancel</button>
                 <button type="submit" class="btn btn-primary" style="background: var(--crisis);">
                     <i class="fas fa-flag" style="margin-right: 6px;"></i> Send Report
                 </button>
@@ -253,6 +286,10 @@ if (!empty($resource['file_path'])) {
 }
 
 .btn-primary:active { transform: translateY(0) scale(0.98); }
+
+.comment-actions-btn:hover {
+    background: rgba(255,255,255,0.1);
+}
 </style>
 
 <script>
@@ -287,6 +324,25 @@ if (!empty($resource['file_path'])) {
     document.addEventListener('click', () => {
         document.querySelectorAll('[id^="actionDropdown"]').forEach(el => el.style.display = 'none');
     });
+
+    function toggleEditComment(id) {
+        const displayDiv = document.getElementById('comment-display-' + id);
+        const editDiv = document.getElementById('comment-edit-' + id);
+        if (displayDiv.style.display === 'none') {
+            displayDiv.style.display = 'block';
+            editDiv.style.display = 'none';
+        } else {
+            displayDiv.style.display = 'none';
+            editDiv.style.display = 'block';
+            editDiv.querySelector('textarea').focus();
+        }
+    }
+
+    function confirmDeleteComment(id) {
+        if (confirm('Are you sure you want to delete this comment? This action cannot be undone.')) {
+            document.getElementById('delete-form-' + id).submit();
+        }
+    }
 
     function toggleLikeDetail(btn, resourceId) {
         const likeUrlBase = '<?= isset($likeUrl) ? $likeUrl : (BASE_URL . "/ug/likeResource") ?>';

@@ -481,7 +481,11 @@ class ModeratorControl
         try {
             $resourceHub = new ResourceHub();
             $reports = $resourceHub->getPendingReports();
-            view('Moderator/reportedResources', array('reports' => $reports));
+            $frozenResources = $resourceHub->getAll('flagged');
+            view('Moderator/reportedResources', array(
+                'reports' => $reports,
+                'frozenResources' => $frozenResources
+            ));
         } catch (Exception $e) {
             echo "Failed to load reports: " . $e->getMessage();
         }
@@ -497,7 +501,7 @@ class ModeratorControl
         $reportId = (int)(isset($_POST['report_id']) ? $_POST['report_id'] : 0);
         $action = isset($_POST['action']) ? $_POST['action'] : '';
         
-        if ($reportId > 0 && in_array($action, array('removed', 'warning issued', 'ignored'))) {
+        if ($reportId > 0 && in_array($action, array('removed', 'frozen', 'ignored'))) {
             $resourceHub = new ResourceHub();
             
             // Default to 'reviewed'. Except maybe 'ignored' would still be reviewed?
@@ -509,8 +513,12 @@ class ModeratorControl
             $res = $stmt->fetch();
 
             if ($action === 'removed' && $res) {
-                // If the moderator decides to remove the content, set resource status to 'archived' or 'flagged' permanently
+                // If the moderator decides to remove the content, set resource status to 'archived' permanently
                 $upd = Database::getConnection()->prepare("UPDATE resource_hub SET status = 'archived' WHERE id = ?");
+                $upd->execute([$res['resource_id']]);
+            } elseif ($action === 'frozen' && $res) {
+                // If the moderator decides to freeze, set status to 'flagged' (Under Review)
+                $upd = Database::getConnection()->prepare("UPDATE resource_hub SET status = 'flagged' WHERE id = ?");
                 $upd->execute([$res['resource_id']]);
             }
 
@@ -518,6 +526,24 @@ class ModeratorControl
         }
 
         header('Location: ' . BASE_URL . '/Moderator/reported-resources?resolved=1');
+        exit;
+    }
+
+    public function unfreezeResource()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/Moderator/reported-resources');
+            exit;
+        }
+
+        $resourceId = (int)(isset($_POST['id']) ? $_POST['id'] : 0);
+        
+        if ($resourceId > 0) {
+            $upd = Database::getConnection()->prepare("UPDATE resource_hub SET status = 'published' WHERE id = ?");
+            $upd->execute([$resourceId]);
+        }
+
+        header('Location: ' . BASE_URL . '/Moderator/reported-resources?unfrozen=1');
         exit;
     }
 

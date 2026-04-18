@@ -20,7 +20,7 @@ if ($isAdmin): ?>
             --radius-sm:8px; --radius-lg:20px; --radius-full:9999px;
             --shadow-sm:0 1px 3px rgba(30,58,52,.06);
         }
-        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--bg-soft); }
+        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--surface); }
         .main-content { margin-left: 280px; width: calc(100% - 280px); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
     </style>
 </head>
@@ -64,12 +64,22 @@ require BASE_PATH . '/app/views/layouts/header.php';
     }
 
     .mod-form-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
+        background: var(--bg-deep);
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: var(--radius-lg);
         padding: 40px;
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-xl);
     }
+    .mod-form-card label { color: white !important; }
+    .mod-form-card .form-input-lib { 
+        background: rgba(255,255,255,0.05) !important; 
+        color: white !important; 
+        border-color: rgba(255,255,255,0.2) !important; 
+    }
+    .mod-form-card select option { background: var(--bg-deep); color: white; }
+    .type-fields-card { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.1) !important; }
+    .type-fields-card h3 { color: var(--primary-light) !important; }
+    .upload-box { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.1) !important; }
 
     .form-rows {
         display: grid;

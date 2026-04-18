@@ -13,7 +13,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 <style>
     /* ── Resource Category Management Styles ── */
-    .category-page-wrapper { padding: 28px 32px; }
+    .category-page-wrapper { padding: 28px 32px; background: var(--surface); min-height: 100vh; }
 
     /* Toolbar for title and main action */
     .toolbar {

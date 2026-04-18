@@ -196,7 +196,7 @@
 	}
 </style>
 
-<div class="main-content">
+<div class="main-content" style="padding: 40px; background: var(--surface); min-height: 100vh;">
 
 
 	<!-- Resource Management -->

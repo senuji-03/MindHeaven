@@ -20,7 +20,7 @@ if ($isAdmin): ?>
             --radius-sm:8px; --radius-lg:20px; --radius-full:9999px;
             --shadow-sm:0 1px 3px rgba(30,58,52,.06);
         }
-        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--bg-soft); }
+        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--surface); }
         .main-content { margin-left: 280px; width: calc(100% - 280px); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
     </style>
 </head>
@@ -43,15 +43,22 @@ require BASE_PATH . '/app/views/layouts/header.php';
         padding: 40px;
         background: var(--surface);
     }
+    .form-wrapper label { color: white !important; }
+    .form-wrapper input, .form-wrapper select, .form-wrapper textarea { 
+        background: rgba(255,255,255,0.05) !important; 
+        color: white !important; 
+        border-color: rgba(255,255,255,0.2) !important; 
+    }
+    .form-wrapper select option { background: var(--bg-deep); color: white; }
 </style>
 
         <header><h1>✏️ Edit Resource</h1></header>
 
         <div class="form-wrapper">
-            <div class="section-header-bar">
-                <h2>📝 Update Resource: <?= htmlspecialchars($resource['title']); ?></h2>
+            <div class="section-header-bar" style="background: var(--bg-deep); border-bottom: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                <h2 style="color: white; margin: 0; padding: 20px 32px;">📝 Update Resource: <?= htmlspecialchars($resource['title']); ?></h2>
             </div>
-            <section class="create-resource card flush-top stack">
+            <section class="create-resource card flush-top stack" style="background: var(--bg-deep); color: white; border-radius: 0 0 var(--radius-lg) var(--radius-lg); box-shadow: var(--shadow-xl);">
                 <form id="editResourceForm" action="<?= $updateUrl ?? BASE_URL . '/Moderator/resource/update' ?>" method="POST" enctype="multipart/form-data" class="stack">
                     <input type="hidden" name="id" value="<?= $resource['id']; ?>">
                     
@@ -127,7 +134,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                         </div>
                     <?php endif; ?>
 
-                    <div id="articleFields" class="stack card" style="display:none;">
+                    <div id="articleFields" class="stack card" style="display:none; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
                         <h3>📝 Article Content</h3>
                         <div class="form-group">
                             <label for="articleImage">🖼️ Featured Image</label>
@@ -143,7 +150,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                         </div>
                     </div>
 
-                    <div id="videoFields" class="stack card" style="display:none;">
+                    <div id="videoFields" class="stack card" style="display:none; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
                         <h3>🎥 Video Content</h3>
                         <div class="form-group">
                             <label for="videoFile">🎬 Upload Video File (optional)</label>
@@ -164,7 +171,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                         </div>
                     </div>
 
-                    <div id="audioFields" class="stack card" style="display:none;">
+                    <div id="audioFields" class="stack card" style="display:none; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
                         <h3>🎵 Audio Content</h3>
                         <div class="form-group">
                             <label for="audioFile">🎧 Upload Audio</label>

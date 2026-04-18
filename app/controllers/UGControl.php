@@ -336,6 +336,48 @@ class UGControl
         exit;
     }
 
+    public function editComment()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_id'], $_POST['comment'], $_POST['resource_id'])) {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            
+            $commentId = (int)$_POST['comment_id'];
+            $resourceId = (int)$_POST['resource_id'];
+            $userId = $_SESSION['user_id'];
+            $comment = trim($_POST['comment']);
+            
+            if (!empty($comment)) {
+                $resourceHub->updateComment($commentId, $userId, $comment);
+            }
+            
+            header('Location: ' . BASE_URL . '/ug/viewResource?id=' . $resourceId);
+            exit;
+        }
+        header('Location: ' . BASE_URL . '/ug/resources');
+        exit;
+    }
+
+    public function deleteComment()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_id'], $_POST['resource_id'])) {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            
+            $commentId = (int)$_POST['comment_id'];
+            $resourceId = (int)$_POST['resource_id'];
+            $userId = $_SESSION['user_id'];
+            
+            // Allow deletion if owner
+            $resourceHub->deleteComment($commentId, $userId);
+            
+            header('Location: ' . BASE_URL . '/ug/viewResource?id=' . $resourceId);
+            exit;
+        }
+        header('Location: ' . BASE_URL . '/ug/resources');
+        exit;
+    }
+
     public function reportResource() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);

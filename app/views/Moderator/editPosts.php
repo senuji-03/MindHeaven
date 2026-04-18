@@ -20,7 +20,7 @@ if ($isAdmin): ?>
             --radius-sm:8px; --radius-lg:20px; --radius-full:9999px;
             --shadow-sm:0 1px 3px rgba(30,58,52,.06);
         }
-        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--bg-soft); }
+        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--surface); }
         .main-content { margin-left: 280px; width: calc(100% - 280px); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
     </style>
 </head>
