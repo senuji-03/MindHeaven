@@ -141,6 +141,124 @@ class UGControl
     {
         view('undergrad/mood');
     }
+
+    public function journal()
+    {
+        $userId = $_SESSION['user_id'] ?? 0;
+        $pdo = Database::getConnection();
+
+        // Fetch User Info (including Full Name)
+        $stmt = $pdo->prepare("
+            SELECT u.username, us.full_name 
+            FROM users u
+            LEFT JOIN undergraduate_students us ON u.id = us.user_id
+            WHERE u.id = ?
+        ");
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Fetch Habit Stats
+        require_once BASE_PATH . '/app/models/Habit.php';
+        $habitDb = new Habit();
+        $habitStats = $habitDb->getStats($userId);
+
+        // Fetch Today's Mood
+        $stmtMood = $pdo->prepare("SELECT mood_type FROM mood_records WHERE user_id = ? AND DATE(created_at) = CURDATE() ORDER BY created_at DESC LIMIT 1");
+        $stmtMood->execute([$userId]);
+        $todayMood = $stmtMood->fetchColumn();
+
+        // Daily Mental Health Quotes
+        $quotes = [
+            "Your mental health is a priority. Your happiness is essential. Your self-care is a necessity.",
+            "You don't have to see the whole staircase, just take the first step.",
+            "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.",
+            "It’s okay to not be okay as long as you are not giving up.",
+            "Self-care is how you take your power back.",
+            "One small crack does not mean that you are broken, it means that you were put to the test and you didn't fall apart.",
+            "The only way out is through, and the only way through is together.",
+            "Be patient with yourself. Self-growth is tender; it's holy ground. There's no greater investment."
+        ];
+        // Select a quote based on the day of the year
+        $dayOfYear = (int)date('z');
+        $dailyQuote = $quotes[$dayOfYear % count($quotes)];
+
+        // Fetch Real Journal Entries
+        require_once BASE_PATH . '/app/models/Journal.php';
+        $journalDb = new Journal();
+        $entries = $journalDb->getByUser($userId);
+
+        view('undergrad/journal', [
+            'currentUser' => $user,
+            'habitStats' => $habitStats,
+            'todayMood' => $todayMood,
+            'dailyQuote' => $dailyQuote, // Pass quote to view
+            'initialEntries' => $entries
+        ]);
+    }
+
+    public function saveJournal()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+
+        try {
+            require_once BASE_PATH . '/app/models/Journal.php';
+            $journalDb = new Journal();
+            $userId = $_SESSION['user_id'];
+            
+            $id = !empty($_POST['id']) ? (int)$_POST['id'] : null;
+            $data = [
+                'user_id' => $userId,
+                'title' => trim($_POST['title']),
+                'content' => trim($_POST['content']),
+                'mood_tag' => $_POST['mood_tag'] ?? 'neutral',
+                'category_tags' => $_POST['category_tags'] ?? '',
+                'gratitude' => trim($_POST['gratitude'] ?? ''),
+                'highlight' => trim($_POST['highlight'] ?? '')
+            ];
+
+            if ($id) {
+                $journalDb->update($id, $userId, $data);
+                $response = ['status' => 'success', 'message' => 'Entry updated', 'id' => $id];
+            } else {
+                $newId = $journalDb->create($data);
+                $response = ['status' => 'success', 'message' => 'Entry created', 'id' => $newId];
+            }
+
+            header('Content-Type: application/json');
+            echo json_encode($response);
+            exit;
+        } catch (Exception $e) {
+            header('Content-Type: application/json', true, 500);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            exit;
+        }
+    }
+
+    public function deleteJournal()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+
+        try {
+            require_once BASE_PATH . '/app/models/Journal.php';
+            $journalDb = new Journal();
+            $userId = $_SESSION['user_id'];
+            $id = (int)$_POST['id'];
+
+            if ($journalDb->delete($id, $userId)) {
+                $response = ['status' => 'success', 'message' => 'Entry deleted'];
+            } else {
+                $response = ['status' => 'error', 'message' => 'Delete failed'];
+            }
+
+            header('Content-Type: application/json');
+            echo json_encode($response);
+            exit;
+        } catch (Exception $e) {
+            header('Content-Type: application/json', true, 500);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            exit;
+        }
+    }
     public function resources()
     {
         try {

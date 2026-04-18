@@ -28,6 +28,7 @@ if (!function_exists('getNavigationItems')) {
         ['icon' => 'fas fa-home', 'text' => 'Dashboard', 'url' => '/ug', 'slug' => 'dashboard'],
         ['icon' => 'fas fa-check-circle', 'text' => 'Habits', 'url' => '/ug/habits', 'slug' => 'habits'],
         ['icon' => 'fas fa-smile', 'text' => 'Mood Tracker', 'url' => '/ug/mood', 'slug' => 'mood'],
+        ['icon' => 'fas fa-feather-alt', 'text' => 'Journal', 'url' => '/ug/journal', 'slug' => 'journal'],
         ['icon' => 'fas fa-calendar-alt', 'text' => 'Appointments', 'url' => '/ug/appointment', 'slug' => 'appointments'],
         ['icon' => 'fas fa-comments', 'text' => 'Chat', 'url' => '/ug/chat', 'slug' => 'chat'],
       ],
