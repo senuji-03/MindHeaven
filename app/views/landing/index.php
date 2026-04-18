@@ -1623,13 +1623,6 @@ if (!empty($counselors)):
                                         <span class="c-stat-value"><?php echo (int)($counselor['completed_sessions'] ?? 0); ?></span>
                                         <span class="c-stat-label">Sessions</span>
                                     </div>
-                                    <div class="c-stat-item">
-                                        <span class="c-stat-value">
-                                            <i class="fas fa-star" style="color:var(--accent-warm); font-size:0.8rem; margin-right:2px;"></i>
-                                            <?php echo number_format((float)($counselor['avg_rating'] ?? 0), 1); ?>
-                                        </span>
-                                        <span class="c-stat-label">Rating</span>
-                                    </div>
                                 </div>
 
                                 <p class="counselor-bio"><?php echo $bioShort; ?></p>
@@ -1657,27 +1650,65 @@ if (!empty($counselors)):
             <p class="section-subtitle">Real experiences from students who found support through MindHeaven.</p>
         </div>
         <div class="testimonials-grid stagger-children">
-            <div class="testimonial-card animate-on-scroll">
-                <div class="testimonial-quote">"</div>
-                <p>I didn't think I needed help until I tried the self-assessment. Seeing my results helped me
-                    understand what I was feeling — and the counselor I connected with changed everything.</p>
-                <span class="testimonial-author">— 2nd Year, Psychology Major</span>
-            </div>
-            <div class="testimonial-card animate-on-scroll">
-                <div class="testimonial-quote">"</div>
-                <p>The forum gave me a space to say what I couldn't say out loud. Knowing other students were going
-                    through the same things made me feel less alone during the hardest semester of my life.</p>
-                <span class="testimonial-author">— 3rd Year, Engineering</span>
-            </div>
-            <div class="testimonial-card animate-on-scroll">
-                <div class="testimonial-quote">"</div>
-                <p>Tracking my mood every day seemed small, but after a month I could see patterns. It helped my
-                    counselor and me figure out what was triggering my anxiety. I'm doing so much better now.</p>
-                <span class="testimonial-author">— 1st Year, Business</span>
-            </div>
+            <?php
+            $platformFeedbacks = isset($platformFeedbacks) && is_array($platformFeedbacks) ? $platformFeedbacks : [];
+            if (!empty($platformFeedbacks)):
+                foreach ($platformFeedbacks as $fb):
+                    $content    = htmlspecialchars(trim($fb['content']));
+                    $rating     = isset($fb['rating']) && $fb['rating'] !== null ? (float) $fb['rating'] : null;
+                    $authorName = !empty($fb['user_name']) ? htmlspecialchars($fb['user_name']) : null;
+                    // Build a contextual byline
+                    $bylineParts = [];
+                    if (!empty($fb['year_of_study'])) {
+                        $yr = (int) $fb['year_of_study'];
+                        $suffix = ($yr === 1 ? 'st' : ($yr === 2 ? 'nd' : ($yr === 3 ? 'rd' : 'th')));
+                        $bylineParts[] = $yr . $suffix . ' Year';
+                    }
+                    if (!empty($fb['major'])) {
+                        $bylineParts[] = htmlspecialchars($fb['major']);
+                    }
+                    $bylineContext = !empty($bylineParts) ? implode(', ', $bylineParts) : '';
+                    $byline = $authorName ? $authorName . ($bylineContext ? ' · ' . $bylineContext : '') : 'Anonymous Student' . ($bylineContext ? ' · ' . $bylineContext : '');
+            ?>
+                <div class="testimonial-card animate-on-scroll">
+                    <?php if ($rating !== null): ?>
+                    <div class="testimonial-stars" style="display:flex;gap:3px;margin-bottom:10px;">
+                        <?php for ($s = 1; $s <= 5; $s++): ?>
+                            <i class="<?php echo $s <= round($rating) ? 'fas' : 'far'; ?> fa-star"
+                               style="color:<?php echo $s <= round($rating) ? 'var(--accent-warm)' : 'var(--border)'; ?>;font-size:0.85rem;"></i>
+                        <?php endfor; ?>
+                        <span style="font-size:0.78rem;color:var(--text-secondary);margin-left:5px;"><?php echo number_format($rating, 1); ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <div class="testimonial-quote">"</div>
+                    <p><?php echo $content; ?></p>
+                    <span class="testimonial-author">— <?php echo $byline; ?></span>
+                </div>
+            <?php endforeach; else: ?>
+                <!-- Fallback static testimonials when no DB feedback exists -->
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testimonial-quote">"</div>
+                    <p>I didn't think I needed help until I tried the self-assessment. Seeing my results helped me
+                        understand what I was feeling — and the counselor I connected with changed everything.</p>
+                    <span class="testimonial-author">— 2nd Year, Psychology Major</span>
+                </div>
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testimonial-quote">"</div>
+                    <p>The forum gave me a space to say what I couldn't say out loud. Knowing other students were going
+                        through the same things made me feel less alone during the hardest semester of my life.</p>
+                    <span class="testimonial-author">— 3rd Year, Engineering</span>
+                </div>
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testimonial-quote">"</div>
+                    <p>Tracking my mood every day seemed small, but after a month I could see patterns. It helped my
+                        counselor and me figure out what was triggering my anxiety. I'm doing so much better now.</p>
+                    <span class="testimonial-author">— 1st Year, Business</span>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>
+
 
 <!-- ======== SELF-DISCOVERY ======== -->
 <section class="section--alt">
