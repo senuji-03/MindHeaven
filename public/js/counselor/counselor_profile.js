@@ -1,360 +1,262 @@
-// Navigation Functions
-function showNotifications() {
-    alert('Notifications:\n• New appointment request from John Doe\n• Reminder: Session with Sarah in 30 mins\n• Weekly report is ready');
+/* ============================================================
+   Counselor Profile — JavaScript
+   Handles: Edit Profile Modal, Photo Upload
+   ============================================================ */
+
+// ── Modal State ──────────────────────────────────────────────
+let activeTab = 'personal';
+let isSaving  = false;
+
+// ── Open / Close Edit Modal ──────────────────────────────────
+function openEditModal() {
+    // Populate Personal tab
+    document.getElementById('edit_full_name').value = PROFILE_DATA.full_name || '';
+    document.getElementById('edit_phone').value      = PROFILE_DATA.phone     || '';
+
+    // Populate Professional tab
+    document.getElementById('edit_spec').value = PROFILE_DATA.spec || '';
+    document.getElementById('edit_exp').value  = PROFILE_DATA.exp  || '';
+    document.getElementById('edit_bio').value  = PROFILE_DATA.bio  || '';
+
+    // Populate Qualifications tab
+    renderQualificationRows(PROFILE_DATA.qualifications || []);
+
+    // Reset to first tab
+    switchTab('personal');
+
+    // Clear any old messages
+    setModalMessage('', '');
+
+    // Show modal
+    const modal = document.getElementById('editProfileModal');
+    modal.style.display = 'flex';
+    // Small delay so CSS flex is set before adding open class (transition)
+    requestAnimationFrame(() => modal.classList.add('open'));
 }
 
-function showMessages() {
-    alert('Messages:\n• Sarah Johnson: Thank you for yesterday\'s session\n• Michael Chen: Can we reschedule tomorrow\'s appointment?\n• System: Weekly feedback summary available');
+function closeEditModal() {
+    const modal = document.getElementById('editProfileModal');
+    modal.classList.remove('open');
+    setTimeout(() => { modal.style.display = 'none'; }, 280);
 }
 
-// Edit Section Functions
-let editingSection = null;
-let originalData = {};
+// ── Tab Switching ────────────────────────────────────────────
+function switchTab(tabName) {
+    // Deactivate all tabs & content panels
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
 
-function editSection(section) {
-    if (editingSection) {
-        alert('Please save or cancel the current edit first.');
+    // Activate selected
+    document.getElementById('tab-' + tabName).classList.add('active');
+    document.getElementById('tabcontent-' + tabName).classList.add('active');
+    activeTab = tabName;
+}
+
+// ── Qualification Rows (inside modal) ────────────────────────
+function renderQualificationRows(qualifications) {
+    const list = document.getElementById('editQualList');
+    list.innerHTML = '';
+
+    if (qualifications.length === 0) {
+        list.innerHTML = `
+            <div class="empty-qual-hint">
+                <i class="fa-solid fa-graduation-cap"></i>
+                No qualifications yet. Click <strong>Add Qualification</strong> to begin.
+            </div>`;
         return;
     }
 
-    editingSection = section;
-    
-    if (section === 'personal') {
-        const fullNameObj = document.getElementById('c_full_name');
-        const phoneObj = document.getElementById('c_phone');
-        
-        originalData.fullName = fullNameObj.textContent;
-        originalData.phone = phoneObj.textContent;
-        
-        fullNameObj.contentEditable = true;
-        phoneObj.contentEditable = true;
-        fullNameObj.style.background = 'var(--bg-mid)';
-        phoneObj.style.background = 'var(--bg-mid)';
-        fullNameObj.style.borderColor = 'var(--border-strong)';
-        phoneObj.style.borderColor = 'var(--border-strong)';
-        
-        document.getElementById('personalSave').classList.add('active');
-    } 
-    else if (section === 'professional') {
-        const specObj = document.getElementById('c_spec');
-        const expObj = document.getElementById('c_exp');
-        const bioObj = document.getElementById('c_bio');
-        
-        originalData.spec = specObj.textContent;
-        originalData.exp = expObj.textContent;
-        originalData.bio = bioObj.textContent;
-        
-        specObj.contentEditable = true;
-        expObj.contentEditable = true;
-        bioObj.contentEditable = true;
-        specObj.style.background = 'var(--bg-mid)';
-        expObj.style.background = 'var(--bg-mid)';
-        bioObj.style.background = 'var(--bg-mid)';
-        specObj.style.borderColor = 'var(--border-strong)';
-        expObj.style.borderColor = 'var(--border-strong)';
-        bioObj.style.borderColor = 'var(--border-strong)';
-        
-        document.getElementById('professionalSave').classList.add('active');
-    }
-    else if (section === 'qualification') {
-        const list = document.getElementById('qualificationList');
-        originalData.qualificationHTML = list.innerHTML;
-        
-        const qualItems = document.querySelectorAll('.qualification-item');
-        
-        qualItems.forEach((item) => {
-            item.querySelector('.qualification-title').contentEditable = true;
-            item.querySelector('.qualification-institution').contentEditable = true;
-            item.querySelector('.qualification-year').contentEditable = true;
-            item.querySelector('.qualification-description').contentEditable = true;
-            
-            item.style.borderColor = 'var(--primary-light)';
-            item.style.boxShadow = 'var(--shadow-sm)';
-            
-            // Add highlighting slightly to editable inner blocks
-            const blocks = item.querySelectorAll('[contenteditable="true"]');
-            blocks.forEach(b => {
-                b.style.padding = '4px';
-                b.style.borderRadius = '4px';
-                b.style.background = 'var(--surface)';
-                b.style.border = '1px solid var(--border)';
-            });
-
-            if (!item.querySelector('.delete-qual-btn')) {
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-qual-btn';
-                delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-                delBtn.style.cssText = 'position: absolute; right: 12px; top: 12px; background: var(--surface); color: var(--danger); border: 1px solid var(--border); border-radius: var(--radius-full); width:32px; height:32px; cursor: pointer; transition: all 0.2s ease;';
-                delBtn.onmouseover = function() {
-                    this.style.background = '#fef2f2';
-                    this.style.borderColor = '#fca5a5';
-                };
-                delBtn.onmouseout = function() {
-                    this.style.background = 'var(--surface)';
-                    this.style.borderColor = 'var(--border)';
-                };
-                delBtn.onclick = function() {
-                    if (confirm('Delete this qualification?')) {
-                        item.remove();
-                    }
-                };
-                item.style.position = 'relative';
-                item.appendChild(delBtn);
-            }
-        });
-        
-        document.getElementById('qualificationSave').classList.add('active');
-    }
+    qualifications.forEach(q => addQualificationRow(q));
 }
 
-function cancelEdit(section) {
-    if (section === 'personal') {
-        const fullNameObj = document.getElementById('c_full_name');
-        const phoneObj = document.getElementById('c_phone');
-        
-        fullNameObj.textContent = originalData.fullName;
-        phoneObj.textContent = originalData.phone;
-        
-        fullNameObj.contentEditable = false;
-        phoneObj.contentEditable = false;
-        fullNameObj.style.background = '';
-        phoneObj.style.background = '';
-        fullNameObj.style.borderColor = '';
-        phoneObj.style.borderColor = '';
-        
-        document.getElementById('personalSave').classList.remove('active');
-    }
-    else if (section === 'professional') {
-        const specObj = document.getElementById('c_spec');
-        const expObj = document.getElementById('c_exp');
-        const bioObj = document.getElementById('c_bio');
-        
-        specObj.textContent = originalData.spec;
-        expObj.textContent = originalData.exp;
-        bioObj.textContent = originalData.bio;
-        
-        specObj.contentEditable = false;
-        expObj.contentEditable = false;
-        bioObj.contentEditable = false;
-        specObj.style.background = '';
-        expObj.style.background = '';
-        bioObj.style.background = '';
-        specObj.style.borderColor = '';
-        expObj.style.borderColor = '';
-        bioObj.style.borderColor = '';
-        
-        document.getElementById('professionalSave').classList.remove('active');
-    }
-    else if (section === 'qualification') {
-        const list = document.getElementById('qualificationList');
-        list.innerHTML = originalData.qualificationHTML;
-        document.getElementById('qualificationSave').classList.remove('active');
-    }
-    
-    editingSection = null;
-    originalData = {};
-}
+function addQualificationRow(data = {}) {
+    const list = document.getElementById('editQualList');
 
-function saveSection(section) {
-    if (section === 'personal') {
-        const fullNameObj = document.getElementById('c_full_name');
-        const phoneObj = document.getElementById('c_phone');
-        
-        const fullName = fullNameObj.textContent.trim();
-        const phone = phoneObj.textContent.trim();
-        
-        if (!fullName) {
-            alert('Full Name cannot be empty.');
-            return;
-        }
-        
-        fetch('/MindHeaven/public/counselor/updateProfile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ full_name: fullName, phone_number: phone })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                fullNameObj.contentEditable = false;
-                phoneObj.contentEditable = false;
-                fullNameObj.style.background = '';
-                phoneObj.style.background = '';
-                fullNameObj.style.borderColor = '';
-                phoneObj.style.borderColor = '';
-                document.getElementById('personalSave').classList.remove('active');
-                alert('Personal details updated successfully!');
-                editingSection = null;
-                originalData = {};
-            } else {
-                alert(data.message || 'Failed to update personal details.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('An error occurred.');
-        });
-    }
-    else if (section === 'professional') {
-        const specObj = document.getElementById('c_spec');
-        const expObj = document.getElementById('c_exp');
-        const bioObj = document.getElementById('c_bio');
-        
-        const spec = specObj.textContent.trim();
-        const exp = expObj.textContent.trim();
-        const bio = bioObj.textContent.trim();
-        
-        fetch('/MindHeaven/public/counselor/updateProfile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ specialization: spec, years_experience: exp, bio: bio })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                specObj.contentEditable = false;
-                expObj.contentEditable = false;
-                bioObj.contentEditable = false;
-                specObj.style.background = '';
-                expObj.style.background = '';
-                bioObj.style.background = '';
-                specObj.style.borderColor = '';
-                expObj.style.borderColor = '';
-                bioObj.style.borderColor = '';
-                document.getElementById('professionalSave').classList.remove('active');
-                alert('Professional details updated successfully!');
-                editingSection = null;
-                originalData = {};
-            } else {
-                alert(data.message || 'Failed to update professional details.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('An error occurred.');
-        });
-    }
-    else if (section === 'qualification') {
-        const qualItems = document.querySelectorAll('.qualification-item:not(.empty-state)');
-        const qualifications = [];
-        
-        qualItems.forEach(item => {
-            qualifications.push({
-                id: item.dataset.id || '',
-                title: item.querySelector('.qualification-title').textContent.trim(),
-                institution: item.querySelector('.qualification-institution').textContent.trim(),
-                year: item.querySelector('.qualification-year').textContent.trim(),
-                description: item.querySelector('.qualification-description').textContent.trim(),
-            });
-        });
-        
-        fetch('/MindHeaven/public/api/counselor/qualifications/sync', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ qualifications: qualifications })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Qualifications successfully updated!');
-                location.reload(); // Reload to reflect any new DB IDs
-            } else {
-                alert(data.message || 'Failed to update qualifications.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('An error occurred.');
-        });
-    }
-}
+    // Remove empty hint if present
+    const hint = list.querySelector('.empty-qual-hint');
+    if (hint) hint.remove();
 
-function addQualification() {
-    if (editingSection && editingSection !== 'qualification') {
-        alert('Please save or cancel the current edit first.');
-        return;
-    }
-    
-    const list = document.getElementById('qualificationList');
-    
-    // Remove empty state if present
-    const emptyState = list.querySelector('.empty-state');
-    if (emptyState) {
-        list.innerHTML = '';
-    }
-    
-    if (editingSection !== 'qualification') {
-        if (!emptyState) {
-            originalData.qualificationHTML = list.innerHTML;
-        } else {
-            originalData.qualificationHTML = '<div class="qualification-item empty-state" style="text-align: center; color: var(--text-secondary); border: 1px dashed var(--border-strong);"><i class="fa-solid fa-graduation-cap" style="font-size:2rem;margin-bottom:10px;display:block;"></i>No qualifications added yet. Click Add to create one.</div>';
-        }
-        
-        editingSection = 'qualification';
-        document.getElementById('qualificationSave').classList.add('active');
-        
-        const qualItems = document.querySelectorAll('.qualification-item:not(.empty-state)');
-        qualItems.forEach((item) => {
-            item.querySelector('.qualification-title').contentEditable = true;
-            item.querySelector('.qualification-institution').contentEditable = true;
-            item.querySelector('.qualification-year').contentEditable = true;
-            item.querySelector('.qualification-description').contentEditable = true;
-            
-            item.style.borderColor = 'var(--primary-light)';
-            item.style.boxShadow = 'var(--shadow-sm)';
-            
-            const blocks = item.querySelectorAll('[contenteditable="true"]');
-            blocks.forEach(b => {
-                b.style.padding = '4px';
-                b.style.borderRadius = '4px';
-                b.style.background = 'var(--surface)';
-                b.style.border = '1px solid var(--border)';
-            });
-            
-            if (!item.querySelector('.delete-qual-btn')) {
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-qual-btn';
-                delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-                delBtn.style.cssText = 'position: absolute; right: 12px; top: 12px; background: var(--surface); color: var(--danger); border: 1px solid var(--border); border-radius: var(--radius-full); width:32px; height:32px; cursor: pointer; transition: all 0.2s ease;';
-                delBtn.onmouseover = function() {
-                    this.style.background = '#fef2f2';
-                    this.style.borderColor = '#fca5a5';
-                };
-                delBtn.onmouseout = function() {
-                    this.style.background = 'var(--surface)';
-                    this.style.borderColor = 'var(--border)';
-                };
-                delBtn.onclick = function() {
-                    if (confirm('Delete this qualification?')) {
-                        item.remove();
-                        if (document.querySelectorAll('.qualification-item').length === 0) {
-                            list.innerHTML = '<div class="qualification-item empty-state" style="text-align: center; color: var(--text-secondary); border: 1px dashed var(--border-strong);"><i class="fa-solid fa-graduation-cap" style="font-size:2rem;margin-bottom:10px;display:block;"></i>No qualifications added yet. Click Add to create one.</div>';
-                        }
-                    }
-                };
-                item.style.position = 'relative';
-                item.appendChild(delBtn);
-            }
-        });
-    }
+    const id          = data.id          || '';
+    const title       = data.title       || '';
+    const institution = data.institution || '';
+    const year        = data.year        || '';
+    const description = data.description || '';
 
-    const newItemHTML = `
-        <div class="qualification-item" style="border-color: var(--primary-light); box-shadow: var(--shadow-sm); position: relative;">
-            <div class="qualification-header">
-                <div>
-                    <div class="qualification-title" contenteditable="true" style="padding:4px; border-radius:4px; background:var(--surface); border:1px solid var(--border);">New Qualification</div>
-                    <div class="qualification-institution" contenteditable="true" style="padding:4px; border-radius:4px; background:var(--surface); border:1px solid var(--border); margin-top:4px;">Institution Name</div>
-                </div>
-                <span class="qualification-year" contenteditable="true" style="padding:4px 12px; border-radius:var(--radius-full); background:var(--surface); border:1px solid var(--border);">Year</span>
+    const row = document.createElement('div');
+    row.className = 'qual-form-row';
+    row.dataset.qualId = id;
+
+    row.innerHTML = `
+        <div class="qual-form-inner-row">
+            <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Title / Degree</label>
+                <input type="text" class="form-input qual-title" value="${escHtml(title)}" placeholder="e.g. BSc Psychology">
             </div>
-            <p class="qualification-description" contenteditable="true" style="padding:4px; border-radius:4px; background:var(--surface); border:1px solid var(--border);">Description</p>
-            <button class="delete-qual-btn" style="position: absolute; right: 12px; top: 12px; background: var(--surface); color: var(--danger); border: 1px solid var(--border); border-radius: var(--radius-full); width:32px; height:32px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.background='#fef2f2'; this.style.borderColor='#fca5a5';" onmouseout="this.style.background='var(--surface)'; this.style.borderColor='var(--border)';" onclick="if(confirm('Delete this qualification?')) this.parentElement.remove();"><i class="fa-solid fa-trash-can"></i></button>
+            <button type="button" class="delete-qual-row-btn" title="Remove" onclick="removeQualRow(this)">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+        <div class="form-row" style="margin-bottom:0.8rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Institution</label>
+                <input type="text" class="form-input qual-institution" value="${escHtml(institution)}" placeholder="University / College name">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Year / Period</label>
+                <input type="text" class="form-input qual-year" value="${escHtml(year)}" placeholder="e.g. 2018 – 2022">
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Description (optional)</label>
+            <textarea class="form-textarea qual-description" rows="2" placeholder="Brief description...">${escHtml(description)}</textarea>
         </div>
     `;
-    list.insertAdjacentHTML('afterbegin', newItemHTML);
+
+    list.appendChild(row);
 }
 
-// Photo Upload Functions
+function removeQualRow(btn) {
+    const row  = btn.closest('.qual-form-row');
+    const list = document.getElementById('editQualList');
+    row.remove();
+
+    // Show empty hint if nothing remains
+    if (list.querySelectorAll('.qual-form-row').length === 0) {
+        list.innerHTML = `
+            <div class="empty-qual-hint">
+                <i class="fa-solid fa-graduation-cap"></i>
+                No qualifications yet. Click <strong>Add Qualification</strong> to begin.
+            </div>`;
+    }
+}
+
+// ── Save All Sections ────────────────────────────────────────
+async function saveProfileModal() {
+    if (isSaving) return;
+
+    const fullName = document.getElementById('edit_full_name').value.trim();
+    const phone    = document.getElementById('edit_phone').value.trim();
+    const spec     = document.getElementById('edit_spec').value.trim();
+    const exp      = document.getElementById('edit_exp').value.trim();
+    const bio      = document.getElementById('edit_bio').value.trim();
+
+    if (!fullName) {
+        switchTab('personal');
+        setModalMessage('Full Name cannot be empty.', 'error');
+        document.getElementById('edit_full_name').focus();
+        return;
+    }
+
+    if (phone && !/^[0-9]{10}$/.test(phone)) {
+        switchTab('personal');
+        setModalMessage('Mobile number must be exactly 10 digits.', 'error');
+        document.getElementById('edit_phone').focus();
+        return;
+    }
+
+    isSaving = true;
+    const saveBtn = document.getElementById('saveProfileBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
+    setModalMessage('', '');
+
+    try {
+        // 1. Personal + Professional in one call (they share the same endpoint)
+        const profileRes = await fetch('/MindHeaven/public/counselor/updateProfile', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                full_name:        fullName,
+                phone_number:     phone,
+                specialization:   spec,
+                years_experience: exp,
+                bio:              bio,
+            }),
+        });
+        const profileData = await profileRes.json();
+
+        if (!profileData.success) {
+            throw new Error(profileData.message || 'Failed to update profile details.');
+        }
+
+        // 2. Qualifications sync
+        const qualRows = document.querySelectorAll('#editQualList .qual-form-row');
+        const qualifications = [];
+        qualRows.forEach(row => {
+            qualifications.push({
+                id:          row.dataset.qualId || '',
+                title:       row.querySelector('.qual-title').value.trim(),
+                institution: row.querySelector('.qual-institution').value.trim(),
+                year:        row.querySelector('.qual-year').value.trim(),
+                description: row.querySelector('.qual-description').value.trim(),
+            });
+        });
+
+        const qualRes  = await fetch('/MindHeaven/public/api/counselor/qualifications/sync', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qualifications }),
+        });
+        const qualData = await qualRes.json();
+
+        if (!qualData.success) {
+            throw new Error(qualData.message || 'Failed to sync qualifications.');
+        }
+
+        // ── Update displayed values in-page ──────────────────
+        setEl('profileName',   fullName);
+        setEl('profileSpec',   spec || 'Counselor');
+        setEl('view_full_name', fullName);
+        setEl('view_phone',    phone);
+        setEl('view_spec',     spec);
+        setEl('view_exp',      exp);
+        setEl('view_bio',      bio);
+
+        // Update in-memory data
+        PROFILE_DATA.full_name = fullName;
+        PROFILE_DATA.phone     = phone;
+        PROFILE_DATA.spec      = spec;
+        PROFILE_DATA.exp       = exp;
+        PROFILE_DATA.bio       = bio;
+
+        setModalMessage('Profile updated successfully!', 'success');
+
+        // Reload after short delay so qualification IDs are refreshed from DB
+        setTimeout(() => {
+            closeEditModal();
+            location.reload();
+        }, 1200);
+
+    } catch (err) {
+        console.error(err);
+        setModalMessage(err.message || 'An error occurred. Please try again.', 'error');
+        isSaving = false;
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+    }
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function setEl(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+}
+
+function setModalMessage(msg, type) {
+    const el = document.getElementById('editModalMsg');
+    el.textContent = msg;
+    el.className   = 'edit-modal-msg' + (type ? ' ' + type : '');
+}
+
+function escHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+// ── Photo Upload Functions (unchanged) ───────────────────────
 let selectedPhoto = null;
 
 function openPhotoModal() {
@@ -373,7 +275,7 @@ function previewPhoto(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
             selectedPhoto = e.target.result;
-        }
+        };
         reader.readAsDataURL(file);
     }
 }
@@ -383,25 +285,22 @@ function uploadPhoto() {
         alert('Please select a photo first.');
         return;
     }
-    
     const fileInput = document.getElementById('photoUpload');
-    const file = fileInput.files[0];
-    
+    const file      = fileInput.files[0];
     if (!file) {
-         alert('No file found.');
-         return;
+        alert('No file found.');
+        return;
     }
-    
     const formData = new FormData();
     formData.append('profile_picture', file);
-    
+
     fetch('/MindHeaven/public/counselor/uploadProfilePhoto', {
         method: 'POST',
-        body: formData
+        body: formData,
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
-        if(data.success) {
+        if (data.success) {
             document.getElementById('profilePic').src = data.url;
             alert('Profile picture updated successfully!');
             closePhotoModal();
@@ -415,16 +314,19 @@ function uploadPhoto() {
     });
 }
 
-// Close modal when clicking outside
+// Close modals when clicking backdrop
 window.onclick = function(event) {
-    const modal = document.getElementById('photoModal');
-    if (event.target === modal) {
+    const photoModal = document.getElementById('photoModal');
+    if (event.target === photoModal) {
         closePhotoModal();
     }
-}
+    const editModal = document.getElementById('editProfileModal');
+    if (event.target === editModal) {
+        closeEditModal();
+    }
+};
 
-
-// Initialize on page load
+// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Counselor Profile loaded successfully!');
 });
