@@ -78,7 +78,7 @@ if (!function_exists('getNavigationItems')) {
       'main' => [
         ['icon' => 'fas fa-chart-bar', 'text' => 'Dashboard', 'url' => '/ModeratorDashboard', 'slug' => 'dashboard'],
         ['icon' => 'fas fa-book', 'text' => 'Resource Hub', 'url' => '/Moderator/resource-hub', 'slug' => 'resource-hub'],
-        ['icon' => 'fas fa-comments', 'text' => 'Moderate Forum', 'url' => '/admin/moderate-forum', 'slug' => 'moderate-forum'],
+        ['icon' => 'fas fa-comments', 'text' => 'Moderate Forum', 'url' => '/Moderator/moderate-forum', 'slug' => 'moderate-forum'],
       ]
     ],
     'call_responder' => [

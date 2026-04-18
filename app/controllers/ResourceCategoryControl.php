@@ -18,9 +18,8 @@ class ResourceCategoryControl
         $stmt = $pdo->query("SELECT id, name, description, is_active, thumbnail FROM resource_categories ORDER BY name ASC");
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        view('Admin/customize-forum-categories', array(
-            'categories' => $categories,
-            'mode' => 'resource'
+        view('Moderator/manage-resource-categories', array(
+            'categories' => $categories
         ));
     }
 
