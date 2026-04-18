@@ -1696,11 +1696,13 @@ class AdminControl
             $appointmentModel = new Appointment();
 
             $appointments = $appointmentModel->getAllForAdmin();
+            $freezedAppointments = $appointmentModel->getFreezedForAdmin();
             $stats = $appointmentModel->getAdminStats();
 
             echo json_encode([
                 'success' => true,
                 'appointments' => $appointments,
+                'freezedAppointments' => $freezedAppointments,
                 'stats' => $stats
             ]);
         } catch (Exception $e) {

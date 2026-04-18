@@ -184,12 +184,14 @@ $router->delete('/api/counselor/timeslots/delete', 'TimeslotControl@deleteSlot')
 // Minimal Appointment APIs (create + counselors list + counselor view)
 $router->get('/api/counselors', 'AppointmentApiControl@listCounselors');
 $router->get('/api/appointments/slots', 'AppointmentApiControl@getSlots');
+$router->get('/api/appointments/available-dates', 'AppointmentApiControl@getAvailableDates');
 $router->get('/api/appointments/mine', 'AppointmentApiControl@listForStudent');
 $router->get('/api/test', 'AppointmentApiControl@test');
 $router->post('/api/appointments/create', 'AppointmentApiControl@create');
 $router->put('/api/appointments/update', 'AppointmentApiControl@update');
 $router->put('/api/appointments/reschedule', 'AppointmentApiControl@reschedule');
 $router->post('/api/appointments/hide', 'AppointmentApiControl@hide');
+$router->post('/api/appointments/report-noshow', 'AppointmentApiControl@reportNoShow');
 $router->delete('/api/appointments/delete', 'AppointmentApiControl@delete');
 $router->get('/api/counselor/appointments', 'AppointmentApiControl@listForCounselor');
 $router->post('/api/appointments/status', 'AppointmentApiControl@updateStatus');

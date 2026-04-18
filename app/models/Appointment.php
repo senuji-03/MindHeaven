@@ -108,15 +108,33 @@ class Appointment
     public function delete($id)
     {
         $pdo = Database::getConnection();
-        error_log("Appointment model: Attempting to delete appointment with ID: " . $id);
+        error_log("Appointment model: Archiving and deleting appointment with ID: " . $id);
 
-        $stmt = $pdo->prepare("DELETE FROM appointments WHERE id = ?");
-        $stmt->execute(array($id));
+        try {
+            $pdo->beginTransaction();
 
-        $deleted = $stmt->rowCount() > 0;
-        error_log("Appointment model: Delete result - " . ($deleted ? "SUCCESS" : "FAILED") . " (rows affected: " . $stmt->rowCount() . ")");
+            // 1. Move to freezed_appointment
+            // Using SELECT *, NOW() assumes freezed_appointment has the same columns as appointments + one additional timestamp column at the end.
+            $stmtArchive = $pdo->prepare("INSERT INTO freezed_appointment SELECT *, NOW() FROM appointments WHERE id = ?");
+            $stmtArchive->execute(array($id));
 
-        return $deleted;
+            // 2. Delete from appointments
+            $stmtDelete = $pdo->prepare("DELETE FROM appointments WHERE id = ?");
+            $stmtDelete->execute(array($id));
+
+            $deleted = $stmtDelete->rowCount() > 0;
+            $pdo->commit();
+
+            error_log("Appointment model: Freezed and Deleted result - " . ($deleted ? "SUCCESS" : "FAILED"));
+            return $deleted;
+
+        } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log("Appointment model delete-to-freeze error: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function updateCounselorNotes($id, $notesJson)
@@ -239,6 +257,19 @@ class Appointment
         $stmt = $pdo->prepare("UPDATE appointments SET hidden_by_counselor = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
         $stmt->execute(array((int) $id));
         return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Report a counselor no-show by a student.
+     */
+    public function reportNoShow($id, $feedback, $studentUserId)
+    {
+        $pdo = Database::getConnection();
+        $sql = "UPDATE appointments 
+                SET status = 'no_show', student_feedback = ?, updated_at = CURRENT_TIMESTAMP 
+                WHERE id = ? AND student_user_id = ?";
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute(array($feedback, (int) $id, (int) $studentUserId));
     }
 
     /**
@@ -588,5 +619,30 @@ class Appointment
         $stmt = $pdo->prepare($sql);
         $stmt->execute($counselorUserIds);
         return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
+
+    /**
+     * Get all archived (freezed) appointments for admin view.
+     */
+    public function getFreezedForAdmin()
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "
+            SELECT 
+                fa.*,
+                COALESCE(us.full_name, u1.username, 'N/A') AS student_name,
+                COALESCE(c.full_name, u2.username, 'N/A') AS counselor_name
+            FROM freezed_appointment fa
+            LEFT JOIN undergraduate_students us ON fa.student_user_id = us.user_id
+            LEFT JOIN users u1 ON fa.student_user_id = u1.id
+            LEFT JOIN counselors c ON fa.counselor_user_id = c.user_id
+            LEFT JOIN users u2 ON fa.counselor_user_id = u2.id
+            ORDER BY fa.freezed_at DESC
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

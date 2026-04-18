@@ -106,7 +106,28 @@ class UGControl
     }
     public function appointment()
     {
-        view('undergrad/appointments');
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT c.*, u.username,
+                   AVG(f.rating) as avg_rating,
+                   GROUP_CONCAT(DISTINCT CONCAT(cq.title, ' at ', cq.institution) SEPARATOR ' • ') as qualifications,
+                   (
+                       SELECT GROUP_CONCAT(CONCAT(slot_date, '|', TIME_FORMAT(start_time, '%H:%i')) ORDER BY slot_date, start_time ASC SEPARATOR ';')
+                       FROM counselor_timeslots
+                       WHERE counselor_user_id = u.id AND is_booked = 0 AND is_frozen = 0 AND slot_date >= CURDATE()
+                   ) as available_slots
+            FROM counselors c
+            INNER JOIN users u ON c.user_id = u.id
+            LEFT JOIN feedback f ON c.id = f.counselor_id
+            LEFT JOIN counselor_qualifications cq ON c.id = cq.counselor_id
+            WHERE u.role = 'counselor' AND u.account_status = 'active'
+            GROUP BY c.id, u.username, u.id
+            ORDER BY c.full_name
+        ");
+        $stmt->execute();
+        $counselors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        view('undergrad/appointments', ['counselors' => $counselors]);
     }
     public function contact()
     {

@@ -106,6 +106,63 @@ function openBookingModal(appointment = null) {
     setTimeout(() => document.getElementById('appointmentTitle')?.focus(), 220);
 }
 
+function openBookingModalForCounselor(counselorId) {
+    openBookingModal();
+    // Pre-select counselor logic after a brief delay so dropdown is populated
+    setTimeout(() => {
+        const counselorSelect = document.getElementById('appointmentCounselor');
+        if (counselorSelect) {
+            counselorSelect.value = counselorId;
+            // Trigger change event to load slots
+            counselorSelect.dispatchEvent(new Event('change'));
+            
+            // Focus on date since counselor is selected
+            const dateInput = document.getElementById('appointmentDate');
+            if (dateInput) {
+                // Focus after modal transition
+                setTimeout(() => dateInput.focus(), 220);
+            }
+        }
+    }, 150);
+}
+
+function openBookingModalWithSlot(counselorId, date, time) {
+    openBookingModal();
+    
+    setTimeout(async () => {
+        const counselorSelect = document.getElementById('appointmentCounselor');
+        const dateSelect = document.getElementById('appointmentDate');
+        const timeSelect = document.getElementById('appointmentTime');
+        
+        if (counselorSelect) {
+            counselorSelect.value = counselorId;
+            await loadAvailableDates(counselorId);
+        }
+        
+        if (dateSelect) {
+            // Date might be added to options if not present (unlikely but safe)
+            if (!Array.from(dateSelect.options).some(o => o.value === date)) {
+                const dateObj = new Date(date);
+                const label = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+                const opt = new Option(label, date);
+                dateSelect.add(opt);
+            }
+            dateSelect.value = date;
+            await loadTimeSlots();
+        }
+        
+        if (timeSelect && !timeSelect.disabled) {
+            for (let i = 0; i < timeSelect.options.length; i++) {
+                if (timeSelect.options[i].value.startsWith(time)) {
+                    timeSelect.selectedIndex = i;
+                    timeSelect.dispatchEvent(new Event('change'));
+                    break;
+                }
+            }
+        }
+    }, 200);
+}
+
 // ─── Modal Close ──────────────────────────────────────────────────────────────
 // ONE function. Called from ✕ button, Cancel button, backdrop, Escape — everywhere.
 function closeBookingModal() {
@@ -185,6 +242,49 @@ function loadAppointmentTypes() {
     ];
     sel.innerHTML = '<option value="">Select type...</option>' +
         types.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
+}
+
+// ─── Available Dates ────────────────────────────────────────────────────────
+async function loadAvailableDates(counselorId) {
+    const dateSel = document.getElementById('appointmentDate');
+    const timeSel = document.getElementById('appointmentTime');
+    if (!dateSel) return;
+
+    if (!counselorId) {
+        dateSel.innerHTML = '<option value="">Select counselor first</option>';
+        dateSel.disabled = true;
+        if (timeSel) {
+            timeSel.innerHTML = '<option value="">Select counselor & date first</option>';
+            timeSel.disabled = true;
+        }
+        return;
+    }
+
+    dateSel.innerHTML = '<option value="">Loading dates...</option>';
+    dateSel.disabled = true;
+
+    try {
+        const res = await fetch(`${BASE}/api/appointments/available-dates?counselor_id=${encodeURIComponent(counselorId)}`, { credentials: 'same-origin' });
+        const data = await res.json();
+        const dates = Array.isArray(data.dates) ? data.dates : [];
+
+        if (!dates.length) {
+            dateSel.innerHTML = '<option value="">No counselor slots available soon</option>';
+            dateSel.disabled = true;
+            return;
+        }
+
+        dateSel.innerHTML = '<option value="">Choose an available date</option>' + 
+            dates.map(d => {
+                const dateObj = new Date(d);
+                const label = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+                return `<option value="${d}">${label}</option>`;
+            }).join('');
+        dateSel.disabled = false;
+    } catch (e) {
+        console.error("loadAvailableDates error:", e);
+        dateSel.innerHTML = '<option value="">Error fetching dates</option>';
+    }
 }
 
 // â”€â”€â”€ Time Slots â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -312,7 +412,9 @@ async function onFormSubmit(e) {
 
 // â”€â”€â”€ Event Listeners â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function setupEventListeners() {
-    document.getElementById('appointmentCounselor')?.addEventListener('change', loadTimeSlots);
+    document.getElementById('appointmentCounselor')?.addEventListener('change', (e) => {
+        loadAvailableDates(e.target.value);
+    });
     document.getElementById('appointmentDate')?.addEventListener('change', loadTimeSlots);
     document.getElementById('resetAppointmentForm')?.addEventListener('click', resetForm);
     document.getElementById('importDemoAppointments')?.addEventListener('click', () =>
@@ -351,6 +453,17 @@ function _generateRowsHtml(list) {
         const typeLabel = a.type ? a.type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) : '—';
         const counselor = a.counselor_name || '—';
 
+        // Show "No-Show" button if 30+ minutes have passed since the appointment time
+        const canReportAbsence = (['accepted', 'accept', 'scheduled', 'confirmed', 'in_progress'].includes(statusKey)) && (function() {
+            if (!a.date || !a.time) return false;
+            // Handle time format (HH:mm or HH:mm:ss)
+            const cleanTime = a.time.substring(0, 5);
+            const start = new Date(a.date + 'T' + cleanTime);
+            const now = new Date();
+            const diffMin = (now - start) / (1000 * 60);
+            return diffMin >= 30;
+        })();
+
         return `<tr>
             <td>
                 <strong style="font-weight:600;font-size:.9rem;">${escHtml(a.title)}</strong>
@@ -367,7 +480,7 @@ function _generateRowsHtml(list) {
                 ${statusKey === 'rescheduled' && a.reschedule_reason ? `<div style="font-size:.7rem;color:var(--primary);margin-top:4px;max-width:150px;font-style:italic;">New Time Proposed: ${escHtml(a.reschedule_reason)}</div>` : ''}
             </td>
             <td>
-                <div style="display:flex;gap:6px;">
+                <div style="display:flex;gap:6px;align-items:center;">
                     ${statusKey === 'rescheduled' ? `
                         <button class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 8px;font-size:.75rem;" onclick="acceptReschedule(${a.id})" title="Accept New Time">
                             Accept
@@ -380,6 +493,11 @@ function _generateRowsHtml(list) {
                     ${a.meeting_link && (statusKey === 'accepted' || statusKey === 'accept' || statusKey === 'in_progress') ? `
                         <button type="button" onclick="${a.mode === 'chat' ? `window.location.href='${escHtml(a.meeting_link)}'` : `promptJoin('${escHtml(a.meeting_link)}')`}" class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 12px;font-size:.8rem;display:inline-flex;align-items:center;line-height:30px;border-radius:6px;" title="Join ${a.mode === 'chat' ? 'Chat' : 'Call'}">
                             <i class="fas ${a.mode === 'chat' ? 'fa-comment' : 'fa-video'}" style="margin-right:6px;"></i> Join ${a.mode === 'chat' ? 'Chat' : 'Call'}
+                        </button>
+                    ` : ''}
+                    ${canReportAbsence ? `
+                        <button type="button" class="mh-action-btn" style="background:var(--crisis);color:white;width:auto;padding:0 10px;font-size:.75rem;border-radius:6px;" onclick="openNoShowModal(${a.id})" title="Counselor No-Show">
+                            <i class="fas fa-user-slash"></i> No-Show
                         </button>
                     ` : ''}
                     <button class="mh-action-btn mh-action-btn--danger" onclick="deleteAppointment(${a.id})" title="Cancel">
@@ -443,6 +561,16 @@ function _renderActiveSessions(activeList) {
         const modeLabel = MODE_LABELS[a.mode] || (a.mode ? a.mode.replace('_', ' ') : '—');
         const typeLabel = a.type ? a.type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) : '—';
 
+        // Show "No-Show" button if 30+ minutes have passed since the appointment time
+        const canReportAbsence = (function() {
+            if (!a.date || !a.time) return false;
+            const cleanTime = a.time.substring(0, 5);
+            const start = new Date(a.date + 'T' + cleanTime);
+            const now = new Date();
+            const diffMin = (now - start) / (1000 * 60);
+            return diffMin >= 30;
+        })();
+
         return `<div class="mh-table-card" style="margin-bottom: 24px; border-top: 4px solid #10b981; background: #f0fdf4; box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 0 8px 10px -6px rgba(16, 185, 129, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 24px;">
                     <div style="flex: 1;">
@@ -469,12 +597,18 @@ function _renderActiveSessions(activeList) {
                         </div>
                     </div>
                     
-                    <div style="display: flex; height: 100%; align-items: center;">
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end; justify-content: center; height: 100%;">
                         <button type="button" onclick="${a.mode === 'chat' ? `window.location.href='${escHtml(a.meeting_link)}'` : `promptJoin('${escHtml(a.meeting_link)}')`}" 
                             class="mh-btn mh-btn--primary" 
-                            style="background: #10b981; padding: 16px 32px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                            style="background: #10b981; padding: 12px 28px; font-size: 1rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); width: 100%;">
                             <i class="fas ${a.mode === 'chat' ? 'fa-comment' : 'fa-video'}" style="margin-right: 10px;"></i> Join Session
                         </button>
+                        ${canReportAbsence ? `
+                            <button type="button" class="mh-btn mh-btn--outline" onclick="openNoShowModal(${a.id})" 
+                                style="border-color: var(--crisis); color: var(--crisis); padding: 8px 16px; font-size: 0.85rem; width: 100%;">
+                                <i class="fas fa-user-slash" style="margin-right:8px;"></i> Counselor Not Joined?
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
                 
@@ -689,6 +823,54 @@ function leaveDailyCall() {
     }
     document.getElementById('dailyCallContainer').style.display = 'none';
     activeJoinUrl = '';
+}
+
+// ─── No Show Logic ──────────────────────────────────────────────────────────
+function openNoShowModal(id) {
+    const el = document.getElementById('noShowModal');
+    const idInput = document.getElementById('noShowAppointmentId');
+    if (!el || !idInput) return;
+
+    idInput.value = id;
+    el.style.display = 'flex';
+}
+
+function closeNoShowModal() {
+    const el = document.getElementById('noShowModal');
+    if (el) el.style.display = 'none';
+    const form = document.getElementById('noShowForm');
+    if (form) form.reset();
+}
+
+async function submitNoShowReport() {
+    const id = document.getElementById('noShowAppointmentId')?.value;
+    const feedback = document.getElementById('noShowFeedback')?.value?.trim();
+    const submitBtn = document.getElementById('submitNoShowBtn');
+
+    if (!id || !feedback) {
+        toastError('Please provide feedback details.');
+        return;
+    }
+
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+        const res = await fetch(`${BASE}/api/appointments/report-noshow`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ id, feedback })
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Failed to submit report');
+
+        toastSuccess('Report submitted successfully.');
+        closeNoShowModal();
+        renderAppointments();
+    } catch (err) {
+        toastError(err.message);
+        if (submitBtn) submitBtn.disabled = false;
+    }
 }
 
 document.getElementById('btnJoinVideo')?.addEventListener('click', () => {

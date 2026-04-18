@@ -88,7 +88,9 @@ require BASE_PATH . '/app/views/layouts/header.php';
 						<label for="appointmentDate" class="mh-label">
 							<i class="fas fa-calendar-days"></i> Date <span class="mh-required">*</span>
 						</label>
-						<input type="date" id="appointmentDate" name="date" class="mh-input" required />
+						<select id="appointmentDate" name="date" class="mh-input" required disabled>
+							<option value="">Select counselor first</option>
+						</select>
 						<span class="mh-field-error" id="dateError"></span>
 					</div>
 					<div class="mh-form-group">
@@ -146,18 +148,52 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 		<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
 			<button class="mh-btn mh-btn--primary" id="btnJoinVideo" style="width:100%;justify-content:center;">
-				<i class="fas fa-video"></i> Join with Video
+				<i class="fas fa-video"></i> Audio & Video Call
 			</button>
-			<button class="mh-btn mh-btn--outline" id="btnJoinAudio"
-				style="width:100%;justify-content:center;color:var(--text);border-color:#cbd5e1;">
-				<i class="fas fa-phone"></i> Join with Audio Only
+			<button class="mh-btn mh-btn--outline" id="btnJoinAudio" style="width:100%;justify-content:center;">
+				<i class="fas fa-microphone"></i> Audio Only
 			</button>
 		</div>
 
-		<button class="mh-btn mh-btn--ghost"
-			onclick="document.getElementById('joinPreferenceModal').style.display='none'" style="font-size:0.85rem;">
-			Cancel
+		<button class="mh-btn mh-btn--ghost" onclick="document.getElementById('joinPreferenceModal').style.display='none'" style="font-size:0.85rem;color:var(--text-secondary);">
+			Go Back
 		</button>
+	</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+	 COUNSELOR NO-SHOW MODAL
+═══════════════════════════════════════════ -->
+<div id="noShowModal" class="mh-modal-overlay" style="display:none;z-index:9999;">
+	<div class="mh-modal" style="max-width:500px;">
+		<div class="mh-modal__header">
+			<h2 class="mh-modal__title" style="color:var(--crisis);">
+				<i class="fas fa-user-slash"></i> Report Counselor Absence
+			</h2>
+			<button class="mh-modal__close" onclick="closeNoShowModal()">&times;</button>
+		</div>
+		<div class="mh-modal__body">
+			<form id="noShowForm" onsubmit="event.preventDefault(); submitNoShowReport();">
+				<input type="hidden" id="noShowAppointmentId" value="">
+				
+				<p style="font-size:0.92rem; color:var(--text-secondary); margin-bottom:1.5rem; line-height:1.5;">
+					We're sorry the counselor hasn't joined the session. Please provide any feedback or details below. This will mark the session as a "No-Show" and our administrators will review the report.
+				</p>
+
+				<div class="mh-form-group">
+					<label for="noShowFeedback" class="mh-label">Feedback / Details <span class="mh-required">*</span></label>
+					<textarea id="noShowFeedback" class="mh-input mh-textarea" rows="4" required 
+						placeholder="E.g., I waited for 30 minutes but the counselor never joined the video call..."></textarea>
+				</div>
+
+				<div class="mh-modal__actions" style="margin-top:2rem;">
+					<button type="button" class="mh-btn mh-btn--outline" onclick="closeNoShowModal()">Cancel</button>
+					<button type="submit" class="mh-btn mh-btn--danger" id="submitNoShowBtn">
+						<i class="fas fa-flag"></i> Submit Report
+					</button>
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
 
@@ -174,9 +210,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
 				<h1 class="mh-page-title">Your Appointments</h1>
 				<p class="mh-page-desc">Schedule and manage your confidential counseling sessions.</p>
 			</div>
-			<button class="mh-btn mh-btn--primary mh-btn--lg" onclick="openBookingModal()">
-				<i class="fas fa-plus"></i> Request Appointment
-			</button>
 		</div>
 	</div>
 
@@ -264,6 +297,103 @@ require BASE_PATH . '/app/views/layouts/header.php';
 					</tr>
 				</tbody>
 			</table>
+		</div>
+	</div>
+
+	<!-- Booking Call-to-Action -->
+	<div class="mh-booking-cta-section">
+		<div class="mh-booking-cta">
+			<div class="mh-booking-cta__content">
+				<h3 class="mh-booking-cta__title">Need someone to talk to?</h3>
+				<p class="mh-booking-cta__text">Meet our volunteering experienced professional counselor session free. We are here to support you.</p>
+			</div>
+			<button class="mh-btn mh-btn--primary mh-btn--lg" onclick="openBookingModal()">
+				<i class="fas fa-calendar-check"></i> Request a Session
+			</button>
+		</div>
+	</div>
+
+	<!-- Our Counselors Card -->
+	<div class="mh-table-card" style="margin-bottom: 24px; border-top: 4px solid var(--primary);">
+		<div class="mh-table-card__header">
+			<div>
+				<h2 class="mh-table-card__title" style="color: var(--primary);"><i class="fas fa-user-doctor"></i> Our Counselors</h2>
+				<p class="mh-table-card__sub">Meet our dedicated counseling team</p>
+			</div>
+		</div>
+
+		<div class="mh-counselor-grid">
+			<?php if (!empty($counselors)): ?>
+				<?php foreach ($counselors as $c): 
+					$fullName = htmlspecialchars($c['full_name'] ?: $c['username']);
+					$spec = htmlspecialchars($c['specialization'] ?: 'General Counseling');
+					$rating = !empty($c['avg_rating']) ? number_format((float)$c['avg_rating'], 1) : null;
+					$exp = !empty($c['years_experience']) ? (int)$c['years_experience'] . ' Years Exp.' : '';
+					$bio = !empty($c['bio']) ? htmlspecialchars($c['bio']) : 'A dedicated professional ready to help you navigate your mental health journey.';
+					$quals = !empty($c['qualifications']) ? htmlspecialchars($c['qualifications']) : '';
+					
+					$picStr = !empty($c['profile_picture']) ? $c['profile_picture'] : '';
+					$pic = $picStr ? (strpos($picStr, 'http') === 0 ? htmlspecialchars($picStr) : BASE_URL . '/' . htmlspecialchars(ltrim($picStr, '/'))) : BASE_URL . '/public/images/default-avatar.png';
+				?>
+				<div class="mh-counselor-card">
+					<img src="<?= $pic ?>" alt="<?= $fullName ?>" class="mh-counselor-img" onerror="this.src='<?= BASE_URL ?>/public/images/default-avatar.png'">
+					<div class="mh-counselor-info">
+						<div style="display:flex; justify-content:space-between; align-items:flex-start;">
+							<h3 class="mh-counselor-name"><?= $fullName ?></h3>
+						</div>
+						<div class="mh-counselor-spec" style="margin-bottom: 2px;">
+							<?= $spec ?><?= $exp ? " &bull; $exp" : '' ?>
+						</div>
+						<div class="mh-counselor-quals" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; display: flex; align-items: center; gap: 5px;">
+							<i class="fas fa-certificate" style="color: var(--primary-light); font-size: 0.7rem;"></i>
+							<?= $quals ?: 'Licensed Professional' ?>
+						</div>
+						
+						<div class="mh-counselor-availability">
+							<span class="mh-availability-label"><i class="far fa-clock"></i> Next Available:</span>
+							<div class="mh-slot-pills">
+								<?php 
+								if (!empty($c['available_slots'])):
+									$slotsArr = explode(';', $c['available_slots']);
+									$maxSlots = 3;
+									for ($i = 0; $i < min(count($slotsArr), $maxSlots); $i++):
+										$slotParts = explode('|', $slotsArr[$i]);
+										if (count($slotParts) === 2):
+											$sDate = $slotParts[0];
+											$sTime = $slotParts[1];
+											$displayTime = date('g:i A', strtotime($sTime));
+											$displayDate = date('M j', strtotime($sDate));
+								?>
+									<button class="mh-slot-pill" onclick="openBookingModalWithSlot(<?= (int)$c['user_id'] ?>, '<?= htmlspecialchars($sDate) ?>', '<?= htmlspecialchars($sTime) ?>')" title="Quick book for <?= $displayDate ?> at <?= $displayTime ?>">
+										<?= $displayDate ?>, <?= $displayTime ?>
+									</button>
+								<?php 
+										endif;
+									endfor; 
+								?>
+								<?php if (count($slotsArr) > $maxSlots): ?>
+									<span class="mh-slot-more" title="Click 'Book Session' to see all available times">+<?= count($slotsArr) - $maxSlots ?> more</span>
+								<?php endif; ?>
+								<?php else: ?>
+									<span class="mh-no-slots">No upcoming slots found</span>
+								<?php endif; ?>
+							</div>
+						</div>
+
+						<p class="mh-counselor-bio"><?= strlen($bio) > 100 ? substr($bio, 0, 97) . '...' : $bio ?></p>
+						
+						<!-- Open Booking Modal and pre-select this counselor -->
+						<button class="mh-btn mh-btn--primary mh-btn--sm" style="width:100%;margin-top:auto;" onclick="openBookingModalForCounselor(<?= $c['user_id'] ?>)">
+							Book Session
+						</button>
+					</div>
+				</div>
+				<?php endforeach; ?>
+			<?php else: ?>
+				<div class="mh-empty-state" style="padding: 2rem; width: 100%; grid-column: 1 / -1; border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-top: 1px solid var(--border);">
+					<p>No counselors available at the moment.</p>
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
 

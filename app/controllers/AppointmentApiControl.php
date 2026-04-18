@@ -89,10 +89,14 @@ class AppointmentApiControl
             // First try to get counselors from the counselors table
             try {
                 $stmt = $pdo->prepare("
-                    SELECT u.id, u.username, c.full_name, c.specialization, c.is_available, (u.account_status = 'active') as is_approved
+                    SELECT u.id, u.username, c.full_name, c.specialization, c.is_available, 
+                           (u.account_status = 'active') as is_approved,
+                           AVG(f.rating) as avg_rating
                     FROM users u 
                     INNER JOIN counselors c ON u.id = c.user_id 
+                    LEFT JOIN feedback f ON c.id = f.counselor_id
                     WHERE u.role = 'counselor'
+                    GROUP BY u.id, u.username, c.full_name, c.specialization, c.is_available, u.account_status
                     ORDER BY c.full_name
                 ");
                 $stmt->execute();
@@ -108,7 +112,7 @@ class AppointmentApiControl
 
             // Fallback: Get counselors from users table only
             $stmt = $pdo->prepare("
-                SELECT id, username, full_name, '' as specialization, 1 as is_available, 1 as is_approved
+                SELECT id, username, full_name, '' as specialization, 1 as is_available, 1 as is_approved, NULL as avg_rating
                 FROM users 
                 WHERE role = 'counselor'
                 ORDER BY full_name, username
@@ -274,6 +278,39 @@ class AppointmentApiControl
         } catch (Exception $e) {
             error_log("AppointmentApiControl getSlots error: " . $e->getMessage());
             $this->json(array('slots' => array()));
+        }
+    }
+
+    /**
+     * GET /api/appointments/available-dates
+     * Returns unique dates where a counselor has unbooked slots.
+     */
+    public function getAvailableDates()
+    {
+        $counselorId = (int) (isset($_GET['counselor_id']) ? $_GET['counselor_id'] : 0);
+
+        if (!$counselorId) {
+            return $this->json(array('error' => 'counselor_id is required'), 400);
+        }
+
+        try {
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("
+                SELECT DISTINCT slot_date 
+                FROM counselor_timeslots 
+                WHERE counselor_user_id = ? 
+                  AND is_booked = 0 
+                  AND is_frozen = 0 
+                  AND slot_date >= CURDATE()
+                ORDER BY slot_date ASC
+            ");
+            $stmt->execute(array($counselorId));
+            $dates = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            $this->json(array('dates' => $dates));
+        } catch (Exception $e) {
+            error_log("AppointmentApiControl getAvailableDates error: " . $e->getMessage());
+            $this->json(array('dates' => array()));
         }
     }
 
@@ -543,6 +580,56 @@ class AppointmentApiControl
         } catch (Exception $e) {
             error_log("AppointmentApiControl delete error: " . $e->getMessage());
             $this->json(array('error' => 'Failed to delete appointment'), 500);
+        }
+    }
+
+    public function reportNoShow()
+    {
+        $data = $this->getJsonInput();
+        $userId = (int) (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0);
+        $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
+
+        // Note: Students are often labeled as 'student' or 'undergraduate' in session role
+        if (!$userId || ($role !== 'student' && $role !== 'undergrad' && $role !== 'undergraduate')) {
+            return $this->json(array('error' => 'Unauthorized. Only students can report no-shows.'), 401);
+        }
+
+        if (empty($data['id']) || empty($data['feedback'])) {
+            return $this->json(array('error' => 'Missing ID or feedback'), 400);
+        }
+
+        try {
+            $appointment = $this->appointmentModel->getById((int) $data['id']);
+            if (!$appointment || (int) $appointment['student_user_id'] !== $userId) {
+                return $this->json(array('error' => 'Appointment not found or access denied'), 403);
+            }
+
+            // Verify 30 minutes have passed (1800 seconds)
+            $startDateTime = new DateTime($appointment['date'] . ' ' . $appointment['time']);
+            $now = new DateTime();
+            $diffSeconds = $now->getTimestamp() - $startDateTime->getTimestamp();
+
+            if ($diffSeconds < 1800) {
+                return $this->json(array('error' => 'You can only report a no-show after 30 minutes has passed from the start time.'), 400);
+            }
+
+            $success = $this->appointmentModel->reportNoShow((int) $data['id'], $data['feedback'], $userId);
+
+            if ($success) {
+                // Free the counselor's timeslot
+                $this->timeslotModel->markFree(
+                    (int) $appointment['counselor_user_id'],
+                    $appointment['date'],
+                    $appointment['time']
+                );
+
+                $this->json(array('success' => true, 'message' => 'Counselor absence reported.'));
+            } else {
+                $this->json(array('error' => 'Failed to process report'), 500);
+            }
+        } catch (Exception $e) {
+            error_log('reportNoShow error: ' . $e->getMessage());
+            $this->json(array('error' => 'Server error while reporting no-show'), 500);
         }
     }
 

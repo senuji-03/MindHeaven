@@ -284,7 +284,10 @@
             </div>
 
             <!-- Appointments Table -->
-            <div class="section-card">
+            <div class="section-card" style="margin-bottom: 30px;">
+                <div class="card-header" style="padding: 15px 20px; border-bottom: 1px solid var(--border); background: var(--bg-mid);">
+                    <h3 style="margin:0; font-size:1.1rem; color:var(--text-primary);"><i class="fas fa-calendar-check" style="margin-right:8px; color:var(--primary);"></i> Active Appointments</h3>
+                </div>
                 <table class="users-table">
                     <thead>
                         <tr>
@@ -313,7 +316,70 @@
 
                 <div style="padding: 20px; text-align: center;">
                     <button class="btn btn-secondary">Load More Appointments</button>
+                </div>
+            </div>
 
+            <!-- No-Show Appointments Table -->
+            <div class="section-card" style="margin-bottom: 30px;">
+                <div class="card-header" style="padding: 15px 20px; border-bottom: 1px solid var(--border); background: #fff1f2;">
+                    <h3 style="margin:0; font-size:1.1rem; color: #9f1239;"><i class="fas fa-user-times" style="margin-right:8px; color: #e11d48;"></i> No-Show Appointments</h3>
+                    <p style="margin: 4px 0 0 28px; font-size: 0.8rem; color: #9f1239;">Dedicated list for analyzing incidents where counselor or student didn't attend.</p>
+                </div>
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Counselor</th>
+                            <th>Date & Time</th>
+                            <th>Student Feedback</th>
+                            <th>Counselor Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="noShowAppointmentsTableBody">
+                        <!-- Content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+
+                <div id="noShowEmptyState" class="empty-state" style="display: none; padding: 30px;">
+                    <div class="empty-state-content">
+                        <div class="empty-state-icon" style="font-size: 2rem; opacity: 0.5;">🚫</div>
+                        <h3 style="font-size: 1rem;">No-Show records clear</h3>
+                        <p style="font-size: 0.85rem;">Incident reports will appear here for review.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archived (Freezed) Appointments Table -->
+            <div class="section-card">
+                <div class="card-header" style="padding: 15px 20px; border-bottom: 1px solid var(--border); background: #f1f5f9;">
+                    <h3 style="margin:0; font-size:1.1rem; color: #475569;"><i class="fas fa-archive" style="margin-right:8px; color: #64748b;"></i> Archived (Freezed) Appointments</h3>
+                    <p style="margin: 4px 0 0 28px; font-size: 0.8rem; color: #64748b;">Records of cancelled or completed appointments that have been removed from the active list.</p>
+                </div>
+                <table class="users-table archived-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Counselor</th>
+                            <th>Original Date</th>
+                            <th>Status</th>
+                            <th>Archived At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archivedAppointmentsTableBody">
+                        <!-- Content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+
+                <div id="archivedEmptyState" class="empty-state" style="display: none; padding: 30px;">
+                    <div class="empty-state-content">
+                        <div class="empty-state-icon" style="font-size: 2rem; opacity: 0.5;">📦</div>
+                        <h3 style="font-size: 1rem;">No archived appointments</h3>
+                        <p style="font-size: 0.85rem;">When appointments are deleted or archived, they will appear here.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -329,6 +395,7 @@
     // Global variables
     let allAppointments = [];
     let filteredAppointments = [];
+    let archivedAppointments = [];
     
     // ----------------------
     // UTILITY FUNCTIONS
@@ -421,8 +488,12 @@
             
             if (data.success) {
                 allAppointments = data.appointments || [];
+                archivedAppointments = data.freezedAppointments || [];
                 filteredAppointments = [...allAppointments];
+                
                 renderAppointments();
+                renderNoShowAppointments();
+                renderArchivedAppointments();
                 
                 // Use stats from server if provided, otherwise calculate
                 if (data.stats) {
@@ -520,14 +591,17 @@
         const tbody = document.getElementById('appointmentsTableBody');
         const emptyState = document.getElementById('appointmentsEmptyState');
         
-        if (!filteredAppointments.length) {
+        // Filter out no_show for the main table
+        const activeAppointments = filteredAppointments.filter(a => a.status !== 'no_show');
+        
+        if (!activeAppointments.length) {
             emptyState.style.display = 'block';
             tbody.innerHTML = '';
             return;
         }
         
         emptyState.style.display = 'none';
-        tbody.innerHTML = filteredAppointments.map(appointment => {
+        tbody.innerHTML = activeAppointments.map(appointment => {
             // Process session notes (might be JSON)
             let sessionNotes = 'None';
             if (appointment.counselor_notes) {
@@ -554,8 +628,77 @@
                 <td><span class="${getStatusBadgeClass(appointment.status || '')}">${appointment.status || 'N/A'}</span></td>
                 <td title="${sessionNotes}">${truncatedNotes}</td>
                 <td>
-                    <button class="btn-icon" title="View Details" onclick="viewAppointmentDetails(${appointment.id})">👁️</button>
+                    <button class="btn-icon" title="View Details" onclick="viewAppointmentDetails(${appointment.id}, false)">👁️</button>
                     <button class="btn-icon" title="Download Report" onclick="downloadAppointmentReport(${appointment.id})">📄</button>
+                </td>
+            </tr>
+            `;
+        }).join('');
+    }
+
+    function renderNoShowAppointments() {
+        const tbody = document.getElementById('noShowAppointmentsTableBody');
+        const emptyState = document.getElementById('noShowEmptyState');
+        
+        // Filter for no_show from the already filtered set
+        const noShowApps = filteredAppointments.filter(a => a.status === 'no_show');
+        
+        if (!noShowApps.length) {
+            emptyState.style.display = 'block';
+            tbody.innerHTML = '';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        tbody.innerHTML = noShowApps.map(appointment => {
+            let counselorNotes = 'N/A';
+            if (appointment.counselor_notes) {
+                try {
+                    const notesObj = JSON.parse(appointment.counselor_notes);
+                    counselorNotes = notesObj.summary || notesObj.notes || appointment.counselor_notes;
+                } catch (e) {
+                    counselorNotes = appointment.counselor_notes;
+                }
+            }
+            
+            return `
+            <tr style="background: #fff1f2;">
+                <td>#${appointment.id}</td>
+                <td>${appointment.student_name || 'N/A'}</td>
+                <td>${appointment.counselor_name || 'N/A'}</td>
+                <td>${formatDate(appointment.date)}<br><small>${formatTime(appointment.time)}</small></td>
+                <td style="font-size: 0.85rem; color: #9f1239;">${appointment.student_feedback || 'No feedback'}</td>
+                <td style="font-size: 0.85rem; color: #475569;">${counselorNotes}</td>
+                <td>
+                    <button class="btn-icon" title="View Details" onclick="viewAppointmentDetails(${appointment.id}, false)">👁️</button>
+                </td>
+            </tr>
+            `;
+        }).join('');
+    }
+
+    function renderArchivedAppointments() {
+        const tbody = document.getElementById('archivedAppointmentsTableBody');
+        const emptyState = document.getElementById('archivedEmptyState');
+        
+        if (!archivedAppointments.length) {
+            emptyState.style.display = 'block';
+            tbody.innerHTML = '';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        tbody.innerHTML = archivedAppointments.map(appointment => {
+            return `
+            <tr class="archived-row" style="background: #f8fafc;">
+                <td><span style="color: #64748b;">#${appointment.id}</span></td>
+                <td>${appointment.student_name || 'N/A'}</td>
+                <td>${appointment.counselor_name || 'N/A'}</td>
+                <td>${formatDate(appointment.date)}</td>
+                <td><span class="${getStatusBadgeClass(appointment.status || '')}" style="opacity: 0.7;">${appointment.status || 'N/A'}</span></td>
+                <td><span style="font-size: 0.85rem; color: #64748b;">${appointment.freezed_at ? formatDate(appointment.freezed_at.split(' ')[0]) : 'N/A'}</span></td>
+                <td>
+                    <button class="btn-icon" title="View Archived Details" onclick="viewAppointmentDetails(${appointment.id}, true)">👁️</button>
                 </td>
             </tr>
             `;
@@ -645,14 +788,18 @@
         });
         
         renderAppointments();
+        renderNoShowAppointments();
     }
     
     // ----------------------
     // ACTION FUNCTIONS
     // ----------------------
     
-    function viewAppointmentDetails(appointmentId) {
-        const appointment = allAppointments.find(a => a.id === appointmentId);
+    function viewAppointmentDetails(appointmentId, isArchived = false) {
+        const appointment = isArchived 
+            ? archivedAppointments.find(a => a.id === appointmentId)
+            : allAppointments.find(a => a.id === appointmentId);
+            
         if (!appointment) return;
         
         // Check for rescheduled date

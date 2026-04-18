@@ -375,6 +375,82 @@
     to { transform: rotate(360deg); }
 }
 
+/* ── Counselor Cards ────────────────────────────────────── */
+.mh-counselor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.mh-counselor-card {
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.mh-counselor-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.mh-counselor-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--surface);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 4px;
+}
+
+.mh-counselor-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.mh-counselor-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.mh-counselor-rating {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #d97706; /* amber color for star */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mh-counselor-spec {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--primary);
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+.mh-counselor-bio {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+    flex: 1;
+}
+
 /* ══════════════════════════════════════════════════════════
    BOOKING MODAL
 ══════════════════════════════════════════════════════════ */
@@ -656,3 +732,155 @@ select.mh-input {
 @media (max-width: 400px) {
     .mh-stats-row { grid-template-columns: 1fr; }
 }
+
+/* ── Booking CTA ────────────────────────────────────── */
+.mh-booking-cta-section {
+    margin-bottom: 24px;
+}
+
+.mh-booking-cta {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+    border-radius: var(--radius-lg);
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    box-shadow: var(--shadow-lg);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    border: none;
+}
+
+.mh-booking-cta::after {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -50px;
+    right: -20px;
+    pointer-events: none;
+}
+
+.mh-booking-cta__content {
+    flex: 1;
+    z-index: 1;
+}
+
+.mh-booking-cta__title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0 0 8px;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.mh-booking-cta__text {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+.mh-booking-cta .mh-btn--primary {
+    background: #fff;
+    color: var(--primary-dark);
+    padding: 14px 32px;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.mh-booking-cta .mh-btn--primary:hover {
+    background: var(--bg-soft);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+
+@media (max-width: 900px) {
+    .mh-booking-cta {
+        flex-direction: column;
+        text-align: center;
+        padding: 32px 24px;
+    }
+    .mh-booking-cta__text {
+        margin: 0 auto;
+    }
+}
+
+/* ── Counselor Availability Slots ───────────────────────── */
+.mh-counselor-availability {
+    margin-top: 12px;
+    margin-bottom: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+}
+
+.mh-availability-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 10px;
+}
+
+.mh-availability-label i {
+    color: var(--primary);
+    font-size: 0.8rem;
+}
+
+.mh-slot-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mh-slot-pill {
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.mh-slot-pill:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(61, 139, 110, 0.2);
+}
+
+.mh-slot-more {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 6px 4px;
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+.mh-no-slots {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    opacity: 0.8;
+}
+
+
