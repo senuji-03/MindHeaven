@@ -1,27 +1,21 @@
 <?php
 /**
- * Shared view for managing Categories:
- * - Forum Thread Categories (mode = forum)
- * - Report Categories (mode = report)
- * - Resource Hub Categories (mode = resource)
+ * Dedicated view for Managing Resource Hub Categories
+ * Mode: resource
  */
-$currentMode = $mode ?? 'forum';
-$pageTitle = $currentMode === 'resource' ? 'Manage Resource Hub Categories' : ($currentMode === 'report' ? 'Manage Report Categories' : 'Manage Forum Thread Categories');
-$actionBase = $currentMode === 'resource' ? '/resource-categories' : ($currentMode === 'report' ? '/admin/report-categories' : '/admin/forum-categories');
-
-$TITLE = 'MindHeaven — ' . $pageTitle;
-// Mapping current mode to navigation slug for highlighting
-$CURRENT_PAGE = $currentMode === 'resource' ? 'resource-hub' : 'moderate-forum';
+$TITLE = 'MindHeaven — Manage Resource Hub Categories';
+$CURRENT_PAGE = 'resource-hub'; 
 $PAGE_CSS = [];
+$actionBase = '/resource-categories';
 
 require BASE_PATH . '/app/views/layouts/header.php';
 ?>
 
 <style>
-    /* ── Category Management Styles ── */
+    /* ── Resource Category Management Styles ── */
     .category-page-wrapper { padding: 28px 32px; }
 
-    /* Reuse toolbar and tab styles consistent with forum moderation */
+    /* Toolbar for title and main action */
     .toolbar {
         background: var(--surface);
         padding: 1.25rem 1.5rem;
@@ -141,7 +135,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
     <?php endif; ?>
 
     <div class="toolbar">
-        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;"><?= $pageTitle ?></h2>
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">Manage Resource Hub Categories</h2>
         <div class="actions">
             <button class="btn" style="background: var(--primary); color: white;" onclick="openModal('addCategoryModal')">
                 <i class="fas fa-plus"></i> Add Category
@@ -149,21 +143,11 @@ require BASE_PATH . '/app/views/layouts/header.php';
         </div>
     </div>
 
-    <?php 
-    // Show tabs only for Forum and Report moderation context
-    if ($currentMode !== 'resource') {
-        $activeTab = ($currentMode === 'report') ? 'report-categories' : 'forum-categories';
-        include '_forum_tabs.php'; 
-    }
-    ?>
-
     <section class="list">
         <table class="users-table">
             <thead>
                 <tr>
-                    <?php if($currentMode === 'resource'): ?>
                     <th style="width: 80px;">Icon</th>
-                    <?php endif; ?>
                     <th>Category Name</th>
                     <th>Description</th>
                     <th>Status</th>
@@ -172,11 +156,10 @@ require BASE_PATH . '/app/views/layouts/header.php';
             </thead>
             <tbody>
                 <?php if (empty($categories)): ?>
-                    <tr><td colspan="<?= ($currentMode === 'resource' ? 5 : 4) ?>" style="text-align:center; padding:3rem; color:var(--text-secondary);">No categories found.</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding:3rem; color:var(--text-secondary);">No categories found.</td></tr>
                 <?php else: ?>
                     <?php foreach ($categories as $category): ?>
                         <tr>
-                            <?php if($currentMode === 'resource'): ?>
                             <td>
                                 <div class="category-icon-box">
                                     <?php if(!empty($category['thumbnail'])): ?>
@@ -186,7 +169,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
                                     <?php endif; ?>
                                 </div>
                             </td>
-                            <?php endif; ?>
                             <td style="font-weight: 700;"><?= htmlspecialchars($category['name']) ?></td>
                             <td style="color: var(--text-secondary); font-size: 0.9rem; max-width: 400px; line-height: 1.5;">
                                 <?= htmlspecialchars($category['description']) ?>
@@ -237,13 +219,11 @@ require BASE_PATH . '/app/views/layouts/header.php';
                 <label>Description</label>
                 <textarea name="description" class="form-input" rows="3" placeholder="Briefly describe what belongs in this category..."></textarea>
             </div>
-            <?php if($currentMode === 'resource'): ?>
-                <div class="form-row">
-                    <label>Thumbnail Image</label>
-                    <input type="file" name="thumbnail" accept="image/*" class="form-input" style="padding: 8px;">
-                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Square ratio recommended. Max 2MB.</p>
-                </div>
-            <?php endif; ?>
+            <div class="form-row">
+                <label>Thumbnail Image</label>
+                <input type="file" name="thumbnail" accept="image/*" class="form-input" style="padding: 8px;">
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Square ratio recommended. Max 2MB.</p>
+            </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
                 <button type="button" class="btn" style="background:var(--bg-mid); color:var(--text-secondary);" onclick="closeModal('addCategoryModal')">Cancel</button>
                 <button type="submit" class="btn" style="background:var(--primary); color:white;">Create Category</button>
@@ -269,13 +249,11 @@ require BASE_PATH . '/app/views/layouts/header.php';
                 <label>Description</label>
                 <textarea name="description" id="edit_description" class="form-input" rows="3"></textarea>
             </div>
-            <?php if($currentMode === 'resource'): ?>
-                <div class="form-row">
-                    <label>Replace Thumbnail</label>
-                    <input type="file" name="thumbnail" accept="image/*" class="form-input" style="padding: 8px;">
-                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Leave blank to keep the current image.</p>
-                </div>
-            <?php endif; ?>
+            <div class="form-row">
+                <label>Replace Thumbnail</label>
+                <input type="file" name="thumbnail" accept="image/*" class="form-input" style="padding: 8px;">
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Leave blank to keep the current image.</p>
+            </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
                 <button type="button" class="btn" style="background:var(--bg-mid); color:var(--text-secondary);" onclick="closeModal('editCategoryModal')">Cancel</button>
                 <button type="submit" class="btn" style="background:var(--primary); color:white;">Save Changes</button>
@@ -311,7 +289,6 @@ require BASE_PATH . '/app/views/layouts/header.php';
         document.getElementById('activateForm').submit(); 
     }
 
-    // Modal click-outside to close
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
             closeModal(event.target.id);

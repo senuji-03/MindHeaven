@@ -46,10 +46,6 @@ class ModeratorControl
         }
     }
 
-    public function flagged()
-    {
-        view('Moderator/FlaggedUsers');
-    }
 
     public function ModeratorDashboard()
     {
@@ -144,19 +140,6 @@ class ModeratorControl
         }
     }
 
-    public function warn()
-    {
-        $data = array(
-            'userId' => isset($_GET['userId']) ? $_GET['userId'] : null,
-            'username' => isset($_GET['username']) ? $_GET['username'] : null,
-            'email' => isset($_GET['email']) ? $_GET['email'] : null,
-            'strikes' => isset($_GET['strikes']) ? $_GET['strikes'] : 0,
-            'joinDate' => isset($_GET['joinDate']) ? $_GET['joinDate'] : null,
-            'lastActivity' => isset($_GET['lastActivity']) ? $_GET['lastActivity'] : null
-        );
-
-        view('Moderator/WarnForm', $data);
-    }
 
     public function editReportedContent()
     {
