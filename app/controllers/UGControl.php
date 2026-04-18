@@ -558,7 +558,41 @@ class UGControl
 
     public function quiz()
     {
-        view('undergrad/quiz');
+        $userId = $_SESSION['user_id'] ?? 0;
+        require_once BASE_PATH . '/app/models/Assessment.php';
+        $assessmentDb = new Assessment();
+        
+        $history = $assessmentDb->getHistory($userId);
+        
+        view('undergrad/quiz', [
+            'history' => $history
+        ]);
+    }
+
+    public function saveQuizResult()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            return;
+        }
+
+        $userId = $_SESSION['user_id'] ?? 0;
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!$data) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Invalid data']);
+            return;
+        }
+
+        require_once BASE_PATH . '/app/models/Assessment.php';
+        $assessmentDb = new Assessment();
+        
+        $success = $assessmentDb->saveResult($userId, $data);
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => $success]);
     }
     
     public function goals() {
