@@ -66,8 +66,12 @@ class COControl
             $pdo = Database::getConnection();
             $stmt = $pdo->query("SELECT c.*, COALESCE(u.full_name, u.username, 'Anonymous') AS caller_name 
                                  FROM crisis_calls c 
-                                 LEFT JOIN users u ON c.caller_id = u.id 
+                                 LEFT JOIN users u ON COALESCE(c.caller_user_id, c.caller_id) = u.id 
                                  WHERE c.status = 'escalated' 
+                                 AND NOT EXISTS (
+                                     SELECT 1 FROM crisis_intervention_notes cin 
+                                     WHERE cin.crisis_call_id = c.id
+                                 )
                                  ORDER BY c.created_at DESC LIMIT 5");
             $escalatedCalls = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
@@ -1159,9 +1163,6 @@ class COControl
         } catch (Exception $e) {
             header('Location: ' . BASE_URL . '/counselor/dashboard?error=load_failed');
             exit;
-        }
-    }
-}
         }
     }
 }
