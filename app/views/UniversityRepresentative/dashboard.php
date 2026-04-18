@@ -518,7 +518,8 @@
                                 <div class="activity-details">
                                     <h4><?= htmlspecialchars($event['event_title']) ?></h4>
                                     <p><?= date('M j, Y', strtotime($event['event_date'])) ?> at
-                                        <?= date('g:i A', strtotime($event['start_time'])) ?></p>
+                                        <?= date('g:i A', strtotime($event['start_time'])) ?>
+                                    </p>
                                 </div>
                                 <span class="activity-badge badge-upcoming">Upcoming</span>
                             </div>
@@ -543,13 +544,14 @@
                     <?php if (!empty($completed_events_list)): ?>
                         <?php foreach ($completed_events_list as $event): ?>
                             <div class="activity-item">
-                                <div class="activity-icon" style="background: var(--bg-soft); color: var(--text-secondary);"><i
-                                        class="fas fa-check-double"></i></div>
+                                <div class="activity-icon">
+                                    <i class="fas fa-calendar-day"></i>
+                                </div>
                                 <div class="activity-details">
                                     <h4><?= htmlspecialchars($event['event_title']) ?></h4>
                                     <p><?= date('M j, Y', strtotime($event['event_date'])) ?></p>
                                 </div>
-                                <span class="activity-badge badge-completed">Archived</span>
+                                <span class="activity-badge badge-completed">Completed</span>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>

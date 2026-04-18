@@ -988,9 +988,18 @@ class AdminControl
             }
         }
 
+        // Filter out reports/flags where content was not found (already deleted)
+        $reports = array_filter($reports, function ($r) {
+            return $r['content_title'] !== 'Unknown/Deleted Content';
+        });
+
+        $systemFlags = array_filter($systemFlags, function ($f) {
+            return $f['content_title'] !== 'Unknown/Deleted Content';
+        });
+
         view('Admin/moderate-forum', [
-            'reports' => $reports,
-            'systemFlags' => $systemFlags
+            'reports' => array_values($reports),
+            'systemFlags' => array_values($systemFlags)
         ]);
     }
 
@@ -1040,9 +1049,14 @@ class AdminControl
 
                     if ($report['content_type'] === 'thread') {
                         $threadModel->delete($report['content_id']);
-                    } elseif ($report['content_type'] === 'post' || $report['content_type'] === 'reply') {
+                    } elseif (in_array($report['content_type'], ['post', 'reply', 'reply_reply'])) {
                         $threadModel->deletePost($report['content_id']);
                     }
+
+                    // Cross-cleanup: Resolve ALL other pending reports AND automated flags for this content
+                    require_once BASE_PATH . '/app/models/SystemFlag.php';
+                    $reportModel->resolveByContent($report['content_type'], $report['content_id']);
+                    (new SystemFlag())->resolveByContent($report['content_type'], $report['content_id']);
 
                     // Add strike to content owner if not already given for this report
                     if (empty($report['strike_given']) && !empty($report['content_owner_id'])) {
@@ -1090,9 +1104,14 @@ class AdminControl
 
                     if ($flag['content_type'] === 'thread') {
                         $threadModel->delete($flag['content_id']);
-                    } elseif ($flag['content_type'] === 'post' || $flag['content_type'] === 'reply' || $flag['content_type'] === 'reply_reply') {
+                    } elseif (in_array($flag['content_type'], ['post', 'reply', 'reply_reply'])) {
                         $threadModel->deletePost($flag['content_id']);
                     }
+
+                    // Cross-cleanup: Resolve ALL other pending automated flags AND standard reports for this content
+                    require_once BASE_PATH . '/app/models/Report.php';
+                    $flagModel->resolveByContent($flag['content_type'], $flag['content_id']);
+                    (new Report())->resolveByContent($flag['content_type'], $flag['content_id']);
 
                     if (!empty($flag['user_id'])) {
                         $userModel->addStrike($flag['user_id']);

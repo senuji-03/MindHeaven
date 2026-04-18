@@ -4,74 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resource Hub - Admin | Mind Haven</title>
+    <!-- Fonts & Icons (Design System §2, §15) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>Admin Panel</p>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/admin" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item">
-                <span class="icon">👥</span>
-                Manage Users
-            </a>
-            <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item active">
-                <span class="icon">📚</span>
-                Resource Hub
-            </a>
-            <a href="<?= BASE_URL ?>/admin/add-resource" class="nav-item">
-                <span class="icon">➕</span>
-                Add Resource
-            </a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
-                <span class="icon">💬</span>
-                Moderate Forum
-            </a>
-            <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item">
-                <span class="icon">👨‍⚕️</span>
-                Manage Counselors
-            </a>
-            <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
-                <span class="icon">📅</span>
-                Appointments
-            </a>
-            <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
-                <span class="icon">📈</span>
-                System Reports
-                        </a>
-            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
-                <span class="icon">🏛️</span>
-                University Events
-            </a>
-            <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
-                <span class="icon">⚙️</span>
-                Settings
-            </a>
-            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
-                <span class="icon"></span>
-                Donation logs
-            </a>
-                    <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <span class="icon">🚪</span>
-                Logout
-            </a>
-        </div>
-    </div>
+    <?php 
+    $activePage = 'resource-hub';
+    include '_sidebar.php'; 
+    ?>
 
     <!-- Main Content -->
     <div class="main-content">

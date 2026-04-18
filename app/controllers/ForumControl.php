@@ -310,6 +310,12 @@ class ForumControl
             }
 
             if ($threadModel->delete($id)) {
+                // Auto-resolve associated reports and automated flags
+                require_once BASE_PATH . '/app/models/Report.php';
+                require_once BASE_PATH . '/app/models/SystemFlag.php';
+                (new Report())->resolveByContent($type, $id);
+                (new SystemFlag())->resolveByContent($type, $id);
+
                 $_SESSION['success'] = "Thread deleted successfully.";
                 header('Location: ' . BASE_URL . '/forum' . $embedQuery);
             } else {
@@ -333,6 +339,12 @@ class ForumControl
             }
 
             if ($threadModel->deletePost($id)) {
+                // Auto-resolve associated reports and automated flags
+                require_once BASE_PATH . '/app/models/Report.php';
+                require_once BASE_PATH . '/app/models/SystemFlag.php';
+                (new Report())->resolveByContent('post', $id);
+                (new SystemFlag())->resolveByContent('post', $id);
+
                 $_SESSION['success'] = "Reply deleted successfully.";
             } else {
                 $_SESSION['error'] = "Failed to delete reply.";

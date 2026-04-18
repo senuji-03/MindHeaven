@@ -8,28 +8,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Sidebar (Design System §1,§15) -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>Admin Panel</p>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/admin" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
-            <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item"><i class="fas fa-users"></i> Manage Users</a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item"><i class="fas fa-comments"></i> Moderate Forum</a>
-            <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item"><i class="fas fa-calendar-check"></i> Appointments</a>
-            <a href="<?= BASE_URL ?>/admin/reports" class="nav-item"><i class="fas fa-chart-bar"></i> System Reports</a>
-            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item"><i class="fas fa-university"></i> University Events</a>
-            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item active"><i class="fas fa-hand-holding-usd"></i> Donation Logs</a>
-            <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item"><i class="fas fa-book"></i> Resource Hub</a>
-            <a href="<?= BASE_URL ?>/admin/add-resource" class="nav-item"><i class="fas fa-plus-circle"></i> Add Resource</a>
-            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item"><i class="fas fa-edit"></i> Edit Resources</a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-    </aside>
+    <?php 
+    $activePage = 'donations';
+    include '_sidebar.php'; 
+    ?>
 
     <!-- Main Content -->
     <div class="main-content">

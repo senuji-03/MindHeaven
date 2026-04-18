@@ -82,4 +82,19 @@ class SystemFlag
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$status, $id]);
     }
+
+    /**
+     * Resolve all pending system flags associated with a specific piece of content
+     */
+    public function resolveByContent($contentType, $contentId)
+    {
+        // Normalize content type for DB
+        if (in_array($contentType, ['reply', 'reply_reply', 'post_reply'], true)) {
+            $contentType = 'post';
+        }
+
+        $sql = "UPDATE system_flags SET status = 'resolved' WHERE content_type = ? AND content_id = ? AND status = 'pending'";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$contentType, $contentId]);
+    }
 }

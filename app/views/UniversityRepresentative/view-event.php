@@ -408,14 +408,11 @@ $isRep = isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['r
             <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
                 <i class="fas fa-calendar-alt"></i> Manage Events
             </a>
-            <a href="<?= BASE_URL ?>/university-rep/announcements" class="nav-item">
-                <i class="fas fa-bullhorn"></i> Announcements
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/resources" class="nav-item">
-                <i class="fas fa-book-open"></i> Resources
-            </a>
             <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
                 <i class="fas fa-university"></i> University Profile
+            </a>
+            <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
+                <i class="fas fa-user-circle"></i> My Profile
             </a>
         </nav>
         <div class="sidebar-footer">

@@ -6,6 +6,13 @@
 
 class UniversityRepresentativeControl
 {
+    public function __construct()
+    {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'university_representative') {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+    }
 
 
     // Helper to ensure university name is in session
@@ -37,11 +44,7 @@ class UniversityRepresentativeControl
     {
         try {
             $pdo = Database::getConnection();
-            $universityRepId = $_SESSION['user_id'] ?? null;
-            if (!$universityRepId) {
-                header('Location: ' . BASE_URL . '/login');
-                exit;
-            }
+            $universityRepId = $_SESSION['user_id'];
 
             // fetch user details & university name
             $stmt = $pdo->prepare("
@@ -142,12 +145,7 @@ class UniversityRepresentativeControl
             $pdo = Database::getConnection();
 
             // Get the university representative user ID from session
-            $universityRepId = $_SESSION['user_id'] ?? null;
-            if (!$universityRepId) {
-                $_SESSION['error'] = 'User not authenticated';
-                header('Location: ' . BASE_URL . '/login');
-                exit;
-            }
+            $universityRepId = $_SESSION['user_id'];
 
             $this->ensureUniversitySession($pdo, $universityRepId);
 

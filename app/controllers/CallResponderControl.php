@@ -2,14 +2,16 @@
 
 class CallResponderControl
 {
-
-    public function index()
+    public function __construct()
     {
         if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['call_responder', 'admin'])) {
             header('Location: ' . BASE_URL . '/login');
             exit;
         }
+    }
 
+    public function index()
+    {
         require BASE_PATH . '/app/views/CallResponder/CallPage.php';
     }
 
@@ -20,11 +22,6 @@ class CallResponderControl
 
     public function success()
     {
-        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['call_responder', 'admin'])) {
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
-
         try {
             $pdo = Database::getConnection();
             $stmt = $pdo->prepare("SELECT c.*, 

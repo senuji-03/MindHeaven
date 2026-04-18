@@ -11,6 +11,10 @@ class COControl
 
     public function __construct()
     {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'counselor') {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
         $this->eventModel = new Event();
     }
 
@@ -78,13 +82,7 @@ class COControl
      */
     public function feedbackList() {
         $counselorFeedback = array();
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        if (empty($_SESSION['user_id'])) {
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
+        
         $counselorModel = new Counselor();
         $counselor = $counselorModel->getByUserId($_SESSION['user_id']);
         if (!$counselor || empty($counselor['id'])) {
@@ -103,11 +101,6 @@ class COControl
 
     public function timeslots()
     {
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'counselor') {
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
         view('/counselor/timeslots');
     }
 

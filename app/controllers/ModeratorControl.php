@@ -6,7 +6,8 @@ class ModeratorControl
 {
     public function __construct()
     {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'moderator') {
+        // Shared access for Moderators and Admins
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'moderator' && $_SESSION['role'] !== 'admin')) {
             header('Location: ' . BASE_URL . '/login');
             exit;
         }

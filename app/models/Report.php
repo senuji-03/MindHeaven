@@ -175,4 +175,23 @@ class Report
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$id]);
     }
+
+    /**
+     * Resolve all pending reports associated with a specific piece of content
+     */
+    public function resolveByContent($contentType, $contentId)
+    {
+        // If it's any form of post/reply, we want to clear all variants
+        if (in_array($contentType, ['post', 'reply', 'reply_reply'])) {
+            $types = ['post', 'reply', 'reply_reply'];
+            $placeholders = implode(',', array_fill(0, count($types), '?'));
+            $sql = "UPDATE reports SET status = 'resolved' WHERE content_type IN ($placeholders) AND content_id = ? AND status = 'pending'";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute(array_merge($types, [$contentId]));
+        }
+
+        $sql = "UPDATE reports SET status = 'resolved' WHERE content_type = ? AND content_id = ? AND status = 'pending'";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$contentType, $contentId]);
+    }
 }
