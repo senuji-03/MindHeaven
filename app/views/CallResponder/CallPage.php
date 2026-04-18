@@ -648,15 +648,31 @@ async function escalateCall() {
 		const data = await res.json();
 
 		if (data.success) {
-			// Reset workspace
-			document.getElementById('callNotes').value = '';
-			document.getElementById('activeCallContainer').style.display = 'none';
-			document.getElementById('noCallState').style.display          = 'flex';
-			currentCallId = null;
-			fetchWaitingCalls();
+			// Update UI to show escalated state instead of closing
+			const callerNameEl = document.getElementById('currentCallerName');
+			if (callerNameEl && !callerNameEl.innerHTML.includes('Escalated')) {
+				callerNameEl.innerHTML += ' <span style="font-size:0.75rem; color:var(--accent-warm); font-weight:600; vertical-align:middle; margin-left:8px;">(Escalated to Counselor)</span>';
+			}
+
+			const durationEl = document.querySelector('.rp-call-duration');
+			if (durationEl) {
+				durationEl.innerHTML = '<span class="dot" style="background:var(--accent-warm)"></span> Waiting for Counselor to join...';
+			}
+
+			// Disable the escalate button to prevent double-click
+			const escBtn = document.querySelector('button[onclick="escalateCall()"]');
+			if (escBtn) {
+				escBtn.disabled = true;
+				escBtn.style.opacity = '0.6';
+				escBtn.style.cursor = 'not-allowed';
+				escBtn.innerHTML = '<i class="fas fa-check"></i> Escalated';
+			}
 
 			// Success toast
-			showToast('Call escalated to an available counselor successfully!', 'success');
+			showToast('Call escalated successfully! Please stay on the line until a counselor joins.', 'success');
+			
+			// Refresh queue in background
+			fetchWaitingCalls();
 		} else {
 			alert(data.error || 'Failed to escalate record.');
 		}

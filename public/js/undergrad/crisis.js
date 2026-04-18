@@ -7,17 +7,17 @@ let groundingStep = 1;
 let groundingData = {};
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeCrisisPage();
 });
 
 function initializeCrisisPage() {
     // Add any initialization logic here
     console.log('Crisis support page initialized');
-    
+
     // Set up emergency button analytics (if needed)
     setupEmergencyButtons();
-    
+
     // Initialize support contacts from localStorage
     loadSupportContacts();
 }
@@ -25,9 +25,9 @@ function initializeCrisisPage() {
 // Emergency button functionality
 function setupEmergencyButtons() {
     const emergencyButtons = document.querySelectorAll('.emergency-btn');
-    
+
     emergencyButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             // Track emergency button usage (for analytics)
             const buttonType = this.classList.contains('primary') ? '988' : '911';
             trackEmergencyCall(buttonType);
@@ -42,7 +42,7 @@ function trackEmergencyCall(type) {
         timestamp: new Date().toISOString(),
         page: 'crisis'
     };
-    
+
     // Store in localStorage for analytics
     const existingData = JSON.parse(localStorage.getItem('emergencyCalls') || '[]');
     existingData.push(emergencyData);
@@ -68,13 +68,13 @@ function startBreathingExercise() {
     const text = document.getElementById('breathingText');
     const startBtn = document.getElementById('startBreathing');
     const stopBtn = document.getElementById('stopBreathing');
-    
+
     startBtn.style.display = 'none';
     stopBtn.style.display = 'inline-flex';
-    
+
     let phase = 'inhale';
     let count = 0;
-    
+
     breathingInterval = setInterval(() => {
         if (phase === 'inhale') {
             circle.classList.add('inhale');
@@ -93,7 +93,7 @@ function startBreathingExercise() {
             text.textContent = 'Pause...';
             phase = 'inhale';
             count++;
-            
+
             if (count >= 5) {
                 text.textContent = 'Great job! Take a moment to notice how you feel.';
                 setTimeout(() => {
@@ -110,12 +110,12 @@ function stopBreathingExercise() {
         clearInterval(breathingInterval);
         breathingInterval = null;
     }
-    
+
     const circle = document.getElementById('breathingCircle');
     const text = document.getElementById('breathingText');
     const startBtn = document.getElementById('startBreathing');
     const stopBtn = document.getElementById('stopBreathing');
-    
+
     circle.classList.remove('inhale', 'exhale');
     text.textContent = 'Click Start to Begin';
     startBtn.style.display = 'inline-flex';
@@ -139,15 +139,15 @@ function closeGroundingTechnique() {
 function resetGrounding() {
     groundingStep = 1;
     groundingData = {};
-    
+
     // Hide all steps
     document.querySelectorAll('.step').forEach(step => {
         step.classList.remove('active');
     });
-    
+
     // Show first step
     document.getElementById('step1').classList.add('active');
-    
+
     // Clear all inputs
     document.querySelectorAll('.grounding-steps input').forEach(input => {
         input.value = '';
@@ -158,18 +158,18 @@ function nextGroundingStep() {
     const currentStep = document.getElementById(`step${groundingStep}`);
     const input = currentStep.querySelector('input');
     const value = input.value.trim();
-    
+
     if (!value) {
         alert('Please fill in this step before continuing.');
         return;
     }
-    
+
     // Store the data
     groundingData[`step${groundingStep}`] = value;
-    
+
     // Hide current step
     currentStep.classList.remove('active');
-    
+
     // Show next step
     groundingStep++;
     if (groundingStep <= 5) {
@@ -183,7 +183,7 @@ function nextGroundingStep() {
 function completeGroundingExercise() {
     const modal = document.getElementById('groundingModal');
     const modalBody = modal.querySelector('.modal-body');
-    
+
     modalBody.innerHTML = `
         <div class="grounding-complete">
             <h3>🎉 Great job completing the grounding exercise!</h3>
@@ -202,13 +202,13 @@ function completeGroundingExercise() {
             </div>
         </div>
     `;
-    
+
     // Store completion data
     const completionData = {
         timestamp: new Date().toISOString(),
         data: groundingData
     };
-    
+
     const existingData = JSON.parse(localStorage.getItem('groundingExercises') || '[]');
     existingData.push(completionData);
     localStorage.setItem('groundingExercises', JSON.stringify(existingData));
@@ -254,7 +254,7 @@ function openSafetyPlan() {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
     document.body.style.overflow = 'hidden';
 }
@@ -262,17 +262,17 @@ function openSafetyPlan() {
 function saveSafetyPlan() {
     const textareas = document.querySelectorAll('.safety-plan textarea');
     const planData = {};
-    
+
     textareas.forEach((textarea, index) => {
         const labels = ['warningSigns', 'copingStrategies', 'supportPeople', 'professionalHelp', 'safeEnvironment'];
         planData[labels[index]] = textarea.value;
     });
-    
+
     planData.timestamp = new Date().toISOString();
-    
+
     localStorage.setItem('safetyPlan', JSON.stringify(planData));
     alert('Safety plan saved successfully!');
-    
+
     // Close modal
     document.querySelector('.modal').remove();
     document.body.style.overflow = 'auto';
@@ -317,7 +317,7 @@ function openDistractionTools() {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
     document.body.style.overflow = 'hidden';
 }
@@ -363,7 +363,7 @@ function callSupport() {
         alert('No support contacts saved. Please add a contact first.');
         return;
     }
-    
+
     // For demo purposes, just show the first contact
     const contact = contacts[0];
     if (confirm(`Call ${contact.name} at ${contact.phone}?`)) {
@@ -377,7 +377,7 @@ function textSupport() {
         alert('No support contacts saved. Please add a contact first.');
         return;
     }
-    
+
     // For demo purposes, just show the first contact
     const contact = contacts[0];
     const message = prompt('Enter your message:');
@@ -401,7 +401,7 @@ function startMentalMath() {
     const number = Math.floor(Math.random() * 100) + 1;
     const multiplier = Math.floor(Math.random() * 12) + 1;
     const answer = number * multiplier;
-    
+
     const userAnswer = prompt(`What is ${number} × ${multiplier}?`);
     if (parseInt(userAnswer) === answer) {
         alert('Correct! Great job!');
@@ -421,7 +421,7 @@ function playCalmingSounds() {
 function startSimpleGame() {
     const colors = ['red', 'blue', 'green', 'yellow', 'purple'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    
+
     const userGuess = prompt(`I'm thinking of a color: red, blue, green, yellow, or purple. What is it?`);
     if (userGuess.toLowerCase() === randomColor) {
         alert('Correct! Great job!');
@@ -431,7 +431,7 @@ function startSimpleGame() {
 }
 
 // Close modals when clicking outside
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (e.target.classList.contains('modal')) {
         e.target.remove();
         document.body.style.overflow = 'auto';
@@ -439,7 +439,7 @@ document.addEventListener('click', function(e) {
 });
 
 // Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => {

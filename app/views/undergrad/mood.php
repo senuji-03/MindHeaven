@@ -1151,13 +1151,103 @@ require BASE_PATH . '/app/views/layouts/header.php';
     color: var(--text-secondary);
   }
 
+  /* ── Responsive ──────────────────────────── */
   @media (max-width: 900px) {
     .smart-grid {
       grid-template-columns: 1fr;
     }
   }
 
-  /* ── Responsive ──────────────────────────── */
+  /* ── Print Styles (Native PDF Export) ─────── */
+  @media print {
+    /* Hide UI-specific elements */
+    header, footer, .top-header, .sidebar, #sidebar, .mp, .toast-wrap, .mo-overlay, .btn-log, .mp-header, .mobile-menu-toggle {
+      display: none !important;
+    }
+
+    /* Reset core layout containers for print */
+    html, body, .main-wrapper {
+      background: #fff !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    /* Show only the PDF template */
+    #pdfTemplate {
+      display: block !important;
+      visibility: visible !important;
+      width: 100% !important;
+      max-width: 800px !important;
+      padding: 40px !important;
+      margin: 0 auto !important;
+      position: static !important;
+      background: #fff !important;
+      box-sizing: border-box !important;
+    }
+
+    /* Standardize alignments for report contents */
+    #pdfTemplate h1, #pdfTemplate h2, #pdfTemplate h3 {
+      font-family: 'DM Sans', sans-serif !important;
+      margin-top: 0 !important;
+    }
+
+    /* Fix grids and flex boxes for print */
+    .pdf-grid {
+      display: block !important;
+      width: 100% !important;
+    }
+    
+    .pdf-row {
+      display: flex !important;
+      gap: 20px !important;
+      margin-bottom: 20px !important;
+    }
+    
+    .pdf-col {
+      flex: 1 !important;
+    }
+
+    /* Ensure recommendation items look good in print */
+    #pdfRecs .rec-item {
+      display: flex !important;
+      align-items: center !important;
+      background: #f8fafc !important;
+      border: 1px solid #e2e8f0 !important;
+      margin-bottom: 8px !important;
+      padding: 10px 15px !important;
+      border-radius: 8px !important;
+      text-decoration: none !important;
+      color: inherit !important;
+    }
+    
+    #pdfRecs .rec-icon {
+      font-size: 1.2rem !important;
+      margin-right: 12px !important;
+    }
+    
+    #pdfRecs .rec-info {
+      flex: 1 !important;
+    }
+    
+    #pdfRecs .rec-label {
+      font-weight: 700 !important;
+      display: block !important;
+    }
+    
+    #pdfRecs i.fa-chevron-right {
+      display: none !important; /* Hide action icons in print */
+    }
+
+    /* Keep colors during print */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  }
+
   @media (max-width: 900px) {
     .mp-stats {
       grid-template-columns: repeat(2, 1fr);
@@ -2210,22 +2300,21 @@ $tags = ['Work', 'School', 'Relationships', 'Health', 'Sleep', 'Exercise', 'Weat
 
   // ─── PDF Report ───────────────────────────────────────────────────
   async function downloadWellnessPDF() {
-    const { jsPDF } = window.jspdf || {};
     const element = document.getElementById('pdfTemplate');
     if (!element) return;
 
-    // Populate template
+    // Populate template with latest data
     const name = "<?= htmlspecialchars($currentUser['username'] ?? 'User') ?>";
     const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     
     document.getElementById('pdfName').textContent = name;
     document.getElementById('pdfDate').textContent = date;
     
-    // Insights
+    // Copy Insights
     const insightList = document.getElementById('insightsBody').cloneNode(true);
     document.getElementById('pdfInsights').innerHTML = insightList.innerHTML;
     
-    // Recommendations
+    // Copy Recommendations
     const recList = document.getElementById('recommendationsList').cloneNode(true);
     document.getElementById('pdfRecs').innerHTML = recList.innerHTML;
 
@@ -2233,82 +2322,83 @@ $tags = ['Work', 'School', 'Relationships', 'Health', 'Sleep', 'Exercise', 'Weat
     document.getElementById('pdfStatTotal').textContent = records.length;
     document.getElementById('pdfStatStreak').textContent = document.getElementById('statStreak').textContent;
 
-    // Show template, generate, hide
-    element.style.display = 'block';
-    
-    const opt = {
-      margin: [15, 15],
-      filename: `MindHeaven_Wellness_Report_${name.replace(/\s+/g,'_')}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
     try {
-      toast('Generating PDF report...', 'info');
-      await html2pdf().set(opt).from(element).save();
-      toast('Report downloaded successfully!', 'success');
+      toast('Preparing report...', 'info');
+      // Small timeout to ensure DOM content is updated before printing
+      setTimeout(() => {
+        window.print();
+      }, 500);
     } catch (err) {
       console.error(err);
-      toast('Failed to generate PDF.', 'error');
-    } finally {
-      element.style.display = 'none';
+      toast('Failed to open print dialog.', 'error');
     }
   }
 </script>
 
 <!-- PDF Template (Hidden) -->
-<div id="pdfTemplate" style="display: none; width: 800px; padding: 40px; background: #fff; color: #1E3A34; font-family: 'DM Sans', sans-serif;">
-  <div style="border-bottom: 2px solid #3D8B6E; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+<div id="pdfTemplate" style="display: none; width: 800px; padding: 40px; background: #fff; color: #1E3A34; font-family: 'DM Sans', system-ui, sans-serif;">
+  <!-- Header -->
+  <div style="border-bottom: 3px solid #3D8B6E; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
     <div>
-      <h1 style="margin: 0; font-size: 28px; color: #3D8B6E;">Wellness Report</h1>
-      <p style="margin: 5px 0 0; color: #6B8C7E; font-size: 14px;">Personalized Emotional Insights by MindHeaven</p>
+      <h1 style="margin: 0; font-size: 32px; color: #3D8B6E; font-weight: 800;">Wellness Report</h1>
+      <p style="margin: 4px 0 0; color: #6B8C7E; font-size: 14px; font-weight: 500;">Personalized Emotional Insights • MindHeaven</p>
     </div>
     <div style="text-align: right;">
-      <p style="margin: 0; font-weight: 700; font-size: 16px;" id="pdfName">—</p>
-      <p style="margin: 2px 0 0; font-size: 12px; color: #6B8C7E;" id="pdfDate">—</p>
+      <p style="margin: 0; font-weight: 800; font-size: 18px; color: #1E3A34;" id="pdfName">—</p>
+      <p style="margin: 2px 0 0; font-size: 13px; color: #6B8C7E; font-weight: 600;" id="pdfDate">—</p>
     </div>
   </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
-    <div style="background: #EEF6F2; padding: 20px; border-radius: 12px;">
-      <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; color: #3D8B6E; letter-spacing: 1px;">Summary</h3>
-      <div style="display: flex; gap: 20px; margin-top: 15px;">
+  <!-- Summary Stats -->
+  <div class="pdf-row" style="display: flex; gap: 20px; margin-bottom: 35px;">
+    <div style="flex: 1; background: #EEF6F2; padding: 24px; border-radius: 16px; border: 1px solid #D6E4DD;">
+      <h3 style="margin: 0 0 16px; font-size: 12px; text-transform: uppercase; color: #3D8B6E; letter-spacing: 1.5px; font-weight: 800;">Activity Summary</h3>
+      <div style="display: flex; gap: 30px;">
         <div>
-          <span style="display: block; font-size: 10px; color: #6B8C7E;">Total Logs</span>
-          <span style="font-size: 24px; font-weight: 700;" id="pdfStatTotal">0</span>
+          <span style="display: block; font-size: 11px; color: #6B8C7E; margin-bottom: 4px; font-weight: 600;">Total Logs</span>
+          <span style="font-size: 28px; font-weight: 800; color: #1E3A34;" id="pdfStatTotal">0</span>
         </div>
         <div>
-          <span style="display: block; font-size: 10px; color: #6B8C7E;">Current Streak</span>
-          <span style="font-size: 24px; font-weight: 700;" id="pdfStatStreak">0</span>
+          <span style="display: block; font-size: 11px; color: #6B8C7E; margin-bottom: 4px; font-weight: 600;">Current Streak</span>
+          <span style="font-size: 28px; font-weight: 800; color: #1E3A34;" id="pdfStatStreak">0</span>
         </div>
       </div>
     </div>
-    <div style="background: #FFF9F2; padding: 20px; border-radius: 12px; border: 1px solid #FFEEDD;">
-      <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; color: #E8A87C; letter-spacing: 1px;">Wellness Level</h3>
-      <p style="font-size: 13px; line-height: 1.5; color: #555; margin-top: 10px;">Your emotional data reflects your commitment to mental wellness. Maintain consistency for better pattern recognition.</p>
+    <div style="flex: 1; background: #FFF9F2; padding: 24px; border-radius: 16px; border: 1px solid #FFEEDD;">
+      <h3 style="margin: 0 0 12px; font-size: 12px; text-transform: uppercase; color: #E8A87C; letter-spacing: 1.5px; font-weight: 800;">Wellness Status</h3>
+      <p style="font-size: 14px; line-height: 1.6; color: #5C4B3C; margin: 0; font-weight: 500;">Your emotional data reflects your commitment to self-care. Maintain consistency for even deeper pattern recognition.</p>
     </div>
   </div>
 
-  <div style="margin-bottom: 40px;">
-    <h3 style="border-bottom: 1px solid #D6E4DD; padding-bottom: 10px; margin-bottom: 20px; color: #3D8B6E;">Personalized Insights</h3>
-    <div id="pdfInsights" style="font-size: 14px; line-height: 1.6;">
+  <!-- Insights -->
+  <div style="margin-bottom: 40px; background: #fff; padding: 0 5px;">
+    <h3 style="border-bottom: 2px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px; color: #1E3A34; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+      <span style="color: #3D8B6E;">•</span> Personalized Insights
+    </h3>
+    <div id="pdfInsights" style="font-size: 15px; line-height: 1.7; color: #334139;">
       <!-- Populated from insightsBody -->
     </div>
   </div>
 
-  <div style="margin-bottom: 40px;">
-    <h3 style="border-bottom: 1px solid #D6E4DD; padding-bottom: 10px; margin-bottom: 20px; color: #3D8B6E;">Actionable Recommendations</h3>
-    <div id="pdfRecs" class="rec-list" style="font-size: 13px;">
+  <!-- Recommendations -->
+  <div style="margin-bottom: 40px; background: #fff; padding: 0 5px;">
+    <h3 style="border-bottom: 2px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 20px; color: #1E3A34; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+      <span style="color: #3D8B6E;">•</span> Recommended Actions
+    </h3>
+    <div id="pdfRecs" class="rec-list">
       <!-- Populated from recommendationsList -->
     </div>
   </div>
 
-  <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #D6E4DD; text-align: center; color: #6B8C7E; font-size: 11px;">
-    <p>This report is generated based on your self-reported mood journals. For critical mental health support, please use the Crisis Hotline or book a session with our university counselors.</p>
-    <p style="margin-top: 10px;">&copy; 2026 MindHeaven Wellness System</p>
+  <!-- Footer -->
+  <div style="margin-top: 80px; padding-top: 24px; border-top: 1px solid #E2E8F0; text-align: center; color: #94A3B8;">
+    <p style="margin: 0; font-size: 12px; font-weight: 500; line-height: 1.5;">This report is generated based on self-reported data. For immediate support, please use the Crisis Hotline or book a session via the Appointments tab.</p>
+    <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 20px;">
+      <span style="font-size: 14px; color: #3D8B6E; font-weight: 800;">MindHeaven</span>
+      <span style="width: 4px; height: 4px; background: #CBD5E1; border-radius: 50%;"></span>
+      <span style="font-size: 11px; font-weight: 600;">© 2026 Wellness System</span>
+    </div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>

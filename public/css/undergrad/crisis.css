@@ -674,9 +674,17 @@
 }
 
 @keyframes mh-pulse-red {
-    0% { box-shadow: 0 0 0 0 rgba(214, 79, 79, 0.6); }
-    70% { box-shadow: 0 0 0 10px rgba(214, 79, 79, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(214, 79, 79, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(214, 79, 79, 0.6);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(214, 79, 79, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(214, 79, 79, 0);
+    }
 }
 
 .mh-crisis-modal__title {
@@ -724,9 +732,20 @@
 }
 
 @keyframes mh-pulse-big {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(214, 79, 79, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 30px rgba(214, 79, 79, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(214, 79, 79, 0); }
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(214, 79, 79, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 30px rgba(214, 79, 79, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(214, 79, 79, 0);
+    }
 }
 
 .mh-connecting-state__title {
@@ -758,12 +777,27 @@
     animation: mh-dots 1.4s infinite ease-in-out both;
 }
 
-.mh-connecting-dots span:nth-child(1) { animation-delay: -0.32s; }
-.mh-connecting-dots span:nth-child(2) { animation-delay: -0.16s; }
+.mh-connecting-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.mh-connecting-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
 
 @keyframes mh-dots {
-    0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
-    40% { transform: scale(1); opacity: 1; }
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+        opacity: 0.3;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* ── Call Workspace ────────────────────────────────────── */
@@ -813,6 +847,517 @@
 
 /* ── Toast Animation ───────────────────────────────────── */
 @keyframes mh-toast-in {
-    from { transform: translateX(100px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+
+/* ── Specific Support for Dynamic Modals in crisis.js ── */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(13, 25, 22, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modal .modal-content {
+    background: var(--surface);
+    width: 100%;
+    max-width: 500px;
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+    animation: mh-modal-pop 0.4s ease;
+}
+
+.modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.modal .modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.modal .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.modal .input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border);
+    margin-bottom: 16px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.modal .btn {
+    padding: 12px 24px;
+    border-radius: var(--radius-full);
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--primary);
+    color: white;
+}
+
+/* ── Persistent Safety Plan Card ────────────────────────── */
+.mh-safety-plan-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    margin-top: 28px;
+    border-left: 6px solid var(--primary);
+}
+
+.mh-safety-plan-card__header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+}
+
+.mh-safety-plan-card__icon {
+    width: 56px;
+    height: 56px;
+    background: var(--bg-mid);
+    color: var(--primary);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.mh-safety-plan-card__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+
+.mh-safety-plan-card__desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.mh-safety-plan-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.mh-safety-item {
+    background: var(--bg-mid);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.mh-safety-item--full {
+    grid-column: span 2;
+}
+
+.mh-safety-item label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+    margin-bottom: 12px;
+}
+
+.mh-safety-item p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+}
+
+.mh-safety-plan-empty {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.mh-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+/* ── Safety Plan Modal Form Optimization ────────────────── */
+.mh-safety-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.mh-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mh-form-group label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mh-form-group textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border);
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: none;
+    transition: border-color 0.2s;
+}
+
+.mh-form-group textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+/* Modal Scroll Fix */
+.modal-content {
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden !important;
+    border-radius: var(--radius-lg);
+}
+
+.modal-body {
+    padding: 10px 0 20px;
+    overflow-y: auto !important;
+    flex: 1;
+}
+
+/* Force 2-column on wider screens */
+@media (min-width: 769px) {
+    .modal-content--wide {
+        max-width: 850px !important;
+    }
+
+    .mh-safety-form-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .mh-safety-plan-grid,
+    .mh-safety-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mh-safety-item--full {
+        grid-column: span 1;
+    }
+
+    .modal-content {
+        width: 95% !important;
+        margin: 20px auto;
+    }
+}/* -- Interactive Tool Modals & Components ----------------------- */
+
+.mh-tool-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(28, 43, 42, 0.88);
+    backdrop-filter: blur(6px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mh-tool-modal-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mh-tool-modal {
+    width: 100%;
+    max-width: 500px;
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    transform: translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mh-tool-modal-backdrop.active .mh-tool-modal {
+    transform: translateY(0);
+}
+
+.mh-tool-modal__header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mh-tool-modal__header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mh-tool-modal__header h3 i {
+    color: var(--primary);
+}
+
+.mh-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.mh-tool-modal__body {
+    padding: 32px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.mh-tool-guide {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+/* Breathing Tool */
+.mh-breathing-container {
+    height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin: 20px 0;
+}
+
+.mh-breathing-circle {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    position: relative;
+    transition: all 4s ease-in-out;
+    box-shadow: 0 0 20px rgba(107, 184, 154, 0.3);
+}
+
+.mh-breathing-circle.inhale {
+    transform: scale(2.2);
+    background: var(--primary);
+    box-shadow: 0 0 40px rgba(61, 139, 110, 0.5);
+}
+
+.mh-breathing-circle.exhale {
+    transform: scale(0.8);
+    background: var(--accent-calm);
+}
+
+.mh-breathing-circle.hold {
+    transform: scale(2.2);
+    box-shadow: 0 0 60px rgba(61, 139, 110, 0.8);
+}
+
+.mh-breathing-text {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    min-height: 1.5em;
+}
+
+/* Grounding Wizard */
+.mh-grounding-step {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.mh-grounding-step.active {
+    opacity: 1;
+    transform: translateX(0);
+    display: block;
+}
+
+.mh-grounding-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--primary);
+    background: var(--bg-mid);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    margin-bottom: 12px;
+}
+
+.mh-grounding-title {
+    font-size: 1.35rem;
+    margin-bottom: 20px;
+}
+
+.mh-grounding-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mh-grounding-input {
+    padding: 14px 18px;
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.mh-grounding-input:focus {
+    border-color: var(--primary);
+    outline: none;
+    background: #fff;
+}
+
+.mh-success-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+/* Distraction Activities */
+.mh-distraction-menu {
+    display: grid;
+    gap: 12px;
+}
+
+.mh-distraction-option {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.mh-distraction-option:hover {
+    background: #fff;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.mh-distraction-icon {
+    font-size: 1.8rem;
+}
+
+.mh-distraction-option strong {
+    display: block;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.mh-distraction-option span {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.mh-activity-box {
+    padding: 20px;
+    background: var(--bg-soft);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--border);
+}
+
+.mh-math-problem {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin: 20px 0;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.mh-tool-modal__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.mh-tool-modal__footer {
+    padding: 20px 32px;
+    border-top: 1px solid var(--border);
+}
+
+@media (max-width: 480px) {
+    .mh-tool-modal {
+        max-height: 95vh;
+    }
+    .mh-tool-modal__body {
+        padding: 20px;
+    }
+    .mh-breathing-container {
+        height: 180px;
+    }
+    .mh-breathing-circle {
+        width: 60px;
+        height: 60px;
+    }
 }
