@@ -72,6 +72,13 @@ class Habit {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getById(int $id, int $userId): ?array {
+        $stmt = $this->pdo->prepare("SELECT * FROM habits WHERE id = ? AND user_id = ? AND is_active = 1 LIMIT 1");
+        $stmt->execute([$id, $userId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
     // ----------------------------------------------------------------
     // READ calendar data: count of scheduled (active) habits per day
     // Returns: ['YYYY-MM-DD' => count, ...]
@@ -207,10 +214,10 @@ class Habit {
     }
 
     // ----------------------------------------------------------------
-    // SOFT-DELETE a habit
+    // HARD-DELETE a habit
     // ----------------------------------------------------------------
     public function delete(int $id, int $userId): bool {
-        $stmt = $this->pdo->prepare("UPDATE habits SET is_active = 0 WHERE id = ? AND user_id = ?");
+        $stmt = $this->pdo->prepare("DELETE FROM habits WHERE id = ? AND user_id = ?");
         $stmt->execute([$id, $userId]);
         return $stmt->rowCount() > 0;
     }
@@ -316,5 +323,66 @@ class Habit {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Calculate the current consecutive day streak for a habit.
+     */
+    public function getCurrentStreak(int $habitId, int $userId): int {
+        $stmt = $this->pdo->prepare("
+            SELECT completion_date 
+            FROM habit_completions 
+            WHERE habit_id = ? AND user_id = ? 
+            ORDER BY completion_date DESC
+        ");
+        $stmt->execute([$habitId, $userId]);
+        $dates = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($dates)) return 0;
+
+        $streak = 0;
+        $curr = new DateTime(date('Y-m-d'));
+        
+        // If the most recent completion wasn't today or yesterday, streak is 0
+        $lastDate = new DateTime($dates[0]);
+        $diff = $curr->diff($lastDate)->days;
+        
+        if ($diff > 1) return 0;
+
+        $streak = 1;
+        $prev = $lastDate;
+
+        for ($i = 1; $i < count($dates); $i++) {
+            $thisDate = new DateTime($dates[$i]);
+            $interval = $prev->diff($thisDate)->days;
+            
+            if ($interval === 1) {
+                $streak++;
+                $prev = $thisDate;
+            } elseif ($interval === 0) {
+                // Same day completion, ignore
+                continue;
+            } else {
+                break;
+            }
+        }
+        
+        return $streak;
+    }
+
+    /**
+     * Get habits scheduled for today that haven't been completed yet.
+     */
+    public function getIncompleteHabitsForToday(int $userId): array {
+        $today = date('Y-m-d');
+        $all = $this->getByUser($userId);
+        
+        $pending = [];
+        foreach ($all as $h) {
+            if ($this->isScheduledOnDate($h, $today) && !$h['completed_today']) {
+                $pending[] = $h;
+            }
+        }
+        return $pending;
     }
 }

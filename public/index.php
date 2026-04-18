@@ -61,6 +61,9 @@ $router->get('/admin/profile', 'AdminControl@profile');
 $router->get('/admin/manage-users', 'AdminControl@manageUsers');
 $router->get('/admin/suspended-users', 'AdminControl@suspendedUsers');
 $router->get('/admin/resource-hub', 'AdminControl@resourceHub');
+$router->get('/admin/add-resource', 'AdminControl@addResource');
+$router->post('/admin/resource/create', 'AdminControl@createResource');
+$router->get('/admin/category-resources', 'AdminControl@categoryResources');
 $router->get('/admin/moderate-forum', 'AdminControl@moderateForum');
 $router->get('/admin/counselors', 'AdminControl@counselors');
 $router->get('/admin/appointments', 'AdminControl@appointments');
@@ -146,6 +149,12 @@ $router->get('/counselor/viewResource', 'COControl@CviewResource');
 $router->post('/counselor/likeResource', 'COControl@ClikeResource');
 $router->post('/counselor/addComment', 'COControl@CaddComment');
 $router->post('/counselor/reportResource', 'COControl@CreportResource');
+$router->get('/counselor/resource/edit', 'COControl@CeditResource');
+$router->post('/counselor/resource/update', 'COControl@CupdateResource');
+$router->get('/counselor/resources/manage', 'COControl@CmanageResources');
+$router->get('/counselor/addResource', 'COControl@CaddResource');
+$router->post('/counselor/resource/create', 'COControl@CcreateResource');
+$router->post('/counselor/resource/delete', 'COControl@CdeleteResource');
 
 // Counselor routes
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -16,7 +16,8 @@
     <aside class="sidebar">
       <h2>Admin</h2>
       <ul>
-        <li><a href="<?= BASE_URL ?>/admin">Dashboard</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/resource-hub">Resource Hub</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/add-resource">Add Resource</a></li>
         <li><a href="<?= BASE_URL ?>/admin/monitoring" class="active">System Monitoring</a></li>
       </ul>
     </aside>

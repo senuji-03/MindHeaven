@@ -2,7 +2,7 @@
 $TITLE = 'MindHeaven — Appointments';
 $CURRENT_PAGE = 'appointments';
 $PAGE_CSS = ["/MindHeaven/public/css/undergrad/appointments.css"];
-$PAGE_JS = ["/MindHeaven/public/js/undergrad/appointments.js"];
+$PAGE_JS = ["/MindHeaven/public/js/undergrad/appointments.js?v=" . time()];
 require BASE_PATH . '/app/views/layouts/header.php';
 ?>
 
@@ -62,8 +62,8 @@ require BASE_PATH . '/app/views/layouts/header.php';
 						</label>
 						<select id="appointmentMode" name="mode" class="mh-input" required>
 							<option value="">Select mode</option>
-							<option value="audio_video">🎥 Audio / Video Call</option>
-							<option value="chat">💬 Chat</option>
+							<option value="audio_video">Audio / Video Call</option>
+							<option value="chat">Chat</option>
 						</select>
 						<span class="mh-field-error" id="modeError"></span>
 					</div>
@@ -175,7 +175,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 				<p class="mh-page-desc">Schedule and manage your confidential counseling sessions.</p>
 			</div>
 			<button class="mh-btn mh-btn--primary mh-btn--lg" onclick="openBookingModal()">
-				<i class="fas fa-plus"></i> Book Appointment
+				<i class="fas fa-plus"></i> Request Appointment
 			</button>
 		</div>
 	</div>
@@ -288,7 +288,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 			<p class="mh-empty-state__desc">Book your first counseling session to get started on your wellness journey.
 			</p>
 			<button class="mh-btn mh-btn--primary" onclick="openBookingModal()">
-				<i class="fas fa-plus"></i> Book Now
+				<i class="fas fa-plus"></i> Request Now
 			</button>
 		</div>
 

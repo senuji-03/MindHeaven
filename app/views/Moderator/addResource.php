@@ -206,7 +206,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
         </div>
 
         <div class="mod-form-card">
-            <form id="addPostForm" action="<?= BASE_URL ?>/Moderator/resource/create" method="POST" enctype="multipart/form-data">
+            <form id="addPostForm" action="<?= isset($createUrl) ? $createUrl : BASE_URL . '/Moderator/resource/create' ?>" method="POST" enctype="multipart/form-data">
                 <div class="form-rows">
                     <div class="form-group-row">
                         <label for="postName">Title</label>
@@ -246,8 +246,9 @@ require BASE_PATH . '/app/views/layouts/header.php';
                     <div class="form-group-row">
                         <label for="status">Publish Status</label>
                         <select name="status" id="status" class="form-input-lib">
-                            <option value="draft">Draft (Private)</option>
-                            <option value="published">Published (Public)</option>
+                            <?php $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'); ?>
+                            <option value="draft" <?= !$isAdmin ? 'selected' : '' ?>>Draft (Private)</option>
+                            <option value="published" <?= $isAdmin ? 'selected' : '' ?>>Published (Public)</option>
                             <option value="archived">Archived</option>
                         </select>
                     </div>

@@ -1,1 +1,8 @@
-public/uploads/
+# Ignore all uploads by default
+public/uploads/*
+
+# But allow tracking for Resource Hub assets
+!public/uploads/resources/
+!public/uploads/categories/
+!public/uploads/audio/
+!public/uploads/videos/

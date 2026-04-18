@@ -685,7 +685,221 @@ class AdminControl
     public function resourceHub()
     {
         $this->requireAdmin();
-        view('Admin/resource-hub');
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            
+            $allResources = $resourceHub->getAll('published');
+            $resourcesByCategory = array();
+            foreach ($allResources as $resource) {
+                $cat = $resource['category'];
+                if (!isset($resourcesByCategory[$cat])) {
+                    $resourcesByCategory[$cat] = array();
+                }
+                $resourcesByCategory[$cat][] = $resource;
+            }
+            $stats = $resourceHub->getStats();
+            $categories = $resourceHub->getCategories();
+            
+            view('Admin/resource-hub', array(
+                'resources'           => $allResources,
+                'resourcesByCategory' => $resourcesByCategory,
+                'categories'          => $categories,
+                'stats'               => $stats,
+                'lastUpdated'         => date('Y-m-d H:i:s'),
+                'categoryBaseUrl'     => BASE_URL . '/admin/category-resources'
+            ));
+        } catch (Exception $e) {
+            view('Admin/resource-hub', array(
+                'resources'           => array(),
+                'resourcesByCategory' => array(),
+                'categories'          => array(),
+                'stats'               => array('total_resources' => 0, 'published' => 0),
+                'error'               => 'Unable to load resources: ' . $e->getMessage()
+            ));
+        }
+    }
+
+    public function addResource()
+    {
+        $this->requireAdmin();
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            $categories = $resourceHub->getCategories();
+            view('Moderator/addResource', array(
+                'categories' => $categories,
+                'createUrl' => BASE_URL . '/admin/resource/create'
+            ));
+        } catch (Exception $e) {
+            view('Moderator/addResource', array('categories' => array(), 'error' => 'Failed to load categories: ' . $e->getMessage()));
+        }
+    }
+
+    public function createResource()
+    {
+        $this->requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/add-resource');
+            exit;
+        }
+
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+
+            $userId = $_SESSION['user_id'];
+            $title = trim($_POST['title'] ?? '');
+            $category = trim($_POST['category'] ?? '');
+            $contentType = trim($_POST['content_type'] ?? '');
+
+            if (empty($title) || empty($category) || empty($contentType)) {
+                header('Location: ' . BASE_URL . '/admin/add-resource?error=missing_fields');
+                exit;
+            }
+
+            $rawContent = '';
+            if ($contentType === 'article') {
+                $rawContent = $_POST['article_content'] ?? ($_POST['content'] ?? '');
+            } else {
+                $rawContent = $_POST['video_content'] ?? ($_POST['audio_content'] ?? ($_POST['content'] ?? ''));
+            }
+
+            $data = array(
+                'title' => $title,
+                'category' => $category,
+                'content_type' => $contentType,
+                'summary' => trim($_POST['summary'] ?? ''),
+                'tags' => trim($_POST['tags'] ?? ''),
+                'status' => $_POST['status'] ?? 'published', // Default to published for admins
+                'created_by' => $userId,
+                'content' => trim($rawContent),
+                'youtube_url' => trim($_POST['youtube_url'] ?? '') ?: null,
+            );
+
+            // Handle file upload based on content type
+            if ($contentType === 'article') {
+                if (isset($_FILES['article_image']) && !empty($_FILES['article_image']['name'])) {
+                    $uploadResult = $this->handleFileUpload($_FILES['article_image'], 'images');
+                    if ($uploadResult['success']) {
+                        $data['file_path'] = $uploadResult['path'];
+                        $data['file_name'] = $uploadResult['name'];
+                        $data['file_size'] = $uploadResult['size'];
+                        $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/admin/add-resource?error=' . urlencode($uploadResult['error']));
+                        exit;
+                    }
+                }
+            } else {
+                $fileField = $contentType === 'video' ? 'video_file' : 'audio_file';
+                $uploadDir = $contentType === 'video' ? 'videos' : 'audio';
+
+                if (isset($_FILES[$fileField]) && !empty($_FILES[$fileField]['name'])) {
+                    $uploadResult = $this->handleFileUpload($_FILES[$fileField], $uploadDir);
+                    if ($uploadResult['success']) {
+                        $data['file_path'] = $uploadResult['path'];
+                        $data['file_name'] = $uploadResult['name'];
+                        $data['file_size'] = $uploadResult['size'];
+                        $data['file_type'] = $uploadResult['type'];
+                    } else {
+                        header('Location: ' . BASE_URL . '/admin/add-resource?error=' . urlencode($uploadResult['error']));
+                        exit;
+                    }
+                }
+            }
+
+            // Reusing basic model creation
+            $resourceHub->create($data);
+            header('Location: ' . BASE_URL . '/admin/add-resource?created=1');
+            exit;
+
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/admin/add-resource?error=creation_failed');
+            exit;
+        }
+    }
+
+    public function categoryResources()
+    {
+        $this->requireAdmin();
+        try {
+            require_once BASE_PATH . '/app/models/ResourceHub.php';
+            $resourceHub = new ResourceHub();
+            $categoryName = $_GET['category'] ?? '';
+            
+            if (empty($categoryName)) {
+                header('Location: ' . BASE_URL . '/admin/resource-hub');
+                exit;
+            }
+
+            $resources = $resourceHub->getByCategory($categoryName, 'published');
+            $categories = $resourceHub->getCategories();
+            
+            view('Admin/resource-hub', array(
+                'resources' => $resources,
+                'category' => $categoryName,
+                'categories' => $categories,
+                'isCategoryView' => true,
+                'categoryBaseUrl' => BASE_URL . '/admin/category-resources'
+            ));
+        } catch (Exception $e) {
+            header('Location: ' . BASE_URL . '/admin/resource-hub?error=load_failed');
+            exit;
+        }
+    }
+
+    private function handleFileUpload($file, $uploadDir)
+    {
+        if ($file['error'] !== 0) {
+            $errorMap = array(
+                1 => 'File exceeds upload_max_filesize (2MB).',
+                2 => 'File exceeds MAX_FILE_SIZE in form.',
+                3 => 'File only partially uploaded.',
+                4 => 'No file was uploaded.',
+                6 => 'Missing temporary folder.',
+                7 => 'Failed to write to disk.',
+                8 => 'A PHP extension stopped the upload.'
+            );
+            $msg = isset($errorMap[$file['error']]) ? $errorMap[$file['error']] : 'Unknown upload error (code: ' . $file['error'] . ')';
+            return ['success' => false, 'error' => $msg];
+        }
+
+        $allowedExts = array(
+            'images'    => array('jpg', 'jpeg', 'png', 'gif', 'webp'),
+            'videos'    => array('mp4', 'avi', 'mov', 'wmv'),
+            'audio'     => array('mp3', 'wav', 'm4a', 'ogg'),
+            'resources' => array('pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'mp4', 'mp3'),
+        );
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = isset($allowedExts[$uploadDir]) ? $allowedExts[$uploadDir] : array();
+
+        if (!empty($allowed) && !in_array($ext, $allowed)) {
+            return ['success' => false, 'error' => 'File extension ".' . $ext . '" not allowed in ' . $uploadDir . '.'];
+        }
+
+        $storeDir  = 'resources';
+        $uploadPath = BASE_PATH . '/public/uploads/' . $storeDir . '/';
+
+        if (!is_dir($uploadPath)) {
+            @mkdir($uploadPath, 0755, true);
+        }
+
+        $safeBase   = preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($file['name']));
+        $fileName   = time() . '_' . $safeBase;
+        $targetPath = $uploadPath . $fileName;
+
+        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+            return [
+                'success' => true,
+                'path'    => 'uploads/resources/' . $fileName,
+                'name'    => $file['name'],
+                'size'    => $file['size'],
+                'type'    => $ext,
+            ];
+        }
+        return ['success' => false, 'error' => 'Failed to move uploaded file.'];
     }
 
     public function moderateForum()

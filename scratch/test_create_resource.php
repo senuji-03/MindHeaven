@@ -1,45 +1,36 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+define('BASE_PATH', __DIR__);
+require_once 'config/config.php';
+require_once 'core/Database.php';
+require_once 'app/models/ResourceHub.php';
 
-require_once 'c:/xampp/htdocs/MindHeaven/config/config.php';
-require_once 'c:/xampp/htdocs/MindHeaven/core/Database.php';
-require_once 'c:/xampp/htdocs/MindHeaven/app/models/ResourceHub.php';
-
-echo "Database Host: " . DB_HOST . "\n";
-echo "Database Name: " . DB_NAME . "\n";
+// Mock session
+session_start();
+$_SESSION['user_id'] = 1;
 
 try {
     $resourceHub = new ResourceHub();
-
-    $testData = array(
-        'title' => 'Test Simulation ' . time(),
-        'category' => 'Sleep & Wellness',
+    $data = array(
+        'title' => 'Test Resource ' . time(),
+        'category' => 'abc',
         'content_type' => 'article',
-        'content' => 'This is a test article body from simulation',
-        'file_path' => 'uploads/resources/test_sim.png',
-        'file_name' => 'test_sim.png',
-        'file_size' => 1024,
-        'file_type' => 'image/png',
         'summary' => 'Test summary',
-        'tags' => 'test, simulation',
-        'status' => 'published',
-        'created_by' => 2
+        'tags' => 'test, research',
+        'status' => 'draft',
+        'created_by' => 1,
+        'content' => 'Test content body',
+        'youtube_url' => null
     );
-
-    echo "Attempting to create resource via model...\n";
-    $result = $resourceHub->create($testData);
-
+    
+    echo "Attempting to create resource with data:\n";
+    print_r($data);
+    $result = $resourceHub->create($data);
+    
     if ($result) {
-        echo "SUCCESS: Record created.\n";
-        $pdo = Database::getConnection();
-        $stmt = $pdo->query("SELECT * FROM resource_hub ORDER BY id DESC LIMIT 1");
-        $last = $stmt->fetch(PDO::FETCH_ASSOC);
-        print_r($last);
+        echo "Success! Resource created.\n";
     } else {
-        echo "FAILURE: Model returned false. Check logs.\n";
+        echo "Failed! ResourceHub::create returned false.\n";
     }
 } catch (Exception $e) {
-    echo "EXCEPTION: " . $e->getMessage() . "\n";
+    echo "Exception: " . $e->getMessage() . "\n";
 }
-?>

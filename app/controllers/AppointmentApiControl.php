@@ -11,8 +11,8 @@ class AppointmentApiControl
     public function __construct()
     {
         $this->appointmentModel = new Appointment();
-        $this->timeslotModel    = new Timeslot();
-        $this->eventModel       = new Event();
+        $this->timeslotModel = new Timeslot();
+        $this->eventModel = new Event();
         $this->notificationModel = new Notification();
     }
 
@@ -68,7 +68,7 @@ class AppointmentApiControl
                     'rejectionReason' => isset($row['rejection_reason']) ? $row['rejection_reason'] : '',
                     'urgency' => 'medium',
                     'bookedDate' => isset($row['created_at']) ? $row['created_at'] : '',
-                    'studentUserId' => isset($row['student_user_id']) ? (int)$row['student_user_id'] : null,
+                    'studentUserId' => isset($row['student_user_id']) ? (int) $row['student_user_id'] : null,
                     'originalDate' => isset($row['original_date']) ? $row['original_date'] : null,
                     'originalTime' => isset($row['original_time']) ? $row['original_time'] : null,
                 );
@@ -203,7 +203,7 @@ class AppointmentApiControl
                 // Notify Counselor
                 $this->notificationModel->create(
                     (int) $data['counselor_user_id'],
-                    "New appointment booked: " . trim((string)$data['title']) . " for " . $data['date'],
+                    "New appointment booked: " . trim((string) $data['title']) . " for " . $data['date'],
                     'appointment_booked',
                     $id,
                     $userId
@@ -335,13 +335,13 @@ class AppointmentApiControl
                 if ($oldApp && ($oldApp['date'] !== $data['date'] || $oldApp['time'] !== $dbTime)) {
                     // Free old slot
                     $this->timeslotModel->markFree(
-                        (int)$oldApp['counselor_user_id'],
+                        (int) $oldApp['counselor_user_id'],
                         $oldApp['date'],
                         $oldApp['time']
                     );
                     // Freeze new slot
                     $this->timeslotModel->markFrozen(
-                        (int)$oldApp['counselor_user_id'],
+                        (int) $oldApp['counselor_user_id'],
                         $data['date'],
                         $dbTime
                     );
@@ -385,7 +385,7 @@ class AppointmentApiControl
             }
 
             // Authorization
-            if ($role === 'counselor' && (int)$appointment['counselor_user_id'] !== $userId) {
+            if ($role === 'counselor' && (int) $appointment['counselor_user_id'] !== $userId) {
                 return $this->json(array('error' => 'Unauthorized'), 403);
             }
 
@@ -398,10 +398,10 @@ class AppointmentApiControl
             // 1. Check for overlap/max-6 for the NEW slot
             // If the slot is the same, we skip these checks
             if ($appointment['date'] !== $data['date'] || $appointment['time'] !== $dbTime) {
-                
+
                 // Fetch timeslots for the new date to check availability
                 $slots = $this->timeslotModel->getByDate($appointment['counselor_user_id'], $data['date']);
-                
+
                 // Check if the specific slot already exists
                 $targetSlot = null;
                 foreach ($slots as $s) {
@@ -421,17 +421,17 @@ class AppointmentApiControl
                     if (count($slots) >= 6) {
                         return $this->json(array('error' => 'Maximum 6 timeslots per day reached for the selected date.'), 400);
                     }
-                    
+
                     // Slot doesn't exist. Check overlap
                     // We need a way to check overlap without creating. 
                     // Let's use a simpler check: duration is 1 hour (fixed) or we check against existing ones.
                     // Usually, slots are 1 hour.
                     $newStart = strtotime($data['date'] . ' ' . $dbTime);
                     $newEnd = $newStart + 3600; // Assume 1 hour
-                    
+
                     foreach ($slots as $s) {
                         $sStart = strtotime($data['date'] . ' ' . $s['start_time']);
-                        $sEnd   = strtotime($data['date'] . ' ' . $s['end_time']);
+                        $sEnd = strtotime($data['date'] . ' ' . $s['end_time']);
                         if ($newStart < $sEnd && $newEnd > $sStart) {
                             return $this->json(array('error' => 'The selected time overlaps with an existing timeslot.'), 409);
                         }
@@ -441,7 +441,7 @@ class AppointmentApiControl
                 // 2. Perform Timeslot Updates
                 // Free the OLD slot
                 $this->timeslotModel->markFree(
-                    (int)$appointment['counselor_user_id'],
+                    (int) $appointment['counselor_user_id'],
                     $appointment['date'],
                     $appointment['time']
                 );
@@ -452,16 +452,16 @@ class AppointmentApiControl
                     // or we can explicitly calculate end time)
                     $endTime = date('H:i:s', $newEnd);
                     $this->timeslotModel->createCustom(
-                        (int)$appointment['counselor_user_id'],
+                        (int) $appointment['counselor_user_id'],
                         $data['date'],
                         $dbTime,
                         $endTime
                     );
                 }
-                
+
                 // Mark the new slot as frozen (awaiting student acceptance)
                 $this->timeslotModel->markFrozen(
-                    (int)$appointment['counselor_user_id'],
+                    (int) $appointment['counselor_user_id'],
                     $data['date'],
                     $dbTime
                 );
@@ -469,7 +469,7 @@ class AppointmentApiControl
 
             // 3. Calendar Synchronization & Conflict Check
             $force = isset($data['force']) && $data['force'] === true;
-            
+
             // Check for potential conflicts in the counselor's calendar
             if ($this->eventModel->checkTimeConflict($appointment['counselor_user_id'], $data['date'], $dbTime)) {
                 if (!$force) {
@@ -528,7 +528,7 @@ class AppointmentApiControl
             $appointment = $this->appointmentModel->getById((int) $data['id']);
             if ($appointment) {
                 $this->timeslotModel->markFree(
-                    (int)$appointment['counselor_user_id'],
+                    (int) $appointment['counselor_user_id'],
                     $appointment['date'],
                     $appointment['time']
                 );
@@ -591,7 +591,7 @@ class AppointmentApiControl
 
         try {
             $rejectionReason = isset($data['rejectionReason']) ? $data['rejectionReason'] : null;
-            
+
             // Capture status before update for notification logic
             $appointmentBefore = $this->appointmentModel->getById((int) $data['id']);
             $oldStatus = $appointmentBefore ? strtolower($appointmentBefore['status']) : null;
@@ -610,37 +610,37 @@ class AppointmentApiControl
                             // If it was rescheduled, notify counselor that student accepted
                             if ($oldStatus === 'rescheduled') {
                                 $this->notificationModel->create(
-                                    (int)$appointment['counselor_user_id'],
+                                    (int) $appointment['counselor_user_id'],
                                     "Student accepted your rescheduled time for: " . $appointment['title'],
                                     'reschedule_accepted',
-                                    (int)$data['id'],
+                                    (int) $data['id'],
                                     $appointment['student_user_id']
                                 );
                             } else {
                                 // Counselor accepted student's booking
                                 $this->notificationModel->create(
-                                    (int)$appointment['student_user_id'],
+                                    (int) $appointment['student_user_id'],
                                     "Your appointment '" . $appointment['title'] . "' has been accepted.",
                                     'appointment_accepted',
-                                    (int)$data['id'],
+                                    (int) $data['id'],
                                     $appointment['counselor_user_id']
                                 );
                             }
                         } else {
                             // Rejected
                             $this->notificationModel->create(
-                                (int)$appointment['student_user_id'],
+                                (int) $appointment['student_user_id'],
                                 "Your appointment '" . $appointment['title'] . "' was rejected. Reason: " . ($rejectionReason ?: 'No reason provided'),
                                 'appointment_rejected',
-                                (int)$data['id'],
-                                (int)$_SESSION['user_id']
+                                (int) $data['id'],
+                                (int) $_SESSION['user_id']
                             );
                         }
                     }
 
                     if ($status === 'accept' || $status === 'accepted') {
                         $this->timeslotModel->markBooked(
-                            (int)$appointment['counselor_user_id'],
+                            (int) $appointment['counselor_user_id'],
                             $appointment['date'],
                             $appointment['time']
                         );
@@ -674,7 +674,7 @@ class AppointmentApiControl
                             if (!curl_errno($ch)) {
                                 $result = json_decode($response, true);
                                 if (!empty($result['url'])) {
-                                    $this->appointmentModel->updateMeetingLink((int)$appointment['id'], $result['url']);
+                                    $this->appointmentModel->updateMeetingLink((int) $appointment['id'], $result['url']);
                                     error_log("Daily.co room created successfully for appointment ID: " . $appointment['id']);
                                 } else {
                                     error_log("Daily.co error: " . print_r($result, true));
@@ -687,7 +687,7 @@ class AppointmentApiControl
                     } elseif ($status === 'rejected' || $status === 'cancelled' || $status === 'completed' || $status === 'no_show') {
                         // All terminal statuses free the slot
                         $this->timeslotModel->markFree(
-                            (int)$appointment['counselor_user_id'],
+                            (int) $appointment['counselor_user_id'],
                             $appointment['date'],
                             $appointment['time']
                         );
@@ -729,29 +729,29 @@ class AppointmentApiControl
             }
 
             // Authorization: counselor must own this appointment
-            if ((int)$appointment['counselor_user_id'] !== $userId) {
+            if ((int) $appointment['counselor_user_id'] !== $userId) {
                 return $this->json(array('error' => 'Unauthorized'), 403);
             }
 
             // Update meeting link (shared URL for chat room)
-            $this->appointmentModel->updateMeetingLink((int)$data['id'], $data['meeting_link']);
+            $this->appointmentModel->updateMeetingLink((int) $data['id'], $data['meeting_link']);
 
             // Transition status to in_progress if it was accepted/confirmed
             $status = strtolower($appointment['status']);
             if (in_array($status, array('accept', 'accepted', 'scheduled', 'confirmed'))) {
-                $this->appointmentModel->updateStatus((int)$data['id'], 'in_progress');
+                $this->appointmentModel->updateStatus((int) $data['id'], 'in_progress');
             }
 
             // Get Chat Session ID to link the notification directly to the room
             $chatModel = new Chat();
-            $chatSessionId = $chatModel->findOrCreateSession((int)$appointment['counselor_user_id'], (int)$appointment['student_user_id']);
+            $chatSessionId = $chatModel->findOrCreateSession((int) $appointment['counselor_user_id'], (int) $appointment['student_user_id']);
 
             // Notify Undergrad
             $this->notificationModel->create(
-                (int)$appointment['student_user_id'],
+                (int) $appointment['student_user_id'],
                 "Your counseling session for '" . $appointment['title'] . "' has started! Click here to join.",
                 'session_started',
-                (int)$chatSessionId,
+                (int) $chatSessionId,
                 $userId
             );
 
@@ -791,7 +791,7 @@ class AppointmentApiControl
         }
 
         try {
-            $rows  = $this->appointmentModel->getSessionHistory($counselorUserId, $statusFilter);
+            $rows = $this->appointmentModel->getSessionHistory($counselorUserId, $statusFilter);
             $stats = $this->appointmentModel->getSessionHistoryStats($counselorUserId);
 
             // Map DB rows to the structure expected by the frontend
@@ -802,7 +802,7 @@ class AppointmentApiControl
                     : '';
 
                 // --- Normalise display status ---
-                $rawStatus     = $row['status'];
+                $rawStatus = $row['status'];
                 $displayStatus = $rawStatus;
                 if ($rawStatus === 'no_show') {
                     $displayStatus = 'no-show';
@@ -826,30 +826,30 @@ class AppointmentApiControl
                 }
 
                 return array(
-                    'id'               => $row['id'],
-                    'userId'           => 'U' . str_pad($row['student_user_id'], 5, '0', STR_PAD_LEFT),
-                    'patientName'      => $row['student_name'] ?: 'Unknown',
-                    'date'             => $row['date'],
-                    'time'             => $timeFormatted,
-                    'duration'         => '60 mins',
-                    'status'           => $displayStatus,
-                    'sessionType'      => ucfirst(str_replace('_', ' ', $row['type'] ?: 'individual')),
-                    'notes'            => $notes,
-                    'counselorNotes'   => $row['counselor_notes'] ?: '',
-                    'reason'           => $row['title'] ?: '',
-                    'rejectionReason'  => $rejectionReason,
+                    'id' => $row['id'],
+                    'userId' => 'U' . str_pad($row['student_user_id'], 5, '0', STR_PAD_LEFT),
+                    'patientName' => $row['student_name'] ?: 'Unknown',
+                    'date' => $row['date'],
+                    'time' => $timeFormatted,
+                    'duration' => '60 mins',
+                    'status' => $displayStatus,
+                    'sessionType' => ucfirst(str_replace('_', ' ', $row['type'] ?: 'individual')),
+                    'notes' => $notes,
+                    'counselorNotes' => $row['counselor_notes'] ?: '',
+                    'reason' => $row['title'] ?: '',
+                    'rejectionReason' => $rejectionReason,
                     'rescheduleReason' => $rescheduleReason,
-                    'originalDate'     => isset($row['original_date']) ? $row['original_date'] : null,
-                    'originalTime'     => isset($row['original_time']) ? $row['original_time'] : null,
-                    'rawTime'          => $row['time'],
-                    'nextAppointment'  => 'TBD',
+                    'originalDate' => isset($row['original_date']) ? $row['original_date'] : null,
+                    'originalTime' => isset($row['original_time']) ? $row['original_time'] : null,
+                    'rawTime' => $row['time'],
+                    'nextAppointment' => 'TBD',
                 );
             }, $rows);
 
             $this->json(array(
-                'success'  => true,
+                'success' => true,
                 'sessions' => $sessions,
-                'stats'    => $stats,
+                'stats' => $stats,
             ));
         } catch (Exception $e) {
             error_log('AppointmentApiControl getSessionHistory error: ' . $e->getMessage());
@@ -874,7 +874,7 @@ class AppointmentApiControl
         try {
             // Verify appointment belongs to this counselor
             $appointment = $this->appointmentModel->getById((int) $data['id']);
-            if (!$appointment || (int)$appointment['counselor_user_id'] !== $userId) {
+            if (!$appointment || (int) $appointment['counselor_user_id'] !== $userId) {
                 return $this->json(array('error' => 'Appointment not found or access denied'), 403);
             }
 
@@ -903,7 +903,7 @@ class AppointmentApiControl
             return $this->json(array('error' => 'Unauthorized'), 401);
         }
 
-        $studentId = isset($_GET['student_id']) ? (int)$_GET['student_id'] : 0;
+        $studentId = isset($_GET['student_id']) ? (int) $_GET['student_id'] : 0;
         if (!$studentId) {
             return $this->json(array('error' => 'Student ID is required'), 400);
         }
