@@ -3,15 +3,16 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - University Representative | MindHaven</title>
-    
+
     <!-- Fonts and Icons -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <style>
         :root {
             --primary: #3D8B6E;
@@ -131,7 +132,9 @@
             font-weight: 600;
         }
 
-        .logout-btn:hover { background: rgba(214, 79, 79, 0.1); }
+        .logout-btn:hover {
+            background: rgba(214, 79, 79, 0.1);
+        }
 
         /* Main Content area */
         .main-content {
@@ -198,7 +201,10 @@
             gap: 16px;
         }
 
-        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
 
         .stat-icon {
             width: 48px;
@@ -210,14 +216,40 @@
             font-size: 1.25rem;
         }
 
-        .stat-details h3 { font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .stat-number { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); }
+        .stat-details h3 {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
 
         /* Color variants for stats */
-        .icon-funds { background: #E8F5E9; color: #2E7D32; }
-        .icon-active { background: #E3F2FD; color: #1565C0; }
-        .icon-pending { background: #FFF3E0; color: #EF6C00; }
-        .icon-donors { background: #F3E5F5; color: #7B1FA2; }
+        .icon-funds {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .icon-active {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .icon-pending {
+            background: #FFF3E0;
+            color: #EF6C00;
+        }
+
+        .icon-donors {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
 
         /* Section Layout */
         .dashboard-grid {
@@ -242,7 +274,11 @@
             align-items: center;
         }
 
-        .section-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+        .section-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
 
         .activity-item {
             padding: 20px 32px;
@@ -253,8 +289,13 @@
             transition: background 0.2s ease;
         }
 
-        .activity-item:last-child { border-bottom: none; }
-        .activity-item:hover { background: var(--bg-soft); }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: var(--bg-soft);
+        }
 
         .activity-icon {
             width: 44px;
@@ -268,8 +309,16 @@
             font-size: 1.1rem;
         }
 
-        .activity-details h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
-        .activity-details p { font-size: 0.85rem; color: var(--text-secondary); }
+        .activity-details h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .activity-details p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
 
         .activity-badge {
             margin-left: auto;
@@ -280,8 +329,15 @@
             border-radius: var(--radius-full);
         }
 
-        .badge-upcoming { background: #E3F2FD; color: #1565C0; }
-        .badge-completed { background: #F5F5F5; color: #616161; }
+        .badge-upcoming {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .badge-completed {
+            background: #F5F5F5;
+            color: #616161;
+        }
 
         .btn-view-all {
             font-size: 0.8rem;
@@ -293,9 +349,16 @@
             background: var(--bg-mid);
             transition: all 0.2s;
         }
-        .btn-view-all:hover { background: var(--primary); color: white; }
 
-        .alert-container { margin-bottom: 32px; }
+        .btn-view-all:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .alert-container {
+            margin-bottom: 32px;
+        }
+
         .alert {
             padding: 16px 24px;
             border-radius: var(--radius-md);
@@ -306,14 +369,27 @@
             font-size: 0.95rem;
             margin-bottom: 16px;
         }
-        .alert-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
-        .alert-error { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
+
+        .alert-success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #C8E6C9;
+        }
+
+        .alert-error {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #FFCDD2;
+        }
 
         @media (max-width: 1200px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <aside class="sidebar">
@@ -366,9 +442,9 @@
 
         <!-- Top Bar -->
         <div class="topbar">
-            <?php 
-                $greetingName = isset($user['full_name']) ? trim($user['full_name']) : '';
-                $greeting = $greetingName ? "Hello, " . htmlspecialchars($greetingName) : "Hello";
+            <?php
+            $greetingName = isset($user['full_name']) ? trim($user['full_name']) : '';
+            $greeting = $greetingName ? "Hello, " . htmlspecialchars($greetingName) : "Hello";
             ?>
             <h1><?= $greeting ?> 👋</h1>
             <div class="topbar-right">
@@ -435,20 +511,22 @@
                     <a href="<?= BASE_URL ?>/university-rep/events" class="btn-view-all">View All</a>
                 </div>
                 <div class="activity-list">
-                    <?php if(!empty($upcoming_events_list)): ?>
-                        <?php foreach($upcoming_events_list as $event): ?>
+                    <?php if (!empty($upcoming_events_list)): ?>
+                        <?php foreach ($upcoming_events_list as $event): ?>
                             <div class="activity-item">
                                 <div class="activity-icon"><i class="fas fa-calendar-day"></i></div>
                                 <div class="activity-details">
                                     <h4><?= htmlspecialchars($event['event_title']) ?></h4>
-                                    <p><?= date('M j, Y', strtotime($event['event_date'])) ?> at <?= date('g:i A', strtotime($event['start_time'])) ?></p>
+                                    <p><?= date('M j, Y', strtotime($event['event_date'])) ?> at
+                                        <?= date('g:i A', strtotime($event['start_time'])) ?></p>
                                 </div>
                                 <span class="activity-badge badge-upcoming">Upcoming</span>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <div style="padding: 60px 40px; text-align: center; color: var(--text-secondary);">
-                            <i class="far fa-calendar" style="font-size: 2.5rem; opacity: 0.2; margin-bottom: 16px; display: block;"></i>
+                            <i class="far fa-calendar"
+                                style="font-size: 2.5rem; opacity: 0.2; margin-bottom: 16px; display: block;"></i>
                             <p>No upcoming events scheduled.</p>
                         </div>
                     <?php endif; ?>
@@ -462,10 +540,11 @@
                     <a href="<?= BASE_URL ?>/university-rep/events" class="btn-view-all">View All</a>
                 </div>
                 <div class="activity-list">
-                    <?php if(!empty($completed_events_list)): ?>
-                        <?php foreach($completed_events_list as $event): ?>
+                    <?php if (!empty($completed_events_list)): ?>
+                        <?php foreach ($completed_events_list as $event): ?>
                             <div class="activity-item">
-                                <div class="activity-icon" style="background: var(--bg-soft); color: var(--text-secondary);"><i class="fas fa-check-double"></i></div>
+                                <div class="activity-icon" style="background: var(--bg-soft); color: var(--text-secondary);"><i
+                                        class="fas fa-check-double"></i></div>
                                 <div class="activity-details">
                                     <h4><?= htmlspecialchars($event['event_title']) ?></h4>
                                     <p><?= date('M j, Y', strtotime($event['event_date'])) ?></p>
@@ -475,7 +554,8 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <div style="padding: 60px 40px; text-align: center; color: var(--text-secondary);">
-                            <i class="fas fa-check-circle" style="font-size: 2.5rem; opacity: 0.2; margin-bottom: 16px; display: block;"></i>
+                            <i class="fas fa-check-circle"
+                                style="font-size: 2.5rem; opacity: 0.2; margin-bottom: 16px; display: block;"></i>
                             <p>No history entries found.</p>
                         </div>
                     <?php endif; ?>
@@ -486,4 +566,5 @@
 
     <script src="<?= BASE_URL ?>/js/university-rep/script.js"></script>
 </body>
+
 </html>
