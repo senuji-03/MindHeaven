@@ -44,7 +44,11 @@ class COControl
                 $feedbackModel = new Feedback();
                 $counselorFeedback = $feedbackModel->getCounselorFeedback((int) $counselor['id'], 10);
                 
-                $feedbackStats = $feedbackModel->getStats(array('counselor_id' => $counselor['id']));
+                $feedbackStats = $feedbackModel->getStats(array(
+                    'counselor_id' => $counselor['id'],
+                    'viewer_id' => $_SESSION['user_id'],
+                    'viewer_role' => $_SESSION['role']
+                ));
                 if ($feedbackStats && isset($feedbackStats['avg_rating'])) {
                     $stats['avgRating'] = round((float)$feedbackStats['avg_rating'], 1);
                 }
@@ -194,7 +198,11 @@ class COControl
 
             // Fetch feedback stats (for average rating)
             $feedbackModel = new Feedback();
-            $feedbackStats = $feedbackModel->getStats(array('counselor_id' => $counselor['id']));
+            $feedbackStats = $feedbackModel->getStats(array(
+                'counselor_id' => $counselor['id'],
+                'viewer_id' => $_SESSION['user_id'],
+                'viewer_role' => $_SESSION['role']
+            ));
             if ($feedbackStats && isset($feedbackStats['avg_rating'])) {
                 $avgRating = round((float)$feedbackStats['avg_rating'], 1);
             }

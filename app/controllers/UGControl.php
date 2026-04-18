@@ -390,17 +390,27 @@ class UGControl
             require_once BASE_PATH . '/app/models/Feedback.php';
             $feedbackModel = new Feedback();
 
-            // Get all feedback for display
-            $allFeedback = $feedbackModel->read();
+            // Get all feedback for display (filtered by privacy rules in model)
+            $allFeedback = $feedbackModel->read(array(
+                'viewer_id' => $_SESSION['user_id'],
+                'viewer_role' => $_SESSION['role']
+            ));
 
             // Get user's own feedback
-            $userFeedback = $feedbackModel->read(array('user_id' => $_SESSION['user_id']));
+            $userFeedback = $feedbackModel->read(array(
+                'user_id' => $_SESSION['user_id'],
+                'viewer_id' => $_SESSION['user_id'],
+                'viewer_role' => $_SESSION['role']
+            ));
 
             // Get counselors for selection
             $counselors = $feedbackModel->getCounselors();
 
-            // Get feedback statistics
-            $stats = $feedbackModel->getStats();
+            // Get feedback statistics (filtered by privacy rules)
+            $stats = $feedbackModel->getStats(array(
+                'viewer_id' => $_SESSION['user_id'],
+                'viewer_role' => $_SESSION['role']
+            ));
 
             $data = array(
                 'allFeedback' => $allFeedback,

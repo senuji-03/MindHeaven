@@ -31,7 +31,13 @@ class Feedback
     }
 
     /**
-     * Read all feedback entries with optional filters
+     * Read all feedback entries with privacy filtering.
+     * @param array $filters 
+     *      - feedback_type
+     *      - counselor_id
+     *      - user_id
+     *      - viewer_id (The ID of the user requesting the data)
+     *      - viewer_role (The role of the user requesting the data: 'undergraduate', 'counselor', 'admin', etc.)
      */
     public function read($filters = array())
     {
@@ -45,6 +51,29 @@ class Feedback
                 WHERE 1=1";
 
         $params = array();
+
+        // --- Privacy Logic ---
+        $viewerId = $filters['viewer_id'] ?? null;
+        $viewerRole = $filters['viewer_role'] ?? 'public';
+
+        if ($viewerRole !== 'admin' && $viewerRole !== 'moderator') {
+            // Non-admins have restricted access to counselor feedback
+            $sql .= " AND (f.feedback_type != 'counselor' "; // Platform/General is public
+            
+            if ($viewerId !== null) {
+                if ($viewerRole === 'undergraduate') {
+                    // Students can also see their own counselor feedback
+                    $sql .= " OR f.user_id = :viewer_id";
+                    $params[':viewer_id'] = $viewerId;
+                } elseif ($viewerRole === 'counselor') {
+                    // Counselors can see feedback directed at them
+                    // We need to match f.counselor_id with the counselor's ID in the counselors table
+                    $sql .= " OR f.counselor_id = (SELECT id FROM counselors WHERE user_id = :viewer_id LIMIT 1)";
+                    $params[':viewer_id'] = $viewerId;
+                }
+            }
+            $sql .= ")";
+        }
 
         if (isset($filters['feedback_type'])) {
             $sql .= " AND f.feedback_type = :feedback_type";
@@ -146,7 +175,7 @@ class Feedback
     }
 
     /**
-     * Get feedback statistics
+     * Get feedback statistics with privacy filtering
      */
     public function getStats($filters = array())
     {
@@ -157,13 +186,33 @@ class Feedback
                 COUNT(CASE WHEN feedback_type = 'counselor' THEN 1 END) as counselor_feedback_count,
                 COUNT(CASE WHEN feedback_type = 'platform' THEN 1 END) as platform_feedback_count,
                 COUNT(CASE WHEN feedback_type = 'feature_request' THEN 1 END) as feature_request_count
-                FROM feedback 
+                FROM feedback f
                 WHERE 1=1";
 
         $params = array();
 
+        // --- Privacy Logic ---
+        $viewerId = $filters['viewer_id'] ?? null;
+        $viewerRole = $filters['viewer_role'] ?? 'public';
+
+        if ($viewerRole !== 'admin' && $viewerRole !== 'moderator') {
+            // Non-admins have restricted access to counselor feedback stats
+            $sql .= " AND (f.feedback_type != 'counselor' ";
+            
+            if ($viewerId !== null) {
+                if ($viewerRole === 'undergraduate') {
+                    $sql .= " OR f.user_id = :viewer_id";
+                    $params[':viewer_id'] = $viewerId;
+                } elseif ($viewerRole === 'counselor') {
+                    $sql .= " OR f.counselor_id = (SELECT id FROM counselors WHERE user_id = :viewer_id LIMIT 1)";
+                    $params[':viewer_id'] = $viewerId;
+                }
+            }
+            $sql .= ")";
+        }
+
         if (isset($filters['counselor_id'])) {
-            $sql .= " AND counselor_id = :counselor_id";
+            $sql .= " AND f.counselor_id = :counselor_id";
             $params[':counselor_id'] = $filters['counselor_id'];
         }
 
@@ -202,6 +251,33 @@ class Feedback
         $stmt = $this->db->prepare($sql);
         $stmt->execute(array(':id' => $feedback_id, ':user_id' => $user_id));
         return $stmt->fetchColumn() > 0;
+    }
+
+    /**
+     * Get public platform/general feedbacks for display on the landing page.
+     * Only returns entries with non-empty content.
+     * @param int $limit
+     * @return array
+     */
+    public function getPublicPlatformFeedbacks($limit = 6)
+    {
+        $sql = "SELECT f.id, f.content, f.rating, f.is_anonymous, f.feedback_type, f.created_at,
+                CASE WHEN f.is_anonymous = 1 THEN NULL
+                     ELSE COALESCE(us.full_name, u.full_name, u.username)
+                END as user_name,
+                us.year_of_study, us.major
+                FROM feedback f
+                LEFT JOIN users u ON f.user_id = u.id
+                LEFT JOIN undergraduate_students us ON f.user_id = us.user_id
+                WHERE f.feedback_type IN ('platform', 'general')
+                  AND f.content IS NOT NULL
+                  AND LENGTH(TRIM(f.content)) > 20
+                ORDER BY f.rating DESC, f.created_at DESC
+                LIMIT " . (int) $limit;
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

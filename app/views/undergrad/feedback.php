@@ -630,7 +630,11 @@ require BASE_PATH . '/app/views/layouts/header.php';
               <div class="feedback-header">
                 <h3 class="feedback-title"><?php echo htmlspecialchars($feedback['title']); ?></h3>
                 <span class="feedback-type-badge <?php echo $feedback['feedback_type']; ?>">
-                  <?php echo $feedback['feedback_type'] === 'general' ? 'Platform' : 'Counselor'; ?>
+                  <?php 
+                    if ($feedback['feedback_type'] === 'general') echo 'Platform';
+                    elseif ($feedback['feedback_type'] === 'counselor') echo 'Counselor (Private)';
+                    else echo ucfirst($feedback['feedback_type']);
+                  ?>
                 </span>
               </div>
 

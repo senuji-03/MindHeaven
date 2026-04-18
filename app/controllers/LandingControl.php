@@ -25,6 +25,9 @@ class LandingControl
         $feedbackModel = new Feedback();
         $avgRatingsMap = $feedbackModel->getAvgRatingsBulk($counselorIds);
 
+        // Fetch platform/general feedbacks for the "Student Voices" section
+        $platformFeedbacks = $feedbackModel->getPublicPlatformFeedbacks(6);
+
         foreach ($counselors as &$counselor) {
             $counselor['qualifications'] = isset($qualificationsMap[$counselor['id']]) ? $qualificationsMap[$counselor['id']] : array();
             $counselor['completed_sessions'] = $sessionCountsMap[$counselor['user_id']] ?? 0;
@@ -59,8 +62,9 @@ class LandingControl
         }
 
         view('landing/index', [
-            'counselors' => $counselors,
-            'eventsByUniversity' => $eventsByUniversity
+            'counselors'         => $counselors,
+            'eventsByUniversity' => $eventsByUniversity,
+            'platformFeedbacks'  => $platformFeedbacks,
         ]);
     }
 }
