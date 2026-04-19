@@ -15,21 +15,28 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Header -->
-        <div class="page-header">
-            <div class="header-content">
-                <h1>💰 Donation Log</h1>
-                <p>Track and manage all donations received by the system</p>
+        <!-- Top Bar -->
+        <?php 
+        $topbarTitle = 'Donation Log';
+        include '_topbar.php'; 
+        ?>
+
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="header-content">
+                    <h2>💰 Donation Log</h2>
+                    <p>Track and manage all donations received by the system</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="exportDonations()">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshDonations()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
             </div>
-            <div class="header-actions">
-                <button class="btn btn-primary" onclick="exportDonations()">
-                    <i class="fas fa-download"></i> Export CSV
-                </button>
-                <button class="btn btn-secondary" onclick="refreshDonations()">
-                    <i class="fas fa-sync"></i> Refresh
-                </button>
-            </div>
-        </div>
 
         <!-- Stats Cards -->
         <div class="stats-section">

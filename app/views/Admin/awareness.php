@@ -1,61 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Awareness Programs</title>
-  <link rel="stylesheet" href="<?= BASE_URL ?>/css/Admin/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awareness Programs - Admin | Mind Haven</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
+    <style>
+        .appointment {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        section h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+    </style>
 </head>
 <body>
-  <nav class="sidebar-nav">
-   <aside class="sidebar">
-      <h2>Admin</h2>
-      <ul>
-        <li><a href="<?= BASE_URL ?>/admin">Dashboard</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/manage-users" class="active">Manage Users</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/moderate-forum">Moderate Forum</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/counselors">Manage Counselors</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/appointments">Appointments</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/approve-counselors">Approve Counselors</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/resource-hub">Resource Hub</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/add-resource">Add Resource</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/reports">Reports & Moods</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/donations">Donations</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/awareness">Awareness Programs</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/monitoring">System Monitoring</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/university-events">University Events</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/settings">Settings</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/profile">Profile</a></li>
+    <!-- Sidebar -->
+    <?php 
+    $activePage = 'awareness';
+    include '_sidebar.php'; 
+    ?>
 
-      </ul>
-    </aside>
-            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
-        </nav>
-  <header class="topbar">
-    <h1>Awareness Programs</h1>
-    <div class="icons">
-      <a href="<?= BASE_URL ?>/logout" class="btn-top">Logout</a>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <?php 
+        $topbarTitle = 'Awareness Programs';
+        include '_topbar.php'; 
+        ?>
+
+        <div class="content-wrapper">
+            <section>
+                <h2>Upcoming Programs</h2>
+                <div class="appointment">
+                    <i class="fas fa-calendar-alt" style="margin-right: 10px; color: var(--primary);"></i>
+                    Mental Health Awareness Week - 2025-09-10
+                </div>
+            </section>
+        </div>
     </div>
-  </header>
-  <div class="container">
-    <aside class="sidebar">
-      <h2>Admin</h2>
-      <ul>
-        <li><a href="<?= BASE_URL ?>/admin">Dashboard</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/awareness" class="active">Awareness Programs</a></li>
-      </ul>
-    </aside>
-    <main class="main-content">
-      <section>
-        <h2>Upcoming Programs</h2>
-        <div class="appointment">Mental Health Awareness Week - 2025-09-10</div>
-      </section>
-    </main>
-  </div>
+
+    <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
 </body>
 </html>
-
-
-

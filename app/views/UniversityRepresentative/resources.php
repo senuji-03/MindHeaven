@@ -242,40 +242,18 @@
 
 <body>
     <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>University Representative</p>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
-                <i class="fas fa-th-large"></i> Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item">
-                <i class="fas fa-calendar-alt"></i> Manage Events
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/announcements" class="nav-item">
-                <i class="fas fa-bullhorn"></i> Announcements
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/resources" class="nav-item active">
-                <i class="fas fa-book-open"></i> Resources
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
-                <i class="fas fa-university"></i> University Profile
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
-                <i class="fas fa-user-circle"></i> My Profile
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
+    <?php 
+    $activePage = ''; // Not in main 4 sidebar items as per request
+    include '_sidebar.php'; 
+    ?>
 
     <!-- Main Content -->
     <div class="main-content">
+        <!-- Topbar -->
+        <?php 
+        $topbarTitle = 'Manage Resources';
+        include '_topbar.php'; 
+        ?>
         <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
         <div class="alert-container">
             <?php if (isset($_SESSION['success'])): ?>
