@@ -123,7 +123,7 @@ function renderAppointments(appointmentsToRender = appointments) {
                                 ` : ''}
                                 ${appointment.status === 'rejected' || appointment.status === 'reject' ? `
                                     <button class="btn btn-reject" onclick="hideAppointment(${appointment.id})"><i class="fa-solid fa-trash"></i> Delete</button>
-                                ` : (!['completed', 'no_show','in_progress'].includes(appointment.status) ? `
+                                ` : (!['completed', 'no_show', 'in_progress', 'cancelled', 'cancel'].includes(appointment.status) ? `
                                     <button class="btn btn-reschedule" onclick="reschedule('${appointment.patientName}', '${appointment.reason}', ${appointment.id})"><i class="fa-solid fa-calendar-day"></i> Reschedule</button>
                                 ` : '')}
                                 ${appointment.status === 'accept' || appointment.status === 'accepted' ? `
