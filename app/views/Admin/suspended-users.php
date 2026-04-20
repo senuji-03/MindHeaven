@@ -46,70 +46,20 @@
 </head>
 
 <body>
+<body>
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>Admin Panel</p>
-        </div>
-
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/admin" class="nav-item">
-                <span class="icon">📊</span> Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item active">
-                <span class="icon">👥</span> Manage Users
-            </a>
-            <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
-                <span class="icon">📚</span> Resource Hub
-            </a>
-            <a href="<?= BASE_URL ?>/admin/add-resource" class="nav-item">
-                <span class="icon">➕</span> Add Resource
-            </a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
-                <span class="icon">💬</span> Moderate Forum
-            </a>
-            <a href="<?= BASE_URL ?>/admin/counselors" class="nav-item">
-                <span class="icon">👨‍⚕️</span> Manage Counselors
-            </a>
-            <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
-                <span class="icon">📅</span> Appointments
-            </a>
-            <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
-                <span class="icon">📈</span> System Reports
-                        </a>
-            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
-                <span class="icon">🏛️</span>
-                University Events
-            </a>
-            <a href="<?= BASE_URL ?>/admin/settings" class="nav-item">
-                <span class="icon">⚙️</span> Settings
-            </a>
-                    <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <span class="icon">🚪</span> Logout
-            </a>
-        </div>
-    </div>
+    <?php 
+    $activePage = 'manage-users';
+    include '_sidebar.php'; 
+    ?>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
-        <div class="topbar">
-            <h1>Suspended Users</h1>
-            <div class="topbar-right">
-                <div class="admin-profile">
-                    <span>Admin User</span>
-                    <div class="avatar">A</div>
-                </div>
-            </div>
-        </div>
+        <?php 
+        $topbarTitle = 'Suspended Users';
+        include '_topbar.php'; 
+        ?>
 
         <!-- Content -->
         <div class="content-wrapper">

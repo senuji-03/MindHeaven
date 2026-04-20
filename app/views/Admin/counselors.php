@@ -20,15 +20,11 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
-        <div class="topbar">
-            <h1>Manage Counselors</h1>
-            <div class="topbar-right">
-                <div class="admin-profile">
-                    <span>Admin User</span>
-                    <div class="avatar">A</div>
-                </div>
-            </div>
-        </div>
+        <!-- Top Bar -->
+        <?php 
+        $topbarTitle = 'Manage Counselors';
+        include '_topbar.php'; 
+        ?>
 
         <!-- Content -->
         <div class="content-wrapper">

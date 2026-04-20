@@ -230,42 +230,18 @@
 
 <body>
     <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>University Representative</p>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
-                <i class="fas fa-th-large"></i> Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
-                <i class="fas fa-calendar-alt"></i> Manage Events
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
-                <i class="fas fa-university"></i> University Profile
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
-                <i class="fas fa-user-circle"></i> My Profile
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
+    <?php 
+    $activePage = 'events';
+    include '_sidebar.php'; 
+    ?>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
-        <div class="topbar">
-            <h1>Edit Event</h1>
-            <div class="user-profile">
-                <span><?= htmlspecialchars($_SESSION['university_name'] ?? 'University') ?></span>
-                <div class="avatar"><?= strtoupper(substr($_SESSION['university_name'] ?? 'U', 0, 1)) ?></div>
-            </div>
-        </div>
+        <?php 
+        $topbarTitle = 'Edit Event';
+        include '_topbar.php'; 
+        ?>
 
         <!-- Content -->
         <div class="content-wrapper">

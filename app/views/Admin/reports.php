@@ -8,17 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
-        :root {
-            --primary:#3D8B6E; --primary-light:#6BB89A; --primary-dark:#2A6B52;
-            --bg-deep:#1C2B2A; --bg-soft:#F5F0E8; --bg-mid:#EEF6F2;
-            --text-primary:#1E3A34; --text-secondary:#6B8C7E;
-            --surface:#FFFFFF; --border:#D6E4DD;
-            --radius-sm:8px; --radius-lg:20px; --radius-full:9999px;
-            --shadow-sm:0 1px 3px rgba(30,58,52,.06);
-        }
-        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--bg-soft); }
-
-        .main-content { margin-left: 280px; width: calc(100% - 280px); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .main-content { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
         .reports-container {
             display: grid;
@@ -214,15 +204,11 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="topbar">
-            <h1>System Reports</h1>
-            <div class="topbar-right">
-                <div class="admin-profile">
-                    <span>Admin User</span>
-                    <div class="avatar">A</div>
-                </div>
-            </div>
-        </div>
+        <!-- Top Bar -->
+        <?php 
+        $topbarTitle = 'System Reports';
+        include '_topbar.php'; 
+        ?>
 
         <div class="content-wrapper">
             

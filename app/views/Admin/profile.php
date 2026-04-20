@@ -105,78 +105,18 @@
 </head>
 
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>Admin Panel</p>
-        </div>
-
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/admin" class="nav-item">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/admin/manage-users" class="nav-item">
-                <span class="icon">👥</span>
-                Manage Users
-            </a>
-            <a href="<?= BASE_URL ?>/admin/moderate-forum" class="nav-item">
-                <span class="icon">💬</span>
-                Moderate Forum
-            </a>
-            <a href="<?= BASE_URL ?>/admin/appointments" class="nav-item">
-                <span class="icon">📅</span>
-                Appointments
-            </a>
-            <a href="<?= BASE_URL ?>/admin/reports" class="nav-item">
-                <span class="icon">📈</span>
-                System Reports
-            </a>
-            <a href="<?= BASE_URL ?>/admin/university-events" class="nav-item">
-                <span class="icon">🏛️</span>
-                University Events
-            </a>
-            <a href="<?= BASE_URL ?>/admin/donations" class="nav-item">
-                <span class="icon">💰</span>
-                Donation logs
-            </a>
-            <a href="<?= BASE_URL ?>/admin/resource-hub" class="nav-item">
-                <span class="icon">📚</span>
-                Resource Hub
-            </a>
-            <a href="<?= BASE_URL ?>/admin/add-resource" class="nav-item">
-                <span class="icon">➕</span>
-                Add Resource
-            </a>
-            <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <span class="icon">🚪</span>
-                Logout
-            </a>
-        </div>
-    </div>
+    <?php 
+    $activePage = 'profile';
+    include '_sidebar.php'; 
+    ?>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
-        <div class="topbar">
-            <h1>My Profile</h1>
-            <div class="topbar-right">
-                <a href="<?= BASE_URL ?>/admin/profile" style="text-decoration: none; color: inherit;">
-                    <div class="admin-profile" style="cursor: pointer;">
-                        <span><?= htmlspecialchars($user['full_name'] ?? $user['username']) ?></span>
-                        <div class="avatar"><?= strtoupper(substr($user['username'] ?? 'A', 0, 1)) ?></div>
-                    </div>
-                </a>
-            </div>
-        </div>
+        <?php 
+        $topbarTitle = 'My Profile';
+        include '_topbar.php'; 
+        ?>
 
         <!-- Content -->
         <div class="content-wrapper">

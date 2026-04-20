@@ -42,9 +42,4 @@ $activePage = $activePage ?? ''; // Default to empty if not set
             <i class="fas fa-cog"></i> Settings
         </a>
     </nav>
-    <div class="sidebar-footer">
-        <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
-    </div>
 </aside>

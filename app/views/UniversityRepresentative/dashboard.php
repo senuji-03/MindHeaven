@@ -392,72 +392,19 @@
 
 <body>
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>University Rep</p>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item active">
-                <i class="fas fa-th-large"></i> Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item">
-                <i class="fas fa-calendar-alt"></i> Manage Events
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
-                <i class="fas fa-university"></i> University Profile
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
-                <i class="fas fa-user-circle"></i> My Profile
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
+    <?php 
+    $activePage = 'dashboard';
+    include '_sidebar.php'; 
+
+    $greetingName = isset($user['full_name']) ? trim($user['full_name']) : '';
+    $topbarTitle = $greetingName ? "Hello, " . htmlspecialchars($greetingName) . " 👋" : "Hello 👋";
+    ?>
 
     <main class="main-content">
-        <!-- Alerts -->
-        <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
-            <div class="alert-container">
-                <?php if (isset($_SESSION['success'])): ?>
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i>
-                        <span><?= htmlspecialchars($_SESSION['success']) ?></span>
-                    </div>
-                    <?php unset($_SESSION['success']); ?>
-                <?php endif; ?>
-
-                <?php if (isset($_SESSION['error'])): ?>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span><?= htmlspecialchars($_SESSION['error']) ?></span>
-                    </div>
-                    <?php unset($_SESSION['error']); ?>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-
         <!-- Top Bar -->
-        <div class="topbar">
-            <?php
-            $greetingName = isset($user['full_name']) ? trim($user['full_name']) : '';
-            $greeting = $greetingName ? "Hello, " . htmlspecialchars($greetingName) : "Hello";
-            ?>
-            <h1><?= $greeting ?> 👋</h1>
-            <div class="topbar-right">
-                <div class="user-profile">
-                    <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-secondary);">
-                        <?= htmlspecialchars(isset($_SESSION['university_name']) ? $_SESSION['university_name'] : 'Academic Institute') ?>
-                    </span>
-                    <div class="avatar">
-                        <?= strtoupper(substr(isset($_SESSION['university_name']) ? $_SESSION['university_name'] : 'U', 0, 1)) ?>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php include '_topbar.php'; ?>
+
+        <!-- Alerts -->
 
         <!-- Stats Grid -->
         <div class="stats-grid">

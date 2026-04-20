@@ -49,6 +49,7 @@ $router->post('/ug/deleteComment', 'UGControl@deleteComment');
 $router->post('/ug/likeResource', 'UGControl@likeResource');
 $router->post('/ug/reportResource', 'UGControl@reportResource');
 $router->get('/ug/quiz', 'UGControl@quiz');
+$router->post('/ug/quiz/save', 'UGControl@saveQuizResult');
 $router->get('/ug/profile', 'UGControl@profile');
 $router->get('/ug/profile/edit', 'UGControl@editProfile');
 $router->post('/ug/profile/edit', 'UGControl@editProfile');
