@@ -566,6 +566,13 @@ require BASE_PATH . '/app/views/layouts/header.php';
     box-shadow: var(--shadow-lg);
     max-height: 94vh;
     overflow-y: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .modal-content::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
   }
 
   .modal-title {
@@ -1214,6 +1221,18 @@ $currentMonth = (int) date('n');
     document.getElementById('dailyStart').value = TODAY;
     document.getElementById('weeklyStart').value = TODAY;
     document.getElementById('customStart').value = TODAY;
+
+    // Real-time color uniqueness check
+    document.getElementById('habitColor').addEventListener('change', (e) => {
+      const selectedColor = e.target.value;
+      const habitId = document.getElementById('habitIdInput').value;
+      const isColorUsed = allHabits.some(h => h.color && h.color.toLowerCase() === selectedColor.toLowerCase() && h.id != habitId);
+      
+      if (isColorUsed) {
+        showToast('This color is already used by another habit!', 'error');
+        // Optionally suggest a random unique color or let them try again
+      }
+    });
   });
 
   /* ── Stats ───────────────────────────────────────────────────────── */
@@ -1312,15 +1331,16 @@ $currentMonth = (int) date('n');
   function renderDots() {
     document.querySelectorAll('.day-dots').forEach(el => {
       const date = el.dataset.dotsFor;
-      const count = calData[date] || 0;
+      const dateInfo = calData[date] || null;
+      const count = dateInfo ? dateInfo.count : 0;
       el.innerHTML = '';
       if (!count) return;
 
-      // Use habit colors where possible
+      // Use habit colors from the backend
       for (let i = 0; i < Math.min(count, 3); i++) {
         const dot = document.createElement('span');
         dot.className = 'dot';
-        dot.style.background = (allHabits[i] && allHabits[i].color) ? allHabits[i].color : '#10b981';
+        dot.style.background = (dateInfo && dateInfo.colors && dateInfo.colors[i]) ? dateInfo.colors[i] : '#10b981';
         el.appendChild(dot);
       }
       if (count > 3) {
@@ -1728,6 +1748,16 @@ $currentMonth = (int) date('n');
       if (!start_date) { showToast('Please select a start date', 'error'); btn.textContent = isEdit ? 'Update Habit' : 'Save Habit'; btn.disabled = false; return; }
     }
 
+    const selectedColor = document.getElementById('habitColor').value;
+    const isColorUsed = allHabits.some(h => h.color && h.color.toLowerCase() === selectedColor.toLowerCase() && h.id != habitId);
+
+    if (isColorUsed) {
+      showToast('This color is already used by another habit. Please pick a unique color.', 'error');
+      btn.textContent = isEdit ? 'Update Habit' : 'Save Habit';
+      btn.disabled = false;
+      return;
+    }
+
     const payload = {
       id: isEdit ? parseInt(habitId, 10) : undefined,
       name: document.getElementById('habitName').value.trim(),
@@ -1738,7 +1768,7 @@ $currentMonth = (int) date('n');
       end_date,
       days_of_week,
       repeat_interval,
-      color: document.getElementById('habitColor').value,
+      color: selectedColor,
       icon: document.getElementById('habitIcon').value
     };
 

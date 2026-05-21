@@ -139,18 +139,53 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
     /* Action buttons */
     .btn {
-        padding: 8px 16px; border: none; border-radius: var(--radius-full);
-        cursor: pointer; font-weight: 600; font-size: 0.85rem;
-        transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 22px;
+        border-radius: var(--radius-full);   /* Always pill-shaped */
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
         text-decoration: none;
+        border: none;
+        box-sizing: border-box;
     }
-    .btn.secondary { background: var(--bg-mid); color: var(--text-secondary); border: 1.5px solid var(--border); }
-    .btn.secondary:hover { background: var(--border); color: var(--text-primary); }
-    .btn.danger { background: var(--crisis); color: white; }
-    .btn.danger:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-outline {
+        background: transparent;
+        color: var(--primary);
+        border: 1.5px solid var(--border);
+        padding: 8.5px 20.5px; /* Adjust for border */
+    }
+    .btn-outline:hover {
+        border-color: var(--primary);
+        background: var(--bg-mid);
+    }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(61, 139, 110, 0.3);
+    }
     .btn-danger { background: var(--crisis); color: white; }
+    .btn-danger:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(214, 79, 79, 0.3);
+    }
+    .btn-warning {
+        background: rgba(245, 158, 11, 0.12);
+        color: #92400e;
+        border: 1.5px solid #fcd34d;
+        padding: 8.5px 20.5px;
+    }
+    .btn-warning:hover {
+        background: rgba(245, 158, 11, 0.2);
+        border-color: #fbbf24;
+    }
 
     /* Alert banners */
     .alert { padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 0.9rem; }
@@ -168,7 +203,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
     .modal-content {
         background: var(--surface);
-        border-radius: var(--radius-lg);
+        border-radius: var(--radius-xl);
         padding: 32px;
         width: 90%; max-width: 520px;
         box-shadow: var(--shadow-lg);
@@ -185,14 +220,16 @@ require BASE_PATH . '/app/views/layouts/header.php';
     .close:hover { color: var(--crisis); }
 
     .form-row { margin-bottom: 16px; }
-    .form-row label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-    .form-row textarea, .form-row select {
-        width: 100%; padding: 10px 14px;
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .form-input {
+        width: 100%; padding: 12px 16px;
         border: 1.5px solid var(--border); border-radius: var(--radius-sm);
         font-size: 0.9rem; color: var(--text-primary); background: var(--surface);
         font-family: inherit; resize: vertical;
+        box-sizing: border-box;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
-    .form-row textarea:focus, .form-row select:focus {
+    .form-input:focus {
         outline: none; border-color: var(--primary);
         box-shadow: 0 0 0 3px rgba(61,139,110,0.12);
     }
@@ -253,23 +290,23 @@ require BASE_PATH . '/app/views/layouts/header.php';
                             <form action="<?= BASE_URL ?>/admin/update-report-status" method="POST" style="display:inline;">
                                 <input type="hidden" name="report_id" value="<?= $report['id'] ?>">
                                 <input type="hidden" name="status" value="resolved">
-                                <button type="submit" class="btn secondary">Approve (Keep)</button>
+                                <button type="submit" class="btn btn-outline">Approve (Keep)</button>
                             </form>
-                            <button type="button" class="btn secondary" style="background:rgba(245,158,11,0.12);color:#92400e;border-color:#fcd34d;"
+                            <button type="button" class="btn btn-warning"
                                 onclick="openEditModal(<?= htmlspecialchars(json_encode($report)) ?>)">Edit Content</button>
                             <form action="<?= BASE_URL ?>/admin/update-report-status" method="POST" style="display:inline;">
                                 <input type="hidden" name="report_id" value="<?= $report['id'] ?>">
                                 <input type="hidden" name="status" value="resolved">
                                 <input type="hidden" name="delete_content" value="1">
-                                <button type="submit" class="btn danger"
+                                <button type="submit" class="btn btn-danger"
                                     onclick="return confirm('Delete this content? A strike will be added to the user.')">Delete &amp; Resolve</button>
                             </form>
                             <?php if (($report['account_status'] ?? 'active') !== 'suspended' && ($report['account_status'] ?? 'active') !== 'banned'): ?>
-                                <button type="button" class="btn danger"
+                                <button type="button" class="btn btn-danger"
                                     onclick="openSuspendModal(<?= $report['owner_id'] ?>, '<?= htmlspecialchars($report['owner_name']) ?>')">Suspend User</button>
                             <?php endif; ?>
                             <?php if (!empty($report['context_url'])): ?>
-                                <a href="<?= htmlspecialchars($report['context_url']) ?>" target="_blank" class="btn secondary">View Context</a>
+                                <a href="<?= htmlspecialchars($report['context_url']) ?>" target="_blank" class="btn btn-outline">View Context</a>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -307,23 +344,23 @@ require BASE_PATH . '/app/views/layouts/header.php';
                             <form action="<?= BASE_URL ?>/admin/update-system-flag-status" method="POST" style="display:inline;">
                                 <input type="hidden" name="id" value="<?= $flag['id'] ?>">
                                 <input type="hidden" name="status" value="reviewed">
-                                <button type="submit" class="btn secondary">Approve (Keep)</button>
+                                <button type="submit" class="btn btn-outline">Approve (Keep)</button>
                             </form>
-                            <button type="button" class="btn secondary" style="background:rgba(245,158,11,0.12);color:#92400e;border-color:#fcd34d;"
+                            <button type="button" class="btn btn-warning"
                                 onclick="openEditModal(<?= htmlspecialchars(json_encode($flag)) ?>, true)">Edit Content</button>
                             <form action="<?= BASE_URL ?>/admin/update-system-flag-status" method="POST" style="display:inline;">
                                 <input type="hidden" name="id" value="<?= $flag['id'] ?>">
                                 <input type="hidden" name="status" value="resolved">
                                 <input type="hidden" name="delete_content" value="1">
-                                <button type="submit" class="btn danger"
+                                <button type="submit" class="btn btn-danger"
                                     onclick="return confirm('Delete this content? A strike will be added to the user.')">Delete &amp; Resolve</button>
                             </form>
                             <?php if (($flag['account_status'] ?? 'active') !== 'suspended' && ($flag['account_status'] ?? 'active') !== 'banned'): ?>
-                                <button type="button" class="btn danger"
+                                <button type="button" class="btn btn-danger"
                                     onclick="openSuspendModal(<?= $flag['owner_id'] ?>, '<?= htmlspecialchars($flag['owner_name']) ?>')">Suspend User</button>
                             <?php endif; ?>
                             <?php if (!empty($flag['context_url'])): ?>
-                                <a href="<?= htmlspecialchars($flag['context_url']) ?>" target="_blank" class="btn secondary">View Context</a>
+                                <a href="<?= htmlspecialchars($flag['context_url']) ?>" target="_blank" class="btn btn-outline">View Context</a>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -344,8 +381,8 @@ require BASE_PATH . '/app/views/layouts/header.php';
             <input type="hidden" name="flag_id" id="editFlagId">
             <input type="hidden" name="post_id" id="editPostId">
             <div class="form-row">
-                <label for="editContent">Content:</label>
-                <textarea name="content" id="editContent" rows="6"></textarea>
+                <label for="editContent" class="form-label">Content:</label>
+                <textarea name="content" id="editContent" rows="6" class="form-input"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </form>
@@ -361,7 +398,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
         <form action="<?= BASE_URL ?>/admin/suspend-user" method="POST">
             <input type="hidden" name="user_id" id="suspendUserId">
             <div class="form-row">
-                <label for="suspensionDays">Duration:</label>
+                <label for="suspensionDays" class="form-label">Duration:</label>
                 <select name="suspension_days" id="suspensionDays" class="form-input">
                     <option value="1">1 Day</option>
                     <option value="3">3 Days</option>

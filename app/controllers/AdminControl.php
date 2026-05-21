@@ -439,8 +439,8 @@ class AdminControl
                     $universityId = $pdo->lastInsertId();
                 }
 
-                $stmt = $pdo->prepare("INSERT INTO university_representatives (user_id, university_id, position) VALUES (?, ?, ?)");
-                $stmt->execute([$userId, $universityId, $position]);
+                $stmt = $pdo->prepare("INSERT INTO university_representatives (user_id, university_id, position, email, full_name, phone_number) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$userId, $universityId, $position, $email, $fullName, $phoneNumber]);
 
                 $_SESSION['temp_username'] = $username;
                 $_SESSION['temp_password'] = $password;
@@ -571,8 +571,11 @@ class AdminControl
                 $position = trim($_POST['position'] ?? 'University Representative');
 
                 if ($universityId) {
-                    $stmt = $pdo->prepare("UPDATE university_representatives SET university_id = ?, position = ? WHERE user_id = ?");
-                    $stmt->execute([$universityId, $position, $userId]);
+                    $stmt = $pdo->prepare("UPDATE university_representatives SET university_id = ?, position = ?, full_name = ?, phone_number = ? WHERE user_id = ?");
+                    $stmt->execute([$universityId, $position, $fullName, $phoneNumber, $userId]);
+                } else {
+                    $stmt = $pdo->prepare("UPDATE university_representatives SET position = ?, full_name = ?, phone_number = ? WHERE user_id = ?");
+                    $stmt->execute([$position, $fullName, $phoneNumber, $userId]);
                 }
             }
 

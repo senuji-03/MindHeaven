@@ -117,14 +117,17 @@ class Habit
 
         while ($current <= $to) {
             $dateStr = $current->format('Y-m-d');
-            $count = 0;
+            $dayColors = [];
             foreach ($habits as $habit) {
                 if ($this->isScheduledOnDate($habit, $dateStr)) {
-                    $count++;
+                    $dayColors[] = $habit['color'] ?? '#10b981';
                 }
             }
-            if ($count > 0) {
-                $result[$dateStr] = $count;
+            if (!empty($dayColors)) {
+                $result[$dateStr] = [
+                    'count' => count($dayColors),
+                    'colors' => array_slice($dayColors, 0, 3)
+                ];
             }
             $current->modify('+1 day');
         }

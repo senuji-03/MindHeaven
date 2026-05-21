@@ -114,7 +114,8 @@ class UGControl
                    (
                        SELECT GROUP_CONCAT(CONCAT(slot_date, '|', TIME_FORMAT(start_time, '%H:%i')) ORDER BY slot_date, start_time ASC SEPARATOR ';')
                        FROM counselor_timeslots
-                       WHERE counselor_user_id = u.id AND is_booked = 0 AND is_frozen = 0 AND slot_date >= CURDATE()
+                       WHERE counselor_user_id = u.id AND is_booked = 0 AND is_frozen = 0 
+                         AND (slot_date > CURDATE() OR (slot_date = CURDATE() AND start_time >= CURTIME()))
                    ) as available_slots
             FROM counselors c
             INNER JOIN users u ON c.user_id = u.id
