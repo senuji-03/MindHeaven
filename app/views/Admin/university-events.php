@@ -9,21 +9,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
-        :root {
-            --primary:#3D8B6E; --primary-light:#6BB89A; --primary-dark:#2A6B52;
-            --bg-deep:#1C2B2A; --bg-soft:#F5F0E8; --bg-mid:#EEF6F2;
-            --text-primary:#1E3A34; --text-secondary:#6B8C7E;
-            --surface:#FFFFFF; --border:#D6E4DD;
-            --radius-sm:8px; --radius-lg:20px; --radius-full:9999px;
-            --shadow-sm:0 1px 3px rgba(30,58,52,.06);
-        }
-        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--bg-soft); }
-
-        .main-content { margin-left: 280px; width: calc(100% - 280px); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .main-content { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
     </style>
-
+</head>
 <body>
-    <!-- Sidebar (Design System §1,§15) -->
+    <!-- Sidebar -->
     <?php 
     $activePage = 'university-events';
     include '_sidebar.php'; 
@@ -32,17 +22,10 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
-        <div class="topbar">
-            <h1>Pending University Events</h1>
-            <div class="topbar-right">
-                <a href="<?= BASE_URL ?>/admin/profile" style="text-decoration: none; color: inherit;">
-                    <div class="admin-profile" style="cursor: pointer;">
-                        <span>Admin User</span>
-                        <div class="avatar">A</div>
-                    </div>
-                </a>
-            </div>
-        </div>
+        <?php 
+        $topbarTitle = 'University Events';
+        include '_topbar.php'; 
+        ?>
 
         <!-- Content -->
         <div class="content-wrapper">

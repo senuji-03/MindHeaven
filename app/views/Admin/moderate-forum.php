@@ -1,141 +1,178 @@
-<?php
-$TITLE       = 'MindHeaven — Moderate Forum';
-$CURRENT_PAGE = 'moderate-forum';
-$PAGE_CSS    = array();
-require BASE_PATH . '/app/views/layouts/header.php';
-?>
+<!DOCTYPE html>
+<html lang="en">
 
-<style>
-    /* ── Forum-specific styles ── */
-    .forum-page-wrapper { padding: 28px 32px; background: var(--surface); min-height: 100vh; }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderate Forum - Admin | Mind Haven</title>
+    <!-- Fonts & Icons (Design System §2, §15) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
+    <style>
+        :root {
+            --crisis: #D64F4F;
+            --success: #4CAF82;
+        }
 
-    /* Tabs toolbar */
-    .toolbar {
-        background: var(--surface);
-        padding: 1.25rem 1.5rem;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        margin-bottom: 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        border: 1px solid var(--border);
-    }
+        /* ── Forum-specific styles ── */
+        <?php include '_forum_styles.php'; ?>
 
-    .tabs { display: flex; gap: 0.5rem; }
+        .forum-page-wrapper {
+            padding: 0;
+            background: var(--surface);
+            min-height: 100vh;
+        }
 
-    .tab {
-        padding: 0.6rem 1.25rem;
-        border: 1.5px solid var(--border);
-        background: var(--surface);
-        color: var(--text-secondary);
-        border-radius: var(--radius-full);
-        cursor: pointer;
-        transition: all 0.25s ease;
-        font-weight: 500;
-        font-size: 0.9rem;
-        text-decoration: none;
-        display: inline-block;
-    }
+        /* Embed (forum preview iframe) */
+        .embed {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
 
-    .tab.active, .tab:hover {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-        box-shadow: 0 4px 12px rgba(61,139,110,0.25);
-    }
+        .embed-header {
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-mid);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
 
-    /* Embed (forum preview iframe) */
-    .embed {
-        background: var(--surface);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border);
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-    }
+        .embed-header strong {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
 
-    .embed-header {
-        padding: 1.25rem 1.5rem;
-        background: var(--bg-mid);
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
+        .chip {
+            background: var(--primary-light);
+            color: white;
+            padding: 0.3rem 0.85rem;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
 
-    .embed-header strong { font-size: 1rem; color: var(--text-primary); font-weight: 600; }
+        /* Report / Flag list */
+        .list {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
 
-    .chip {
-        background: var(--primary-light);
-        color: white;
-        padding: 0.3rem 0.85rem;
-        border-radius: var(--radius-full);
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
+        .list-header {
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-mid);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    /* Report / Flag list */
-    .list {
-        background: var(--surface);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border);
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-    }
+        .list-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+        }
 
-    .list-header {
-        padding: 1.25rem 1.5rem;
-        background: var(--bg-mid);
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+        .list h2 {
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-mid);
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+        }
 
-    .list-header h2 {
-        display: flex; align-items: center; gap: 0.5rem;
-        font-size: 1rem; font-weight: 700; color: var(--text-primary);
-        margin: 0; padding: 0; background: none; border: none;
-    }
+        .row {
+            display: flex;
+            align-items: flex-start;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            gap: 1rem;
+            transition: background 0.2s;
+        }
 
-    .list h2 {
-        padding: 1.25rem 1.5rem;
-        background: var(--bg-mid);
-        border-bottom: 1px solid var(--border);
-        color: var(--text-primary);
-        font-size: 1rem; font-weight: 700; margin: 0;
-    }
+        .row:hover {
+            background: var(--bg-mid);
+        }
 
-    .row {
-        display: flex;
-        align-items: flex-start;
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid var(--border);
-        gap: 1rem;
-        transition: background 0.2s;
-    }
+        .row:last-child {
+            border-bottom: none;
+        }
 
-    .row:hover { background: var(--bg-mid); }
-    .row:last-child { border-bottom: none; }
+        .row .title {
+            flex: 1;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
 
-    .row .title { flex: 1; font-weight: 500; color: var(--text-primary); }
+        .row .chip {
+            padding: 0.3rem 0.7rem;
+            font-size: 0.78rem;
+        }
 
-    .row .chip { padding: 0.3rem 0.7rem; font-size: 0.78rem; }
-    .row .chip:not(.approved) { background: var(--bg-soft); color: var(--crisis); }
-    .row .chip.approved { background: rgba(76,175,130,0.12); color: var(--success); }
+        .row .chip:not(.approved) {
+            background: var(--bg-soft);
+            color: var(--crisis);
+        }
 
-    .report-details { flex: 1; }
-    .snippet { color: var(--text-secondary); font-size: 0.88rem; margin: 6px 0; line-height: 1.5; }
-    .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .match-highlight { background: rgba(214,79,79,0.15); padding: 2px 6px; border-radius: 4px; font-weight: 700; color: var(--crisis); }
+        .row .chip.approved {
+            background: rgba(76, 175, 130, 0.12);
+            color: var(--success);
+        }
 
-    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-start; padding-top: 4px; }
+        .report-details {
+            flex: 1;
+        }
+
+        .snippet {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            margin: 6px 0;
+            line-height: 1.5;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .match-highlight {
+            background: rgba(214, 79, 79, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            color: var(--crisis);
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            padding-top: 4px;
+        }
 
     /* Action buttons */
     .btn {
@@ -187,19 +224,43 @@ require BASE_PATH . '/app/views/layouts/header.php';
         border-color: #fbbf24;
     }
 
-    /* Alert banners */
-    .alert { padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 0.9rem; }
-    .alert-success { background: rgba(76,175,130,0.12); border-left: 4px solid var(--success); color: var(--success); }
-    .alert-danger  { background: rgba(214,79,79,0.1);  border-left: 4px solid var(--crisis);  color: var(--crisis);  }
+        /* Alert banners */
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
 
-    /* Modals */
-    .modal {
-        display: none; position: fixed; top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(30,58,52,0.45);
-        z-index: 2000; align-items: center; justify-content: center;
-    }
-    .modal.active { display: flex; }
+        .alert-success {
+            background: rgba(76, 175, 130, 0.12);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-danger {
+            background: rgba(214, 79, 79, 0.1);
+            border-left: 4px solid var(--crisis);
+            color: var(--crisis);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 58, 52, 0.45);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
 
     .modal-content {
         background: var(--surface);
@@ -210,14 +271,28 @@ require BASE_PATH . '/app/views/layouts/header.php';
         position: relative;
     }
 
-    .modal-content h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 20px; }
+        .modal-content h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
 
-    .close {
-        position: absolute; top: 16px; right: 20px;
-        font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);
-        background: none; border: none; line-height: 1;
-    }
-    .close:hover { color: var(--crisis); }
+        .close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: var(--crisis);
+        }
 
     .form-row { margin-bottom: 16px; }
     .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
@@ -237,12 +312,12 @@ require BASE_PATH . '/app/views/layouts/header.php';
 
 <div class="forum-page-wrapper">
 
-    <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert alert-success"><?= $_SESSION['success']; ?> <?php unset($_SESSION['success']); ?></div>
-    <?php endif; ?>
-    <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger"><?= $_SESSION['error']; ?> <?php unset($_SESSION['error']); ?></div>
-    <?php endif; ?>
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success"><?= $_SESSION['success']; ?> <?php unset($_SESSION['success']); ?></div>
+                <?php endif; ?>
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger"><?= $_SESSION['error']; ?> <?php unset($_SESSION['error']); ?></div>
+                <?php endif; ?>
 
     <?php
     $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'preview';
@@ -472,4 +547,11 @@ require BASE_PATH . '/app/views/layouts/header.php';
     };
 </script>
 
-<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>
+            </div> <!-- .forum-page-wrapper -->
+        </div> <!-- .content-wrapper -->
+    </div> <!-- .main-content -->
+
+    <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
+</body>
+
+</html>

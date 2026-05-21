@@ -11,7 +11,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                 <!-- Page Header -->
                 <div class="chat-list-header">
                     <h1><i class="fa-regular fa-comments"></i> Counselling Chat</h1>
-                    <span class="secure-badge"><i class="fa-solid fa-lock"></i> End-to-end secure</span>
+                    <!-- <span class="secure-badge"><i class="fa-solid fa-lock"></i> End-to-end secure</span> -->
                 </div>
 
                 <!-- Start New Chat Card (only shown if undergrads exist) -->

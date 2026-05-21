@@ -396,43 +396,23 @@ $isRep = isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['r
 <body>
 
 <?php if ($isRep): ?>
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>University Rep</p>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="<?= BASE_URL ?>/university-rep/dashboard" class="nav-item">
-                <i class="fas fa-th-large"></i> Dashboard
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/events" class="nav-item active">
-                <i class="fas fa-calendar-alt"></i> Manage Events
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/university-profile" class="nav-item">
-                <i class="fas fa-university"></i> University Profile
-            </a>
-            <a href="<?= BASE_URL ?>/university-rep/profile" class="nav-item">
-                <i class="fas fa-user-circle"></i> My Profile
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
+    <?php 
+    $activePage = 'events';
+    include '_sidebar.php'; 
+    ?>
 <?php endif; ?>
 
 <main class="main-content">
-    <div class="topbar">
-        <h1>Event Details</h1>
-        <?php if ($isRep): ?>
-            <div class="user-profile">
-                <span><?= htmlspecialchars(isset($_SESSION['university_name']) ? $_SESSION['university_name'] : 'University') ?></span>
-                <div class="avatar"><?= strtoupper(substr(isset($_SESSION['university_name']) ? $_SESSION['university_name'] : 'U', 0, 1)) ?></div>
-            </div>
-        <?php endif; ?>
-    </div>
+    <?php if ($isRep): ?>
+        <?php 
+        $topbarTitle = 'Event Details';
+        include '_topbar.php'; 
+        ?>
+    <?php else: ?>
+        <div class="topbar">
+            <h1>Event Details</h1>
+        </div>
+    <?php endif; ?>
 
     <div class="event-container">
         <div class="page-header">

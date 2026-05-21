@@ -7,63 +7,19 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
 </head>
 <body>
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>🧠 Mind Haven</h2>
-            <p>Admin Panel</p>
-        </div>
-        
-        <nav class="sidebar-nav">
-          <aside class="sidebar">
-      <h2>Admin</h2>
-      <ul>
-        <li><a href="<?= BASE_URL ?>/admin">Dashboard</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/manage-users" class="active">Manage Users</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/moderate-forum">Moderate Forum</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/counselors">Manage Counselors</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/appointments">Appointments</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/approve-counselors">Approve Counselors</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/resource-hub">Resource Hub</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/add-resource">Add Resource</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/reports">Reports & Moods</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/donations">Donations</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/awareness">Awareness Programs</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/monitoring">System Monitoring</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/university-events">University Events</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/settings">Settings</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/profile">Profile</a></li>
+    <!-- Sidebar -->
+    <?php 
+    $activePage = 'manage-users';
+    include '_sidebar.php'; 
+    ?>
 
-      </ul>
-    </aside>  
-                    <a href="<?= BASE_URL ?>/EditPosts" class="nav-item">
-                <span class="icon">✏️</span>
-                Edit Resources
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/logout" class="logout-btn">
-                <span class="icon">🚪</span>
-                Logout
-            </a>
-        </div>
-    </div>
-
+    <!-- Main Content -->
     <div class="main-content">
-      <br/><br/>
-        <div class="topbar">
-            <h1>Approve Counselors</h1>
-            <div class="topbar-right">
-                <div class="notification-icon">
-                    🔔
-                    <span class="badge">3</span>
-                </div>
-                <div class="admin-profile">
-                    <span>Admin User</span>
-                    <div class="avatar">A</div>
-                </div>
-            </div>
-        </div>
+        <!-- Top Bar -->
+        <?php 
+        $topbarTitle = 'Approve Counselors';
+        include '_topbar.php'; 
+        ?>
 
         <div class="content-wrapper">
             <div class="page-header">

@@ -12,29 +12,39 @@ $actionBase = $currentMode === 'resource' ? '/resource-categories' : ($currentMo
 $TITLE = 'MindHeaven — ' . $pageTitle;
 // Mapping current mode to navigation slug for highlighting
 $CURRENT_PAGE = $currentMode === 'resource' ? 'resource-hub' : 'moderate-forum';
-$PAGE_CSS = [];
-
-require BASE_PATH . '/app/views/layouts/header.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $TITLE ?></title>
+    <!-- Fonts & Icons (Design System §2, §15) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
+</head>
+<body>
+    <?php 
+    $activePage = $CURRENT_PAGE;
+    include '_sidebar.php'; 
+    ?>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <?php 
+        $topbarTitle = $pageTitle;
+        include '_topbar.php'; 
+        ?>
+
+        <div class="content-wrapper">
 
 <style>
+    <?php include '_forum_styles.php'; ?>
+
     /* ── Category Management Styles ── */
     .category-page-wrapper { padding: 28px 32px; }
-
-    /* Reuse toolbar and tab styles consistent with forum moderation */
-    .toolbar {
-        background: var(--surface);
-        padding: 1.25rem 1.5rem;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        margin-bottom: 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        border: 1px solid var(--border);
-    }
 
     /* List / Table Styles */
     .list {
@@ -319,4 +329,9 @@ require BASE_PATH . '/app/views/layouts/header.php';
     }
 </script>
 
-<?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>
+        </div> <!-- End content-wrapper -->
+    </div> <!-- End main-content -->
+
+    <script src="<?= BASE_URL ?>/js/Admin/script.js"></script>
+</body>
+</html>

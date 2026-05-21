@@ -356,6 +356,18 @@ class AppointmentApiControl
             // Fetch old appointment details for timeslot logic
             $oldApp = $this->appointmentModel->getById((int) $data['id']);
 
+            if (!$oldApp) {
+                return $this->json(array('error' => 'Appointment not found'), 404);
+            }
+
+            if ((int)$oldApp['student_user_id'] !== $userId) {
+                return $this->json(array('error' => 'Unauthorized'), 401);
+            }
+
+            if (strtolower($oldApp['status']) !== 'pending') {
+                return $this->json(array('error' => 'Only pending appointments can be updated'), 400);
+            }
+
             $updated = $this->appointmentModel->update(
                 (int) $data['id'],
                 trim((string) $data['title']),
@@ -563,13 +575,27 @@ class AppointmentApiControl
         try {
             // Fetch appointment details before deletion to free the timeslot
             $appointment = $this->appointmentModel->getById((int) $data['id']);
-            if ($appointment) {
-                $this->timeslotModel->markFree(
-                    (int) $appointment['counselor_user_id'],
-                    $appointment['date'],
-                    $appointment['time']
-                );
+            if (!$appointment) {
+                return $this->json(array('error' => 'Appointment not found'), 404);
             }
+
+            if ((int)$appointment['student_user_id'] !== $userId) {
+                return $this->json(array('error' => 'Unauthorized'), 401);
+            }
+
+            $status = strtolower($appointment['status']);
+            $allowedDeleteStatuses = array('pending', 'no_show', 'completed', 'rejected', 'reject', 'cancelled');
+            
+            if (!in_array($status, $allowedDeleteStatuses)) {
+                return $this->json(array('error' => 'You can only delete pending, completed, rejected, cancelled, or no-show appointments. For active accepted sessions, please cancel them.'), 400);
+            }
+
+            // Free the attached timeslot, just in case it was still active
+            $this->timeslotModel->markFree(
+                (int) $appointment['counselor_user_id'],
+                $appointment['date'],
+                $appointment['time']
+            );
 
             $result = $this->appointmentModel->delete((int) $data['id']);
             if ($result) {
@@ -692,8 +718,31 @@ class AppointmentApiControl
                     $status = strtolower($data['status']);
 
                     // Notify relevant party
-                    if ($status === 'accepted' || $status === 'reject' || $status === 'rejected') {
-                        if ($status === 'accepted') {
+                    if ($status === 'accepted' || $status === 'reject' || $status === 'rejected' || $status === 'cancelled') {
+                        if ($status === 'cancelled') {
+                            $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
+                            $currentUserId = isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 0;
+                            
+                            if ($role === 'counselor') {
+                                // Counselor cancelled -> notify student
+                                $this->notificationModel->create(
+                                    (int) $appointment['student_user_id'],
+                                    "Your appointment '" . $appointment['title'] . "' was cancelled by the counselor.",
+                                    'appointment_cancelled',
+                                    (int) $data['id'],
+                                    $currentUserId
+                                );
+                            } else {
+                                // Student cancelled -> notify counselor
+                                $this->notificationModel->create(
+                                    (int) $appointment['counselor_user_id'],
+                                    "Student has cancelled the appointment '" . $appointment['title'] . "'.",
+                                    'appointment_cancelled',
+                                    (int) $data['id'],
+                                    $currentUserId
+                                );
+                            }
+                        } elseif ($status === 'accepted') {
                             // If it was rescheduled, notify counselor that student accepted
                             if ($oldStatus === 'rescheduled') {
                                 $this->notificationModel->create(

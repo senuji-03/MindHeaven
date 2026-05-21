@@ -45,7 +45,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                     </div>
                 </div>
                 <!-- Overdue Card -->
-                <div class="stat-card overdue">
+                <!-- <div class="stat-card overdue">
                     <div class="stat-header">
                         <div>
                             <div class="stat-title">Overdue</div>
@@ -53,7 +53,7 @@ require BASE_PATH . '/app/views/layouts/header.php';
                         </div>
                         <div class="stat-icon"><i class="fa-regular fa-clock"></i></div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <!-- Filter Section -->

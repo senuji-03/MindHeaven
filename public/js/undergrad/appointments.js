@@ -269,8 +269,12 @@ async function loadAvailableDates(counselorId) {
         const dates = Array.isArray(data.dates) ? data.dates : [];
 
         if (!dates.length) {
-            dateSel.innerHTML = '<option value="">No counselor slots available soon</option>';
+            dateSel.innerHTML = '<option value="">No available slots yet</option>';
             dateSel.disabled = true;
+            if (timeSel) {
+                timeSel.innerHTML = '<option value="">No available slots yet</option>';
+                timeSel.disabled = true;
+            }
             return;
         }
 
@@ -317,7 +321,7 @@ async function loadTimeSlots() {
         const slots = Array.isArray(data.slots) ? data.slots : [];
 
         if (!slots.length) {
-            timeSel.innerHTML = '<option value="">No timeslots set by counselor for this date</option>';
+            timeSel.innerHTML = '<option value="">No available slots yet</option>';
             timeSel.disabled = true;
             return;
         }
@@ -485,11 +489,11 @@ function _generateRowsHtml(list) {
                         <button class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 8px;font-size:.75rem;" onclick="acceptReschedule(${a.id})" title="Accept New Time">
                             Accept
                         </button>
-                    ` : (['completed', 'no_show', 'in_progress'].includes(statusKey) ? '' : `
+                    ` : (statusKey === 'pending' ? `
                         <button class="mh-action-btn" onclick="editAppointment(${a.id})" title="Edit">
                             <i class="fas fa-pen"></i>
                         </button>
-                    `)}
+                    ` : '')}
                     ${a.meeting_link && (statusKey === 'accepted' || statusKey === 'accept' || statusKey === 'in_progress') ? `
                         <button type="button" onclick="${a.mode === 'chat' ? `window.location.href='${escHtml(a.meeting_link)}'` : `promptJoin('${escHtml(a.meeting_link)}')`}" class="mh-action-btn" style="background:var(--primary);color:white;width:auto;padding:0 12px;font-size:.8rem;display:inline-flex;align-items:center;line-height:30px;border-radius:6px;" title="Join ${a.mode === 'chat' ? 'Chat' : 'Call'}">
                             <i class="fas ${a.mode === 'chat' ? 'fa-comment' : 'fa-video'}" style="margin-right:6px;"></i> Join ${a.mode === 'chat' ? 'Chat' : 'Call'}
@@ -500,9 +504,16 @@ function _generateRowsHtml(list) {
                             <i class="fas fa-user-slash"></i> No-Show
                         </button>
                     ` : ''}
-                    <button class="mh-action-btn mh-action-btn--danger" onclick="deleteAppointment(${a.id})" title="Cancel">
-                        <i class="fas fa-trash-can"></i>
-                    </button>
+                    ${['accept', 'accepted', 'scheduled', 'confirmed', 'rescheduled'].includes(statusKey) ? `
+                        <button class="mh-action-btn mh-action-btn--danger" onclick="cancelAppointment(${a.id})" title="Cancel Session">
+                            <i class="fas fa-calendar-xmark"></i>
+                        </button>
+                    ` : ''}
+                    ${['pending', 'completed', 'rejected', 'reject', 'cancelled', 'no_show'].includes(statusKey) ? `
+                        <button class="mh-action-btn mh-action-btn--danger" onclick="deleteAppointment(${a.id})" title="Delete Record">
+                            <i class="fas fa-trash-can"></i>
+                        </button>
+                    ` : ''}
                 </div>
             </td>
         </tr>`;
@@ -646,8 +657,28 @@ function editAppointment(id) {
     openBookingModal(a);
 }
 
+async function cancelAppointment(id) {
+    if (!confirm('Cancel this appointment? This will free the timeslot and notify the counselor.')) return;
+
+    try {
+        const res = await fetch(`${BASE}/api/appointments/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ id, status: 'cancelled' })
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Failed');
+
+        toastSuccess('Appointment cancelled.');
+        renderAppointments();
+    } catch (err) {
+        toastError('Could not cancel: ' + err.message);
+    }
+}
+
 async function deleteAppointment(id) {
-    if (!confirm('Cancel this appointment? This cannot be undone.')) return;
+    if (!confirm('Delete this appointment record from your history? This cannot be undone.')) return;
 
     try {
         const res = await fetch(`${BASE}/api/appointments/delete`, {

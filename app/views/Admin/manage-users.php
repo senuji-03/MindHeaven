@@ -319,17 +319,11 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
-        <div class="topbar">
-            <h1>Manage Users</h1>
-            <div class="topbar-right">
-                <a href="<?= BASE_URL ?>/admin/profile" style="text-decoration: none; color: inherit;">
-                    <div class="admin-profile" style="cursor: pointer;">
-                        <span>Admin User</span>
-                        <div class="avatar">A</div>
-                    </div>
-                </a>
-            </div>
-        </div>
+        <!-- Top Bar -->
+        <?php 
+        $topbarTitle = 'Manage Users';
+        include '_topbar.php'; 
+        ?>
 
        
 

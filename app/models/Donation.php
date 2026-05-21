@@ -118,7 +118,8 @@ class Donation
     {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("
-            SELECT d.*, e.event_title, u.name AS university_name 
+            SELECT d.*, e.event_title, 
+                   u.name AS university_name, u.account_number, u.bank_name, u.bank_branch
             FROM donations d
             LEFT JOIN university_rep_events e ON d.event_id = e.id
             LEFT JOIN university_representatives ur ON e.university_rep_id = ur.user_id

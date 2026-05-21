@@ -12,23 +12,22 @@ if ($isAdmin): ?>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/admin/style.css">
     <style>
-        :root {
-            --primary:#3D8B6E; --primary-light:#6BB89A; --primary-dark:#2A6B52;
-            --bg-deep:#1C2B2A; --bg-soft:#F5F0E8; --bg-mid:#EEF6F2;
-            --text-primary:#1E3A34; --text-secondary:#6B8C7E;
-            --surface:#FFFFFF; --border:#D6E4DD;
-            --radius-sm:8px; --radius-lg:20px; --radius-full:9999px;
-            --shadow-sm:0 1px 3px rgba(30,58,52,.06);
-        }
-        body { font-family:'DM Sans','Inter',system-ui,sans-serif; background:var(--surface); }
-        .main-content { margin-left: 280px; width: calc(100% - 280px); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .main-content { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
     </style>
 </head>
 <body>
     <?php 
     $activePage = 'edit-resources';
-    include BASE_PATH . '/app/views/Admin/_sidebar.php'; 
+    include BASE_PATH . '/app/views/admin/_sidebar.php'; 
     ?>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <?php 
+        $topbarTitle = 'Resource Management Library';
+        include BASE_PATH . '/app/views/admin/_topbar.php'; 
+        ?>
 <?php else: ?>
 <?php 
 $TITLE = 'Manage Resources';
@@ -303,7 +302,11 @@ require BASE_PATH . '/app/views/layouts/header.php';
             border-left-color: var(--crisis); 
         }
     </style>
-<div class="main-content" style="padding: 40px; background: var(--surface);">
+<?php if ($isAdmin): ?>
+    <div class="content-wrapper">
+<?php else: ?>
+    <div class="main-content" style="padding: 40px; background: var(--surface);">
+<?php endif; ?>
         <div class="edit-page-header">
             <h1>Resource Management Library</h1>
             <p>Refine and organize your educational materials. Use filters to quickly locate specific content blocks.</p>
@@ -504,5 +507,8 @@ require BASE_PATH . '/app/views/layouts/header.php';
     });
 })();
 </script>
+
+    </div> <!-- End content-wrapper or main-content -->
+</div> <!-- End main-content (opened in top section for Admin) -->
 
 <?php require BASE_PATH . '/app/views/layouts/footer.php'; ?>
